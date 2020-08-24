@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreWebApi.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoreWebApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
@@ -30,6 +32,7 @@ namespace CoreWebApi.Controllers
         }
 
         // GET api/<ValuesController>/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult>  GetValue(int id)
         {
