@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Claims;
@@ -24,9 +26,10 @@ namespace CoreWebApi.Controllers
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
 
+
         public AuthController(IAuthRepository repo, IConfiguration config)
         {
-          _config = config;
+            _config = config;
             _repo = repo;
         }
 
@@ -36,8 +39,10 @@ namespace CoreWebApi.Controllers
             // validate request;
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
-            if(await _repo.UserExists(userForRegisterDto.Username)) 
-                return BadRequest("Username already exists");
+            if (await _repo.UserExists(userForRegisterDto.Username))
+                return BadRequest(new { message = "User Already Exist" });
+
+
 
             var userToCreate = new User
             {
@@ -52,9 +57,11 @@ namespace CoreWebApi.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
+
+
             var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.password);
 
-            if (userFromRepo == null )
+            if (userFromRepo == null)
             {
                 return Unauthorized();
             }
