@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Data;
 using CoreWebApi.Dtos;
+using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -53,6 +54,59 @@ namespace CoreWebApi.Controllers
         //    return NoContent();
         //}
 
+
+        [HttpPost("AddUser")]
+        public async Task<IActionResult> AddUser(UserForAddDto userForAddDto)
+        {
+            // validate request;
+            userForAddDto.Username = userForAddDto.Username.ToLower();
+          
+       
+            if (await _repo.UserExists(userForAddDto.Username))
+                return BadRequest(new { message = "User Already Exist" });
+
+
+
+            var userToCreate = new User
+            {
+                Username = userForAddDto.Username,
+                DateofBirth =Convert.ToDateTime( userForAddDto.DateofBirth),
+                LastActive = Convert.ToDateTime(userForAddDto.LastActive),
+                city = "Lahore",
+                Country = "Pakistan"
+
+            };
+            var createdUser = await _repo.AddUser(userToCreate, userForAddDto.Password);
+
+            return StatusCode(201);
+
+        }
+
+        //[HttpPut("{id}")]
+        //public IActionResult PUT(int id, UserForAddDto userForAddDto)
+        //{
+
+        //    var userToCreate = new User
+        //    {
+        //        Username = userForAddDto.Username,
+        //        DateofBirth = Convert.ToDateTime(userForAddDto.DateofBirth),
+        //        LastActive = Convert.ToDateTime(userForAddDto.LastActive),
+        //        city = "Lahore",
+        //        Country = "Pakistan01"
+
+        //    };
+
+        //    var createdUser =  _repo.EditUser(id ,userToCreate);
+
+
+        //    var dbUser = _context.Students
+        //        .FirstOrDefault(s => s.Id.Equals(id));
+        //    dbStudent.Age = student.Age;
+        //    dbStudent.Name = student.Name;
+        //    dbStudent.IsRegularStudent = student.IsRegularStudent;
+        //    _context.SaveChanges();
+        //    return NoContent();
+        //}
 
     }
 }

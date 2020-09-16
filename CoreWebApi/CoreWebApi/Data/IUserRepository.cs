@@ -13,5 +13,9 @@ namespace CoreWebApi.Data
         Task<bool> SaveAll();
         Task<IEnumerable<User>> GetUsers();
         Task<User> GetUser(int i);
+
+        Task<bool> UserExists(string username);
+
+        Task<User> AddUser(User user, string password);
     }
 }
