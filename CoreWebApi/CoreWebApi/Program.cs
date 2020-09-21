@@ -24,6 +24,7 @@ namespace CoreWebApi
                 {
                     var context = services.GetRequiredService<DataContext>();
                     context.Database.Migrate();
+                    Seed.SeedUserTypes(context);
                     Seed.SeedUsers(context);
 
                 }catch (Exception ex)

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200921073524_InitialMigrations")]
-    partial class InitialMigrations
+    [Migration("20200921095805_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -549,12 +549,19 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<DateTime>("CreatedDatetime")
-                        .HasColumnName("CreatedTimestamp")
+                    b.Property<DateTime>("CreatedTimestamp")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateofBirth")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");

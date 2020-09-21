@@ -15,12 +15,17 @@ namespace CoreWebApi.Models
         [Required]
         [StringLength(50,ErrorMessage ="Username cannot be longer then 50 characters")]
         public string Username { get; set; }
+        [Required]
+        [StringLength(50,ErrorMessage = "Email cannot be longer then 50 characters")]
+        public string Email { get; set; }
+        public string FullName { get; set; }
+
         //[Required]
         public byte[] PasswordHash { get; set; }
         //[Required]
         public byte[] PasswordSalt { get; set; }
         //[Required]
-        [Column("CreatedTimestamp")]
+        //[Column("CreatedTimestamp")]
         public DateTime CreatedTimestamp { get; set; }
         //[Required]
         public string Gender { get; set; }

@@ -547,12 +547,19 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<DateTime>("CreatedDatetime")
-                        .HasColumnName("CreatedTimestamp")
+                    b.Property<DateTime>("CreatedTimestamp")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateofBirth")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
