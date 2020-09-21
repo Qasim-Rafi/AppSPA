@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CoreWebApi.Migrations
 {
-    public partial class initialMigration : Migration
+    public partial class InitialMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -32,7 +32,7 @@ namespace CoreWebApi.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     GroupName = table.Column<string>(nullable: true),
-                    active1 = table.Column<bool>(nullable: false)
+                    Active1 = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -163,18 +163,11 @@ namespace CoreWebApi.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     CreatedById = table.Column<int>(nullable: false),
                     SubjectId = table.Column<int>(nullable: true),
-                    ClassId = table.Column<int>(nullable: true),
                     SectionId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Class", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Class_Class_ClassId",
-                        column: x => x.ClassId,
-                        principalTable: "Class",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Class_Sections_SectionId",
                         column: x => x.SectionId,
@@ -202,7 +195,7 @@ namespace CoreWebApi.Migrations
                     Gender = table.Column<string>(nullable: true),
                     DateofBirth = table.Column<DateTime>(nullable: false),
                     LastActive = table.Column<DateTime>(nullable: false),
-                    city = table.Column<string>(maxLength: 50, nullable: true),
+                    City = table.Column<string>(maxLength: 50, nullable: true),
                     Country = table.Column<string>(maxLength: 50, nullable: true),
                     UserTypeId = table.Column<int>(nullable: false),
                     GroupId = table.Column<int>(nullable: true)
@@ -333,6 +326,7 @@ namespace CoreWebApi.Migrations
                     Comment = table.Column<string>(nullable: true),
                     MessageFromUserId = table.Column<int>(nullable: false),
                     ReplyMessageId = table.Column<int>(nullable: false),
+                    AttachmentPath = table.Column<string>(nullable: true),
                     UserId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -352,10 +346,10 @@ namespace CoreWebApi.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    U = table.Column<string>(nullable: true),
+                    Url = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     DateAdded = table.Column<DateTime>(nullable: false),
-                    IsMain = table.Column<bool>(nullable: false),
+                    IsPrimary = table.Column<bool>(nullable: false),
                     UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -376,9 +370,13 @@ namespace CoreWebApi.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
-                    ContactPerson = table.Column<string>(maxLength: 100, nullable: false),
-                    phoneNumber = table.Column<int>(maxLength: 15, nullable: false),
+                    PrimaryContactPerson = table.Column<string>(maxLength: 100, nullable: false),
+                    PrimaryphoneNumber = table.Column<int>(maxLength: 15, nullable: false),
+                    SecondaryContactPerson = table.Column<string>(maxLength: 100, nullable: true),
+                    SecondaryphoneNumber = table.Column<int>(maxLength: 15, nullable: false),
                     Email = table.Column<string>(maxLength: 50, nullable: false),
+                    PrimaryAddress = table.Column<string>(maxLength: 500, nullable: true),
+                    SecondaryAddress = table.Column<string>(maxLength: 500, nullable: true),
                     UsersId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -393,29 +391,24 @@ namespace CoreWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClassSessionAssignment",
+                name: "UserAddress",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AssignmentId = table.Column<int>(nullable: false),
-                    ClassId = table.Column<int>(nullable: false)
+                    Address1 = table.Column<string>(maxLength: 500, nullable: false),
+                    IsPrimaryAddress = table.Column<bool>(nullable: false),
+                    UsersId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassSessionAssignment", x => x.Id);
+                    table.PrimaryKey("PK_UserAddress", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClassSessionAssignment_Assignments_AssignmentId",
-                        column: x => x.AssignmentId,
-                        principalTable: "Assignments",
+                        name: "FK_UserAddress_Users_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ClassSessionAssignment_Class_ClassId",
-                        column: x => x.ClassId,
-                        principalTable: "Class",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -483,14 +476,31 @@ namespace CoreWebApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SchoolBranch",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BranchName = table.Column<string>(maxLength: 100, nullable: true),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    CreatedById = table.Column<int>(nullable: false),
+                    SchoolAcademiesId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SchoolBranch", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SchoolBranch_SchoolAcademy_SchoolAcademiesId",
+                        column: x => x.SchoolAcademiesId,
+                        principalTable: "SchoolAcademy",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Assignments_ClassId",
                 table: "Assignments",
-                column: "ClassId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Class_ClassId",
-                table: "Class",
                 column: "ClassId");
 
             migrationBuilder.CreateIndex(
@@ -546,16 +556,6 @@ namespace CoreWebApi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassSessionAssignment_AssignmentId",
-                table: "ClassSessionAssignment",
-                column: "AssignmentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClassSessionAssignment_ClassId",
-                table: "ClassSessionAssignment",
-                column: "ClassId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GroupUsers_GroupId",
                 table: "GroupUsers",
                 column: "GroupId");
@@ -587,9 +587,19 @@ namespace CoreWebApi.Migrations
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SchoolBranch_SchoolAcademiesId",
+                table: "SchoolBranch",
+                column: "SchoolAcademiesId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sessions_ClassId",
                 table: "Sessions",
                 column: "ClassId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAddress_UsersId",
+                table: "UserAddress",
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GroupId",
@@ -605,13 +615,13 @@ namespace CoreWebApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Assignments");
+
+            migrationBuilder.DropTable(
                 name: "ClassSectionAssigmentSubmissions");
 
             migrationBuilder.DropTable(
                 name: "ClassSectionUserAssignment");
-
-            migrationBuilder.DropTable(
-                name: "ClassSessionAssignment");
 
             migrationBuilder.DropTable(
                 name: "GroupUsers");
@@ -629,7 +639,10 @@ namespace CoreWebApi.Migrations
                 name: "Photos");
 
             migrationBuilder.DropTable(
-                name: "SchoolAcademy");
+                name: "SchoolBranch");
+
+            migrationBuilder.DropTable(
+                name: "UserAddress");
 
             migrationBuilder.DropTable(
                 name: "Values");
@@ -644,28 +657,28 @@ namespace CoreWebApi.Migrations
                 name: "Sessions");
 
             migrationBuilder.DropTable(
-                name: "Assignments");
-
-            migrationBuilder.DropTable(
                 name: "LeaveTypes");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "SchoolAcademy");
 
             migrationBuilder.DropTable(
                 name: "Class");
 
             migrationBuilder.DropTable(
-                name: "Groups");
-
-            migrationBuilder.DropTable(
-                name: "UserTypes");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Sections");
 
             migrationBuilder.DropTable(
                 name: "Subjects");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
+
+            migrationBuilder.DropTable(
+                name: "UserTypes");
         }
     }
 }

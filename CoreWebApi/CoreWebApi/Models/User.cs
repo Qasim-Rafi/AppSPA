@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +20,8 @@ namespace CoreWebApi.Models
         //[Required]
         public byte[] PasswordSalt { get; set; }
         //[Required]
-        public DateTime CreatedDatetime { get; set; }
+        [Column("CreatedTimestamp")]
+        public DateTime CreatedTimestamp { get; set; }
         //[Required]
         public string Gender { get; set; }
         //[Required]
@@ -33,8 +35,10 @@ namespace CoreWebApi.Models
         public int UserTypeId { get; set; }
 
         public virtual ICollection<Photo>   Photos { get; set; }
+        [ForeignKey("UserTypeId")]
         public virtual UserType Usertypes { get; set; }
         public virtual ICollection<SchoolAcademy> SchoolAcademies { get; set; }
+        public virtual ICollection<UserAddress> UserAddresses { get; set; }
 
     }
 }

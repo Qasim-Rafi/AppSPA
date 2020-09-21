@@ -27,6 +27,13 @@ namespace CoreWebApi.Models
         [StringLength(50,ErrorMessage ="Email cannot be longer then 50 characters")]
         public string Email { get; set; }
 
+        [StringLength(500, ErrorMessage = "Address cannot be longer then 500 characters")]
+        public string PrimaryAddress { get; set; }
+        [StringLength(500, ErrorMessage = "Address cannot be longer then 500 characters")]
+        public string SecondaryAddress { get; set; }
+
         public virtual User Users { get; set; }
+        public virtual ICollection<SchoolBranch> SchoolBranches { get; set; }
+
     }
 }

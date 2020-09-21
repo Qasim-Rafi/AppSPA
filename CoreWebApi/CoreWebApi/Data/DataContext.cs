@@ -18,7 +18,7 @@ namespace CoreWebApi.Data
         public DbSet<ClassSectionAssigmentSubmission> ClassSectionAssigmentSubmissions { get; set; }
         public DbSet<ClassSectionAssignment> ClassSectionAssignment { get; set; }
         public DbSet<ClassSectionUserAssignment> ClassSectionUserAssignment { get; set; }
-        public DbSet<ClassSessionAssignment> ClassSessionAssignment { get; set; }
+        //public DbSet<ClassSessionAssignment> ClassSessionAssignment { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupUser> GroupUsers { get; set; }
         public DbSet<Leave> Leaves { get; set; }

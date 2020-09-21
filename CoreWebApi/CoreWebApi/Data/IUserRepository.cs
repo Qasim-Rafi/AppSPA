@@ -17,5 +17,6 @@ namespace CoreWebApi.Data
         Task<bool> UserExists(string username);
 
         Task<User> AddUser(User user, string password);
+        Task<User> EditUser(int id, User user);
     }
 }

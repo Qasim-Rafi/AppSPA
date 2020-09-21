@@ -46,7 +46,9 @@ namespace CoreWebApi.Controllers
 
             var userToCreate = new User
             {
-                Username = userForRegisterDto.Username
+                Username = userForRegisterDto.Username,
+                UserTypeId=userForRegisterDto.UserTypeId
+
             };
             var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
 

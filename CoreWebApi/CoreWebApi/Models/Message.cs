@@ -12,6 +12,7 @@ namespace CoreWebApi.Models
         public string  Comment { get; set; }
         public int MessageFromUserId  { get; set; }
         public int ReplyMessageId { get; set; }
+        public string AttachmentPath { get; set; }
 
         public virtual User User { get; set; } 
 

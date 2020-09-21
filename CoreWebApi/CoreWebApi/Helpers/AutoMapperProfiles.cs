@@ -12,6 +12,7 @@ namespace CoreWebApi.Helpers
     {
         public AutoMapperProfiles()
         {
+            CreateMap<User, UserForAddDto>().ReverseMap();
             CreateMap<User, UserForListDto>();
             CreateMap<User, UserForDetailedDto>();
             CreateMap<User, UserForAddDto>();

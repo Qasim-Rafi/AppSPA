@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200917130928_initialMigration")]
-    partial class initialMigration
+    [Migration("20200921073524_InitialMigrations")]
+    partial class InitialMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -93,9 +93,6 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ClassId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
 
@@ -113,8 +110,6 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClassId");
 
                     b.HasIndex("SectionId");
 
@@ -223,28 +218,6 @@ namespace CoreWebApi.Migrations
                     b.ToTable("ClassSectionUserAssignment");
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.ClassSessionAssignment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AssignmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClassId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignmentId");
-
-                    b.HasIndex("ClassId");
-
-                    b.ToTable("ClassSessionAssignment");
-                });
-
             modelBuilder.Entity("CoreWebApi.Models.Group", b =>
                 {
                     b.Property<int>("Id")
@@ -252,11 +225,11 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("Active1")
+                        .HasColumnType("bit");
+
                     b.Property<string>("GroupName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("active1")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -334,6 +307,9 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AttachmentPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
@@ -390,10 +366,10 @@ namespace CoreWebApi.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsMain")
+                    b.Property<bool>("IsPrimary")
                         .HasColumnType("bit");
 
-                    b.Property<string>("U")
+                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
@@ -413,11 +389,6 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ContactPerson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
@@ -428,18 +399,66 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int?>("UsersId")
-                        .HasColumnType("int");
+                    b.Property<string>("PrimaryAddress")
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
 
-                    b.Property<int>("phoneNumber")
+                    b.Property<string>("PrimaryContactPerson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("PrimaryphoneNumber")
                         .HasColumnType("int")
                         .HasMaxLength(15);
+
+                    b.Property<string>("SecondaryAddress")
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<string>("SecondaryContactPerson")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("SecondaryphoneNumber")
+                        .HasColumnType("int")
+                        .HasMaxLength(15);
+
+                    b.Property<int?>("UsersId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UsersId");
 
                     b.ToTable("SchoolAcademy");
+                });
+
+            modelBuilder.Entity("CoreWebApi.Models.SchoolBranch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BranchName")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("SchoolAcademiesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolAcademiesId");
+
+                    b.ToTable("SchoolBranch");
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.Section", b =>
@@ -522,11 +541,16 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<DateTime>("CreatedTimestamp")
+                    b.Property<DateTime>("CreatedDatetime")
+                        .HasColumnName("CreatedTimestamp")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateofBirth")
@@ -555,10 +579,6 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<string>("city")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
@@ -566,6 +586,31 @@ namespace CoreWebApi.Migrations
                     b.HasIndex("UserTypeId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CoreWebApi.Models.UserAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<bool>("IsPrimaryAddress")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("UserAddress");
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.UserType", b =>
@@ -616,10 +661,6 @@ namespace CoreWebApi.Migrations
 
             modelBuilder.Entity("CoreWebApi.Models.Class", b =>
                 {
-                    b.HasOne("CoreWebApi.Models.Class", null)
-                        .WithMany("Classes")
-                        .HasForeignKey("ClassId");
-
                     b.HasOne("CoreWebApi.Models.Section", null)
                         .WithMany("Classes")
                         .HasForeignKey("SectionId");
@@ -680,21 +721,6 @@ namespace CoreWebApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.ClassSessionAssignment", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.Assignment", "Assignment")
-                        .WithMany()
-                        .HasForeignKey("AssignmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.Class", "Class")
-                        .WithMany()
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>
                 {
                     b.HasOne("CoreWebApi.Models.Group", "Groups")
@@ -745,6 +771,13 @@ namespace CoreWebApi.Migrations
                         .HasForeignKey("UsersId");
                 });
 
+            modelBuilder.Entity("CoreWebApi.Models.SchoolBranch", b =>
+                {
+                    b.HasOne("CoreWebApi.Models.SchoolAcademy", "SchoolAcademies")
+                        .WithMany("SchoolBranches")
+                        .HasForeignKey("SchoolAcademiesId");
+                });
+
             modelBuilder.Entity("CoreWebApi.Models.Session", b =>
                 {
                     b.HasOne("CoreWebApi.Models.Class", "Class")
@@ -763,6 +796,13 @@ namespace CoreWebApi.Migrations
                         .HasForeignKey("UserTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CoreWebApi.Models.UserAddress", b =>
+                {
+                    b.HasOne("CoreWebApi.Models.User", "Users")
+                        .WithMany("UserAddresses")
+                        .HasForeignKey("UsersId");
                 });
 #pragma warning restore 612, 618
         }
