@@ -13,11 +13,13 @@ namespace CoreWebApi.Models
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(50,ErrorMessage ="Username cannot be longer then 50 characters")]
+        [StringLength(50, ErrorMessage = "Username cannot be longer then 50 characters")]
         public string Username { get; set; }
         [Required]
-        [StringLength(50,ErrorMessage = "Email cannot be longer then 50 characters")]
+        [StringLength(50, ErrorMessage = "Email cannot be longer then 50 characters")]
         public string Email { get; set; }
+
+        [StringLength(50, ErrorMessage = "FullName cannot be longer then 50 characters")]
         public string FullName { get; set; }
 
         //[Required]
@@ -25,21 +27,22 @@ namespace CoreWebApi.Models
         //[Required]
         public byte[] PasswordSalt { get; set; }
         //[Required]
-        //[Column("CreatedTimestamp")]
         public DateTime CreatedTimestamp { get; set; }
-        //[Required]
+        [Required]
         public string Gender { get; set; }
         //[Required]
         public DateTime DateofBirth { get; set; }
         //[Required]
         public DateTime LastActive { get; set; }
+
         [StringLength(50, ErrorMessage = "City cannot be longer then 50 characters")]
-        public string  City { get; set; }
+        public string City { get; set; }
+
         [StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
         public string Country { get; set; }
         public int UserTypeId { get; set; }
 
-        public virtual ICollection<Photo>   Photos { get; set; }
+        public virtual ICollection<Photo> Photos { get; set; }
         [ForeignKey("UserTypeId")]
         public virtual UserType Usertypes { get; set; }
         public virtual ICollection<SchoolAcademy> SchoolAcademies { get; set; }

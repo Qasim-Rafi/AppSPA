@@ -16,7 +16,7 @@ namespace CoreWebApi.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : BaseController
     {
         private readonly IUserRepository _repo;
         private readonly IMapper _mapper;
@@ -85,8 +85,10 @@ namespace CoreWebApi.Controllers
             catch (Exception ex)
             {
 
-                return BadRequest(ex);
-
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
             }
         }
 
@@ -120,7 +122,10 @@ namespace CoreWebApi.Controllers
             catch (Exception ex)
             {
 
-                return BadRequest(ex);
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
 
             }
         }

@@ -21,7 +21,7 @@ namespace CoreWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
@@ -36,6 +36,7 @@ namespace CoreWebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
+            
             // validate request;
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 

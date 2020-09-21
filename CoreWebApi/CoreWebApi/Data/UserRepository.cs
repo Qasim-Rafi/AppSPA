@@ -82,47 +82,56 @@ namespace CoreWebApi.Data
             try
             {
 
-                User dbUser = _context.Users
-                  .FirstOrDefault(s => s.Id.Equals(id));
-                dbUser.FullName = user.FullName;
-                dbUser.Email = user.Email;
-                dbUser.Username = user.Username.ToLower();
-                dbUser.City = user.City;
-                dbUser.Country = user.Country;
-                dbUser.DateofBirth = user.DateofBirth;
-                dbUser.Gender = user.Gender;
-                if (!string.IsNullOrEmpty(user.OldPassword))
+                User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
+                if (dbUser != null)
                 {
-                    if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
+                    dbUser.FullName = user.FullName;
+                    dbUser.Email = user.Email;
+                    dbUser.Username = user.Username.ToLower();
+                    dbUser.City = user.City;
+                    dbUser.Country = user.Country;
+                    dbUser.DateofBirth = user.DateofBirth;
+                    dbUser.Gender = user.Gender;
+                    if (!string.IsNullOrEmpty(user.OldPassword))
                     {
-
-                        if (!string.IsNullOrEmpty(user.Password))
+                        if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
                         {
-                            byte[] passwordhash, passwordSalt;
-                            Seed.CreatePasswordHash(user.Password, out passwordhash, out passwordSalt);
-                            dbUser.PasswordHash = passwordhash;
-                            dbUser.PasswordSalt = passwordSalt;
+
+                            if (!string.IsNullOrEmpty(user.Password))
+                            {
+                                byte[] passwordhash, passwordSalt;
+                                Seed.CreatePasswordHash(user.Password, out passwordhash, out passwordSalt);
+                                dbUser.PasswordHash = passwordhash;
+                                dbUser.PasswordSalt = passwordSalt;
+                            }
+                            else
+                            {
+                                throw new Exception("You didn't provide New Password");
+                            }
+                            //_mapper.Map(dbUser, userForAddDto);
+                            //dbUser = _mapper.Map<User>(userForAddDto);
+                            //dbUser = user;
+                            //if (Seed.VerifyPasswordHash(userForAddDto.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
+                            //_context.Users.Add(dbUser);
+                            //_context.Entry(dbUser).State = EntityState.Modified;
+
+
+                        }
+                        else
+                        {
+                            throw new Exception("Password does not match");
                         }
 
-                        //_mapper.Map(dbUser, userForAddDto);
-                        //dbUser = _mapper.Map<User>(userForAddDto);
-                        //dbUser = user;
-                        //if (Seed.VerifyPasswordHash(userForAddDto.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
-                        //_context.Users.Add(dbUser);
-                        //_context.Entry(dbUser).State = EntityState.Modified;
-
-
                     }
-                    else
-                    {
-                        throw new Exception("Password does not match");
-                    }
+                    if (dbUser != null)
+                        await _context.SaveChangesAsync();
 
+                    return dbUser;
                 }
-                if (dbUser != null)
-                    await _context.SaveChangesAsync();
-
-                return dbUser;
+                else
+                {
+                    throw new Exception("Record Not Found");
+                }
             }
             catch (Exception ex)
             {

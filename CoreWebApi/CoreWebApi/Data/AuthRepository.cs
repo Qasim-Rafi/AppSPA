@@ -23,33 +23,33 @@ namespace CoreWebApi.Data
             if (user == null)
                 return null;
 
-            if (!verifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            if (!Seed.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
                 return null;
 
             return user;
 
         }
 
-        private bool verifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using (HMACSHA512 hmac = new HMACSHA512(passwordSalt))
-            {
-               var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                for (int i=0;i<computedHash.Length; i++)
-                {
-                    if (computedHash[i] != passwordHash[i])
-                        return false;
-                }
+        //private bool verifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        //{
+        //    using (HMACSHA512 hmac = new HMACSHA512(passwordSalt))
+        //    {
+        //       var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //        for (int i=0;i<computedHash.Length; i++)
+        //        {
+        //            if (computedHash[i] != passwordHash[i])
+        //                return false;
+        //        }
 
-                return true;
+        //        return true;
 
-            }
-        }
+        //    }
+        //}
 
         public async Task<User> Register(User user, string password)
         {
             byte[] passwordHash, passwordSalt;
-            CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            Seed.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
@@ -60,19 +60,19 @@ namespace CoreWebApi.Data
             return user;
         }
 
-        private void CreatePasswordHash(string password,out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            byte[] key= new Byte[64];
-            using (HMACSHA512 hmac = new HMACSHA512(key))
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //private void CreatePasswordHash(string password,out byte[] passwordHash, out byte[] passwordSalt)
+        //{
+        //    byte[] key= new Byte[64];
+        //    using (HMACSHA512 hmac = new HMACSHA512(key))
+        //    {
+        //        passwordSalt = hmac.Key;
+        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 
                
-               // var hmac = System.Security.Cryptography.HMACSHA512()
-            }
+        //       // var hmac = System.Security.Cryptography.HMACSHA512()
+        //    }
           
-        }
+        //}
 
         public  async Task<bool> UserExists(string  username)
         {
