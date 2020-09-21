@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using CoreWebApi.Data;
+using AutoMapper;
 
 namespace CoreWebApi.Data
 {
@@ -13,10 +15,13 @@ namespace CoreWebApi.Data
     {
 
         private readonly DataContext _context;
-        
-        public UserRepository(DataContext context)
+        private readonly IMapper _mapper;
+
+        public UserRepository(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
+
         }
 
         public void Add<T>(T entity) where T : class
@@ -58,7 +63,7 @@ namespace CoreWebApi.Data
         public async Task<User> AddUser(User user, string password)
         {
             byte[] passwordHash, passwordSalt;
-            CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            Seed.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
@@ -71,32 +76,75 @@ namespace CoreWebApi.Data
 
 
 
-        public async Task<User> EditUser(int id ,User user)
+        public async Task<User> EditUser(int id, UserForAddDto user)
         {
 
-            User dbUser = _context.Users
-                .FirstOrDefault(s => s.Id.Equals(id));
-             _context.Entry(dbUser).State = EntityState.Modified; 
-            if (dbUser != null)
-                 await _context.SaveChangesAsync();
-
-            return user;
-        }
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            byte[] key = new Byte[64];
-            using (HMACSHA512 hmac = new HMACSHA512(key))
+            try
             {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
+                User dbUser = _context.Users
+                  .FirstOrDefault(s => s.Id.Equals(id));
+                dbUser.FullName = user.FullName;
+                dbUser.Email = user.Email;
+                dbUser.Username = user.Username.ToLower();
+                dbUser.City = user.City;
+                dbUser.Country = user.Country;
+                dbUser.DateofBirth = user.DateofBirth;
+                dbUser.Gender = user.Gender;
+                if (!string.IsNullOrEmpty(user.OldPassword))
+                {
+                    if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
+                    {
+
+                        if (!string.IsNullOrEmpty(user.Password))
+                        {
+                            byte[] passwordhash, passwordSalt;
+                            Seed.CreatePasswordHash(user.Password, out passwordhash, out passwordSalt);
+                            dbUser.PasswordHash = passwordhash;
+                            dbUser.PasswordSalt = passwordSalt;
+                        }
+
+                        //_mapper.Map(dbUser, userForAddDto);
+                        //dbUser = _mapper.Map<User>(userForAddDto);
+                        //dbUser = user;
+                        //if (Seed.VerifyPasswordHash(userForAddDto.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
+                        //_context.Users.Add(dbUser);
+                        //_context.Entry(dbUser).State = EntityState.Modified;
 
 
-                // var hmac = System.Security.Cryptography.HMACSHA512()
+                    }
+                    else
+                    {
+                        throw new Exception("Password does not match");
+                    }
+
+                }
+                if (dbUser != null)
+                    await _context.SaveChangesAsync();
+
+                return dbUser;
             }
+            catch (Exception ex)
+            {
 
+                throw ex;
+            }
         }
 
-        
+        //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        //{
+        //    byte[] key = new Byte[64];
+        //    using (HMACSHA512 hmac = new HMACSHA512(key))
+        //    {
+        //        passwordSalt = hmac.Key;
+        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
+
+        //        // var hmac = System.Security.Cryptography.HMACSHA512()
+        //    }
+
+        //}
+
+
     }
 }

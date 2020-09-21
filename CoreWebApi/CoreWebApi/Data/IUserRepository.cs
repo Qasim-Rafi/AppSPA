@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Models;
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,6 @@ namespace CoreWebApi.Data
         Task<bool> UserExists(string username);
 
         Task<User> AddUser(User user, string password);
-        Task<User> EditUser(int id, User user);
+        Task<User> EditUser(int id, UserForAddDto userForAddDto);
     }
 }

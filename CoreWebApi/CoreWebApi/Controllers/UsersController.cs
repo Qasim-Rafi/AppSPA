@@ -58,53 +58,71 @@ namespace CoreWebApi.Controllers
         [HttpPost("AddUser")]
         public async Task<IActionResult> AddUser(UserForAddDto userForAddDto)
         {
-            // validate request;
-            userForAddDto.Username = userForAddDto.Username.ToLower();
-
-
-            if (await _repo.UserExists(userForAddDto.Username))
-                return BadRequest(new { message = "User Already Exist" });
-
-
-
-            var userToCreate = new User
+            try
             {
-                Username = userForAddDto.Username,
-                DateofBirth = Convert.ToDateTime(userForAddDto.DateofBirth),
-                LastActive = Convert.ToDateTime(userForAddDto.LastActive),
-                City = "Lahore",
-                Country = "Pakistan"
+                // validate request;
+                userForAddDto.Username = userForAddDto.Username.ToLower();
 
-            };
-            var createdUser = await _repo.AddUser(userToCreate, userForAddDto.Password);
 
-            return StatusCode(StatusCodes.Status201Created);
+                if (await _repo.UserExists(userForAddDto.Username))
+                    return BadRequest(new { message = "User Already Exist" });
 
+
+
+                var userToCreate = new User
+                {
+                    Username = userForAddDto.Username,
+                    DateofBirth = Convert.ToDateTime(userForAddDto.DateofBirth),
+                    LastActive = Convert.ToDateTime(DateTime.Now),
+                    City = "Lahore",
+                    Country = "Pakistan"
+
+                };
+                var createdUser = await _repo.AddUser(userToCreate, userForAddDto.Password);
+
+                return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+
+            }
         }
 
         [HttpPut("{id}")]
-        public IActionResult PUT(int id, UserForAddDto userForAddDto)
+        public async Task<IActionResult> PUTAsync(int id, UserForAddDto userForAddDto)
         {
-            var userToEdit = _mapper.Map<User>(userForAddDto);
-            userToEdit.Country = "Pakistan012";
-            userToEdit.City = "Lahore2";
 
-            //var userToEdit = new User
-            //{
-            //    Username = userForAddDto.Username,
-            //    DateofBirth = Convert.ToDateTime(userForAddDto.DateofBirth),
-            //    LastActive = Convert.ToDateTime(userForAddDto.LastActive),
-            //    //city = "Lahore",
-            //    Country = "Pakistan01",
+            try
+            {
+                //var userToEdit = _mapper.Map<User>(userForAddDto);
+                //userToEdit.Country = "Pakistan2";
+                //userToEdit.City = "Lahore2";
 
-
-            //};
-
-            var updatedUser = _repo.EditUser(id, userToEdit);
+                //var userToEdit = new User
+                //{
+                //    Username = userForAddDto.Username,
+                //    DateofBirth = Convert.ToDateTime(userForAddDto.DateofBirth),
+                //    LastActive = Convert.ToDateTime(userForAddDto.LastActive),
+                //    //city = "Lahore",
+                //    Country = "Pakistan01",
 
 
+                //};
 
-            return StatusCode(StatusCodes.Status200OK);
+                var updatedUser = await _repo.EditUser(id, userForAddDto);
+
+
+
+                return StatusCode(StatusCodes.Status200OK);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+
+            }
         }
 
     }
