@@ -1,0 +1,13 @@
+{  
+  "UserTypes": [
+    {
+      "Name": "Admin"
+    },
+    {
+      "Name": "Developer"
+    },
+    {
+      "Name": "User"
+    }
+  ]
+}

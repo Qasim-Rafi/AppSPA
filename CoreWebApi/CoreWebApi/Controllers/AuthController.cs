@@ -21,7 +21,7 @@ namespace CoreWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : BaseController
+    public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
@@ -36,7 +36,7 @@ namespace CoreWebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-            
+
             // validate request;
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
@@ -48,7 +48,7 @@ namespace CoreWebApi.Controllers
             var userToCreate = new User
             {
                 Username = userForRegisterDto.Username,
-                UserTypeId=userForRegisterDto.UserTypeId
+                UserTypeId = userForRegisterDto.UserTypeId
 
             };
             var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
@@ -74,7 +74,7 @@ namespace CoreWebApi.Controllers
                 new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
                 new Claim(ClaimTypes.Name, userFromRepo.Username)
             };
-
+           
             var key = new SymmetricSecurityKey(Encoding.UTF8
                 .GetBytes(_config.GetSection("AppSettings:Token").Value));
 
@@ -86,12 +86,17 @@ namespace CoreWebApi.Controllers
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = creds
             };
-
+           
             var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.CreateToken(tokenDescriptor);            
+            //var session = HttpContext.Session;
+            //var claimsIdentity = new ClaimsPrincipal();
+            //session.SetString("identifier", "session test");// GetClaim(claimsIdentity, "Name"));
 
             return Ok(new
             {
+                //session = session.GetString("identifier"),
+                //claims = GetClaims("Name"),
                 token = tokenHandler.WriteToken(token)
             });
 

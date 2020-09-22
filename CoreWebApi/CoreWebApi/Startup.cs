@@ -22,9 +22,11 @@ namespace CoreWebApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        bool isDev;
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            isDev = env.IsDevelopment();
         }
 
         public IConfiguration Configuration { get; }
@@ -32,13 +34,21 @@ namespace CoreWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers().AddNewtonsoftJson();
             services.AddCors();
             services.AddAutoMapper(typeof(UserRepository).Assembly);
             services.AddScoped<IAuthRepository,AuthRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(optinos =>
                 {
@@ -51,8 +61,9 @@ namespace CoreWebApi
                         ValidateAudience = false
                     };
                 });
-
-            services.AddSwaggerGen(swagger =>
+            if (isDev)
+            {
+                services.AddSwaggerGen(swagger =>
             {
                 //This is to generate the Default UI of Swagger Documentation  
                 swagger.SwaggerDoc("v2", new OpenApiInfo
@@ -87,7 +98,7 @@ namespace CoreWebApi
                     }
                 });
             });
-           
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,6 +107,9 @@ namespace CoreWebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v2/swagger.json", "PlaceInfo Services"));
+
             }
 
             //app.UseHttpsRedirection();
@@ -104,11 +118,9 @@ namespace CoreWebApi
 
             app.UseAuthorization();
 
-            //app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            app.UseSwagger();
-            app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v2/swagger.json", "PlaceInfo Services"));
-
-
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

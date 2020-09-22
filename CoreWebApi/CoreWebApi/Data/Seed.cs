@@ -17,12 +17,14 @@ namespace CoreWebApi.Data
         {
             try
             {
-                if (!context.Users.Any())
+                if (!context.UserTypes.Any())
                 {
-                    var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
-                    DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
-                    var jsonObj = JsonConvert.SerializeObject(dataSet.Tables["UserTypes"]);
-                    var userTypes = JsonConvert.DeserializeObject<List<UserType>>(jsonObj);
+                    //var fileData = System.IO.File.ReadAllText("Data/UserTypeSeedData.json");
+                    //DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
+                    //var jsonObj = JsonConvert.SerializeObject(dataSet.Tables["UserTypes"]);
+                    //var userTypes = JsonConvert.DeserializeObject<List<UserType>>(jsonObj);
+                    var fileData = System.IO.File.ReadAllText("Data/UserTypeSeedData.json");
+                    var userTypes = JsonConvert.DeserializeObject<List<UserType>>(fileData);
 
                     foreach (var type in userTypes)
                     {
@@ -45,10 +47,12 @@ namespace CoreWebApi.Data
             {
                 if (!context.Users.Any())
                 {
+                    //var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
+                    //DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
+                    //var jsonObj = JsonConvert.SerializeObject(dataSet.Tables["Users"]);
+                    //var users = JsonConvert.DeserializeObject<List<User>>(jsonObj);
                     var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
-                    DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
-                    var jsonObj = JsonConvert.SerializeObject(dataSet.Tables["Users"]);
-                    var users = JsonConvert.DeserializeObject<List<User>>(jsonObj);
+                    var users = JsonConvert.DeserializeObject<List<User>>(fileData);
 
                     foreach (var user in users)
                     {

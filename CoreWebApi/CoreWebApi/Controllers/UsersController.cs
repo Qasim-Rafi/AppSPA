@@ -8,6 +8,7 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,11 +17,12 @@ namespace CoreWebApi.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : BaseController
+    public class UsersController : ControllerBase
     {
         private readonly IUserRepository _repo;
         private readonly IMapper _mapper;
         public UsersController(IUserRepository repo, IMapper mapper)
+
         {
             _mapper = mapper;
             _repo = repo;
@@ -79,6 +81,9 @@ namespace CoreWebApi.Controllers
 
                 };
                 var createdUser = await _repo.AddUser(userToCreate, userForAddDto.Password);
+
+                //var files = Request.Form.Files;
+                //Upload(files);
 
                 return StatusCode(StatusCodes.Status201Created);
             }

@@ -30,6 +30,10 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="StaticFiles\Images\" />
+  </ItemGroup>
+
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="tasklist /fi &quot;imagename eq iisexpress.exe&quot; |find &quot;:&quot; &gt; nul&#xD;&#xA;if errorlevel 1 taskkill /f /im &quot;iisexpress.exe&quot;" />
   </Target>

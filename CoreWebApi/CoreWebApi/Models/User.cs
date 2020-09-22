@@ -17,6 +17,8 @@ namespace CoreWebApi.Models
         public string Username { get; set; }
         [Required]
         [StringLength(50, ErrorMessage = "Email cannot be longer then 50 characters")]
+        [DataType(DataType.EmailAddress)]
+        [EmailAddress] 
         public string Email { get; set; }
 
         [StringLength(50, ErrorMessage = "FullName cannot be longer then 50 characters")]

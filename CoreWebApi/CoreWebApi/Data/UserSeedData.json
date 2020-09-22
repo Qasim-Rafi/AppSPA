@@ -25,16 +25,5 @@
       "Gender": "male",
       "password": "password"
     }
-  ],
-  "UserTypes": [
-    {
-      "Name": "Admin"
-    },
-    {
-      "Name": "Developer"
-    },
-    {
-      "Name": "User"
-    }
-  ]
+  ]  
 }
