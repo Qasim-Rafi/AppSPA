@@ -8,6 +8,10 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using CoreWebApi.Data;
 using AutoMapper;
+using AutoMapper.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using CoreWebApi.IData;
 
 namespace CoreWebApi.Data
 {
@@ -16,12 +20,12 @@ namespace CoreWebApi.Data
 
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-
-        public UserRepository(DataContext context, IMapper mapper)
+        private readonly IWebHostEnvironment _HostEnvironment;
+        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment)
         {
             _context = context;
             _mapper = mapper;
-
+            _HostEnvironment = HostEnvironment;
         }
 
         public void Add<T>(T entity) where T : class
@@ -60,18 +64,37 @@ namespace CoreWebApi.Data
         }
 
 
-        public async Task<User> AddUser(User user, string password)
+        public async Task<User> AddUser(UserForAddDto userDto)
         {
-            byte[] passwordHash, passwordSalt;
-            Seed.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            try
+            {
+                var userToCreate = new User
+                {
+                    Username = userDto.Username,
+                    DateofBirth = Convert.ToDateTime(userDto.DateofBirth),
+                    LastActive = Convert.ToDateTime(DateTime.Now),
+                    City = "Lahore",
+                    Country = "Pakistan",
+                    Email = userDto.Email,
+                    UserTypeId = _context.UserTypes.First().Id
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+                };
+                byte[] passwordHash, passwordSalt;
+                Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+                userToCreate.PasswordHash = passwordHash;
+                userToCreate.PasswordSalt = passwordSalt;
 
-            return user;
+                await _context.Users.AddAsync(userToCreate);
+                await _context.SaveChangesAsync();
+
+                return userToCreate;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
 
@@ -123,8 +146,48 @@ namespace CoreWebApi.Data
                         }
 
                     }
-                    if (dbUser != null)
+                    await _context.SaveChangesAsync();
+
+                    // saving images
+                    string contentRootPath = _HostEnvironment.ContentRootPath;
+
+                    var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+                    if (user.files.Any(f => f.Length == 0))
+                    {
+                        throw new Exception("No files found");
+                    }
+                    foreach (var file in user.files)
+                    {
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        var fullPath = Path.Combine(pathToSave);
+                        var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
+                        if (!Directory.Exists(fullPath))
+                        {
+                            Directory.CreateDirectory(fullPath);
+                        }
+                        var filePath = Path.Combine(fullPath, fileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                        if (user.IsPrimaryPhoto)
+                        {
+                            IQueryable<Photo> updatePhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
+                            await updatePhotos.ForEachAsync(m => m.IsPrimary = false);
+                        }
+                        var photo = new Photo
+                        {
+                            Url = dbPath,
+                            Description = "description...",
+                            IsPrimary = user.IsPrimaryPhoto,
+                            UserId = dbUser.Id,
+                            DateAdded = DateTime.Now
+                        };
+                        await _context.Photos.AddAsync(photo);
                         await _context.SaveChangesAsync();
+                    }
+
+
 
                     return dbUser;
                 }
@@ -132,6 +195,7 @@ namespace CoreWebApi.Data
                 {
                     throw new Exception("Record Not Found");
                 }
+
             }
             catch (Exception ex)
             {

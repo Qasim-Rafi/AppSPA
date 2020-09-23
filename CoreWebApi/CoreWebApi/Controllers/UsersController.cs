@@ -1,31 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Data;
 using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
+using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : BaseController
     {
         private readonly IUserRepository _repo;
         private readonly IMapper _mapper;
-        public UsersController(IUserRepository repo, IMapper mapper)
+        private readonly IFileUploadRepository _uploadFiles;
 
+        public UsersController(IUserRepository repo, IMapper mapper, IFileUploadRepository fileUpload, IConfiguration configuration)
+        : base(configuration)
         {
             _mapper = mapper;
             _repo = repo;
+            _uploadFiles = fileUpload;
         }
 
         [HttpGet]
@@ -58,32 +64,18 @@ namespace CoreWebApi.Controllers
 
 
         [HttpPost("AddUser")]
-        public async Task<IActionResult> AddUser(UserForAddDto userForAddDto)
+        public async Task<IActionResult> AddUser(UserForAddDto userForAddDto)//[FromForm]
         {
             try
-            {
-                // validate request;
+            {                
+                
                 userForAddDto.Username = userForAddDto.Username.ToLower();
 
 
                 if (await _repo.UserExists(userForAddDto.Username))
                     return BadRequest(new { message = "User Already Exist" });
-
-
-
-                var userToCreate = new User
-                {
-                    Username = userForAddDto.Username,
-                    DateofBirth = Convert.ToDateTime(userForAddDto.DateofBirth),
-                    LastActive = Convert.ToDateTime(DateTime.Now),
-                    City = "Lahore",
-                    Country = "Pakistan"
-
-                };
-                var createdUser = await _repo.AddUser(userToCreate, userForAddDto.Password);
-
-                //var files = Request.Form.Files;
-                //Upload(files);
+                
+                var createdUser = await _repo.AddUser(userForAddDto);
 
                 return StatusCode(StatusCodes.Status201Created);
             }
@@ -98,7 +90,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PUTAsync(int id, UserForAddDto userForAddDto)
+        public async Task<IActionResult> PUTAsync(int id, [FromForm] UserForAddDto userForAddDto)// [FromForm]
         {
 
             try
@@ -119,6 +111,7 @@ namespace CoreWebApi.Controllers
                 //};
 
                 var updatedUser = await _repo.EditUser(id, userForAddDto);
+                
 
 
 

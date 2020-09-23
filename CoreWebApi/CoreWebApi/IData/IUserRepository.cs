@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CoreWebApi.Data
+namespace CoreWebApi.IData
 {
     public interface IUserRepository
     {
@@ -17,7 +17,7 @@ namespace CoreWebApi.Data
 
         Task<bool> UserExists(string username);
 
-        Task<User> AddUser(User user, string password);
+        Task<User> AddUser(UserForAddDto user);
         Task<User> EditUser(int id, UserForAddDto userForAddDto);
     }
 }

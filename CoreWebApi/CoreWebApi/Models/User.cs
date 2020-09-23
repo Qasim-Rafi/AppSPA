@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
+﻿using CoreWebApi.Dtos;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,7 +33,8 @@ namespace CoreWebApi.Models
         public DateTime CreatedTimestamp { get; set; }
         [Required]
         public string Gender { get; set; }
-        //[Required]
+        [Required]
+        [DateValidation(ErrorMessage = "Date of birth is not in correct format")]
         public DateTime DateofBirth { get; set; }
         //[Required]
         public DateTime LastActive { get; set; }
@@ -45,7 +47,7 @@ namespace CoreWebApi.Models
         public int UserTypeId { get; set; }
 
         public virtual ICollection<Photo> Photos { get; set; }
-        [ForeignKey("UserTypeId")]
+        //[ForeignKey("UserTypeId")]
         public virtual UserType Usertypes { get; set; }
         public virtual ICollection<SchoolAcademy> SchoolAcademies { get; set; }
         public virtual ICollection<UserAddress> UserAddresses { get; set; }

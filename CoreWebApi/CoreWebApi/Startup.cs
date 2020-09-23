@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Data;
+using CoreWebApi.IData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,6 +35,7 @@ namespace CoreWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddDistributedMemoryCache();
 
             services.AddSession(options =>
@@ -46,9 +48,16 @@ namespace CoreWebApi
             services.AddControllers().AddNewtonsoftJson();
             services.AddCors();
             services.AddAutoMapper(typeof(UserRepository).Assembly);
-            services.AddScoped<IAuthRepository,AuthRepository>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            
+            services.AddScoped<IClassRepository, ClassRepository>();
+            services.AddScoped<ISectionRepository, SectionRepository>();
+            services.AddScoped<ISubjectRepository, SubjectRepository>();
+
+
+
+            services.AddScoped<IFileUploadRepository, FileUploadRepository>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(optinos =>
                 {
@@ -61,6 +70,7 @@ namespace CoreWebApi
                         ValidateAudience = false
                     };
                 });
+
             if (isDev)
             {
                 services.AddSwaggerGen(swagger =>
@@ -119,7 +129,7 @@ namespace CoreWebApi
             app.UseAuthorization();
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            
+
             app.UseSession();
             app.UseEndpoints(endpoints =>
             {

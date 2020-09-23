@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
@@ -18,47 +19,18 @@ namespace CoreWebApi.Controllers
 
     public class BaseController : ControllerBase
     {
-        protected readonly IWebHostEnvironment _hostingEnvironment;
+        protected readonly IConfiguration _configuration;
 
-        public BaseController(IWebHostEnvironment environment)
+        public BaseController(IConfiguration configuration)
         {
-            _hostingEnvironment = environment;
+            _configuration = configuration;
         }
+
         [NonAction]
-        public void Upload(IFormFileCollection files)
+        public IActionResult Download(string file)
         {
-            try
-            {
-                var folderName = Path.Combine("StaticFiles", "Images");
-                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
-                if (files.Any(f => f.Length == 0))
-                {
-                    throw new Exception("Files not uploaded");
-                }
-
-                foreach (var file in files)
-                {
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    var fullPath = Path.Combine(pathToSave, fileName);
-                    var dbPath = Path.Combine(folderName, fileName); //you can add this path to a list and then return all dbPaths to the client if require
-
-                    using (var stream = new FileStream(fullPath, FileMode.Create))
-                    {
-                        file.CopyTo(stream);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        [NonAction]
-        public object Download([FromQuery] string file)
-        {
-            var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "StaticFiles", "Images");
+            var uploads = Path.Combine(_configuration.GetSection("AppSettings:VirtualURL").Value, "StaticFiles", "Images");
             var filePath = Path.Combine(uploads, file);
             if (!System.IO.File.Exists(filePath))
                 throw new Exception("Files not found");
@@ -69,14 +41,10 @@ namespace CoreWebApi.Controllers
                 stream.CopyTo(memory);
             }
             memory.Position = 0;
-
-            return new
-            {
-                memory,
-                contentType = GetContentType(filePath),
-                file
-            };
+            return File(memory, GetContentType(filePath), file);
+           
         }
+        [NonAction]
         private string GetContentType(string path)
         {
             var provider = new FileExtensionContentTypeProvider();
