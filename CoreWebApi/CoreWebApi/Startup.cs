@@ -50,6 +50,12 @@ namespace CoreWebApi
             services.AddAutoMapper(typeof(UserRepository).Assembly);
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IClassRepository, ClassRepository>();
+            services.AddScoped<ISectionRepository, SectionRepository>();
+            services.AddScoped<ISubjectRepository, SubjectRepository>();
+
+
+
             services.AddScoped<IFileUploadRepository, FileUploadRepository>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -160,7 +160,7 @@ namespace CoreWebApi.Data
                     {
                         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                         var fullPath = Path.Combine(pathToSave);
-                        var dbPath = Path.Combine(pathToSave, fileName); //you can add this path to a list and then return all dbPaths to the client if require
+                        var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
                         if (!Directory.Exists(fullPath))
                         {
                             Directory.CreateDirectory(fullPath);

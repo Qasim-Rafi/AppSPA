@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Models;
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace CoreWebApi.IData
         Task<IEnumerable<Class>> GetClasses();
         Task<Class> GetClass(int id);
         Task<bool> ClassExists(string username);
-        Task<Class> AddClass(Class @class);
-        Task<Class> EditClass(int id, Class @class);
+        Task<Class> AddClass(ClassDtoForAdd @class);
+        Task<Class> EditClass(int id, ClassDtoForEdit @class);
     }
 }

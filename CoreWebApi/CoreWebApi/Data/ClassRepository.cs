@@ -1,4 +1,5 @@
-﻿using CoreWebApi.IData;
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -32,7 +33,7 @@ namespace CoreWebApi.Data
             var @classes = await _context.Class.ToListAsync();
             return @classes;
         }
-        public async Task<Class> AddClass(Class @class)
+        public async Task<Class> AddClass(ClassDtoForAdd @class)
         {
             try
             {
@@ -54,7 +55,7 @@ namespace CoreWebApi.Data
                 throw ex;
             }
         }
-        public async Task<Class> EditClass(int id, Class @class)
+        public async Task<Class> EditClass(int id, ClassDtoForEdit @class)
         {
             try
             {

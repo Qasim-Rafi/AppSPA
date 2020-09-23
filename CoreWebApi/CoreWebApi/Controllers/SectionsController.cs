@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using CoreWebApi.Dtos;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
@@ -38,7 +39,7 @@ namespace CoreWebApi.Controllers
             return Ok(ToReturn);
         }
         [HttpPost("Add")]
-        public async Task<IActionResult> Post(Section section)
+        public async Task<IActionResult> Post(SectionDtoForAdd section)
         {
             try
             {
@@ -60,7 +61,7 @@ namespace CoreWebApi.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, Section section)
+        public async Task<IActionResult> Put(int id, SectionDtoForEdit section)
         {
 
             try

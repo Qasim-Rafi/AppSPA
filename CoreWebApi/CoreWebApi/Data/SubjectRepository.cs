@@ -1,4 +1,5 @@
-﻿using CoreWebApi.IData;
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -32,7 +33,7 @@ namespace CoreWebApi.Data
             var sections = await _context.Subjects.ToListAsync();
             return sections;
         }
-        public async Task<Subject> AddSubject(Subject section)
+        public async Task<Subject> AddSubject(SubjectDtoForAdd section)
         {
             try
             {
@@ -55,7 +56,7 @@ namespace CoreWebApi.Data
                 throw ex;
             }
         }
-        public async Task<Subject> EditSubject(int id, Subject section)
+        public async Task<Subject> EditSubject(int id, SubjectDtoForEdit section)
         {
             try
             {
