@@ -3,4 +3,8 @@ bin
 obj
 *.db
 appsettings.json
+<<<<<<< Updated upstream
 StaticFiles/Images
+=======
+StaticFiles
+>>>>>>> Stashed changes

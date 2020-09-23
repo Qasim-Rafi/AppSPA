@@ -16,7 +16,8 @@ namespace CoreWebApi
     {
         public static void Main(string[] args)
         {
-           var host =  CreateHostBuilder(args).Build();
+            var host = CreateHostBuilder(args).Build();
+
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -27,12 +28,14 @@ namespace CoreWebApi
                     Seed.SeedUserTypes(context);
                     Seed.SeedUsers(context);
 
-                }catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occured during migration");
                 }
             }
+
             host.Run();
         }
 

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,6 +26,8 @@ namespace CoreWebApi.Dtos
         public string Password { get; set; }
         [Required]
         public string Gender { get; set; }
+        [Required]
+        [DateValidation(ErrorMessage ="Date of birth is not in correct format")]
         public DateTime DateofBirth { get; set; }
 
         [Required]
@@ -32,5 +37,9 @@ namespace CoreWebApi.Dtos
         [Required]
         [StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")] 
         public string Country { get; set; }
+        
+        public bool IsPrimaryPhoto { get; set; }
+        
+        public IFormFileCollection files { get; set; }
     }
 }
