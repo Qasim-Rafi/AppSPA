@@ -67,14 +67,14 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> AddUser(UserForAddDto userForAddDto)//[FromForm]
         {
             try
-            {                
-                
+            {
+
                 userForAddDto.Username = userForAddDto.Username.ToLower();
 
 
                 if (await _repo.UserExists(userForAddDto.Username))
                     return BadRequest(new { message = "User Already Exist" });
-                
+
                 var createdUser = await _repo.AddUser(userForAddDto);
 
                 return StatusCode(StatusCodes.Status201Created);
@@ -90,7 +90,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PUTAsync(int id, [FromForm] UserForAddDto userForAddDto)// [FromForm]
+        public async Task<IActionResult> PUTAsync(int id, UserForAddDto userForAddDto)// [FromForm]
         {
 
             try
@@ -111,7 +111,7 @@ namespace CoreWebApi.Controllers
                 //};
 
                 var updatedUser = await _repo.EditUser(id, userForAddDto);
-                
+
 
 
 

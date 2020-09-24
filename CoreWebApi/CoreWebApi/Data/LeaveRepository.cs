@@ -42,6 +42,8 @@ namespace CoreWebApi.Data
                     Details = leave.Details,
                     FromDate = leave.FromDate,
                     ToDate = leave.ToDate,
+                    UserId = _context.Users.First().Id,
+                    LeaveTypeId = _context.LeaveTypes.First().Id
                 };
 
                 await _context.Leaves.AddAsync(objToCreate);

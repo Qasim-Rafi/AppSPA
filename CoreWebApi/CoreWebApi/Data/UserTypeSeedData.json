@@ -1,13 +1,11 @@
-{  
-  "UserTypes": [
-    {
-      "Name": "Admin"
-    },
-    {
-      "Name": "Developer"
-    },
-    {
-      "Name": "User"
-    }
-  ]
-}
+[
+  {
+    "Name": "Admin"
+  },
+  {
+    "Name": "Developer"
+  },
+  {
+    "Name": "User"
+  }
+]

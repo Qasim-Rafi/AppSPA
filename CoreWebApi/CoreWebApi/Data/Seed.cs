@@ -17,7 +17,7 @@ namespace CoreWebApi.Data
         {
             try
             {
-                if (!context.UserTypes.Any())
+                if (!context.LeaveTypes.Any())
                 {
                    
                     var fileData = System.IO.File.ReadAllText("Data/LeaveTypeSeedData.json");

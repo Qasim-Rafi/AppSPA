@@ -40,6 +40,6 @@ namespace CoreWebApi.Dtos
         
         public bool IsPrimaryPhoto { get; set; }
         
-        public IFormFileCollection files { get; set; }
+        //public IFormFileCollection files { get; set; }
     }
 }

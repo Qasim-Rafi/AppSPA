@@ -15,9 +15,9 @@ namespace CoreWebApi.Models
         [Required]
         [StringLength(250, ErrorMessage = "Details cannot be longer then 250 characters")]
         public string Details { get; set; }
-        [DateValidation]
+        [DateValidation(ErrorMessage = "From Date is not in correct format")]
         public DateTime FromDate { get; set; }
-        [DateValidation]
+        [DateValidation(ErrorMessage = "To Date is not in correct format")]
         public DateTime ToDate { get; set; }
 
 

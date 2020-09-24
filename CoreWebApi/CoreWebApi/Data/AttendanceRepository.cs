@@ -42,7 +42,8 @@ namespace CoreWebApi.Data
                     Present = attendance.Present,
                     Absent = attendance.Absent,
                     Late = attendance.Late,
-                    Comments = attendance.Comments,                    
+                    Comments = attendance.Comments,
+                    UserId = _context.Users.First().Id,
                     CreatedDatetime = DateTime.Now
                 };
 

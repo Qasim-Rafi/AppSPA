@@ -1,29 +1,27 @@
-{
-  "Users": [
-    {
-      "Username": "Qasim",
-      "Gender": "male",
-      "password": "password"
-    },
-    {
-      "Username": "Ashan",
-      "Gender": "male",
-      "password": "password"
-    },
-    {
-      "Username": "Laquman",
-      "Gender": "male",
-      "password": "password"
-    },
-    {
-      "Username": "Daniyal",
-      "Gender": "male",
-      "password": "password"
-    },
-    {
-      "Username": "Bilal",
-      "Gender": "male",
-      "password": "password"
-    }
-  ]  
-}
+[
+  {
+    "Username": "Qasim",
+    "Gender": "male",
+    "password": "password"
+  },
+  {
+    "Username": "Ashan",
+    "Gender": "male",
+    "password": "password"
+  },
+  {
+    "Username": "Laquman",
+    "Gender": "male",
+    "password": "password"
+  },
+  {
+    "Username": "Daniyal",
+    "Gender": "male",
+    "password": "password"
+  },
+  {
+    "Username": "Bilal",
+    "Gender": "male",
+    "password": "password"
+  }
+]

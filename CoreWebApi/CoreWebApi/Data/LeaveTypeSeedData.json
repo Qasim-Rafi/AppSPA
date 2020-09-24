@@ -1,13 +1,11 @@
-{  
-  "LeaveTypes": [
-    {
-      "Type": "Half Day"
-    },
-    {
-      "Type": "Sick"
-    },
-    {
-      "Type": "Casual"
-    }
-  ]
-}
+[
+  {
+    "Type": "Half Day"
+  },
+  {
+    "Type": "Sick"
+  },
+  {
+    "Type": "Casual"
+  }
+]
