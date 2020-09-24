@@ -11,9 +11,9 @@ namespace CoreWebApi.Models
     {
         public int Id { get; set; }
         [StringLength(50)]
-        public string Name{ get; set; }
+        public string Name { get; set; }
         public int ClassId { get; set; }
-        public DateTime CreatedDateTime{ get; set; }
+        public DateTime CreatedDateTime { get; set; }
         public int CreatedBy { get; set; }
 
         public virtual ICollection<Class> classes { get; set; }

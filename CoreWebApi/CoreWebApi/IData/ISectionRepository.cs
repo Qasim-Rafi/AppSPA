@@ -11,7 +11,7 @@ namespace CoreWebApi.IData
     {
         Task<IEnumerable<Section>> GetSections();
         Task<Section> GetSection(int id);
-        Task<bool> SectionExists(string username);
+        Task<bool> SectionExists(string name);
         Task<Section> AddSection(SectionDtoForAdd Section);
         Task<Section> EditSection(int id, SectionDtoForEdit Section);
     }

@@ -14,13 +14,13 @@ namespace CoreWebApi.Dtos
     {
         [Required]
         [StringLength(2, ErrorMessage = "Section Name cannot be longer than 2 characters")]
-        public string SctionName { get; set; }
+        public string SectionName { get; set; }
     }
     public class SectionDtoForEdit
     {
         [Required]
         [StringLength(2, ErrorMessage = "Section Name cannot be longer than 2 characters")]
-        public string SctionName { get; set; }
+        public string SectionName { get; set; }
     }
     public class SectionDtoForList
     {

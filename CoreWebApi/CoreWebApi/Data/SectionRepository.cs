@@ -18,7 +18,7 @@ namespace CoreWebApi.Data
         }
         public async Task<bool> SectionExists(string name)
         {
-            if (await _context.Sections.AnyAsync(x => x.SctionName == name))
+            if (await _context.Sections.AnyAsync(x => x.SectionName == name))
                 return true;
             return false;
         }
@@ -39,7 +39,7 @@ namespace CoreWebApi.Data
             {
                 var objToCreate = new Section
                 {
-                    SctionName = section.SctionName,
+                    SectionName = section.SectionName,
                     CreatedById = 1,
                     CreatedDatetime = DateTime.Now
                 };
@@ -62,7 +62,7 @@ namespace CoreWebApi.Data
                 Section dbObj = _context.Sections.FirstOrDefault(s => s.Id.Equals(id));
                 if (dbObj != null)
                 {
-                    dbObj.SctionName = section.SctionName;
+                    dbObj.SectionName = section.SectionName;
                     await _context.SaveChangesAsync();
                 }
                 return dbObj;

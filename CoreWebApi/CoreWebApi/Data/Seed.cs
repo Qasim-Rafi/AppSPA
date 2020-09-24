@@ -13,6 +13,30 @@ namespace CoreWebApi.Data
     public class Seed
     {
 
+        public static void SeedLeaveTypes(DataContext context)
+        {
+            try
+            {
+                if (!context.UserTypes.Any())
+                {
+                   
+                    var fileData = System.IO.File.ReadAllText("Data/LeaveTypeSeedData.json");
+                    var leaveTypes = JsonConvert.DeserializeObject<List<LeaveType>>(fileData);
+
+                    foreach (var type in leaveTypes)
+                    {
+                        context.LeaveTypes.Add(type);
+                    }
+                    context.SaveChanges();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
         public static void SeedUserTypes(DataContext context)
         {
             try
@@ -47,10 +71,7 @@ namespace CoreWebApi.Data
             {
                 if (!context.Users.Any())
                 {
-                    //var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
-                    //DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
-                    //var jsonObj = JsonConvert.SerializeObject(dataSet.Tables["Users"]);
-                    //var users = JsonConvert.DeserializeObject<List<User>>(jsonObj);
+                   
                     var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
                     var users = JsonConvert.DeserializeObject<List<User>>(fileData);
 

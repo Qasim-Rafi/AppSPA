@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20200917130928_initialMigration.Designer.cs" />
     <Compile Remove="Migrations\20200921095020_InitialMigrations.cs" />
     <Compile Remove="Migrations\20200921095020_InitialMigrations.Designer.cs" />
+    <Compile Remove="Migrations\20200924082728_addColUserId_renameColSecName.cs" />
+    <Compile Remove="Migrations\20200924082728_addColUserId_renameColSecName.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

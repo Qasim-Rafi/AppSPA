@@ -13,41 +13,41 @@ namespace CoreWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SectionsController : ControllerBase
+    public class LeavesController : ControllerBase
     {
-        private readonly ISectionRepository _repo;
+        private readonly ILeaveRepository _repo;
         private readonly IMapper _mapper;
-        public SectionsController(ISectionRepository repo, IMapper mapper)
+        public LeavesController(ILeaveRepository repo, IMapper mapper)
         {
             _mapper = mapper;
             _repo = repo;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSectiones()
+        public async Task<IActionResult> GetLeavees()
         {
-            var sections = await _repo.GetSections();
-            var ToReturn = _mapper.Map<IEnumerable<Section>>(sections);
+            var leaves = await _repo.GetLeaves();
+            var ToReturn = _mapper.Map<IEnumerable<Leave>>(leaves);
             return Ok(ToReturn);
 
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetSection(int id)
+        public async Task<IActionResult> GetLeave(int id)
         {
-            var section = await _repo.GetSection(id);
-            var ToReturn = _mapper.Map<Section>(section);
+            var leave = await _repo.GetLeave(id);
+            var ToReturn = _mapper.Map<Leave>(leave);
             return Ok(ToReturn);
         }
         [HttpPost("Add")]
-        public async Task<IActionResult> Post(SectionDtoForAdd section)
+        public async Task<IActionResult> Post(LeaveDtoForAdd leave)
         {
             try
             {
 
-                if (await _repo.SectionExists(section.SectionName))
-                    return BadRequest(new { message = "Section Already Exist" });
+                if (await _repo.LeaveExists(leave.Details))
+                    return BadRequest(new { message = "Leave Already Exist" });
 
-                var createdObj = await _repo.AddSection(section);
+                var createdObj = await _repo.AddLeave(leave);
 
                 return StatusCode(StatusCodes.Status201Created);
             }
@@ -61,13 +61,13 @@ namespace CoreWebApi.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, SectionDtoForEdit section)
+        public async Task<IActionResult> Put(int id, LeaveDtoForEdit leave)
         {
 
             try
             {
 
-                var updatedObj = await _repo.EditSection(id, section);
+                var updatedObj = await _repo.EditLeave(id, leave);
 
                 return StatusCode(StatusCodes.Status200OK);
             }

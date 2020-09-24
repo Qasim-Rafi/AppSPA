@@ -27,7 +27,7 @@ namespace CoreWebApi
                     context.Database.Migrate();
                     Seed.SeedUserTypes(context);
                     Seed.SeedUsers(context);
-
+                    Seed.SeedLeaveTypes(context);
                 }
                 catch (Exception ex)
                 {

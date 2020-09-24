@@ -11,7 +11,7 @@ namespace CoreWebApi.IData
     {
         Task<IEnumerable<Class>> GetClasses();
         Task<Class> GetClass(int id);
-        Task<bool> ClassExists(string username);
+        Task<bool> ClassExists(string name);
         Task<Class> AddClass(ClassDtoForAdd @class);
         Task<Class> EditClass(int id, ClassDtoForEdit @class);
     }

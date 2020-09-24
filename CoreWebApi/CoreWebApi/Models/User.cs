@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.TagHelpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace CoreWebApi.Models
         //[Required]
         public DateTime CreatedTimestamp { get; set; }
         [Required]
+        //[DefaultValue("male")]
         public string Gender { get; set; }
         [Required]
         [DateValidation(ErrorMessage = "Date of birth is not in correct format")]
