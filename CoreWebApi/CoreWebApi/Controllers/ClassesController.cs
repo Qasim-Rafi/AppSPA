@@ -8,6 +8,7 @@ using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CoreWebApi.Controllers
 {
@@ -43,7 +44,10 @@ namespace CoreWebApi.Controllers
         {
             try
             {
-
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 if (await _repo.ClassExists(@class.Name))
                     return BadRequest(new { message = "Class Already Exist" });
 
@@ -66,7 +70,10 @@ namespace CoreWebApi.Controllers
 
             try
             {
-                
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 var updatedObj = await _repo.EditClass(id, @class);
 
                 return StatusCode(StatusCodes.Status200OK);

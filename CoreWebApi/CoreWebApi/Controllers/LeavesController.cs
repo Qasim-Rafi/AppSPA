@@ -43,7 +43,10 @@ namespace CoreWebApi.Controllers
         {
             try
             {
-
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 if (await _repo.LeaveExists(leave.Details))
                     return BadRequest(new { message = "Leave Already Exist" });
 
@@ -66,7 +69,10 @@ namespace CoreWebApi.Controllers
 
             try
             {
-
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 var updatedObj = await _repo.EditLeave(id, leave);
 
                 return StatusCode(StatusCodes.Status200OK);

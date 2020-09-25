@@ -7,11 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Dtos
-{
-    public class CustomValidation
-    {
-       
-    }
+{    
     public class DateValidation : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)

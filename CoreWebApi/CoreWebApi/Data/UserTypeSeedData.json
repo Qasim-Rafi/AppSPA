@@ -3,9 +3,12 @@
     "Name": "Admin"
   },
   {
-    "Name": "Developer"
+    "Name": "Supervisor"
   },
   {
-    "Name": "User"
+    "Name": "Student"
+  },
+  {
+    "Name": "Teacher"
   }
 ]

@@ -14,6 +14,7 @@ namespace CoreWebApi.Models
         public string  Name { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
+        public bool Active { get; set; }
 
         public Subject Subject { get; set; }
       

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.Internal;
 using CoreWebApi.Data;
 using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
@@ -38,7 +39,9 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _repo.GetUsers();
-            var usersToReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
+
+            var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
+            usersToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
             return Ok(usersToReturn);
 
         }
@@ -48,6 +51,7 @@ namespace CoreWebApi.Controllers
         {
             var user = await _repo.GetUser(id);
             var uerToReturn = _mapper.Map<UserForDetailedDto>(user);
+            //uerToReturn.DateofBirth = DateFormat.ToDate(uerToReturn.DateofBirth);
             return Ok(uerToReturn);
         }
 
@@ -68,7 +72,10 @@ namespace CoreWebApi.Controllers
         {
             try
             {
-
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 userForAddDto.Username = userForAddDto.Username.ToLower();
 
 
@@ -109,7 +116,10 @@ namespace CoreWebApi.Controllers
 
 
                 //};
-
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 var updatedUser = await _repo.EditUser(id, userForAddDto);
 
 

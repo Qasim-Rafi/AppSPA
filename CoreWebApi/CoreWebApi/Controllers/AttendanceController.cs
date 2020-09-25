@@ -7,7 +7,8 @@ using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static CoreWebApi.Dtos.AttendanceDto;
+using CoreWebApi.Dtos;
+using CoreWebApi.Data;
 
 namespace CoreWebApi.Controllers
 {
@@ -17,17 +18,31 @@ namespace CoreWebApi.Controllers
     {
         private readonly IAttendanceRepository _repo;
         private readonly IMapper _mapper;
-        public AttendanceController(IAttendanceRepository repo, IMapper mapper)
+        private readonly DataContext _context;
+        public AttendanceController(IAttendanceRepository repo, IMapper mapper, DataContext context)
         {
             _mapper = mapper;
             _repo = repo;
+            _context = context;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAttendancees()
         {
             var attendances = await _repo.GetAttendances();
-            var ToReturn = _mapper.Map<IEnumerable<Attendance>>(attendances);
+            var ToReturn = attendances.Select(o => new AttendanceDtoForList
+            {
+                UserId = o.UserId,
+                Present = o.Present,
+                Absent = o.Absent,
+                Late = o.Late,
+                Comments = o.Comments,
+                LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
+                LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
+                LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
+                LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault().Type
+            }).ToList();
+            //var ToReturn = _mapper.Map<IEnumerable<AttendanceDtoForList>>(attendances);
             return Ok(ToReturn);
 
         }

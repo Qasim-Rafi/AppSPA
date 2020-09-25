@@ -76,7 +76,9 @@ namespace CoreWebApi.Data
                     City = "Lahore",
                     Country = "Pakistan",
                     Email = userDto.Email,
-                    UserTypeId = _context.UserTypes.First().Id
+                    UserTypeId = _context.UserTypes.First().Id,
+                    CreatedTimestamp = DateTime.Now,
+                    Gender = userDto.Gender
 
                 };
                 byte[] passwordHash, passwordSalt;
@@ -156,7 +158,7 @@ namespace CoreWebApi.Data
                     //string contentRootPath = _HostEnvironment.ContentRootPath;
 
                     //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
-                    
+
                     //foreach (var file in user.files)
                     //{
                     //    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);

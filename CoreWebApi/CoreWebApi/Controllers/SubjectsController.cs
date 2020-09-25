@@ -43,7 +43,10 @@ namespace CoreWebApi.Controllers
         {
             try
             {
-
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 if (await _repo.SubjectExists(subject.Name))
                     return BadRequest(new { message = "Subject Already Exist" });
 
@@ -66,7 +69,10 @@ namespace CoreWebApi.Controllers
 
             try
             {
-
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 var updatedObj = await _repo.EditSubject(id, subject);
 
                 return StatusCode(StatusCodes.Status200OK);

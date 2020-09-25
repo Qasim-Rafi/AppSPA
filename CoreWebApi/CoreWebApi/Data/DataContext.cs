@@ -34,6 +34,7 @@ namespace CoreWebApi.Data
         public DbSet<UserType> UserTypes { get; set; }
 
         public DbSet<Value> Values { get; set; }
+        public DbSet<ClassSection> ClassSections { get; set; }
       
 
         

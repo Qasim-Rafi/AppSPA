@@ -1,11 +1,11 @@
-﻿using CoreWebApi.IData;
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static CoreWebApi.Dtos.AttendanceDto;
 
 namespace CoreWebApi.Data
 {
@@ -25,12 +25,14 @@ namespace CoreWebApi.Data
         public async Task<Attendance> GetAttendance(int id)
         {
             var attendance = await _context.Attendances.FirstOrDefaultAsync(u => u.Id == id);
+
             return attendance;
         }
 
         public async Task<IEnumerable<Attendance>> GetAttendances()
         {
             var attendances = await _context.Attendances.ToListAsync();
+           
             return attendances;
         }
         public async Task<Attendance> AddAttendance(AttendanceDtoForAdd attendance)
