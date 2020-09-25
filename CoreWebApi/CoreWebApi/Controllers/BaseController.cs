@@ -73,17 +73,16 @@ namespace CoreWebApi.Controllers
         //    }
         //    return null;//currentUser.Claims.FirstOrDefault(c => c.Type == name).Value;
         //}
-        //[NonAction]
-        //public string GetClaim(ClaimsPrincipal claimsPrincipal, string jwtClaim)
-        //{
-        //    var claim = claimsPrincipal.Claims.Where(c => c.Type == jwtClaim.ToString()).FirstOrDefault();
-
-        //    if (claim == null)
-        //    {
-        //        //throw new JwtClaimNotFoundException(jwtClaim);
-        //    }
-
-        //    return claim.Value;
-        //}
+        [NonAction]
+        public string GetClaim(string name)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                IEnumerable<Claim> claims = identity.Claims;
+                return identity.FindFirst(name).Value;
+            }
+            return null;
+        }
     }
 }

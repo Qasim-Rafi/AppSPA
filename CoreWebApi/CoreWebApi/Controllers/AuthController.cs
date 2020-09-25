@@ -72,10 +72,10 @@ namespace CoreWebApi.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.Username)
+                new Claim("NameIdentifier", userFromRepo.Id.ToString()),
+                new Claim("Name", userFromRepo.Username)
             };
-           
+
             var key = new SymmetricSecurityKey(Encoding.UTF8
                 .GetBytes(_config.GetSection("AppSettings:Token").Value));
 
@@ -87,17 +87,14 @@ namespace CoreWebApi.Controllers
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = creds
             };
-           
+
             var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);            
-            //var session = HttpContext.Session;
-            //var claimsIdentity = new ClaimsPrincipal();
-            //session.SetString("identifier", "session test");// GetClaim(claimsIdentity, "Name"));
+            var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return Ok(new
-            {
-                //session = session.GetString("identifier"),
-                //claims = GetClaims("Name"),
+            {              
+                loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value,
+                loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals("Name")).Value,
                 token = tokenHandler.WriteToken(token)
             });
 
