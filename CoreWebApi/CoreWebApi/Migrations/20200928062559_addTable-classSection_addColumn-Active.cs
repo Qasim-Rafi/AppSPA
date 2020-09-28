@@ -2,7 +2,7 @@
 
 namespace CoreWebApi.Migrations
 {
-    public partial class addTable_addColumns : Migration
+    public partial class addTableclassSection_addColumnActive : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

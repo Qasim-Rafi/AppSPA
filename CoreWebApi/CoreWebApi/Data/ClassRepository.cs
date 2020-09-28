@@ -40,7 +40,7 @@ namespace CoreWebApi.Data
                 var objToCreate = new Class
                 {
                     Name = @class.Name,
-                    CreatedById = 1,                    
+                    CreatedById = 1,
                     CreatedDateTime = DateTime.Now
                 };
 
@@ -66,6 +66,37 @@ namespace CoreWebApi.Data
                     await _context.SaveChangesAsync();
                 }
                 return dbObj;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<ClassSection>> GetClassSections()
+        {
+            var classSections = await _context.ClassSections.ToListAsync();
+            return classSections;
+        }
+
+
+        public async Task<ClassSection> AddClassSection(ClassSectionDtoForAdd classSection)
+        {
+            try
+            {
+                var objToCreate = new ClassSection
+                {
+                    ClassId = classSection.ClassId,
+                    SectionId = classSection.SectionId,
+                    Active = classSection.Active,
+
+                };
+
+                await _context.ClassSections.AddAsync(objToCreate);
+                await _context.SaveChangesAsync();
+
+                return objToCreate;
             }
             catch (Exception ex)
             {

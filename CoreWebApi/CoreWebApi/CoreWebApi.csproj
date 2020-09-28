@@ -11,6 +11,10 @@
     <Compile Remove="Migrations\20200921095020_InitialMigrations.Designer.cs" />
     <Compile Remove="Migrations\20200924082728_addColUserId_renameColSecName.cs" />
     <Compile Remove="Migrations\20200924082728_addColUserId_renameColSecName.Designer.cs" />
+    <Compile Remove="Migrations\20200925131204_addTable_addColumns.cs" />
+    <Compile Remove="Migrations\20200925131204_addTable_addColumns.Designer.cs" />
+    <Compile Remove="Migrations\20200928062150_addTable_addColumn.cs" />
+    <Compile Remove="Migrations\20200928062150_addTable_addColumn.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

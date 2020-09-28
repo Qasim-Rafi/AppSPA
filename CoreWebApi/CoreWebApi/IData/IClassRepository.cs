@@ -14,5 +14,10 @@ namespace CoreWebApi.IData
         Task<bool> ClassExists(string name);
         Task<Class> AddClass(ClassDtoForAdd @class);
         Task<Class> EditClass(int id, ClassDtoForEdit @class);
+
+        Task<IEnumerable<ClassSection>> GetClassSections();
+        //Task<bool> ClassSectionExists(int classId, int sectionId);
+        Task<ClassSection> AddClassSection(ClassSectionDtoForAdd classSection);
+
     }
 }

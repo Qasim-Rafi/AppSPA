@@ -16,11 +16,10 @@ namespace CoreWebApi.Dtos
 
             //Verify whether date entered in dd/MM/yyyy format.
             bool isValid = regex.IsMatch(value.ToString().Trim());
-            if (!isValid)
+            if (isValid)
             {
-                DateTime dt;
-                isValid = DateTime.TryParseExact(value.ToString(), "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out dt);
-                if (!isValid)
+                isValid = DateTime.TryParseExact(value.ToString(), "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out DateTime dt);
+                if (isValid)
                     return ValidationResult.Success;
                 else
                     return new ValidationResult(ErrorMessage);

@@ -15,10 +15,10 @@ namespace CoreWebApi.Dtos
         [StringLength(250, ErrorMessage = "Details cannot be longer then 250 characters")]
         public string Details { get; set; }
         [Required]
-        [DateValidation] 
+        [DateValidation(ErrorMessage = "From Date is not in correct format")]
         public DateTime FromDate { get; set; }
         [Required]
-        [DateValidation]
+        [DateValidation(ErrorMessage = "To Date is not in correct format")]
         public DateTime ToDate { get; set; }
     }
     public class LeaveDtoForEdit

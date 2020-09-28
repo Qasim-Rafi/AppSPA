@@ -89,5 +89,38 @@ namespace CoreWebApi.Controllers
             }
         }
 
+        [HttpGet("GetClassSections")]
+        public async Task<IActionResult> GetClassSections()
+        {
+            var classes = await _repo.GetClassSections();
+            var ToReturn = _mapper.Map<IEnumerable<ClassSection>>(classes);
+            return Ok(ToReturn);
+
+        }
+        [HttpPost("AddClassSection")]
+        public async Task<IActionResult> AddClassSection(ClassSectionDtoForAdd classSection)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+                //    return BadRequest(new { message = "Class Section Already Exist" });
+
+                var createdObj = await _repo.AddClassSection(classSection);
+
+                return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
     }
 }

@@ -5,12 +5,16 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Helpers
 {
-    public enum UserType
+    public class Enum
     {
+        public enum UserType
+        {
 
-        Admin = 1,
-        Supervisor,
-        Student,
-        Teacher
+            Admin = 1,
+            Supervisor,
+            Student,
+            Teacher
+        }
     }
+    
 }

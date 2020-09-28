@@ -72,7 +72,7 @@ namespace CoreWebApi.Data
                 {
                     Username = userDto.Username,
                     DateofBirth = Convert.ToDateTime(userDto.DateofBirth),
-                    LastActive = Convert.ToDateTime(DateTime.Now),
+                    LastActive = DateTime.Now,
                     City = "Lahore",
                     Country = "Pakistan",
                     Email = userDto.Email,
@@ -115,7 +115,7 @@ namespace CoreWebApi.Data
                     dbUser.Username = user.Username.ToLower();
                     dbUser.City = user.City;
                     dbUser.Country = user.Country;
-                    dbUser.DateofBirth = user.DateofBirth;
+                    dbUser.DateofBirth = Convert.ToDateTime(user.DateofBirth);
                     dbUser.Gender = user.Gender;
                     if (!string.IsNullOrEmpty(user.OldPassword))
                     {

@@ -32,7 +32,7 @@ namespace CoreWebApi.Data
         public async Task<IEnumerable<Attendance>> GetAttendances()
         {
             var attendances = await _context.Attendances.ToListAsync();
-           
+
             return attendances;
         }
         public async Task<Attendance> AddAttendance(AttendanceDtoForAdd attendance)
@@ -46,6 +46,7 @@ namespace CoreWebApi.Data
                     Late = attendance.Late,
                     Comments = attendance.Comments,
                     UserId = _context.Users.First().Id,
+                    ClassSectionId = _context.ClassSections.First().Id,
                     CreatedDatetime = DateTime.Now
                 };
 

@@ -28,4 +28,12 @@ namespace CoreWebApi.Dtos
     public class ClassDtoForDetail
     {
     }
+    public class ClassSectionDtoForAdd
+    {
+        [Required]
+        public int ClassId { get; set; }
+        [Required]
+        public int SectionId { get; set; }
+        public bool Active { get; set; }
+    }
 }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200925131204_addTable_addColumns")]
-    partial class addTable_addColumns
+    [Migration("20200928062559_addTable-classSection_addColumn-Active")]
+    partial class addTableclassSection_addColumnActive
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -710,7 +710,7 @@ namespace CoreWebApi.Migrations
 
             modelBuilder.Entity("CoreWebApi.Models.Attendance", b =>
                 {
-                    b.HasOne("CoreWebApi.Models.ClassSection", "ClassSections")
+                    b.HasOne("CoreWebApi.Models.ClassSection", "ClassSection")
                         .WithMany()
                         .HasForeignKey("ClassSectionId")
                         .OnDelete(DeleteBehavior.Cascade)

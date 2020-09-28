@@ -708,7 +708,7 @@ namespace CoreWebApi.Migrations
 
             modelBuilder.Entity("CoreWebApi.Models.Attendance", b =>
                 {
-                    b.HasOne("CoreWebApi.Models.ClassSection", "ClassSections")
+                    b.HasOne("CoreWebApi.Models.ClassSection", "ClassSection")
                         .WithMany()
                         .HasForeignKey("ClassSectionId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -28,7 +28,7 @@ namespace CoreWebApi.Dtos
         public string Gender { get; set; }
         [Required]
         [DateValidation(ErrorMessage ="Date of birth is not in correct format")]
-        public DateTime DateofBirth { get; set; }
+        public string DateofBirth { get; set; }
 
         [Required]
         [StringLength(50, ErrorMessage = "City cannot be longer then 50 characters")] 

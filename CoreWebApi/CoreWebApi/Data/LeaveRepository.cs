@@ -30,7 +30,7 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<Leave>> GetLeaves()
         {
-            var leaves = await _context.Leaves.ToListAsync();
+            var leaves = await _context.Leaves.Include(m => m.LeaveType).ToListAsync();//.Include(m => m.User)
             return leaves;
         }
         public async Task<Leave> AddLeave(LeaveDtoForAdd leave)

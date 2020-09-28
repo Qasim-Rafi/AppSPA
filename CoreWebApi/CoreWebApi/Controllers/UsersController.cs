@@ -51,7 +51,7 @@ namespace CoreWebApi.Controllers
         {
             var user = await _repo.GetUser(id);
             var uerToReturn = _mapper.Map<UserForDetailedDto>(user);
-            //uerToReturn.DateofBirth = DateFormat.ToDate(uerToReturn.DateofBirth);
+            uerToReturn.DateofBirth = DateFormat.ToDate(uerToReturn.DateofBirth);
             return Ok(uerToReturn);
         }
 
