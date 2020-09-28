@@ -18,6 +18,6 @@ namespace CoreWebApi.IData
         Task<bool> UserExists(string username);
 
         Task<User> AddUser(UserForAddDto user);
-        Task<User> EditUser(int id, UserForAddDto userForAddDto);
+        Task<string> EditUser(int id, UserForAddDto userForAddDto);
     }
 }

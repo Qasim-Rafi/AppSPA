@@ -97,7 +97,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PUTAsync(int id, UserForAddDto userForAddDto)// [FromForm]
+        public async Task<IActionResult> PUTAsync(int id, [FromForm] UserForAddDto userForAddDto)// [FromForm]
         {
 
             try
@@ -125,7 +125,7 @@ namespace CoreWebApi.Controllers
 
 
 
-                return StatusCode(StatusCodes.Status200OK);
+                return Ok(new { imagePath = updatedUser });
             }
             catch (Exception ex)
             {

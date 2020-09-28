@@ -101,7 +101,7 @@ namespace CoreWebApi.Data
 
 
 
-        public async Task<User> EditUser(int id, UserForAddDto user)
+        public async Task<string> EditUser(int id, UserForAddDto user)
         {
 
             try
@@ -150,46 +150,46 @@ namespace CoreWebApi.Data
                     }
                     await _context.SaveChangesAsync();
 
-                    //// saving images
-                    //if (user.files.Any(f => f.Length == 0))
-                    //{
-                    //    throw new Exception("No files found");
-                    //}
-                    //string contentRootPath = _HostEnvironment.ContentRootPath;
+                    // saving images
+                    if (user.files.Any(f => f.Length == 0))
+                    {
+                        throw new Exception("No files found");
+                    }
+                    string contentRootPath = _HostEnvironment.ContentRootPath;
 
-                    //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+                    var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
 
-                    //foreach (var file in user.files)
-                    //{
-                    //    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    //    var fullPath = Path.Combine(pathToSave);
-                    //    var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
-                    //    if (!Directory.Exists(fullPath))
-                    //    {
-                    //        Directory.CreateDirectory(fullPath);
-                    //    }
-                    //    var filePath = Path.Combine(fullPath, fileName);
-                    //    using (var stream = new FileStream(filePath, FileMode.Create))
-                    //    {
-                    //        await file.CopyToAsync(stream);
-                    //    }
-                    //    if (user.IsPrimaryPhoto)
-                    //    {
-                    //        IQueryable<Photo> updatePhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
-                    //        await updatePhotos.ForEachAsync(m => m.IsPrimary = false);
-                    //    }
-                    //    var photo = new Photo
-                    //    {
-                    //        Url = dbPath,
-                    //        Description = "description...",
-                    //        IsPrimary = user.IsPrimaryPhoto,
-                    //        UserId = dbUser.Id,
-                    //        DateAdded = DateTime.Now
-                    //    };
-                    //    await _context.Photos.AddAsync(photo);
-                    //    await _context.SaveChangesAsync();
-                    //}
-                    return dbUser;
+                    foreach (var file in user.files)
+                    {
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        var fullPath = Path.Combine(pathToSave);
+                        var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
+                        if (!Directory.Exists(fullPath))
+                        {
+                            Directory.CreateDirectory(fullPath);
+                        }
+                        var filePath = Path.Combine(fullPath, fileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                        if (user.IsPrimaryPhoto)
+                        {
+                            IQueryable<Photo> updatePhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
+                            await updatePhotos.ForEachAsync(m => m.IsPrimary = false);
+                        }
+                        var photo = new Photo
+                        {
+                            Url = dbPath,
+                            Description = "description...",
+                            IsPrimary = user.IsPrimaryPhoto,
+                            UserId = dbUser.Id,
+                            DateAdded = DateTime.Now
+                        };
+                        await _context.Photos.AddAsync(photo);
+                        await _context.SaveChangesAsync();
+                    }
+                    return contentRootPath;
                 }
                 else
                 {
