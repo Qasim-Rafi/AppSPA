@@ -26,13 +26,14 @@ namespace CoreWebApi.Controllers
         private readonly IUserRepository _repo;
         private readonly IMapper _mapper;
         private readonly IFileUploadRepository _uploadFiles;
-
-        public UsersController(IUserRepository repo, IMapper mapper, IFileUploadRepository fileUpload, IConfiguration configuration)
+        private readonly DataContext _context;
+        public UsersController(IUserRepository repo, IMapper mapper, IFileUploadRepository fileUpload, IConfiguration configuration, DataContext context)
         : base(configuration)
         {
             _mapper = mapper;
             _repo = repo;
             _uploadFiles = fileUpload;
+            _context = context;
         }
 
         [HttpGet]
@@ -137,6 +138,30 @@ namespace CoreWebApi.Controllers
 
             }
         }
+        
+        [HttpGet("GetUsersForAttendance")]
+        public async Task<IActionResult> GetListForAttendance()
+        {
+            try
+            {
+                var users = await _repo.GetUsers();
+                var ToReturn = users.Select(o => new
+                {
+                    UserId = o.Id,
+                    FullName = o.FullName,
+                    Present = false,
+                    Absent = false,
+                    Late = false,
+                    Comments = "",
+                }).ToList();
+                return Ok(ToReturn);
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                throw ex;
+            }
 
+        }
     }
 }
