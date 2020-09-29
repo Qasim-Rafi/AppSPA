@@ -44,6 +44,8 @@ namespace CoreWebApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    //webBuilder.UseKestrel();
+                    //webBuilder.UseIISIntegration();
                 });
     }
 }

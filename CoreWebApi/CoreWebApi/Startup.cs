@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Data;
+using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -37,14 +38,7 @@ namespace CoreWebApi
         {
             try
             {
-                services.AddDistributedMemoryCache();
-
-                services.AddSession(options =>
-                {
-                    options.IdleTimeout = TimeSpan.FromHours(1);
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.IsEssential = true;
-                });
+                
                 services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
                 services.AddControllers().AddNewtonsoftJson();
                 services.AddCors();
@@ -58,7 +52,7 @@ namespace CoreWebApi
                 services.AddScoped<ILeaveRepository, LeaveRepository>();
 
 
-
+                
                 services.AddScoped<IFileUploadRepository, FileUploadRepository>();
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -112,9 +106,11 @@ namespace CoreWebApi
                         });
                     });
                 }
+               
             }
             catch (Exception ex)
             {
+                Log.Exception(ex);
                 Console.WriteLine(ex);
             }
         }
@@ -140,7 +136,6 @@ namespace CoreWebApi
 
                 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
-                app.UseSession();
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
@@ -148,6 +143,7 @@ namespace CoreWebApi
             }
             catch (Exception ex)
             {
+                Log.Exception(ex);
                 Console.WriteLine(ex);
             }
         }

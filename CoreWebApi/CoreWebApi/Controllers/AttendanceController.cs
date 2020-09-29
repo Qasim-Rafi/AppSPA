@@ -9,9 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CoreWebApi.Dtos;
 using CoreWebApi.Data;
+using CoreWebApi.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoreWebApi.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AttendanceController : ControllerBase
@@ -44,6 +47,31 @@ namespace CoreWebApi.Controllers
             }).ToList();
             //var ToReturn = _mapper.Map<IEnumerable<AttendanceDtoForList>>(attendances);
             return Ok(ToReturn);
+
+        }
+        [HttpGet("GetListForAttendance")]
+        public async Task<IActionResult> GetListForAttendance()
+        {
+            try
+            {
+                var attendances = await _repo.GetAttendances();
+                var ToReturn = attendances.Select(o => new
+                {
+                    UserId = o.UserId,
+                    UserName = _context.Users.First(m => m.Id == o.UserId).FullName,
+                    Present = o.Present,
+                    Absent = o.Absent,
+                    Late = o.Late,
+                    Comments = o.Comments,
+                }).ToList();
+                //var ToReturn = _mapper.Map<IEnumerable<AttendanceDtoForList>>(attendances);
+                return Ok(ToReturn);
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                throw ex;
+            }
 
         }
         [HttpGet("{id}")]

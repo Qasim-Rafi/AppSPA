@@ -74,22 +74,22 @@ namespace CoreWebApi.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    return base.BadRequest(ModelState);
                 }
                 userForAddDto.Username = userForAddDto.Username.ToLower();
 
 
                 if (await _repo.UserExists(userForAddDto.Username))
-                    return BadRequest(new { message = "User Already Exist" });
+                    return base.BadRequest(new { message = "User Already Exist" });
 
                 var createdUser = await _repo.AddUser(userForAddDto);
 
-                return StatusCode(StatusCodes.Status201Created);
+                return base.StatusCode(StatusCodes.Status201Created);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
 
-                return BadRequest(new
+                return base.BadRequest(new
                 {
                     message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
                 });
@@ -118,19 +118,19 @@ namespace CoreWebApi.Controllers
                 //};
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    return base.BadRequest(ModelState);
                 }
                 var updatedUser = await _repo.EditUser(id, userForAddDto);
 
 
 
 
-                return Ok(new { imagePath = updatedUser });
+                return base.Ok(new { imagePath = updatedUser });
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
 
-                return BadRequest(new
+                return base.BadRequest(new
                 {
                     message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
                 });
