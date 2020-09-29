@@ -151,7 +151,8 @@ namespace CoreWebApi.Data
                     await _context.SaveChangesAsync();
 
                     // saving images
-                    if (user.files.Any(f => f.Length == 0))
+
+                    if (user.files == null || user.files.Any(f => f.Length == 0))
                     {
                         throw new Exception("No files found");
                     }

@@ -16,9 +16,9 @@ namespace CoreWebApi.Data
         {
             _context = context;
         }
-        public async Task<bool> LeaveExists(string name)
+        public async Task<bool> LeaveExists(int userId)
         {
-            if (await _context.Leaves.AnyAsync(x => x.Details == name))
+            if (await _context.Leaves.AnyAsync(x => x.UserId == userId))
                 return true;
             return false;
         }
@@ -42,8 +42,8 @@ namespace CoreWebApi.Data
                     Details = leave.Details,
                     FromDate = leave.FromDate,
                     ToDate = leave.ToDate,
-                    UserId = _context.Users.First().Id,
-                    LeaveTypeId = _context.LeaveTypes.First().Id
+                    UserId = leave.UserId,
+                    LeaveTypeId = leave.LeaveTypeId
                 };
 
                 await _context.Leaves.AddAsync(objToCreate);

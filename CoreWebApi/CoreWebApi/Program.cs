@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreWebApi.Data;
@@ -43,9 +44,11 @@ namespace CoreWebApi
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
                     //webBuilder.UseKestrel();
+                    //webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
                     //webBuilder.UseIISIntegration();
+                    webBuilder.UseStartup<Startup>();
+                    //webBuilder.Build();
                 });
     }
 }

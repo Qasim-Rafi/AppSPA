@@ -11,6 +11,8 @@ namespace CoreWebApi.Dtos
     }
     public class LeaveDtoForAdd
     {
+        public int LeaveTypeId { get; set; }
+        public int UserId { get; set; }
         [Required]
         [StringLength(250, ErrorMessage = "Details cannot be longer then 250 characters")]
         public string Details { get; set; }

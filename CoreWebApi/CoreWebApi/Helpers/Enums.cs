@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Helpers
 {
-    public class Enum
+    public class Enums
     {
         public enum UserType
         {

@@ -138,7 +138,7 @@ namespace CoreWebApi.Controllers
 
             }
         }
-        
+
         [HttpGet("GetUsersForAttendance")]
         public async Task<IActionResult> GetListForAttendance()
         {
@@ -148,11 +148,13 @@ namespace CoreWebApi.Controllers
                 var ToReturn = users.Select(o => new
                 {
                     UserId = o.Id,
-                    FullName = o.FullName,
+                    o.FullName,
                     Present = false,
                     Absent = false,
                     Late = false,
                     Comments = "",
+                    o.UserTypeId,
+                    UserType = _context.UserTypes.First(m => m.Id == o.UserTypeId).Name,
                 }).ToList();
                 return Ok(ToReturn);
             }

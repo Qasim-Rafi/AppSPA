@@ -11,7 +11,7 @@ namespace CoreWebApi.IData
     {
         Task<IEnumerable<Attendance>> GetAttendances();
         Task<Attendance> GetAttendance(int id);
-        Task<bool> AttendanceExists(string name);
+        Task<bool> AttendanceExists(int userId);
         Task<Attendance> AddAttendance(AttendanceDtoForAdd Attendance);
         Task<Attendance> EditAttendance(int id, AttendanceDtoForEdit Attendance);
     }

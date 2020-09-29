@@ -20,7 +20,7 @@ namespace CoreWebApi.Data
 
         public async Task<User> Login(string username, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username.ToLower());
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
             if (user == null)
                 return null;
 
@@ -77,7 +77,7 @@ namespace CoreWebApi.Data
 
         public  async Task<bool> UserExists(string  username)
         {
-            if (await _context.Users.AnyAsync(x => x.Username == username))
+            if (await _context.Users.AnyAsync(x => x.Username.ToLower() == username.ToLower()))
                 return true;
             return false;
         }

@@ -11,7 +11,7 @@ namespace CoreWebApi.IData
     {
         Task<IEnumerable<Leave>> GetLeaves();
         Task<Leave> GetLeave(int id);
-        Task<bool> LeaveExists(string name);
+        Task<bool> LeaveExists(int userId);
         Task<Leave> AddLeave(LeaveDtoForAdd Leave);
         Task<Leave> EditLeave(int id, LeaveDtoForEdit Leave);
     }

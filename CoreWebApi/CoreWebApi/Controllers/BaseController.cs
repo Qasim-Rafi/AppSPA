@@ -42,7 +42,7 @@ namespace CoreWebApi.Controllers
             }
             memory.Position = 0;
             return File(memory, GetContentType(filePath), file);
-           
+
         }
         [NonAction]
         private string GetContentType(string path)
@@ -79,6 +79,7 @@ namespace CoreWebApi.Controllers
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
+                
                 IEnumerable<Claim> claims = identity.Claims;
                 return identity.FindFirst(name).Value;
             }

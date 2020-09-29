@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class Seed
+    public static class Seed
     {
 
         public static void SeedLeaveTypes(DataContext context)
@@ -19,12 +19,13 @@ namespace CoreWebApi.Data
             {
                 if (!context.LeaveTypes.Any())
                 {
-                   
+
                     var fileData = System.IO.File.ReadAllText("Data/LeaveTypeSeedData.json");
                     var leaveTypes = JsonConvert.DeserializeObject<List<LeaveType>>(fileData);
 
                     foreach (var type in leaveTypes)
                     {
+
                         context.LeaveTypes.Add(type);
                     }
                     context.SaveChanges();
@@ -52,6 +53,7 @@ namespace CoreWebApi.Data
 
                     foreach (var type in userTypes)
                     {
+                        type.Creatdatetime = DateTime.Now;
                         context.UserTypes.Add(type);
                     }
                     context.SaveChanges();
@@ -71,20 +73,22 @@ namespace CoreWebApi.Data
             {
                 if (!context.Users.Any())
                 {
-                   
+
                     var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
                     var users = JsonConvert.DeserializeObject<List<User>>(fileData);
 
-                    foreach (var user in users)
+                    foreach (var (user, index) in ReturnIndex(users))
                     {
+
                         byte[] passwordhash, passwordSalt;
                         CreatePasswordHash("password", out passwordhash, out passwordSalt);
                         user.PasswordHash = passwordhash;
                         user.PasswordSalt = passwordSalt;
                         user.Username = user.Username.ToLower();
                         user.Email = "test@email";
-                        user.FullName = "test name";
-                        user.UserTypeId = context.UserTypes.FirstOrDefault().Id;
+                        user.FullName = "test name " + (index + 1);
+                        user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Id;
+                        user.CreatedTimestamp = DateTime.Now;
                         context.Users.Add(user);
 
 
@@ -98,6 +102,10 @@ namespace CoreWebApi.Data
 
                 throw ex;
             }
+        }
+        public static IEnumerable<(T item, int index)> ReturnIndex<T>(this IEnumerable<T> self)
+        {
+            return self.Select((item, index) => (item, index));
         }
 
         public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
@@ -113,7 +121,7 @@ namespace CoreWebApi.Data
             }
 
         }
-        
+
         public static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))

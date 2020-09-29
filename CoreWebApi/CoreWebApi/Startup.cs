@@ -38,7 +38,13 @@ namespace CoreWebApi
         {
             try
             {
-                
+                services.AddDistributedMemoryCache();
+                services.AddSession(options =>
+                {
+                    options.IdleTimeout = TimeSpan.FromHours(1);
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.IsEssential = true;
+                });
                 services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
                 services.AddControllers().AddNewtonsoftJson();
                 services.AddCors();
@@ -107,6 +113,7 @@ namespace CoreWebApi
                     });
                 }
                
+
             }
             catch (Exception ex)
             {
@@ -135,7 +142,7 @@ namespace CoreWebApi
                 app.UseAuthorization();
 
                 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
+                app.UseSession();
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();

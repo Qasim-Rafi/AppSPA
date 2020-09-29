@@ -16,9 +16,9 @@ namespace CoreWebApi.Data
         {
             _context = context;
         }
-        public async Task<bool> AttendanceExists(string name)
+        public async Task<bool> AttendanceExists(int userId)
         {
-            if (await _context.Attendances.AnyAsync(x => x.Comments == name))
+            if (await _context.Attendances.AnyAsync(x => x.UserId == userId))
                 return true;
             return false;
         }
@@ -45,8 +45,8 @@ namespace CoreWebApi.Data
                     Absent = attendance.Absent,
                     Late = attendance.Late,
                     Comments = attendance.Comments,
-                    UserId = _context.Users.First().Id,
-                    ClassSectionId = _context.ClassSections.First().Id,
+                    UserId = attendance.UserId,
+                    ClassSectionId = attendance.ClassSectionId,
                     CreatedDatetime = DateTime.Now
                 };
 

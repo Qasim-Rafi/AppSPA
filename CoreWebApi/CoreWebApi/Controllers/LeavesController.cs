@@ -48,7 +48,7 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                if (await _repo.LeaveExists(leave.Details))
+                if (await _repo.LeaveExists(leave.UserId))
                     return BadRequest(new { message = "Leave Already Exist" });
 
                 var createdObj = await _repo.AddLeave(leave);

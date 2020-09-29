@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using CoreWebApi.Data;
 using CoreWebApi.Dtos;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
@@ -19,10 +20,12 @@ namespace CoreWebApi.Controllers
     {
         private readonly IClassRepository _repo;
         private readonly IMapper _mapper;
-        public ClassesController(IClassRepository repo, IMapper mapper)
+        private readonly DataContext _context;
+        public ClassesController(IClassRepository repo, IMapper mapper, DataContext context)
         {
             _mapper = mapper;
             _repo = repo;
+            _context = context;
         }
 
         [HttpGet]
@@ -93,8 +96,16 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetClassSections")]
         public async Task<IActionResult> GetClassSections()
         {
-            var classes = await _repo.GetClassSections();
-            var ToReturn = _mapper.Map<IEnumerable<ClassSection>>(classes);
+            var list = await _repo.GetClassSections();
+            var ToReturn = list.Select(o => new
+            {
+                ClassSectionId = o.Id,
+                o.ClassId,
+                ClassName = _context.Class.First(m => m.Id == o.ClassId).Name,
+                o.SectionId,
+                SectionName = _context.Sections.First(m => m.Id == o.SectionId).SectionName,
+
+            }); //_mapper.Map<IEnumerable<ClassSection>>(classes);
             return Ok(ToReturn);
 
         }

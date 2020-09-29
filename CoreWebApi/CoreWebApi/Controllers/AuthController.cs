@@ -78,7 +78,7 @@ namespace CoreWebApi.Controllers
                 {
                     return Unauthorized();
                 }
-                
+
                 var claims = new[]
                 {
                     new Claim("NameIdentifier", userFromRepo.Id.ToString()),
@@ -100,6 +100,8 @@ namespace CoreWebApi.Controllers
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 
+                //var session = HttpContext.Session;
+                //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
                 return Ok(new
                 {
                     loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value,

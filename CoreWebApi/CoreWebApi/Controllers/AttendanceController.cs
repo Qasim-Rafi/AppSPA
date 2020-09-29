@@ -49,7 +49,7 @@ namespace CoreWebApi.Controllers
             return Ok(ToReturn);
 
         }
-       
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAttendance(int id)
         {
@@ -63,7 +63,7 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                if (await _repo.AttendanceExists(attendance.Comments))
+                if (await _repo.AttendanceExists(attendance.UserId))
                     return BadRequest(new { message = "Attendance Already Exist" });
 
                 var createdObj = await _repo.AddAttendance(attendance);
