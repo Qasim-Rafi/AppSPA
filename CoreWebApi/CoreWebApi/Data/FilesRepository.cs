@@ -27,9 +27,10 @@ namespace CoreWebApi.Data
 
         public string AppendImagePath(string imageName)
         {
+            var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
             string contentRootPath = _HostEnvironment.ContentRootPath;
 
-            var path = Path.Combine(contentRootPath, imageName);
+            var path = Path.Combine(VirtualURL, imageName);
             return path;
         }
         //public void Upload(IFormFileCollection files)

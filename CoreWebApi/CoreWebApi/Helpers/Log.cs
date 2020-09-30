@@ -21,7 +21,8 @@ namespace CoreWebApi.Helpers
             }
             using (StreamWriter writer = new StreamWriter(filePath, true))
             {
-                writer.WriteLine("-----------------------------------------------------------------------------");
+
+                writer.WriteLine("---------------------------------------------------------------------------------");
                 writer.WriteLine("Date : " + DateTime.Now.ToString());
                 writer.WriteLine();
 
@@ -33,6 +34,7 @@ namespace CoreWebApi.Helpers
 
                     ex = ex.InnerException;
                 }
+                writer.WriteLine();
             }
         }
     }
