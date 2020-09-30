@@ -101,9 +101,9 @@ namespace CoreWebApi.Controllers
             {
                 ClassSectionId = o.Id,
                 o.ClassId,
-                ClassName = _context.Class.First(m => m.Id == o.ClassId).Name,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
                 o.SectionId,
-                SectionName = _context.Sections.First(m => m.Id == o.SectionId).SectionName,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
 
             }); //_mapper.Map<IEnumerable<ClassSection>>(classes);
             return Ok(ToReturn);

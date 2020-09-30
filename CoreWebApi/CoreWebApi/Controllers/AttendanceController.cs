@@ -43,7 +43,7 @@ namespace CoreWebApi.Controllers
                 LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
                 LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
                 LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
-                LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault().Type
+                LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
             }).ToList();
             //var ToReturn = _mapper.Map<IEnumerable<AttendanceDtoForList>>(attendances);
             return Ok(ToReturn);
@@ -58,15 +58,15 @@ namespace CoreWebApi.Controllers
             return Ok(ToReturn);
         }
         [HttpPost("Add")]
-        public async Task<IActionResult> Post(AttendanceDtoForAdd attendance)
+        public async Task<IActionResult> Post(List<AttendanceDtoForAdd> list)
         {
             try
             {
 
-                if (await _repo.AttendanceExists(attendance.UserId))
-                    return BadRequest(new { message = "Attendance Already Exist" });
+                //if (await _repo.AttendanceExists(attendance.UserId))
+                //    return BadRequest(new { message = "Attendance Already Exist" });
 
-                var createdObj = await _repo.AddAttendance(attendance);
+                var createdObj = await _repo.AddAttendance(list);
 
                 return StatusCode(StatusCodes.Status201Created);
             }

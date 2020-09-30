@@ -16,6 +16,8 @@
     <Compile Remove="Migrations\20200925131204_addTable_addColumns.Designer.cs" />
     <Compile Remove="Migrations\20200928062150_addTable_addColumn.cs" />
     <Compile Remove="Migrations\20200928062150_addTable_addColumn.Designer.cs" />
+    <Compile Remove="Migrations\20200930122345_addColumns-ClassSection.cs" />
+    <Compile Remove="Migrations\20200930122345_addColumns-ClassSection.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
