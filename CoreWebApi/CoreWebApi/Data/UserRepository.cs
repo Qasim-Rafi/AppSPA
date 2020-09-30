@@ -12,6 +12,8 @@ using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using CoreWebApi.IData;
+using CoreWebApi.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace CoreWebApi.Data
 {
@@ -21,11 +23,14 @@ namespace CoreWebApi.Data
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _HostEnvironment;
-        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment)
+        private readonly IFilesRepository _File;
+
+        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file)
         {
             _context = context;
             _mapper = mapper;
             _HostEnvironment = HostEnvironment;
+            _File = file;
         }
 
         public void Add<T>(T entity) where T : class
@@ -38,15 +43,26 @@ namespace CoreWebApi.Data
             _context.Remove(entity);
         }
 
-        public Task<User> GetUser(int id)
+        public async Task<User> GetUser(int id)
         {
-            var user = _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
+            foreach (var item in user.Photos)
+            {
+                item.Url = _File.AppendImagePath(item.Url);
+            }
             return user;
         }
 
         public async Task<IEnumerable<User>> GetUsers()
         {
             var users = await _context.Users.Include(p => p.Photos).ToListAsync();
+            foreach (var user in users)
+            {
+                foreach (var item in user.Photos)
+                {
+                    item.Url = _File.AppendImagePath(item.Url);
+                }
+            }
             return users;
         }
 
@@ -95,6 +111,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
 
+                Log.Exception(ex);
                 throw ex;
             }
         }
@@ -152,45 +169,43 @@ namespace CoreWebApi.Data
 
                     // saving images
 
-                    if (user.files == null || user.files.Any(f => f.Length == 0))
+                    if (user.files != null && user.files.Count() > 0)
                     {
-                        throw new Exception("No files found");
-                    }
-                    string contentRootPath = _HostEnvironment.ContentRootPath;
 
-                    var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
-
-                    foreach (var file in user.files)
-                    {
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                        var fullPath = Path.Combine(pathToSave);
-                        var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
-                        if (!Directory.Exists(fullPath))
+                        string contentRootPath = _HostEnvironment.ContentRootPath;
+                        var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+                        foreach (var file in user.files)
                         {
-                            Directory.CreateDirectory(fullPath);
+                            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                            var fullPath = Path.Combine(pathToSave);
+                            var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
+                            if (!Directory.Exists(fullPath))
+                            {
+                                Directory.CreateDirectory(fullPath);
+                            }
+                            var filePath = Path.Combine(fullPath, fileName);
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+                            if (user.IsPrimaryPhoto)
+                            {
+                                IQueryable<Photo> updatePhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
+                                await updatePhotos.ForEachAsync(m => m.IsPrimary = false);
+                            }
+                            var photo = new Photo
+                            {
+                                Url = dbPath,
+                                Description = "description...",
+                                IsPrimary = user.IsPrimaryPhoto,
+                                UserId = dbUser.Id,
+                                DateAdded = DateTime.Now
+                            };
+                            await _context.Photos.AddAsync(photo);
+                            await _context.SaveChangesAsync();
                         }
-                        var filePath = Path.Combine(fullPath, fileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await file.CopyToAsync(stream);
-                        }
-                        if (user.IsPrimaryPhoto)
-                        {
-                            IQueryable<Photo> updatePhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
-                            await updatePhotos.ForEachAsync(m => m.IsPrimary = false);
-                        }
-                        var photo = new Photo
-                        {
-                            Url = dbPath,
-                            Description = "description...",
-                            IsPrimary = user.IsPrimaryPhoto,
-                            UserId = dbUser.Id,
-                            DateAdded = DateTime.Now
-                        };
-                        await _context.Photos.AddAsync(photo);
-                        await _context.SaveChangesAsync();
                     }
-                    return contentRootPath;
+                    return StatusCodes.Status200OK.ToString();
                 }
                 else
                 {
@@ -200,7 +215,7 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
-
+                Log.Exception(ex);
                 throw ex;
             }
         }

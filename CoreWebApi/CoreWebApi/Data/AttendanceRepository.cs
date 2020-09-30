@@ -1,4 +1,5 @@
 ﻿using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
 
+                Log.Exception(ex);
                 throw ex;
             }
         }
@@ -76,6 +78,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
 
+                Log.Exception(ex);
                 throw ex;
             }
         }

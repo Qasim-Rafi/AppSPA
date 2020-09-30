@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Models;
+﻿using CoreWebApi.Helpers;
+using CoreWebApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System;
@@ -35,6 +36,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
 
+                Log.Exception(ex);
                 throw ex;
             }
         }
@@ -63,6 +65,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
 
+                Log.Exception(ex);
                 throw ex;
             }
         }
@@ -100,6 +103,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
 
+                Log.Exception(ex);
                 throw ex;
             }
         }

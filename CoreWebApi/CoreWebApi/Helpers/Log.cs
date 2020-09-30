@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,8 +11,9 @@ namespace CoreWebApi.Helpers
 {
     public class Log
     {
-        public static void Exception(System.Exception ex)
+        public static void Exception(Exception ex)
         {
+           
             string filePath = Directory.GetCurrentDirectory() + @"/StaticFiles/Log.txt";
             if (!File.Exists(filePath))
             {

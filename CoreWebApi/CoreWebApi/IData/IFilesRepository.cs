@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.IData
 {
-    public interface IFileUploadRepository
+    public interface IFilesRepository
     {
         //void Upload(IFormFileCollection files);
         //object Download(string file);
+        string AppendImagePath(string imageName);
     }
 }

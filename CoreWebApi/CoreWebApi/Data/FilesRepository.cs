@@ -12,17 +12,25 @@ using System.Threading.Tasks;
 namespace CoreWebApi.Data
 {
 
-    public class FileUploadRepository : IFileUploadRepository
+    public class FilesRepository : IFilesRepository
     {
         protected readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _HostEnvironment;
 
        
-        public FileUploadRepository(IConfiguration configuration, IWebHostEnvironment HostEnvironment)
+        public FilesRepository(IConfiguration configuration, IWebHostEnvironment HostEnvironment)
         {
             _configuration = configuration;
             _HostEnvironment = HostEnvironment;
 
+        }
+
+        public string AppendImagePath(string imageName)
+        {
+            string contentRootPath = _HostEnvironment.ContentRootPath;
+
+            var path = Path.Combine(contentRootPath, imageName);
+            return path;
         }
         //public void Upload(IFormFileCollection files)
         //{
@@ -52,7 +60,7 @@ namespace CoreWebApi.Data
         //            //file.s.SaveAs(filePath);
         //            using (var stream = new FileStream(filePath, FileMode.Create))
         //            {
-                        
+
         //                file.CopyTo(stream);
         //            }
         //        }

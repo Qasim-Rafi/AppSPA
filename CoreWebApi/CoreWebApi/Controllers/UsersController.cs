@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,14 +26,14 @@ namespace CoreWebApi.Controllers
     {
         private readonly IUserRepository _repo;
         private readonly IMapper _mapper;
-        private readonly IFileUploadRepository _uploadFiles;
+        private readonly IFilesRepository _File;
         private readonly DataContext _context;
-        public UsersController(IUserRepository repo, IMapper mapper, IFileUploadRepository fileUpload, IConfiguration configuration, DataContext context)
+        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, IConfiguration configuration, DataContext context)
         : base(configuration)
         {
             _mapper = mapper;
             _repo = repo;
-            _uploadFiles = fileUpload;
+            _File = file;
             _context = context;
         }
 
@@ -87,7 +88,7 @@ namespace CoreWebApi.Controllers
 
                 return base.StatusCode(StatusCodes.Status201Created);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
 
                 return base.BadRequest(new
@@ -126,9 +127,9 @@ namespace CoreWebApi.Controllers
 
 
 
-                return base.Ok(new { imagePath = updatedUser });
+                return base.Ok();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
 
                 return base.BadRequest(new
@@ -144,6 +145,7 @@ namespace CoreWebApi.Controllers
         {
             try
             {
+                
                 var users = await _repo.GetUsers();
                 var ToReturn = users.Select(o => new
                 {
@@ -160,8 +162,7 @@ namespace CoreWebApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
-                throw ex;
+                 throw ex;
             }
 
         }

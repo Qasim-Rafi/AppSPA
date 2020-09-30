@@ -59,7 +59,7 @@ namespace CoreWebApi
 
 
                 
-                services.AddScoped<IFileUploadRepository, FileUploadRepository>();
+                services.AddScoped<IFilesRepository, FilesRepository>();
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(optinos =>
