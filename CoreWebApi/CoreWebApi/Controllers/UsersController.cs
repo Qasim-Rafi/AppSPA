@@ -168,7 +168,7 @@ namespace CoreWebApi.Controllers
         }
 
        
-        [HttpGet("GetUsersByType/{typeId}/{classSectionId}")]//  /{classSectionId}
+        [HttpGet("GetUsersByType/{typeId}/{classSectionId?}")]
         public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
         {
             var users = await _repo.GetUsersByType(typeId, classSectionId);

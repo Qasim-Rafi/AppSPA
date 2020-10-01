@@ -43,11 +43,15 @@ namespace CoreWebApi.Dtos
         public bool Absent { get; set; }
         public bool Late { get; set; }
         public string Comments { get; set; }
-        public string LeavePurpose { get; set; }
-        public string LeaveType { get; set; }
+        //public string LeavePurpose { get; set; }
+        //public string LeaveType { get; set; }
         public DateTime CreatedDatetime { get; set; }
-        public DateTime? LeaveFrom { get; set; }
-        public DateTime? LeaveTo { get; set; }
+        //public DateTime? LeaveFrom { get; set; }
+        //public DateTime? LeaveTo { get; set; }
+        public int LateCount { get; internal set; }
+        public int AbsentCount { get; internal set; }
+        public int LeaveCount { get; internal set; }
+        public int PresentCount { get; internal set; }
     }
     public class AttendanceDtoForDetail
     {
