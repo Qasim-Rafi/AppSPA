@@ -157,6 +157,10 @@ namespace CoreWebApi.Controllers
                     Comments = "",
                     o.UserTypeId,
                     UserType = _context.UserTypes.Where(m => m.Id == o.UserTypeId).FirstOrDefault()?.Name,
+                    LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
+                    AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true).Count(),
+                    LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true).Count(),
+                    PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true).Count(),
                 }).ToList();
                 return Ok(ToReturn);
             }
