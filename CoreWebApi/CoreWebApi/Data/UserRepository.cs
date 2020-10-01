@@ -220,34 +220,35 @@ namespace CoreWebApi.Data
             }
         }
 
-        
+
 
         public async Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId)
         {
-            //if (!string.IsNullOrEmpty(classSectionId.ToString()))
-            //{
-            //    var users = await _context.Users.Where(m => m.UserTypeId == typeId).Include(p => p.Photos).ToListAsync();
-            //    foreach (var user in users)
-            //    {
-            //        foreach (var item in user.Photos)
-            //        {
-            //            item.Url = _File.AppendImagePath(item.Url);
-            //        }
-            //    }
-            //    return users;
-            //}
-            //else
-            //{
-            var users = await _context.Users.Where(m => m.UserTypeId == typeId).Include(p => p.Photos).ToListAsync();
-            foreach (var user in users)
+            if (!string.IsNullOrEmpty(classSectionId.ToString()))
             {
-                foreach (var item in user.Photos)
+                IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == classSectionId).Select(m => m.UserId).Distinct();
+                var users = await _context.Users.Where(m => m.UserTypeId == typeId && studentIds.Contains(m.Id)).Include(p => p.Photos).ToListAsync();
+                foreach (var user in users)
                 {
-                    item.Url = _File.AppendImagePath(item.Url);
+                    foreach (var item in user.Photos)
+                    {
+                        item.Url = _File.AppendImagePath(item.Url);
+                    }
                 }
+                return users;
             }
-            return users;
-
+            else
+            {
+                var users = await _context.Users.Where(m => m.UserTypeId == typeId).Include(p => p.Photos).ToListAsync();
+                foreach (var user in users)
+                {
+                    foreach (var item in user.Photos)
+                    {
+                        item.Url = _File.AppendImagePath(item.Url);
+                    }
+                }
+                return users;
+            }
         }
 
         //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
