@@ -145,7 +145,7 @@ namespace CoreWebApi.Controllers
         {
             try
             {
-                
+
                 var users = await _repo.GetUsers();
                 var ToReturn = users.Select(o => new
                 {
@@ -156,14 +156,26 @@ namespace CoreWebApi.Controllers
                     Late = false,
                     Comments = "",
                     o.UserTypeId,
-                    UserType = _context.UserTypes.First(m => m.Id == o.UserTypeId).Name,
+                    UserType = _context.UserTypes.Where(m => m.Id == o.UserTypeId).FirstOrDefault()?.Name,
                 }).ToList();
                 return Ok(ToReturn);
             }
             catch (Exception ex)
             {
-                 throw ex;
+                throw ex;
             }
+
+        }
+
+       
+        [HttpGet("GetUsersByType/{typeId}")]//  /{classSectionId}
+        public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
+        {
+            var users = await _repo.GetUsersByType(typeId, classSectionId);
+
+            var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
+            usersToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
+            return Ok(usersToReturn);
 
         }
     }

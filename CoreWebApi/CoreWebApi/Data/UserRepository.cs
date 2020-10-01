@@ -220,6 +220,36 @@ namespace CoreWebApi.Data
             }
         }
 
+        
+
+        public async Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId)
+        {
+            //if (!string.IsNullOrEmpty(classSectionId.ToString()))
+            //{
+            //    var users = await _context.Users.Where(m => m.UserTypeId == typeId).Include(p => p.Photos).ToListAsync();
+            //    foreach (var user in users)
+            //    {
+            //        foreach (var item in user.Photos)
+            //        {
+            //            item.Url = _File.AppendImagePath(item.Url);
+            //        }
+            //    }
+            //    return users;
+            //}
+            //else
+            //{
+            var users = await _context.Users.Where(m => m.UserTypeId == typeId).Include(p => p.Photos).ToListAsync();
+            foreach (var user in users)
+            {
+                foreach (var item in user.Photos)
+                {
+                    item.Url = _File.AppendImagePath(item.Url);
+                }
+            }
+            return users;
+
+        }
+
         //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         //{
         //    byte[] key = new Byte[64];

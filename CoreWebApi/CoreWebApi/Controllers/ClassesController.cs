@@ -93,22 +93,7 @@ namespace CoreWebApi.Controllers
             }
         }
 
-        [HttpGet("GetClassSections")]
-        public async Task<IActionResult> GetClassSections()
-        {
-            var list = await _repo.GetClassSections();
-            var ToReturn = list.Select(o => new
-            {
-                ClassSectionId = o.Id,
-                o.ClassId,
-                ClassName = _context.Class.First(m => m.Id == o.ClassId).Name,
-                o.SectionId,
-                SectionName = _context.Sections.First(m => m.Id == o.SectionId).SectionName,
-
-            }); //_mapper.Map<IEnumerable<ClassSection>>(classes);
-            return Ok(ToReturn);
-
-        }
+       
         [HttpPost("AddClassSection")]
         public async Task<IActionResult> AddClassSection(ClassSectionDtoForAdd classSection)
         {
@@ -122,6 +107,32 @@ namespace CoreWebApi.Controllers
                 //    return BadRequest(new { message = "Class Section Already Exist" });
 
                 var createdObj = await _repo.AddClassSection(classSection);
+
+                return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
+   
+        [HttpPost("AddClassSectionUser")]
+        public async Task<IActionResult> AddClassSectionUser(ClassSectionUserDtoForAdd classSectionUser)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+                //    return BadRequest(new { message = "Class Section Already Exist" });
+
+                var createdObj = await _repo.AddClassSectionUser(classSectionUser);
 
                 return StatusCode(StatusCodes.Status201Created);
             }

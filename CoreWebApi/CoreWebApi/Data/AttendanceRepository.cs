@@ -2,6 +2,8 @@
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -36,25 +38,30 @@ namespace CoreWebApi.Data
 
             return attendances;
         }
-        public async Task<Attendance> AddAttendance(AttendanceDtoForAdd attendance)
+        public async Task<string> AddAttendance(List<AttendanceDtoForAdd> list)
         {
             try
             {
-                var objToCreate = new Attendance
+                foreach (var attendance in list)
                 {
-                    Present = attendance.Present,
-                    Absent = attendance.Absent,
-                    Late = attendance.Late,
-                    Comments = attendance.Comments,
-                    UserId = attendance.UserId,
-                    ClassSectionId = attendance.ClassSectionId,
-                    CreatedDatetime = DateTime.Now
-                };
 
-                await _context.Attendances.AddAsync(objToCreate);
-                await _context.SaveChangesAsync();
+                    var objToCreate = new Attendance
+                    {
+                        Present = attendance.Present,
+                        Absent = attendance.Absent,
+                        Late = attendance.Late,
+                        Comments = attendance.Comments,
+                        UserId = attendance.UserId,
+                        ClassSectionId = attendance.ClassSectionId,
+                        CreatedDatetime = DateTime.Now
+                    };
 
-                return objToCreate;
+                    await _context.Attendances.AddAsync(objToCreate);
+                    await _context.SaveChangesAsync();
+                }
+               
+
+                return StatusCodes.Status200OK.ToString();
             }
             catch (Exception ex)
             {
