@@ -77,11 +77,7 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<IEnumerable<ClassSection>> GetClassSections()
-        {
-            var classSections = await _context.ClassSections.ToListAsync();
-            return classSections;
-        }
+       
 
 
         public async Task<ClassSection> AddClassSection(ClassSectionDtoForAdd classSection)
@@ -97,6 +93,30 @@ namespace CoreWebApi.Data
                 };
 
                 await _context.ClassSections.AddAsync(objToCreate);
+                await _context.SaveChangesAsync();
+
+                return objToCreate;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                throw ex;
+            }
+        }
+
+        public async Task<ClassSectionUser> AddClassSectionUser(ClassSectionUserDtoForAdd classSectionUser)
+        {
+            try
+            {
+                var objToCreate = new ClassSectionUser
+                {
+                    ClassSectionId = classSectionUser.ClassSectionId,
+                    UserId = classSectionUser.UserId                    
+
+                };
+
+                await _context.ClassSectionUsers.AddAsync(objToCreate);
                 await _context.SaveChangesAsync();
 
                 return objToCreate;

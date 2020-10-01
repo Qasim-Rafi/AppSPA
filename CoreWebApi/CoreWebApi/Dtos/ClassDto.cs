@@ -36,4 +36,11 @@ namespace CoreWebApi.Dtos
         public int SectionId { get; set; }
         public bool Active { get; set; }
     }
+    public class ClassSectionUserDtoForAdd
+    {
+        [Required]
+        public int ClassSectionId { get; set; }
+        [Required]
+        public int UserId { get; set; }
+    }
 }

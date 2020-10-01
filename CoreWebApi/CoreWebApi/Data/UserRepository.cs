@@ -220,12 +220,7 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<IEnumerable<UserType>> GetUserTypes()
-        {
-            var list = await _context.UserTypes.ToListAsync();
-
-            return list;
-        }
+        
 
         public async Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId)
         {

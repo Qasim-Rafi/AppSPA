@@ -17,7 +17,7 @@ namespace CoreWebApi.IData
         Task<bool> UserExists(string username);
         Task<User> AddUser(UserForAddDto user);
         Task<string> EditUser(int id, UserForAddDto userForAddDto);
-        Task<IEnumerable<UserType>> GetUserTypes();
+        //Task<IEnumerable<UserType>> GetUserTypes();
         Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId);
 
     }

@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Helpers
 {
+    public class DataFormat
+    {
 
-   
+    }
     public class DateFormat
     {
         public static string ToDate(string dateString)
@@ -17,7 +19,7 @@ namespace CoreWebApi.Helpers
             var getDate = Convert.ToDateTime(dateString);
             var dt = getDate.Date.ToString("dd-MM-yyyy");
             return dt;
-           
+
             //bool isValid = DateTime.TryParseExact(dateString.ToString(), "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out DateTime dt);
             //var day = dateString.Day;
             //var month = dateString.Month;

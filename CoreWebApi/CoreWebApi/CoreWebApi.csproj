@@ -18,6 +18,8 @@
     <Compile Remove="Migrations\20200928062150_addTable_addColumn.Designer.cs" />
     <Compile Remove="Migrations\20200930122345_addColumns-ClassSection.cs" />
     <Compile Remove="Migrations\20200930122345_addColumns-ClassSection.Designer.cs" />
+    <Compile Remove="Migrations\20201001050300_addTable-ClassSectionUser_addColumns-ClassSection.cs" />
+    <Compile Remove="Migrations\20201001050300_addTable-ClassSectionUser_addColumns-ClassSection.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -167,14 +167,7 @@ namespace CoreWebApi.Controllers
 
         }
 
-        [HttpGet("GetUserTypes")]
-        public async Task<IActionResult> GetUserTypes()
-        {
-            var list = await _repo.GetUserTypes();
-
-            return Ok(list);
-
-        }
+       
         [HttpGet("GetUsersByType/{typeId}")]//  /{classSectionId}
         public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
         {
