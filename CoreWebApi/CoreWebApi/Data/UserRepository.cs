@@ -203,7 +203,7 @@ namespace CoreWebApi.Data
                             if (i == 0)
                                 photo.Url = dbPath;
                             else
-                                photo.Url = photo.Url + "||" + dbPath;
+                                photo.Url = photo.Url + " || " + dbPath;
 
                             await _context.Photos.AddAsync(photo);
                             await _context.SaveChangesAsync();

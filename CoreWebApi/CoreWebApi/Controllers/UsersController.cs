@@ -139,7 +139,7 @@ namespace CoreWebApi.Controllers
             }
         }
 
-        [HttpGet("GetUsersForAttendance")]
+        [HttpGet("GetUsersForAttendance")]//not in use
         public async Task<IActionResult> GetListForAttendance()
         {
             try
@@ -175,10 +175,23 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
         {
             var users = await _repo.GetUsersByType(typeId, classSectionId);
-
-            var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
-            usersToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
-            return Ok(usersToReturn);
+            var ToReturn = users.Select(o => new
+            {
+                UserId = o.Id,
+                o.FullName,
+                Present = false,
+                Absent = false,
+                Late = false,
+                Comments = "",
+                o.UserTypeId,
+                UserType = _context.UserTypes.Where(m => m.Id == o.UserTypeId).FirstOrDefault()?.Name,
+                LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
+                AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true).Count(),
+                LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true).Count(),
+                PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true).Count(),
+            }).ToList();
+            //var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
+            return Ok(ToReturn);
 
         }
     }

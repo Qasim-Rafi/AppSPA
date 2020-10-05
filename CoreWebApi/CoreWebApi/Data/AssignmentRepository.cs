@@ -125,7 +125,7 @@ namespace CoreWebApi.Data
                             if (i == 0)
                                 dbObj.RelatedMaterial = dbPath;
                             else
-                                dbObj.RelatedMaterial = dbObj.RelatedMaterial + "||" + dbPath;
+                                dbObj.RelatedMaterial = dbObj.RelatedMaterial + " || " + dbPath;
                         }
                     }
 
