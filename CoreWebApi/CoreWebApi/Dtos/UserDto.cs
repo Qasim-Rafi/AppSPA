@@ -57,6 +57,7 @@ namespace CoreWebApi.Dtos
         public string DateofBirth { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
+        public bool Active { get; set; }
         public virtual ICollection<Photo> Photos { get; set; }
     }
     public class UserForListDto
@@ -70,7 +71,7 @@ namespace CoreWebApi.Dtos
         public string DateofBirth { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
-
+        public bool Active { get; set; }
     }
     public class UserForLoginDto
     {

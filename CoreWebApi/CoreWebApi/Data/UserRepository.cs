@@ -94,7 +94,10 @@ namespace CoreWebApi.Data
                     Email = userDto.Email,
                     UserTypeId = _context.UserTypes.First().Id,
                     CreatedDateTime = DateTime.Now,
-                    Gender = userDto.Gender
+                    Gender = userDto.Gender,
+                    Active = true,
+                    FullName = userDto.FullName,
+
 
                 };
                 byte[] passwordHash, passwordSalt;
@@ -134,6 +137,8 @@ namespace CoreWebApi.Data
                     dbUser.Country = user.Country;
                     dbUser.DateofBirth = Convert.ToDateTime(user.DateofBirth);
                     dbUser.Gender = user.Gender;
+                    dbUser.Active = user.Active;
+                    dbUser.FullName = user.FullName;
                     if (!string.IsNullOrEmpty(user.OldPassword))
                     {
                         if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
