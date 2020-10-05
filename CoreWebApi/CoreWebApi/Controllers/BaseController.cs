@@ -16,45 +16,47 @@ namespace CoreWebApi.Controllers
 {
     //[Route("api/[controller]")]
     //[ApiController]
-
     public class BaseController : ControllerBase
     {
-        protected readonly IConfiguration _configuration;
+        
 
-        public BaseController(IConfiguration configuration)
+        public BaseController()
         {
-            _configuration = configuration;
+            
         }
 
-        [NonAction]
-        public IActionResult Download(string file)
-        {
+        //[NonAction]
+        //public IActionResult Download(string file)
+        //{
 
-            var uploads = Path.Combine(_configuration.GetSection("AppSettings:VirtualURL").Value, "StaticFiles", "Images");
-            var filePath = Path.Combine(uploads, file);
-            if (!System.IO.File.Exists(filePath))
-                throw new Exception("Files not found");
+        //    var uploads = Path.Combine(_configuration.GetSection("AppSettings:VirtualURL").Value, "StaticFiles", "Images");
+        //    var filePath = Path.Combine(uploads, file);
+        //    if (!System.IO.File.Exists(filePath))
+        //        throw new Exception("Files not found");
 
-            var memory = new MemoryStream();
-            using (var stream = new FileStream(filePath, FileMode.Open))
-            {
-                stream.CopyTo(memory);
-            }
-            memory.Position = 0;
-            return File(memory, GetContentType(filePath), file);
+        //    var memory = new MemoryStream();
+        //    using (var stream = new FileStream(filePath, FileMode.Open))
+        //    {
+        //        stream.CopyTo(memory);
+        //    }
+        //    memory.Position = 0;
+        //    return File(memory, GetContentType(filePath), file);
 
-        }
-        [NonAction]
-        private string GetContentType(string path)
-        {
-            var provider = new FileExtensionContentTypeProvider();
-            string contentType;
-            if (!provider.TryGetContentType(path, out contentType))
-            {
-                contentType = "application/octet-stream";
-            }
-            return contentType;
-        }
+        //}
+        //[NonAction]
+        //private string GetContentType(string path)
+        //{
+        //    var provider = new FileExtensionContentTypeProvider();
+        //    string contentType;
+        //    if (!provider.TryGetContentType(path, out contentType))
+        //    {
+        //        contentType = "application/octet-stream";
+        //    }
+        //    return contentType;
+        //}
+
+
+
         //public ClaimsPrincipal User { get; }
         //[NonAction]
         //public string GetClaims(string name)

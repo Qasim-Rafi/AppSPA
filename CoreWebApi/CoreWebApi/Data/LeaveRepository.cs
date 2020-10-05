@@ -67,6 +67,9 @@ namespace CoreWebApi.Data
                 if (dbObj != null)
                 {
                     dbObj.Details = leave.Details;
+                    dbObj.FromDate = leave.FromDate;
+                    dbObj.ToDate = leave.ToDate;
+                    dbObj.LeaveTypeId = leave.LeaveTypeId;
                     await _context.SaveChangesAsync();
                 }
                 return dbObj;

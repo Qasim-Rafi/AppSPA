@@ -23,6 +23,11 @@ namespace CoreWebApi.Controllers
             _logger = logger;
         }
 
+        [HttpGet("/TestApp")]
+        public string TestApp()
+        {
+            return "Your application is running fine. Checked at: " + DateTime.Now.ToString();
+        }
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {

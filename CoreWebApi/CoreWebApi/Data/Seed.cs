@@ -91,7 +91,7 @@ namespace CoreWebApi.Data
                         user.Email = "test@email";
                         user.FullName = "test name " + (index + 1);
                         user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Id;
-                        user.CreatedTimestamp = DateTime.Now;
+                        user.CreatedDateTime = DateTime.Now;
                         context.Users.Add(user);
 
 

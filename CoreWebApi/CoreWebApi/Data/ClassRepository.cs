@@ -42,7 +42,8 @@ namespace CoreWebApi.Data
                 {
                     Name = @class.Name,
                     CreatedById = 1,
-                    CreatedDateTime = DateTime.Now
+                    CreatedDateTime = DateTime.Now,
+                    Active = true
                 };
 
                 await _context.Class.AddAsync(objToCreate);
@@ -65,6 +66,7 @@ namespace CoreWebApi.Data
                 if (dbObj != null)
                 {
                     dbObj.Name = @class.Name;
+                    dbObj.Active = @class.Active;
                     await _context.SaveChangesAsync();
                 }
                 return dbObj;

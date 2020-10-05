@@ -14,8 +14,8 @@ namespace CoreWebApi.Models
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
 
-        public virtual ICollection<Class> Classes { get; set; }
-        public virtual ICollection<Section> Sections { get; set; }
+        //public virtual ICollection<Class> Classes { get; set; }
+        //public virtual ICollection<Section> Sections { get; set; }
 
     }
 }

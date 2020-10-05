@@ -1,4 +1,5 @@
 ﻿using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using System;
 using System.Collections;
@@ -25,19 +26,20 @@ namespace CoreWebApi.Models
 
         [StringLength(50, ErrorMessage = "FullName cannot be longer then 50 characters")]
         public string FullName { get; set; }
+        public bool Active { get; set; }
 
         //[Required]
         public byte[] PasswordHash { get; set; }
         //[Required]
         public byte[] PasswordSalt { get; set; }
         //[Required]
-        public DateTime CreatedTimestamp { get; set; }
+        public DateTime CreatedDateTime { get; set; }
         [Required]
         //[DefaultValue("male")]
         public string Gender { get; set; }
-        [Required]
+        //[Required]
         [DateValidation(ErrorMessage = "Date of birth is not in correct format")]
-        public DateTime DateofBirth { get; set; }
+        public DateTime? DateofBirth { get; set; }
         //[Required]
         public DateTime LastActive { get; set; }
 

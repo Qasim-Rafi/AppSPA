@@ -78,6 +78,9 @@ namespace CoreWebApi.Data
                 if (dbObj != null)
                 {
                     dbObj.Comments = attendance.Comments;
+                    dbObj.Present = attendance.Present;
+                    dbObj.Absent = attendance.Absent;
+                    dbObj.Late = attendance.Late;
                     await _context.SaveChangesAsync();
                 }
                 return dbObj;

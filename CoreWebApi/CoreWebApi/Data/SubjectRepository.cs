@@ -25,23 +25,23 @@ namespace CoreWebApi.Data
         }
         public async Task<Subject> GetSubject(int id)
         {
-            var section = await _context.Subjects.FirstOrDefaultAsync(u => u.Id == id);
-            return section;
+            var subject = await _context.Subjects.FirstOrDefaultAsync(u => u.Id == id);
+            return subject;
         }
 
         public async Task<IEnumerable<Subject>> GetSubjects()
         {
-            var sections = await _context.Subjects.ToListAsync();
-            return sections;
+            var subjects = await _context.Subjects.ToListAsync();
+            return subjects;
         }
-        public async Task<Subject> AddSubject(SubjectDtoForAdd section)
+        public async Task<Subject> AddSubject(SubjectDtoForAdd subject)
         {
             try
             {
                 var objToCreate = new Subject
                 {
-                    Name = section.Name,
-                    ClassId = section.ClassId,
+                    Name = subject.Name,
+                    ClassId = subject.ClassId,
                     CreatedBy = 1,
                     CreatedDateTime = DateTime.Now
                 };
@@ -58,14 +58,15 @@ namespace CoreWebApi.Data
                 throw ex;
             }
         }
-        public async Task<Subject> EditSubject(int id, SubjectDtoForEdit section)
+        public async Task<Subject> EditSubject(int id, SubjectDtoForEdit subject)
         {
             try
             {
                 Subject dbObj = _context.Subjects.FirstOrDefault(s => s.Id.Equals(id));
                 if (dbObj != null)
                 {
-                    dbObj.Name = section.Name;
+                    dbObj.Name = subject.Name;
+                    dbObj.ClassId = subject.ClassId;
                     await _context.SaveChangesAsync();
                 }
                 return dbObj;

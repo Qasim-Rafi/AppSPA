@@ -28,8 +28,7 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly IFilesRepository _File;
         private readonly DataContext _context;
-        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, IConfiguration configuration, DataContext context)
-        : base(configuration)
+        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context)
         {
             _mapper = mapper;
             _repo = repo;
@@ -41,7 +40,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _repo.GetUsers();
-
+            
             var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
             usersToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
             return Ok(usersToReturn);
@@ -99,7 +98,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PUTAsync(int id, [FromForm] UserForAddDto userForAddDto)// [FromForm]
+        public async Task<IActionResult> PUT(int id, [FromForm] UserForAddDto userForAddDto)// [FromForm]
         {
 
             try

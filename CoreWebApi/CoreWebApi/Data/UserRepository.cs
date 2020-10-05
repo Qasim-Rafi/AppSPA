@@ -93,7 +93,7 @@ namespace CoreWebApi.Data
                     Country = "Pakistan",
                     Email = userDto.Email,
                     UserTypeId = _context.UserTypes.First().Id,
-                    CreatedTimestamp = DateTime.Now,
+                    CreatedDateTime = DateTime.Now,
                     Gender = userDto.Gender
 
                 };
@@ -174,9 +174,9 @@ namespace CoreWebApi.Data
 
                         string contentRootPath = _HostEnvironment.ContentRootPath;
                         var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
-                        foreach (var file in user.files)
+                        for (int i = 0; i < user.files.Count(); i++)
                         {
-                            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(user.files[i].FileName);
                             var fullPath = Path.Combine(pathToSave);
                             var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
                             if (!Directory.Exists(fullPath))
@@ -186,7 +186,7 @@ namespace CoreWebApi.Data
                             var filePath = Path.Combine(fullPath, fileName);
                             using (var stream = new FileStream(filePath, FileMode.Create))
                             {
-                                await file.CopyToAsync(stream);
+                                await user.files[i].CopyToAsync(stream);
                             }
                             if (user.IsPrimaryPhoto)
                             {
@@ -195,12 +195,16 @@ namespace CoreWebApi.Data
                             }
                             var photo = new Photo
                             {
-                                Url = dbPath,
                                 Description = "description...",
                                 IsPrimary = user.IsPrimaryPhoto,
                                 UserId = dbUser.Id,
                                 DateAdded = DateTime.Now
                             };
+                            if (i == 0)
+                                photo.Url = dbPath;
+                            else
+                                photo.Url = photo.Url + "||" + dbPath;
+
                             await _context.Photos.AddAsync(photo);
                             await _context.SaveChangesAsync();
                         }

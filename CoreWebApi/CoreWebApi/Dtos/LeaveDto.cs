@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreWebApi.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -34,6 +35,8 @@ namespace CoreWebApi.Dtos
         [DateValidation(ErrorMessage = "To Date is not in correct format")]
         [Required] 
         public DateTime ToDate { get; set; }
+        public int LeaveTypeId { get; set; }
+
     }
     public class LeaveDtoForList
     {

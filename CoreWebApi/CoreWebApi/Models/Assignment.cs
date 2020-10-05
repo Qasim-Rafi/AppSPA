@@ -13,12 +13,13 @@ namespace CoreWebApi.Models
         [Required]
         [StringLength(30,ErrorMessage ="Assignment Name cannot be longer then 30 characters.")]
         public string AssignmentName { get; set; }
-        public DateTime Creationdatetime { get; set; }
+        public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
         public string Details { get; set; }
         [StringLength(200,ErrorMessage ="Related Material cannot be longer then 200 characters.")]
         public string RelatedMaterial { get; set; }
+        public int ClassSectionId { get; set; }
 
-        public virtual Class Class { get; set; }
+        public virtual ClassSection ClassSection { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace CoreWebApi.Models
         public int ClassSectionId { get; set; }
         public int UserId { get; set; }
 
-        public virtual ICollection<ClassSection> ClassSections { get; set; }
-        public virtual ICollection<User> Users { get; set; }
+        //public virtual ClassSection ClassSection { get; set; }
+        //public virtual User User { get; set; }
     }
 }
