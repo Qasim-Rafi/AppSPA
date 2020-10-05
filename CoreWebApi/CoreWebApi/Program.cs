@@ -29,6 +29,7 @@ namespace CoreWebApi
                     Seed.SeedUserTypes(context);
                     Seed.SeedUsers(context);
                     Seed.SeedLeaveTypes(context);
+                    Seed.SeedGenericData(context);
                 }
                 catch (Exception ex)
                 {

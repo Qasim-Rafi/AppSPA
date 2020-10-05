@@ -1,6 +1,7 @@
 ﻿using CoreWebApi.Helpers;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace CoreWebApi.Data
 {
     public static class Seed
     {
+
 
         public static void SeedLeaveTypes(DataContext context)
         {
@@ -46,10 +48,7 @@ namespace CoreWebApi.Data
             {
                 if (!context.UserTypes.Any())
                 {
-                    //var fileData = System.IO.File.ReadAllText("Data/UserTypeSeedData.json");
-                    //DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
-                    //var jsonObj = JsonConvert.SerializeObject(dataSet.Tables["UserTypes"]);
-                    //var userTypes = JsonConvert.DeserializeObject<List<UserType>>(jsonObj);
+
                     var fileData = System.IO.File.ReadAllText("Data/UserTypeSeedData.json");
                     var userTypes = JsonConvert.DeserializeObject<List<UserType>>(fileData);
 
@@ -90,8 +89,9 @@ namespace CoreWebApi.Data
                         user.Username = user.Username.ToLower();
                         user.Email = "test@email";
                         user.FullName = "test name " + (index + 1);
-                        user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Id;
+                        user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
                         user.CreatedDateTime = DateTime.Now;
+                        user.Active = true;
                         context.Users.Add(user);
 
 
@@ -99,6 +99,107 @@ namespace CoreWebApi.Data
                     context.SaveChanges();
 
                 }
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                throw ex;
+            }
+        }
+        public static void SeedGenericData(DataContext context)
+        {
+            try
+            {
+                var fileData = System.IO.File.ReadAllText("Data/GenericSeedData.json");
+                DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
+                //
+                if (!context.Class.Any())
+                {
+                    var ClassesJson = JsonConvert.SerializeObject(dataSet.Tables["Classes"]);
+                    var Classes = JsonConvert.DeserializeObject<List<Class>>(ClassesJson);
+                    foreach (var obj in Classes)
+                    {
+                        obj.Active = true;
+                        context.Class.Add(obj);
+                    }
+                    context.SaveChanges();
+                }
+                //
+                if (!context.Sections.Any())
+                {
+                    var SectionsJson = JsonConvert.SerializeObject(dataSet.Tables["Sections"]);
+                    var Sections = JsonConvert.DeserializeObject<List<Section>>(SectionsJson);
+
+                    foreach (var item in Sections)
+                    {
+
+                        context.Sections.Add(item);
+                    }
+
+                    context.SaveChanges();
+                }
+                //
+                if (!context.ClassSections.Any())
+                {
+                    var GetClasses = context.Class.Where(m => m.Active == true).ToList();
+                    var GetSections = context.Sections.ToList();
+                    foreach (var obj in GetClasses)
+                    {
+                        foreach (var item in GetSections)
+                        {
+                            var newobj = new ClassSection
+                            {
+                                ClassId = obj.Id,
+                                SectionId = item.Id,
+                                Active = true
+                            };
+                            context.ClassSections.Add(newobj);
+                        }
+
+                    }
+                    context.SaveChanges();
+                }
+                //
+                if (!context.ClassSectionUsers.Any())
+                {
+                    var GetClassSections = context.ClassSections.AsEnumerable();
+                    var StudentID = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
+                    var TeacherID = context.UserTypes.FirstOrDefault(m => m.Name == "Teacher").Id;
+                    var GetStudentUsers = context.Users.Where(m => m.UserTypeId == StudentID).ToList();
+                    var GetTeacherUsers = context.Users.Where(m => m.UserTypeId == TeacherID).ToList();
+                    int half = GetClassSections.Count() / 2;
+                    foreach (var (obj, index) in ReturnIndex(GetClassSections))
+                    {
+                        if (index < half)
+                        {
+                            foreach (var item in GetStudentUsers)
+                            {
+                                var newobj = new ClassSectionUser
+                                {
+                                    ClassSectionId = obj.Id,
+                                    UserId = item.Id
+                                };
+                                context.ClassSectionUsers.Add(newobj);
+                            }
+                        }
+                        else
+                        {
+                            foreach (var item in GetTeacherUsers)
+                            {
+                                var newobj = new ClassSectionUser
+                                {
+                                    ClassSectionId = obj.Id,
+                                    UserId = item.Id
+                                };
+                                context.ClassSectionUsers.Add(newobj);
+                            }
+                        }
+                    }
+                    context.SaveChanges();
+                }
+
+
             }
             catch (Exception ex)
             {

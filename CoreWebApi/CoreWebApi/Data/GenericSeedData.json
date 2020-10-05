@@ -1,0 +1,27 @@
+{
+  "Classes": [
+    {
+      "Name": "9"
+    },
+    {
+      "Name": "10"
+    },
+    {
+      "Name": "11"
+    },
+    {
+      "Name": "12"
+    }
+  ],
+  "Sections": [
+    {
+      "SectionName": "A"
+    },
+    {
+      "SectionName": "B"
+    },
+    {
+      "SectionName": "C"
+    }
+  ]
+}

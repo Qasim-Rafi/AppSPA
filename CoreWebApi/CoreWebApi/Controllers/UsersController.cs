@@ -40,7 +40,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _repo.GetUsers();
-            
+
             var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
             usersToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
             return Ok(usersToReturn);
@@ -170,10 +170,11 @@ namespace CoreWebApi.Controllers
 
         }
 
-       
+
         [HttpGet("GetUsersByType/{typeId}/{classSectionId?}")]
         public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
         {
+            var thisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var users = await _repo.GetUsersByType(typeId, classSectionId);
             var ToReturn = users.Select(o => new
             {
@@ -184,11 +185,11 @@ namespace CoreWebApi.Controllers
                 Late = false,
                 Comments = "",
                 o.UserTypeId,
-                UserType = _context.UserTypes.Where(m => m.Id == o.UserTypeId).FirstOrDefault()?.Name,
+                ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault()?.ClassSectionId,
                 LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
-                AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true).Count(),
-                LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true).Count(),
-                PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true).Count(),
+                AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime <= thisMonth).Count(),
+                LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime <= thisMonth).Count(),
+                PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime <= thisMonth).Count(),
             }).ToList();
             //var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
             return Ok(ToReturn);
