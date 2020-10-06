@@ -20,12 +20,15 @@ namespace CoreWebApi.Controllers
     public class AttendanceController : ControllerBase
     {
         private readonly IAttendanceRepository _repo;
+        private readonly IUserRepository _userRepository;
+
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        public AttendanceController(IAttendanceRepository repo, IMapper mapper, DataContext context)
+        public AttendanceController(IAttendanceRepository repo, IMapper mapper, DataContext context, IUserRepository userRepository)
         {
             _mapper = mapper;
             _repo = repo;
+            _userRepository = userRepository;
             _context = context;
         }
 
@@ -50,6 +53,31 @@ namespace CoreWebApi.Controllers
                 //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
             }).ToList();
             //var ToReturn = _mapper.Map<IEnumerable<AttendanceDtoForList>>(attendances);
+            return Ok(ToReturn);
+
+        }
+        [HttpGet("GetAttendanceToDisplay{typeId}/{classSectionId?}/{date?}")]
+        public async Task<IActionResult> GetAttendanceToDisplay(int typeId, int? classSectionId, string date)
+        {
+            var users = await _userRepository.GetUsersByType(typeId, classSectionId);
+            var userIds = users.Select(m => m.Id);
+            var DTdate = Convert.ToDateTime(date);
+            var ToReturn = _context.Attendances.Where(m => userIds.Contains(m.UserId) && m.CreatedDatetime.Date == DTdate.Date).Select(o => new AttendanceDtoForList
+            {
+                UserId = o.UserId,
+                Present = o.Present,
+                Absent = o.Absent,
+                Late = o.Late,
+                Comments = o.Comments,
+                LeaveCount = _context.Leaves.Where(m => m.UserId == o.UserId).Count(),
+                AbsentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Absent == true).Count(),
+                LateCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Late == true).Count(),
+                PresentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Present == true).Count(),
+                //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
+                //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
+                //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
+                //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
+            }).ToList();
             return Ok(ToReturn);
 
         }

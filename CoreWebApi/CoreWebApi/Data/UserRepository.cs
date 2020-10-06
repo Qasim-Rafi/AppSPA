@@ -55,7 +55,7 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<User>> GetUsers()
         {
-            var users = await _context.Users.Include(p => p.Photos).ToListAsync();
+            var users = await _context.Users.Where(m => m.Active == true).Include(p => p.Photos).ToListAsync();
             foreach (var user in users)
             {
                 foreach (var item in user.Photos)
@@ -235,7 +235,7 @@ namespace CoreWebApi.Data
             if (!string.IsNullOrEmpty(classSectionId.ToString()))
             {
                 IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == classSectionId).Select(m => m.UserId).Distinct();
-                var users = await _context.Users.Where(m => m.UserTypeId == typeId && studentIds.Contains(m.Id)).Include(p => p.Photos).ToListAsync();
+                var users = await _context.Users.Where(m => m.UserTypeId == typeId && studentIds.Contains(m.Id) && m.Active == true).Include(p => p.Photos).ToListAsync();
                 foreach (var user in users)
                 {
                     foreach (var item in user.Photos)
@@ -247,7 +247,7 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var users = await _context.Users.Where(m => m.UserTypeId == typeId).Include(p => p.Photos).ToListAsync();
+                var users = await _context.Users.Where(m => m.UserTypeId == typeId && m.Active == true).Include(p => p.Photos).ToListAsync();
                 foreach (var user in users)
                 {
                     foreach (var item in user.Photos)

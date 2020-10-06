@@ -44,22 +44,36 @@ namespace CoreWebApi.Data
             {
                 foreach (var attendance in list)
                 {
-
-                    var objToCreate = new Attendance
+                    var attendanceExist = _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.UserId == attendance.UserId).FirstOrDefault();
+                    if (attendanceExist != null)
                     {
-                        Present = attendance.Present,
-                        Absent = attendance.Absent,
-                        Late = attendance.Late,
-                        Comments = attendance.Comments,
-                        UserId = attendance.UserId,
-                        ClassSectionId = attendance.ClassSectionId,
-                        CreatedDatetime = DateTime.Now
-                    };
+                        attendanceExist.Present = attendance.Present;
+                        attendanceExist.Absent = attendance.Absent;
+                        attendanceExist.Late = attendance.Late;
+                        attendanceExist.Comments = attendance.Comments;
+                        attendanceExist.UserId = attendance.UserId;
+                        attendanceExist.ClassSectionId = attendance.ClassSectionId;
 
-                    await _context.Attendances.AddAsync(objToCreate);
-                    await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var objToCreate = new Attendance
+                        {
+                            Present = attendance.Present,
+                            Absent = attendance.Absent,
+                            Late = attendance.Late,
+                            Comments = attendance.Comments,
+                            UserId = attendance.UserId,
+                            ClassSectionId = attendance.ClassSectionId,
+                            CreatedDatetime = DateTime.Now
+                        };
+
+                        await _context.Attendances.AddAsync(objToCreate);
+                        await _context.SaveChangesAsync();
+                    }
                 }
-               
+
 
                 return StatusCodes.Status200OK.ToString();
             }
@@ -91,6 +105,11 @@ namespace CoreWebApi.Data
                 Log.Exception(ex);
                 throw ex;
             }
+        }
+
+        public Task<IEnumerable<Attendance>> GetAttendanceToDisplay(int typeId, int? classSectionId, string date)
+        {
+            throw new NotImplementedException();
         }
     }
 }
