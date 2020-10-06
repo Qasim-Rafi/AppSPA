@@ -121,6 +121,7 @@ namespace CoreWebApi.Data
                     foreach (var obj in Classes)
                     {
                         obj.Active = true;
+                        obj.CreatedById = context.Users.FirstOrDefault().Id;
                         context.Class.Add(obj);
                     }
                     context.SaveChanges();

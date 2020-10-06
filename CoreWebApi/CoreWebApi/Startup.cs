@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using CoreWebApi.Controllers;
 using CoreWebApi.Data;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
@@ -57,6 +58,7 @@ namespace CoreWebApi
                 services.AddScoped<IAttendanceRepository, AttendanceRepository>();
                 services.AddScoped<ILeaveRepository, LeaveRepository>();
                 services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+                services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 
                 
