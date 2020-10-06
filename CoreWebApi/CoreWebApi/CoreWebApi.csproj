@@ -20,6 +20,8 @@
     <Compile Remove="Migrations\20200930122345_addColumns-ClassSection.Designer.cs" />
     <Compile Remove="Migrations\20201001050300_addTable-ClassSectionUser_addColumns-ClassSection.cs" />
     <Compile Remove="Migrations\20201001050300_addTable-ClassSectionUser_addColumns-ClassSection.Designer.cs" />
+    <Compile Remove="Migrations\20201005132742_addClassUserRel_addClassSectionRelWithCandS_addClassSectionUserRelWithCSandU.cs" />
+    <Compile Remove="Migrations\20201005132742_addClassUserRel_addClassSectionRelWithCandS_addClassSectionUserRelWithCSandU.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

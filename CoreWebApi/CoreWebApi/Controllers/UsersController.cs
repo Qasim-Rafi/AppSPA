@@ -174,7 +174,8 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetUsersByType/{typeId}/{classSectionId?}")]
         public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
         {
-            var thisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var today = DateTime.Now;
+            var thisMonth = new DateTime(today.Year, today.Month, 1);
             var users = await _repo.GetUsersByType(typeId, classSectionId);
             var ToReturn = users.Select(o => new
             {
@@ -187,9 +188,9 @@ namespace CoreWebApi.Controllers
                 o.UserTypeId,
                 ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault()?.ClassSectionId,
                 LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
-                AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime <= thisMonth).Count(),
-                LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime <= thisMonth).Count(),
-                PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime <= thisMonth).Count(),
+                AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
             }).ToList();
             //var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
             return Ok(ToReturn);

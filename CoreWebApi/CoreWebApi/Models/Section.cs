@@ -13,7 +13,6 @@ namespace CoreWebApi.Models
         public int Id { get; set; }
         [Required]
         [StringLength(2, ErrorMessage = "Section Name cannot be longer than 2 characters")]
-        [Column("SectionName")]
         public string SectionName { get; set; }
         public DateTime CreatedDatetime { get; set; }
         public int CreatedById { get; set; }
