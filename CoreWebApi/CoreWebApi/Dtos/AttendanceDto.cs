@@ -57,4 +57,11 @@ namespace CoreWebApi.Dtos
     public class AttendanceDtoForDetail
     {
     }
+    public class AttendanceDtoForDisplay
+    {
+        public int typeId { get; set; }
+        public int? classSectionId { get; set; }
+        public string date { get; set; }
+    }
+
 }

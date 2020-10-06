@@ -56,12 +56,12 @@ namespace CoreWebApi.Controllers
             return Ok(ToReturn);
 
         }
-        [HttpGet("GetAttendanceToDisplay{typeId}/{classSectionId?}/{date?}")]
-        public async Task<IActionResult> GetAttendanceToDisplay(int typeId, int? classSectionId, string date)
+        [HttpPost("GetAttendanceToDisplay")]
+        public async Task<IActionResult> GetAttendanceToDisplay(AttendanceDtoForDisplay model)
         {
-            var users = await _userRepository.GetUsersByType(typeId, classSectionId);
+            var users = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
             var userIds = users.Select(m => m.Id);
-            var DTdate = Convert.ToDateTime(date);
+            var DTdate = Convert.ToDateTime(model.date);
             var ToReturn = _context.Attendances.Where(m => userIds.Contains(m.UserId) && m.CreatedDatetime.Date == DTdate.Date).Select(o => new AttendanceDtoForList
             {
                 UserId = o.UserId,
