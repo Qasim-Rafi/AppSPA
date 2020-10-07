@@ -65,6 +65,8 @@ namespace CoreWebApi.Controllers
             var ToReturn = _context.Attendances.Where(m => userIds.Contains(m.UserId) && m.CreatedDatetime.Date == DTdate.Date).Select(o => new AttendanceDtoForList
             {
                 UserId = o.UserId,
+                FullName = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
+                CreatedDatetime = DateFormat.ToDate(o.CreatedDatetime.ToString()),
                 Present = o.Present,
                 Absent = o.Absent,
                 Late = o.Late,

@@ -39,6 +39,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public int ClassSectionId { get; set; }
+        public string FullName { get; set; }
         public int UserId { get; set; }
         public bool Present { get; set; }
         public bool Absent { get; set; }
@@ -46,7 +47,7 @@ namespace CoreWebApi.Dtos
         public string Comments { get; set; }
         //public string LeavePurpose { get; set; }
         //public string LeaveType { get; set; }
-        public DateTime CreatedDatetime { get; set; }
+        public string CreatedDatetime { get; set; }
         //public DateTime? LeaveFrom { get; set; }
         //public DateTime? LeaveTo { get; set; }
         public int LateCount { get; internal set; }
