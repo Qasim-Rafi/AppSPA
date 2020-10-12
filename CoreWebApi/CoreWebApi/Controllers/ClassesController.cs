@@ -93,24 +93,22 @@ namespace CoreWebApi.Controllers
             }
         }
 
-        [HttpGet("GetClassSectionMappingById/{id}")]
-        public async Task<IActionResult> GetClassSectionMappingById(int id)
-        {
-            var list = await _repo.GetClassSectionMapping(id);
+        //[HttpGet("GetClassSectionMappingById/{id}")]
+        //public async Task<IActionResult> GetClassSectionMappingById(int id)
+        //{
+        //    var list = await _repo.GetClassSectionMapping(id);
 
-            var ToReturn = list.Select(o => new
-            {
-                ClassSectionId = o.Id,
-                o.ClassId,
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
-                o.SectionId,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
-                o.SchoolAcademyId,
-                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolAcademyId)?.Name
-            });
-            return Ok(ToReturn);
+        //    var ToReturn = list.Select(o => new
+        //    {
+        //        ClassSectionId = o.Id,
+        //        o.ClassId,
+        //        ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
+        //        o.SectionId,
+        //        SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
+        //    });
+        //    return Ok(ToReturn);
 
-        }
+        //}
         [HttpPost("AddClassSectionMapping")]
         public async Task<IActionResult> AddClassSection(ClassSectionDtoForAdd classSection)
         {
@@ -136,33 +134,33 @@ namespace CoreWebApi.Controllers
                 });
             }
         }
-   
-        [HttpPut("UpdateClassSectionMapping")]
-        public async Task<IActionResult> UpdateClassSectionMapping(ClassSectionDtoForUpdate classSection)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
-                //    return BadRequest(new { message = "Class Section Already Exist" });
 
-                var createdObj = await _repo.UpdateClassSectionMapping(classSection);
+        //[HttpPut("UpdateClassSectionMapping")]
+        //public async Task<IActionResult> UpdateClassSectionMapping(ClassSectionDtoForUpdate classSection)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return BadRequest(ModelState);
+        //        }
+        //        //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+        //        //    return BadRequest(new { message = "Class Section Already Exist" });
 
-                return StatusCode(StatusCodes.Status201Created);
-            }
-            catch (Exception ex)
-            {
+        //        var createdObj = await _repo.UpdateClassSectionMapping(classSection);
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
-        }
-   
+        //        return StatusCode(StatusCodes.Status201Created);
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        return BadRequest(new
+        //        {
+        //            message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+        //        });
+        //    }
+        //}
+
         [HttpPost("AddClassSectionUserMapping")]
         public async Task<IActionResult> AddClassSectionUser(ClassSectionUserDtoForAdd classSectionUser)
         {

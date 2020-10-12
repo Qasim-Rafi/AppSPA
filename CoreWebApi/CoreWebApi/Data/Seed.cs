@@ -134,7 +134,7 @@ namespace CoreWebApi.Data
 
                     foreach (var item in Sections)
                     {
-
+                        item.CreatedById = context.Users.First().Id;
                         context.Sections.Add(item);
                     }
 
@@ -200,6 +200,18 @@ namespace CoreWebApi.Data
                     context.SaveChanges();
                 }
 
+
+                //
+                if (!context.SchoolAcademy.Any())
+                {
+                    var SchoolAcademiesJson = JsonConvert.SerializeObject(dataSet.Tables["SchoolAcademies"]);
+                    var SchoolAcademies = JsonConvert.DeserializeObject<List<SchoolAcademy>>(SchoolAcademiesJson);
+                    foreach (var obj in SchoolAcademies)
+                    {                        
+                        context.SchoolAcademy.Add(obj);
+                    }
+                    context.SaveChanges();
+                }
 
             }
             catch (Exception ex)

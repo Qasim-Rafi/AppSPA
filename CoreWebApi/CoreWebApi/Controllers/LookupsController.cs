@@ -7,6 +7,7 @@ using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
@@ -15,8 +16,11 @@ namespace CoreWebApi.Controllers
     public class LookupsController : ControllerBase
     {
         private readonly DataContext _context;
-        public LookupsController(DataContext context)
-        {           
+        private readonly IConfiguration _configuration;
+
+        public LookupsController(DataContext context, IConfiguration configuration)
+        {
+            _configuration = configuration;
             _context = context;
         }
         [HttpGet("UserTypes")]
@@ -31,14 +35,14 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetClassSections()
         {
             var list = await _context.ClassSections.ToListAsync();
-           
+
             var ToReturn = list.Select(o => new
             {
                 ClassSectionId = o.Id,
                 o.ClassId,
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
                 o.SectionId,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,                
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
             });
             return Ok(ToReturn);
 
@@ -47,8 +51,8 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetClasses()
         {
             List<Class> list = await _context.Class.ToListAsync();
-           
-            
+
+
             return Ok(list);
 
         }
@@ -56,17 +60,18 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetSections()
         {
             List<Section> list = await _context.Sections.ToListAsync();
-           
-            
+
+
             return Ok(list);
 
         }
         [HttpGet("SchoolAcademies")]
         public async Task<IActionResult> GetSchoolAcademies()
         {
-            List<SchoolAcademy> list = await _context.SchoolAcademy.ToListAsync();
-           
-            
+            var schoolId = Convert.ToInt32(_configuration.GetSection("AppSettings:SchoolAcademy").Value);
+            List<SchoolAcademy> list = await _context.SchoolAcademy.Where(m => m.Id == schoolId).ToListAsync();
+
+
             return Ok(list);
 
         }

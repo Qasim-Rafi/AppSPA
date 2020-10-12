@@ -23,5 +23,13 @@
     {
       "SectionName": "C"
     }
+  ],
+  "SchoolAcademies": [
+    {
+      "Name": "Lahore School"
+    },
+    {
+      "Name": "Quetta School"
+    }
   ]
 }

@@ -28,6 +28,10 @@
     <Compile Remove="Migrations\20201012093752_updateClass.Designer.cs" />
     <Compile Remove="Migrations\20201012094107_updateClass.cs" />
     <Compile Remove="Migrations\20201012094107_updateClass.Designer.cs" />
+    <Compile Remove="Migrations\20201012095230_updateClass.cs" />
+    <Compile Remove="Migrations\20201012095230_updateClass.Designer.cs" />
+    <Compile Remove="Migrations\20201012095534_updateClass.cs" />
+    <Compile Remove="Migrations\20201012095534_updateClass.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

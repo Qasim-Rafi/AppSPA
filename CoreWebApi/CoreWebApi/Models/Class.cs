@@ -19,7 +19,7 @@ namespace CoreWebApi.Models
         public int CreatedById { get; set; }
         public bool Active { get; set; }
 
-        public virtual ICollection<Subject> Subject { get; set; }
+        public virtual Subject Subject { get; set; }
         [ForeignKey("CreatedById")]
         public virtual User User { get; set; }
 

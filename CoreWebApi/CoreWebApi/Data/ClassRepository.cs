@@ -109,35 +109,34 @@ namespace CoreWebApi.Data
         }
 
 
-        public async Task<IEnumerable<ClassSection>> GetClassSectionMapping(int id)
-        {
-            return await _context.ClassSections.Where(m => m.Id == id).ToListAsync();
+        //public async Task<IEnumerable<ClassSection>> GetClassSectionMapping(int id)
+        //{
+        //    return await _context.ClassSections.Where(m => m.Id == id).ToListAsync();
 
-        }
+        //}
 
-        public async Task<ClassSection> UpdateClassSectionMapping(ClassSectionDtoForUpdate model)
-        {
-            try
-            {
-                var objToUpdate = _context.ClassSections.Where(m => m.Id == model.Id).FirstOrDefault();
+        //public async Task<ClassSection> UpdateClassSectionMapping(ClassSectionDtoForUpdate model)
+        //{
+        //    try
+        //    {
+        //        var objToUpdate = _context.ClassSections.Where(m => m.Id == model.Id).FirstOrDefault();
 
-                objToUpdate.ClassId = model.ClassId;
-                objToUpdate.SectionId = model.SectionId;
-                objToUpdate.SchoolAcademyId = model.SchoolAcademyId;
-                objToUpdate.Active = model.Active;
+        //        objToUpdate.ClassId = model.ClassId;
+        //        objToUpdate.SectionId = model.SectionId;
+        //        objToUpdate.Active = model.Active;
 
-                await _context.ClassSections.AddAsync(objToUpdate);
-                await _context.SaveChangesAsync();
+        //        await _context.ClassSections.AddAsync(objToUpdate);
+        //        await _context.SaveChangesAsync();
 
-                return objToUpdate;
-            }
-            catch (Exception ex)
-            {
+        //        return objToUpdate;
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                Log.Exception(ex);
-                throw ex;
-            }
-        }
+        //        Log.Exception(ex);
+        //        throw ex;
+        //    }
+        //}
         public async Task<ClassSectionUser> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
         {
             try
