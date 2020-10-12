@@ -32,7 +32,7 @@ namespace CoreWebApi.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet] // not in use
         public async Task<IActionResult> GetAttendancees()
         {
             var attendances = await _repo.GetAttendances();
@@ -65,6 +65,7 @@ namespace CoreWebApi.Controllers
             var ToReturn = _context.Attendances.Where(m => userIds.Contains(m.UserId) && m.CreatedDatetime.Date == DTdate.Date).Select(o => new AttendanceDtoForList
             {
                 UserId = o.UserId,
+                ClassSectionId = o.ClassSectionId,
                 FullName = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
                 CreatedDatetime = DateFormat.ToDate(o.CreatedDatetime.ToString()),
                 Present = o.Present,
