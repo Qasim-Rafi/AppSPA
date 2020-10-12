@@ -93,22 +93,22 @@ namespace CoreWebApi.Controllers
             }
         }
 
-        //[HttpGet("GetClassSectionMappingById/{id}")]
-        //public async Task<IActionResult> GetClassSectionMappingById(int id)
-        //{
-        //    var list = await _repo.GetClassSectionMapping(id);
+        [HttpGet("GetClassSectionMapping")]
+        public async Task<IActionResult> GetClassSectionMappingById()
+        {
+            var list = await _repo.GetClassSectionMapping();
 
-        //    var ToReturn = list.Select(o => new
-        //    {
-        //        ClassSectionId = o.Id,
-        //        o.ClassId,
-        //        ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
-        //        o.SectionId,
-        //        SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
-        //    });
-        //    return Ok(ToReturn);
+            var ToReturn = list.Select(o => new
+            {
+                ClassSectionId = o.Id,
+                o.ClassId,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
+                o.SectionId,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
+            });
+            return Ok(ToReturn);
 
-        //}
+        }
         [HttpPost("AddClassSectionMapping")]
         public async Task<IActionResult> AddClassSection(ClassSectionDtoForAdd classSection)
         {

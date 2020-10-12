@@ -109,11 +109,11 @@ namespace CoreWebApi.Data
         }
 
 
-        //public async Task<IEnumerable<ClassSection>> GetClassSectionMapping(int id)
-        //{
-        //    return await _context.ClassSections.Where(m => m.Id == id).ToListAsync();
+        public async Task<IEnumerable<ClassSection>> GetClassSectionMapping()
+        {
+            return await _context.ClassSections.ToListAsync();
 
-        //}
+        }
 
         //public async Task<ClassSection> UpdateClassSectionMapping(ClassSectionDtoForUpdate model)
         //{

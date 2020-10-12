@@ -17,7 +17,7 @@ namespace CoreWebApi.IData
 
         //Task<IEnumerable<ClassSection>> GetClassSections();
         //Task<bool> ClassSectionExists(int classId, int sectionId);
-        //Task<IEnumerable<ClassSection>> GetClassSectionMapping(int id);
+        Task<IEnumerable<ClassSection>> GetClassSectionMapping();
         Task<ClassSection> AddClassSectionMapping(ClassSectionDtoForAdd classSection);
         //Task<ClassSection> UpdateClassSectionMapping(ClassSectionDtoForUpdate classSection);
         Task<ClassSectionUser> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser);
