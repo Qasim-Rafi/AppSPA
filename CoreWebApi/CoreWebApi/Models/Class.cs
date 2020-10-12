@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,12 +15,12 @@ namespace CoreWebApi.Models
         [StringLength(30, ErrorMessage = "Name cannot be longer than 30 characters.")]
         public string Name { get; set; }
         public DateTime CreatedDateTime { get; set; }
-        
+
         public int CreatedById { get; set; }
         public bool Active { get; set; }
 
-        public Subject Subject { get; set; }
-        [ForeignKey("CreatedById")] 
+        public virtual ICollection<Subject> Subject { get; set; }
+        [ForeignKey("CreatedById")]
         public virtual User User { get; set; }
 
     }

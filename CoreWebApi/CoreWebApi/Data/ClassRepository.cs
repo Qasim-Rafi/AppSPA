@@ -79,10 +79,10 @@ namespace CoreWebApi.Data
             }
         }
 
-       
 
 
-        public async Task<ClassSection> AddClassSection(ClassSectionDtoForAdd classSection)
+
+        public async Task<ClassSection> AddClassSectionMapping(ClassSectionDtoForAdd classSection)
         {
             try
             {
@@ -90,8 +90,9 @@ namespace CoreWebApi.Data
                 {
                     ClassId = classSection.ClassId,
                     SectionId = classSection.SectionId,
+                    SchoolAcademyId = classSection.SchoolAcademyId,
                     Active = classSection.Active,
-
+                    CreatedById = _context.Users.First().Id
                 };
 
                 await _context.ClassSections.AddAsync(objToCreate);
@@ -107,15 +108,44 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ClassSectionUser> AddClassSectionUser(ClassSectionUserDtoForAdd classSectionUser)
+
+        public async Task<IEnumerable<ClassSection>> GetClassSectionMapping(int id)
+        {
+            return await _context.ClassSections.Where(m => m.Id == id).ToListAsync();
+
+        }
+
+        public async Task<ClassSection> UpdateClassSectionMapping(ClassSectionDtoForUpdate model)
+        {
+            try
+            {
+                var objToUpdate = _context.ClassSections.Where(m => m.Id == model.Id).FirstOrDefault();
+
+                objToUpdate.ClassId = model.ClassId;
+                objToUpdate.SectionId = model.SectionId;
+                objToUpdate.SchoolAcademyId = model.SchoolAcademyId;
+                objToUpdate.Active = model.Active;
+
+                await _context.ClassSections.AddAsync(objToUpdate);
+                await _context.SaveChangesAsync();
+
+                return objToUpdate;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                throw ex;
+            }
+        }
+        public async Task<ClassSectionUser> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
         {
             try
             {
                 var objToCreate = new ClassSectionUser
                 {
                     ClassSectionId = classSectionUser.ClassSectionId,
-                    UserId = classSectionUser.UserId                    
-
+                    UserId = classSectionUser.UserId
                 };
 
                 await _context.ClassSectionUsers.AddAsync(objToCreate);
@@ -130,5 +160,6 @@ namespace CoreWebApi.Data
                 throw ex;
             }
         }
+
     }
 }

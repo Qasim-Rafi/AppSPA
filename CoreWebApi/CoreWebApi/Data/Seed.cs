@@ -119,7 +119,7 @@ namespace CoreWebApi.Data
                     var ClassesJson = JsonConvert.SerializeObject(dataSet.Tables["Classes"]);
                     var Classes = JsonConvert.DeserializeObject<List<Class>>(ClassesJson);
                     foreach (var obj in Classes)
-                    {
+                    {                 
                         obj.Active = true;
                         obj.CreatedById = context.Users.FirstOrDefault().Id;
                         context.Class.Add(obj);

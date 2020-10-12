@@ -34,6 +34,19 @@ namespace CoreWebApi.Dtos
     public class ClassSectionDtoForAdd
     {
         [Required]
+        public int SchoolAcademyId { get; set; }
+        [Required]
+        public int ClassId { get; set; }
+        [Required]
+        public int SectionId { get; set; }
+        public bool Active { get; set; }
+    }
+    public class ClassSectionDtoForUpdate
+    {
+        public int Id { get; set; }
+        [Required]
+        public int SchoolAcademyId { get; set; }
+        [Required]
         public int ClassId { get; set; }
         [Required]
         public int SectionId { get; set; }

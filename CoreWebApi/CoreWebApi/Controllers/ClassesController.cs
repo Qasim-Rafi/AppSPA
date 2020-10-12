@@ -93,8 +93,25 @@ namespace CoreWebApi.Controllers
             }
         }
 
-       
-        [HttpPost("AddClassSection")]
+        [HttpGet("GetClassSectionMappingById/{id}")]
+        public async Task<IActionResult> GetClassSectionMappingById(int id)
+        {
+            var list = await _repo.GetClassSectionMapping(id);
+
+            var ToReturn = list.Select(o => new
+            {
+                ClassSectionId = o.Id,
+                o.ClassId,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
+                o.SectionId,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
+                o.SchoolAcademyId,
+                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolAcademyId)?.Name
+            });
+            return Ok(ToReturn);
+
+        }
+        [HttpPost("AddClassSectionMapping")]
         public async Task<IActionResult> AddClassSection(ClassSectionDtoForAdd classSection)
         {
             try
@@ -106,7 +123,7 @@ namespace CoreWebApi.Controllers
                 //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
                 //    return BadRequest(new { message = "Class Section Already Exist" });
 
-                var createdObj = await _repo.AddClassSection(classSection);
+                var createdObj = await _repo.AddClassSectionMapping(classSection);
 
                 return StatusCode(StatusCodes.Status201Created);
             }
@@ -120,7 +137,33 @@ namespace CoreWebApi.Controllers
             }
         }
    
-        [HttpPost("AddClassSectionUser")]
+        [HttpPut("UpdateClassSectionMapping")]
+        public async Task<IActionResult> UpdateClassSectionMapping(ClassSectionDtoForUpdate classSection)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+                //    return BadRequest(new { message = "Class Section Already Exist" });
+
+                var createdObj = await _repo.UpdateClassSectionMapping(classSection);
+
+                return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
+   
+        [HttpPost("AddClassSectionUserMapping")]
         public async Task<IActionResult> AddClassSectionUser(ClassSectionUserDtoForAdd classSectionUser)
         {
             try
@@ -132,7 +175,7 @@ namespace CoreWebApi.Controllers
                 //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
                 //    return BadRequest(new { message = "Class Section Already Exist" });
 
-                var createdObj = await _repo.AddClassSectionUser(classSectionUser);
+                var createdObj = await _repo.AddClassSectionUserMapping(classSectionUser);
 
                 return StatusCode(StatusCodes.Status201Created);
             }

@@ -13,18 +13,18 @@ namespace CoreWebApi.Helpers
     {
         public static void Exception(Exception ex)
         {
-
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles");
             string filePath = Directory.GetCurrentDirectory() + @"/StaticFiles/Log.txt";
-            if (!File.Exists(filePath))
+            if (!File.Exists(folderPath))
             {
-                //File.Create(filePath).Dispose();
+                Directory.CreateDirectory(folderPath);
             }
             //var fileModifiedDate = File.GetLastWriteTime(filePath);
             //if (DateTime.Now.Date > fileModifiedDate.Date)
             //{
             //    File.WriteAllText(filePath, string.Empty);
             //}
-            using (StreamWriter writer = (File.Exists(filePath)) ? File.AppendText(filePath) : File.CreateText(filePath))
+            using (StreamWriter writer = new StreamWriter(filePath, true))// (File.Exists(filePath)) ? File.AppendText(filePath) : File.CreateText(filePath))
             {
 
                 writer.WriteLine("---------------------------------------------------------------------------------");
