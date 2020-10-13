@@ -160,5 +160,71 @@ namespace CoreWebApi.Data
             }
         }
 
+        public async Task<ClassSectionUser> UpdateClassSectionUserMapping(ClassSectionUserDtoForAdd model)
+        {
+            try
+            {
+                var objToUpdate = _context.ClassSectionUsers.FirstOrDefault(m => m.Id == model.ClassSectionId);
+
+                objToUpdate.ClassSectionId = model.ClassSectionId;
+                objToUpdate.UserId = model.UserId;
+
+
+                await _context.ClassSectionUsers.AddAsync(objToUpdate);
+                await _context.SaveChangesAsync();
+
+                return objToUpdate;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                throw ex;
+            }
+        }
+
+        public async Task<ClassSectionUser> GetClassSectionUserMappingById(int csId, int userId)
+        {
+            try
+            {
+                var obj = _context.ClassSectionUsers.FirstOrDefaultAsync(m => m.ClassSectionId == csId && m.UserId == userId);
+
+
+                return await obj;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                throw ex;
+            }
+        }
+
+        public async Task<bool> AddClassSectionUserMappingBulk(ClassSectionUserDtoForAddBulk model)
+        {
+            try
+            {
+                foreach (var item in model.UserIds)
+                {
+                    var objToCreate = new ClassSectionUser
+                    {
+                        ClassSectionId = model.ClassSectionId,
+                        UserId = item
+                    };
+
+                    await _context.ClassSectionUsers.AddAsync(objToCreate);
+                    await _context.SaveChangesAsync();
+                }
+                
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                throw ex;
+            }
+        }
     }
 }

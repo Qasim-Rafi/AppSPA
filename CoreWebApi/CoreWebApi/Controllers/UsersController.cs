@@ -196,5 +196,38 @@ namespace CoreWebApi.Controllers
             return Ok(ToReturn);
 
         }
+
+        [HttpGet("GetUnmappedStudents")]
+        public async Task<IActionResult> GetUnmappedStudents()
+        {
+            try
+            {
+
+                var ToReturn = await _repo.GetUnmappedStudents();
+
+                return Ok(ToReturn);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+        [HttpGet("GetMappedStudents/{csId}")]
+        public async Task<IActionResult> GetMappedStudents(int csId)
+        {
+            try
+            {
+
+                var ToReturn = await _repo.GetMappedStudents(csId);
+
+                return Ok(ToReturn);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
     }
 }

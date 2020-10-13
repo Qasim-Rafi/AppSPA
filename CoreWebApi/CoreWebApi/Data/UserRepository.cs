@@ -259,6 +259,21 @@ namespace CoreWebApi.Data
             }
         }
 
+        public async Task<IEnumerable<User>> GetUnmappedStudents()
+        {
+
+            IEnumerable<int> studentIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
+            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enums.UserType.Student && !studentIds.Contains(m.Id)).ToListAsync();
+            return unmappedStudents;
+        }
+
+        public async Task<IEnumerable<User>> GetMappedStudents(int csId)
+        {
+            IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == csId).Select(m => m.UserId).Distinct();
+            var mappedStudents = await _context.Users.Where(m => studentIds.Contains(m.Id)).ToListAsync();
+            return mappedStudents;
+        }
+
         //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         //{
         //    byte[] key = new Byte[64];

@@ -59,4 +59,11 @@ namespace CoreWebApi.Dtos
         [Required]
         public int UserId { get; set; }
     }
+    public class ClassSectionUserDtoForAddBulk
+    {
+        
+        public int ClassSectionId { get; set; }
+       
+        public List<int> UserIds { get; set; }
+    }
 }

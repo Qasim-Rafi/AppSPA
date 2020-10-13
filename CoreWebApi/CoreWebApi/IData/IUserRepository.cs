@@ -13,12 +13,14 @@ namespace CoreWebApi.IData
         void Delete<T>(Task entity) where T : class;
         Task<bool> SaveAll();
         Task<IEnumerable<User>> GetUsers();
+
         Task<User> GetUser(int i);
         Task<bool> UserExists(string username);
         Task<User> AddUser(UserForAddDto user);
         Task<string> EditUser(int id, UserForAddDto userForAddDto);
         //Task<IEnumerable<UserType>> GetUserTypes();
         Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId);
-
+        Task<IEnumerable<User>> GetUnmappedStudents();
+        Task<IEnumerable<User>> GetMappedStudents(int csId);
     }
 }

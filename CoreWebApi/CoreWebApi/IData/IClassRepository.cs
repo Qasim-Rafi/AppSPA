@@ -21,6 +21,9 @@ namespace CoreWebApi.IData
         Task<ClassSection> AddClassSectionMapping(ClassSectionDtoForAdd classSection);
         //Task<ClassSection> UpdateClassSectionMapping(ClassSectionDtoForUpdate classSection);
         Task<ClassSectionUser> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser);
+        Task<bool> AddClassSectionUserMappingBulk(ClassSectionUserDtoForAddBulk classSectionUser);
+        Task<ClassSectionUser> UpdateClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser);
+        Task<ClassSectionUser> GetClassSectionUserMappingById(int csId, int userId);
 
     }
 }

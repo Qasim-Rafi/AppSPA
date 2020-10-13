@@ -94,7 +94,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpGet("GetClassSectionMapping")]
-        public async Task<IActionResult> GetClassSectionMappingById()
+        public async Task<IActionResult> GetClassSectionMapping()
         {
             var list = await _repo.GetClassSectionMapping();
 
@@ -161,6 +161,31 @@ namespace CoreWebApi.Controllers
         //    }
         //}
 
+        [HttpPost("AddClassSectionUserMappingInBulk")]
+        public async Task<IActionResult> AddClassSectionUserMappingInBulk(ClassSectionUserDtoForAddBulk classSectionUser)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+                //    return BadRequest(new { message = "Class Section Already Exist" });
+
+                var createdObj = await _repo.AddClassSectionUserMappingBulk(classSectionUser);
+
+                return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
         [HttpPost("AddClassSectionUserMapping")]
         public async Task<IActionResult> AddClassSectionUser(ClassSectionUserDtoForAdd classSectionUser)
         {
@@ -186,5 +211,39 @@ namespace CoreWebApi.Controllers
                 });
             }
         }
+        [HttpGet("GetClassSectionUserMapping/{csId}/{userId}")]
+        public async Task<IActionResult> GetClassSectionUserMappingById(int csId, int userId)
+        {
+            var ToReturn = await _repo.GetClassSectionUserMappingById(csId, userId);
+
+
+            return Ok(ToReturn);
+
+        }
+        //[HttpPut("UpdateClassSectionUserMapping")]
+        //public async Task<IActionResult> UpdateClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return BadRequest(ModelState);
+        //        }
+        //        //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+        //        //    return BadRequest(new { message = "Class Section Already Exist" });
+
+        //        var createdObj = await _repo.UpdateClassSectionUserMapping(classSectionUser);
+
+        //        return StatusCode(StatusCodes.Status201Created);
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        return BadRequest(new
+        //        {
+        //            message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+        //        });
+        //    }
+        //}
     }
 }
