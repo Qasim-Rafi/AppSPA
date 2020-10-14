@@ -53,8 +53,10 @@ namespace CoreWebApi.Controllers
             var userToCreate = new User
             {
                 Username = userForRegisterDto.Username,
-                UserTypeId = userForRegisterDto.UserTypeId
-
+                UserTypeId = userForRegisterDto.UserTypeId,
+                Email = userForRegisterDto.Email,
+                Active = true,
+                CreatedDateTime=DateTime.Now,                
             };
             var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
 
@@ -99,7 +101,7 @@ namespace CoreWebApi.Controllers
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
-                
+
                 //var session = HttpContext.Session;
                 //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
                 return Ok(new

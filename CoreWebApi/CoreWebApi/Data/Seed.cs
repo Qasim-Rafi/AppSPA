@@ -202,27 +202,28 @@ namespace CoreWebApi.Data
 
 
                 //
-                if (!context.SchoolAcademy.Any())
-                {
-                    var SchoolAcademiesJson = JsonConvert.SerializeObject(dataSet.Tables["SchoolAcademies"]);
-                    var SchoolAcademies = JsonConvert.DeserializeObject<List<SchoolAcademy>>(SchoolAcademiesJson);
-                    foreach (var obj in SchoolAcademies)
-                    {                        
-                        context.SchoolAcademy.Add(obj);
-                    }
-                    context.SaveChanges();
-                }
-                //
-                //if (!context.QuizType.Any())
+                //if (!context.SchoolAcademy.Any())
                 //{
-                //    var QuizTypesJson = JsonConvert.SerializeObject(dataSet.Tables["QuizTypes"]);
-                //    var QuizTypess = JsonConvert.DeserializeObject<List<QuizType>>(QuizTypesJson);
-                //    foreach (var obj in QuizTypes)
-                //    {                        
-                //        context.QuizType.Add(obj);
+                //    var SchoolAcademiesJson = JsonConvert.SerializeObject(dataSet.Tables["SchoolAcademies"]);
+                //    var SchoolAcademies = JsonConvert.DeserializeObject<List<SchoolAcademy>>(SchoolAcademiesJson);
+                //    foreach (var obj in SchoolAcademies)
+                //    {
+                //        obj.Email = "test@test.com";
+                //        context.SchoolAcademy.Add(obj);
                 //    }
                 //    context.SaveChanges();
                 //}
+                //
+                if (!context.QuestionTypes.Any())
+                {
+                    var QuestionTypesJson = JsonConvert.SerializeObject(dataSet.Tables["QuestionTypes"]);
+                    var QuestionTypes = JsonConvert.DeserializeObject<List<QuestionTypes>>(QuestionTypesJson);
+                    foreach (var obj in QuestionTypes)
+                    {
+                        context.QuestionTypes.Add(obj);
+                    }
+                    context.SaveChanges();
+                }
 
             }
             catch (Exception ex)

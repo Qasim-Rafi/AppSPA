@@ -59,6 +59,7 @@ namespace CoreWebApi
                 services.AddScoped<ILeaveRepository, LeaveRepository>();
                 services.AddScoped<IAssignmentRepository, AssignmentRepository>();
                 services.AddScoped<IDashboardRepository, DashboardRepository>();
+                services.AddScoped<IExamRepository, ExamRepository>();
 
 
                 
