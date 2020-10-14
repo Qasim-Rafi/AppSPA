@@ -119,7 +119,7 @@ namespace CoreWebApi.Data
                     var ClassesJson = JsonConvert.SerializeObject(dataSet.Tables["Classes"]);
                     var Classes = JsonConvert.DeserializeObject<List<Class>>(ClassesJson);
                     foreach (var obj in Classes)
-                    {                 
+                    {
                         obj.Active = true;
                         obj.CreatedById = context.Users.FirstOrDefault().Id;
                         context.Class.Add(obj);
@@ -136,6 +136,20 @@ namespace CoreWebApi.Data
                     {
                         item.CreatedById = context.Users.First().Id;
                         context.Sections.Add(item);
+                    }
+
+                    context.SaveChanges();
+                }
+                //
+                if (!context.Subjects.Any())
+                {
+                    var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
+                    var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
+
+                    foreach (var (item, index) in ReturnIndex(Subjects))
+                    {
+                        item.ClassId = context.Class.First().Id + index;
+                        context.Subjects.Add(item);
                     }
 
                     context.SaveChanges();

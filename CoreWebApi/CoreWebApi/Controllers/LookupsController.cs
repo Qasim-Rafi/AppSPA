@@ -65,6 +65,15 @@ namespace CoreWebApi.Controllers
             return Ok(list);
 
         }
+        [HttpGet("Subjects")]
+        public async Task<IActionResult> GetSubjects()
+        {
+            List<Subject> list = await _context.Subjects.ToListAsync();
+
+
+            return Ok(list);
+
+        }
         [HttpGet("SchoolAcademies")]
         public async Task<IActionResult> GetSchoolAcademies()
         {

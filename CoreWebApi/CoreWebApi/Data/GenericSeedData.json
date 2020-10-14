@@ -24,6 +24,17 @@
       "SectionName": "C"
     }
   ],
+  "Subjects": [
+    {
+      "Name": "Physics"
+    },
+    {
+      "Name": "Math"
+    },
+    {
+      "Name": "Computer"
+    }
+  ],
   "SchoolAcademies": [
     {
       "Name": "Lahore School"
