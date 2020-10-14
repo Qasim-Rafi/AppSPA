@@ -55,8 +55,9 @@ namespace CoreWebApi.Controllers
                 Username = userForRegisterDto.Username,
                 UserTypeId = userForRegisterDto.UserTypeId,
                 Email = userForRegisterDto.Email,
+                Gender = "male",
                 Active = true,
-                CreatedDateTime=DateTime.Now,                
+                CreatedDateTime = DateTime.Now,
             };
             var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
 
