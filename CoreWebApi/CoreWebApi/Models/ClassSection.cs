@@ -15,9 +15,9 @@ namespace CoreWebApi.Models
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
 
-        public virtual Class Class { get; set; }
-        public virtual Section Section { get; set; }
-        public virtual SchoolAcademy SchoolAcademy { get; set; }
+        //public virtual Class Class { get; set; }
+        //public virtual Section Section { get; set; }
+        //public virtual SchoolAcademy SchoolAcademy { get; set; }
 
     }
 }

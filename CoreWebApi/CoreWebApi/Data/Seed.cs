@@ -212,6 +212,17 @@ namespace CoreWebApi.Data
                     }
                     context.SaveChanges();
                 }
+                //
+                //if (!context.QuizType.Any())
+                //{
+                //    var QuizTypesJson = JsonConvert.SerializeObject(dataSet.Tables["QuizTypes"]);
+                //    var QuizTypess = JsonConvert.DeserializeObject<List<QuizType>>(QuizTypesJson);
+                //    foreach (var obj in QuizTypes)
+                //    {                        
+                //        context.QuizType.Add(obj);
+                //    }
+                //    context.SaveChanges();
+                //}
 
             }
             catch (Exception ex)

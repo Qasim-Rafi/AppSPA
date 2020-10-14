@@ -31,5 +31,16 @@
     {
       "Name": "Quetta School"
     }
+  ],
+  "QuestionTypes": [
+    {
+      "Type": "MCQs Single"
+    },
+    {
+      "Type": "MCQs Multiple"
+    },
+    {
+      "Type": "Subjective"
+    }
   ]
 }

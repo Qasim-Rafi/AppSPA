@@ -12,10 +12,10 @@ namespace CoreWebApi.Helpers
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            Regex regex = new Regex(@"^([0]?[0-9]|[12][0-9]|[3][01])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$");
+            //Regex regex = new Regex(@"^([0]?[0-9]|[12][0-9]|[3][01])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$");
 
             //Verify whether date entered in MM/dd/yyyy format.
-            bool isValid = regex.IsMatch(value.ToString().Trim());
+            bool isValid = true; //regex.IsMatch(value.ToString().Trim());
             if (isValid)
             {
                 isValid = DateTime.TryParseExact(value.ToString(), "MM/dd/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out DateTime dt);

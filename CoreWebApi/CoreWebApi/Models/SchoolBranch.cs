@@ -13,6 +13,6 @@ namespace CoreWebApi.Models
         public string BranchName { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
-        public virtual SchoolAcademy SchoolAcademies { get; set; }
+        //public virtual SchoolAcademy SchoolAcademies { get; set; }
     }
 }
