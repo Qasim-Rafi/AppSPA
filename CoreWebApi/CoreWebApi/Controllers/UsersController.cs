@@ -98,7 +98,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PUT(int id, [FromForm] UserForAddDto userForAddDto)// [FromForm]
+        public async Task<IActionResult> PUT(int id, [FromForm] UserForUpdateDto userForAddDto)// [FromForm]
         {
 
             try

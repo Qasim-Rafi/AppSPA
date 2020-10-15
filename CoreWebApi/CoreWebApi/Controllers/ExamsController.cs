@@ -21,14 +21,21 @@ namespace CoreWebApi.Controllers
             _mapper = mapper;
             _repo = repo;
         }
-        [HttpGet]
+        [HttpGet("GetAllQuiz")]
         public async Task<IActionResult> GetQuizzes()
         {
             var ToReturn = await _repo.GetQuizzes();
             return Ok(ToReturn);
 
         }
-       
+        [HttpGet("GetQuizById/{id}")]
+        public async Task<IActionResult> GetQuizById(int id)
+        {
+            var ToReturn = await _repo.GetQuizById(id);
+            return Ok(ToReturn);
+
+        }
+
         [HttpPost("AddQuiz")]
         public async Task<IActionResult> PostQuiz(QuizDtoForAdd model)
         {
@@ -54,6 +61,31 @@ namespace CoreWebApi.Controllers
                 });
             }
         }
+        [HttpPut("UpdateQuiz/{id}")]
+        public async Task<IActionResult> PutQuiz(int id, QuizDtoForAdd model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                //if (await _repo.SubjectExists(subject.Name))
+                //    return BadRequest(new { message = "Subject Already Exist" });
+
+                var createdObjId = await _repo.UpdateQuiz(id, model);
+
+                return Ok(createdObjId);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
         [HttpPost("AddQuestion")]
         public async Task<IActionResult> PostQuizQuestion(QuizQuestionDtoForAdd model)
         {
@@ -65,10 +97,35 @@ namespace CoreWebApi.Controllers
                 }
                 //if (await _repo.SubjectExists(subject.Name))
                 //    return BadRequest(new { message = "Subject Already Exist" });
-                
+
                 var createdObj = await _repo.AddQuestion(model);
 
                 return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
+        [HttpPut("UpdateQuestion/{id}")]
+        public async Task<IActionResult> PutQuestion(int id, QuizQuestionDtoForAdd model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                //if (await _repo.SubjectExists(subject.Name))
+                //    return BadRequest(new { message = "Subject Already Exist" });
+
+                var createdObj = await _repo.UpdateQuestion(id, model);
+
+                return Ok(createdObj);
             }
             catch (Exception ex)
             {

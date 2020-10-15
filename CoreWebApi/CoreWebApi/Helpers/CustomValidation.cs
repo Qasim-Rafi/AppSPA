@@ -8,17 +8,22 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Helpers
 {
+    public class CustomValidation
+    {
+
+    }
     public class DateValidation : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            //Regex regex = new Regex(@"^([0]?[0-9]|[12][0-9]|[3][01])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$");
-
+            Regex regex = new Regex(@"^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$");
+            //return ValidationResult.Success;
             //Verify whether date entered in MM/dd/yyyy format.
-            bool isValid = true; //regex.IsMatch(value.ToString().Trim());
+            bool isValid = regex.IsMatch(value.ToString().Trim());
             if (isValid)
             {
-                isValid = DateTime.TryParseExact(value.ToString(), "MM/dd/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out DateTime dt);
+                var dt = new DateTime();
+                isValid = DateTime.TryParseExact(value.ToString(), "MM/dd/yyyy", null, DateTimeStyles.None, out dt);
                 if (isValid)
                     return ValidationResult.Success;
                 else

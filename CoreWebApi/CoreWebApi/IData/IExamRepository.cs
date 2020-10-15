@@ -9,9 +9,12 @@ namespace CoreWebApi.IData
 {
     public interface IExamRepository
     {
-        Task<IEnumerable<Quizzes>> GetQuizzes();
+        Task<object> GetQuizzes();
+        Task<object> GetQuizById(int id);
         Task<int> AddQuiz(QuizDtoForAdd model);
+        Task<int> UpdateQuiz(int id, QuizDtoForAdd model);
         Task<bool> AddQuestion(QuizQuestionDtoForAdd model);
+        Task<bool> UpdateQuestion(int id, QuizQuestionDtoForAdd model);
 
     }
 }

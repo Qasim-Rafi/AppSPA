@@ -13,14 +13,14 @@ namespace CoreWebApi.Dtos
     public class SubjectDtoForAdd
     {
         [Required]
-        [StringLength(50, ErrorMessage = "Subject Name cannot be longer than 50 characters")]
+        [StringLength(100, ErrorMessage = "Subject Name cannot be longer than 100 characters")]
         public string Name { get; set; }
         public int ClassId { get; set; }
     }
     public class SubjectDtoForEdit
     {
         [Required]
-        [StringLength(2, ErrorMessage = "Subject Name cannot be longer than 50 characters")]
+        [StringLength(100, ErrorMessage = "Subject Name cannot be longer than 100 characters")]
         public string Name { get; set; }
         public int ClassId { get; set; }
     }

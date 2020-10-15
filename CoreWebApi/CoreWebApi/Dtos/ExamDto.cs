@@ -14,13 +14,13 @@ namespace CoreWebApi.Dtos
     {
         [Required]
         [DateValidation(ErrorMessage = "QuizDate is not in correct format")]
-
-        public DateTime QuizDate { get; set; }
+        public string QuizDate { get; set; }
         [Required]
-        public int NumberOfQuestions { get; set; }
+        public int NoOfQuestions { get; set; }
         [Required]
         public int SubjectId { get; set; }
     }
+   
     public class QuizQuestionDtoForAdd
     {
         [Required]
@@ -36,6 +36,8 @@ namespace CoreWebApi.Dtos
     }
     public class QuizAnswerDtoForAdd
     {
+        public int? Id { get; set; }
+
         public int QuestionId { get; set; }
         [Required]
         [StringLength(500, ErrorMessage = "Answer cannot be longer then 500 characters")]

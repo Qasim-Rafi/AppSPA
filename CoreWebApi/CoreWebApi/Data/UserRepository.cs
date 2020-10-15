@@ -120,7 +120,7 @@ namespace CoreWebApi.Data
 
 
 
-        public async Task<string> EditUser(int id, UserForAddDto user)
+        public async Task<string> EditUser(int id, UserForUpdateDto user)
         {
 
             try
@@ -181,13 +181,13 @@ namespace CoreWebApi.Data
                         for (int i = 0; i < user.files.Count(); i++)
                         {
                             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(user.files[i].FileName);
-                            var fullPath = Path.Combine(pathToSave);
+                            //var fullPath = Path.Combine(pathToSave);
                             var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
-                            if (!Directory.Exists(fullPath))
+                            if (!Directory.Exists(pathToSave))
                             {
-                                Directory.CreateDirectory(fullPath);
+                                Directory.CreateDirectory(pathToSave);
                             }
-                            var filePath = Path.Combine(fullPath, fileName);
+                            var filePath = Path.Combine(pathToSave, fileName);
                             using (var stream = new FileStream(filePath, FileMode.Create))
                             {
                                 await user.files[i].CopyToAsync(stream);

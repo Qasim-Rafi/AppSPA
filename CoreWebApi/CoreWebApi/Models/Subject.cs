@@ -10,7 +10,7 @@ namespace CoreWebApi.Models
     public class Subject
     {
         public int Id { get; set; }
-        [StringLength(50)]
+        [StringLength(100)]
         public string Name { get; set; }
         public int ClassId { get; set; }
         public DateTime CreatedDateTime { get; set; }

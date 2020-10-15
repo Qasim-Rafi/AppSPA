@@ -96,7 +96,7 @@ namespace CoreWebApi.Controllers
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.Now.AddDays(1),
+                    Expires = DateTime.Now.AddDays(5),
                     SigningCredentials = creds
                 };
 
