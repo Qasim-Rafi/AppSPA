@@ -50,7 +50,7 @@ namespace CoreWebApi.Controllers
 
                 var createdObjId = await _repo.AddQuiz(model);
 
-                return Ok(createdObjId);
+                return Ok(new { createdQuizId = createdObjId });
             }
             catch (Exception ex)
             {

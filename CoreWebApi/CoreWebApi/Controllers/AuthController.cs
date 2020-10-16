@@ -97,9 +97,9 @@ namespace CoreWebApi.Controllers
 
                 Claim[] claims = new[]
                 {
-                    new Claim(Helpers.Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
-                    new Claim(Helpers.Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
-                    new Claim(Helpers.Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString())
+                    new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
+                    new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
+                    new Claim(Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString())
                 };
 
 
@@ -119,8 +119,8 @@ namespace CoreWebApi.Controllers
                 //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
                 return base.Ok(new
                 {
-                    loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Helpers.Enumm.ClaimType.NameIdentifier.ToString())).Value,
-                    loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Helpers.Enumm.ClaimType.Name.ToString())).Value,
+                    loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value,
+                    loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.Name.ToString())).Value,
                     schoolName = schoolBranchDetails.school.Name,
                     token = tokenHandler.WriteToken(token)
                 });

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using AutoMapper.Internal;
 using CoreWebApi.Data;
 using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
@@ -84,7 +83,7 @@ namespace CoreWebApi.Controllers
                 if (await _repo.UserExists(userForAddDto.Username))
                     return base.BadRequest(new { message = "User Already Exist" });
 
-                userForAddDto.LoggedIn_BranchId = GetClaim(Helpers.Enumm.ClaimType.BranchIdentifier.ToString());
+                userForAddDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
                 var createdUser = await _repo.AddUser(userForAddDto);
 
                 return base.StatusCode(StatusCodes.Status201Created);
@@ -124,7 +123,7 @@ namespace CoreWebApi.Controllers
                     return base.BadRequest(ModelState);
                 }
 
-                userForUpdateDto.LoggedIn_BranchId = GetClaim(Helpers.Enumm.ClaimType.BranchIdentifier.ToString());
+                userForUpdateDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
                 var updatedUser = await _repo.EditUser(id, userForUpdateDto);
 

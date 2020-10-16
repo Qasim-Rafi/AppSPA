@@ -16,6 +16,7 @@ namespace CoreWebApi.Controllers
 {
     //[Route("api/[controller]")]
     //[ApiController]
+    [NonController]
     public class BaseController : ControllerBase
     {
 
@@ -57,33 +58,14 @@ namespace CoreWebApi.Controllers
 
 
 
-        //public ClaimsPrincipal User { get; }
-        //[NonAction]
-        //public string GetClaims(string name)
-        //{
-        //    var test1 =  User.Claims.Where(c => c.Type == name);
-        //    var id = User.Claims.FirstOrDefault(c => c.Type == name).Value;
-
-        //    var currentUser = HttpContext.User;
-        //    var identity = HttpContext.User.Identity as ClaimsIdentity;
-        //    if (identity != null)
-        //    {
-        //        IEnumerable<Claim> claims = identity.Claims;
-        //        // or
-        //       return identity.FindFirst(name).Value;
-
-        //    }
-        //    return null;//currentUser.Claims.FirstOrDefault(c => c.Type == name).Value;
-        //}
-
+       
         [NonAction]
         public string GetClaim(string name)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
-
-                IEnumerable<Claim> claims = identity.Claims;
+                //IEnumerable<Claim> claims = identity.Claims;
                 var property = identity.FindFirst(name);
                 if (property != null)
                     return property.Value;
