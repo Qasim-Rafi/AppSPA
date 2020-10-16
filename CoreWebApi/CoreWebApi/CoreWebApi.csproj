@@ -38,6 +38,10 @@
     <Compile Remove="IData\IAssignmentRepository.cs" />
     <Compile Remove="Migrations\20201014072408_initial.cs" />
     <Compile Remove="Migrations\20201014072408_initial.Designer.cs" />
+    <Compile Remove="Migrations\20201016113053_SomeChanges.cs" />
+    <Compile Remove="Migrations\20201016113053_SomeChanges.Designer.cs" />
+    <Compile Remove="Migrations\20201016113225_Initial.cs" />
+    <Compile Remove="Migrations\20201016113225_Initial.Designer.cs" />
     <Compile Remove="Models\Assignment.cs" />
 
   </ItemGroup>

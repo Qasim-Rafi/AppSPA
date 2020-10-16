@@ -12,7 +12,7 @@ namespace CoreWebApi.Dtos
     public class UserDto
     {
     }
-    public class UserForAddDto
+    public class UserForAddDto : GenericDto
     {
         [Required]
         [StringLength(50, ErrorMessage = "Username cannot be longer then 50 characters")]
@@ -25,7 +25,7 @@ namespace CoreWebApi.Dtos
         [Required]
         [StringLength(50, ErrorMessage = "FullName cannot be longer then 50 characters")]
         public string FullName { get; set; }
-        public string OldPassword { get; set; }
+        //public string OldPassword { get; set; }
         public string Password { get; set; }
         [Required]
         public string Gender { get; set; }
@@ -45,7 +45,7 @@ namespace CoreWebApi.Dtos
         //public bool Active { get; set; }
 
     }
-    public class UserForUpdateDto
+    public class UserForUpdateDto : GenericDto
     {
         [Required]
         [StringLength(50, ErrorMessage = "Username cannot be longer then 50 characters")]
@@ -120,6 +120,8 @@ namespace CoreWebApi.Dtos
         [StringLength(8, MinimumLength = 4, ErrorMessage = "You must specify password between 4 and 8 characters")]
         public string Password { get; set; }
         public string Gender { get; set; }
+       
+        [EmailAddress]
         public string Email { get; set; }
         public int UserTypeId { get; set; }
     }

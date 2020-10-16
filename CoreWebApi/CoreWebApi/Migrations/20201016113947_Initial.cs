@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CoreWebApi.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,6 +15,7 @@ namespace CoreWebApi.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClassId = table.Column<int>(nullable: false),
                     SectionId = table.Column<int>(nullable: false),
+                    SchoolAcademyId = table.Column<int>(nullable: false),
                     Active = table.Column<bool>(nullable: false),
                     CreatedDatetime = table.Column<DateTime>(nullable: false),
                     CreatedById = table.Column<int>(nullable: false)
@@ -64,6 +65,37 @@ namespace CoreWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "QuizAnswers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuestionId = table.Column<int>(nullable: true),
+                    Answer = table.Column<string>(nullable: true),
+                    IsTrue = table.Column<bool>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizAnswers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QuizQuestions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuestionTypeId = table.Column<int>(nullable: true),
+                    QuizId = table.Column<int>(nullable: true),
+                    Question = table.Column<string>(nullable: true),
+                    Marks = table.Column<double>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizQuestions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SchoolAcademy",
                 columns: table => new
                 {
@@ -82,22 +114,6 @@ namespace CoreWebApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SchoolAcademy", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Subjects",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 50, nullable: true),
-                    ClassId = table.Column<int>(nullable: false),
-                    CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    CreatedBy = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Subjects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -196,39 +212,6 @@ namespace CoreWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClassSectionAssignment",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ClassSectionId = table.Column<int>(nullable: false),
-                    SubjectId = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(maxLength: 50, nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    ReferenceMaterial = table.Column<string>(maxLength: 100, nullable: true),
-                    StartDatetime = table.Column<DateTime>(nullable: false),
-                    EndDatetime = table.Column<DateTime>(nullable: false),
-                    CreatedById = table.Column<int>(nullable: false),
-                    CreatedByDatetime = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClassSectionAssignment", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ClassSectionAssignment_ClassSections_ClassSectionId",
-                        column: x => x.ClassSectionId,
-                        principalTable: "ClassSections",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ClassSectionAssignment_Subjects_SubjectId",
-                        column: x => x.SubjectId,
-                        principalTable: "Subjects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Groups",
                 columns: table => new
                 {
@@ -244,6 +227,26 @@ namespace CoreWebApi.Migrations
                     table.ForeignKey(
                         name: "FK_Groups_SchoolBranch_SchoolBranchId",
                         column: x => x.SchoolBranchId,
+                        principalTable: "SchoolBranch",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QuestionTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<string>(nullable: true),
+                    schoolBranchId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuestionTypes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_QuestionTypes_SchoolBranch_schoolBranchId",
+                        column: x => x.schoolBranchId,
                         principalTable: "SchoolBranch",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -332,8 +335,7 @@ namespace CoreWebApi.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     CreatedById = table.Column<int>(nullable: false),
                     Active = table.Column<bool>(nullable: false),
-                    SchoolBranchId = table.Column<int>(nullable: false),
-                    SubjectId = table.Column<int>(nullable: true)
+                    SchoolBranchId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -341,41 +343,6 @@ namespace CoreWebApi.Migrations
                     table.ForeignKey(
                         name: "FK_Class_Users_CreatedById",
                         column: x => x.CreatedById,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Class_Subjects_SubjectId",
-                        column: x => x.SubjectId,
-                        principalTable: "Subjects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ClassSectionAssigmentSubmissions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ClassSectionAssignmentId = table.Column<int>(nullable: false),
-                    StudentId = table.Column<int>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    CreatedDatetime = table.Column<DateTime>(nullable: false),
-                    SubmittedMaterial = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClassSectionAssigmentSubmissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ClassSectionAssigmentSubmissions_ClassSectionAssignment_ClassSectionAssignmentId",
-                        column: x => x.ClassSectionAssignmentId,
-                        principalTable: "ClassSectionAssignment",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ClassSectionAssigmentSubmissions_Users_StudentId",
-                        column: x => x.StudentId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -516,6 +483,29 @@ namespace CoreWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Quizzes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuizDate = table.Column<DateTime>(nullable: true),
+                    NoOfQuestions = table.Column<int>(nullable: true),
+                    SubjectId = table.Column<int>(nullable: false),
+                    CreatedDate = table.Column<DateTime>(nullable: true),
+                    CreatedById = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quizzes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Quizzes_Users_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserAddress",
                 columns: table => new
                 {
@@ -577,6 +567,90 @@ namespace CoreWebApi.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Subjects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(maxLength: 100, nullable: true),
+                    ClassId = table.Column<int>(nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    CreatedBy = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subjects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subjects_Class_ClassId",
+                        column: x => x.ClassId,
+                        principalTable: "Class",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClassSectionAssignment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClassSectionId = table.Column<int>(nullable: false),
+                    SubjectId = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(maxLength: 50, nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    ReferenceMaterial = table.Column<string>(maxLength: 100, nullable: true),
+                    StartDatetime = table.Column<DateTime>(nullable: false),
+                    EndDatetime = table.Column<DateTime>(nullable: false),
+                    CreatedById = table.Column<int>(nullable: false),
+                    CreatedByDatetime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassSectionAssignment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClassSectionAssignment_ClassSections_ClassSectionId",
+                        column: x => x.ClassSectionId,
+                        principalTable: "ClassSections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClassSectionAssignment_Subjects_SubjectId",
+                        column: x => x.SubjectId,
+                        principalTable: "Subjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClassSectionAssigmentSubmissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClassSectionAssignmentId = table.Column<int>(nullable: false),
+                    StudentId = table.Column<int>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    CreatedDatetime = table.Column<DateTime>(nullable: false),
+                    SubmittedMaterial = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassSectionAssigmentSubmissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClassSectionAssigmentSubmissions_ClassSectionAssignment_ClassSectionAssignmentId",
+                        column: x => x.ClassSectionAssignmentId,
+                        principalTable: "ClassSectionAssignment",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClassSectionAssigmentSubmissions_Users_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Attendances_ClassSectionId",
                 table: "Attendances",
@@ -586,11 +660,6 @@ namespace CoreWebApi.Migrations
                 name: "IX_Class_CreatedById",
                 table: "Class",
                 column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Class_SubjectId",
-                table: "Class",
-                column: "SubjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClassSectionAssigmentSubmissions_ClassSectionAssignmentId",
@@ -670,6 +739,16 @@ namespace CoreWebApi.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuestionTypes_schoolBranchId",
+                table: "QuestionTypes",
+                column: "schoolBranchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizzes_CreatedById",
+                table: "Quizzes",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SchoolBranch_SchoolAcademyID",
                 table: "SchoolBranch",
                 column: "SchoolAcademyID");
@@ -688,6 +767,12 @@ namespace CoreWebApi.Migrations
                 name: "IX_State_CountryId",
                 table: "State",
                 column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subjects_ClassId",
+                table: "Subjects",
+                column: "ClassId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAddress_UserId",
@@ -742,6 +827,18 @@ namespace CoreWebApi.Migrations
                 name: "Photos");
 
             migrationBuilder.DropTable(
+                name: "QuestionTypes");
+
+            migrationBuilder.DropTable(
+                name: "QuizAnswers");
+
+            migrationBuilder.DropTable(
+                name: "QuizQuestions");
+
+            migrationBuilder.DropTable(
+                name: "Quizzes");
+
+            migrationBuilder.DropTable(
                 name: "Sections");
 
             migrationBuilder.DropTable(
@@ -766,16 +863,16 @@ namespace CoreWebApi.Migrations
                 name: "LeaveType");
 
             migrationBuilder.DropTable(
-                name: "Class");
-
-            migrationBuilder.DropTable(
                 name: "ClassSections");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Subjects");
 
             migrationBuilder.DropTable(
-                name: "Subjects");
+                name: "Class");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "SchoolBranch");

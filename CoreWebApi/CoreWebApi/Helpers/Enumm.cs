@@ -5,15 +5,20 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Helpers
 {
-    public class Enums
+    public class Enumm
     {
         public enum UserType
         {
-
             Admin = 1,
             Supervisor,
             Student,
             Teacher
+        }
+        public enum ClaimType
+        {
+            NameIdentifier = 1,
+            Name,
+            BranchIdentifier,
         }
     }
     

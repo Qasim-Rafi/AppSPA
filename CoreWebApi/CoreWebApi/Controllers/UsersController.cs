@@ -41,9 +41,10 @@ namespace CoreWebApi.Controllers
         {
             var users = await _repo.GetUsers();
 
-            var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
-            usersToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
-            return Ok(usersToReturn);
+            var ToReturn = _mapper.Map<List<UserForListDto>>(users);
+            ToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
+           
+            return Ok(ToReturn);
 
         }
 
@@ -83,6 +84,7 @@ namespace CoreWebApi.Controllers
                 if (await _repo.UserExists(userForAddDto.Username))
                     return base.BadRequest(new { message = "User Already Exist" });
 
+                userForAddDto.LoggedIn_BranchId = GetClaim(Helpers.Enumm.ClaimType.BranchIdentifier.ToString());
                 var createdUser = await _repo.AddUser(userForAddDto);
 
                 return base.StatusCode(StatusCodes.Status201Created);
@@ -98,7 +100,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PUT(int id, [FromForm] UserForUpdateDto userForAddDto)// [FromForm]
+        public async Task<IActionResult> PUT(int id, [FromForm] UserForUpdateDto userForUpdateDto)// [FromForm]
         {
 
             try
@@ -121,7 +123,10 @@ namespace CoreWebApi.Controllers
                 {
                     return base.BadRequest(ModelState);
                 }
-                var updatedUser = await _repo.EditUser(id, userForAddDto);
+
+                userForUpdateDto.LoggedIn_BranchId = GetClaim(Helpers.Enumm.ClaimType.BranchIdentifier.ToString());
+
+                var updatedUser = await _repo.EditUser(id, userForUpdateDto);
 
 
 
@@ -203,7 +208,9 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                var ToReturn = await _repo.GetUnmappedStudents();
+                var users = await _repo.GetUnmappedStudents();
+                var ToReturn = _mapper.Map<List<UserForListDto>>(users);
+
 
                 return Ok(ToReturn);
             }
@@ -219,7 +226,9 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                var ToReturn = await _repo.GetMappedStudents(csId);
+                var users = await _repo.GetMappedStudents(csId);
+                var ToReturn = _mapper.Map<List<UserForListDto>>(users);
+
 
                 return Ok(ToReturn);
             }

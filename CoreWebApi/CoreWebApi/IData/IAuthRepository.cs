@@ -11,7 +11,7 @@ namespace CoreWebApi.IData
         Task<User> Register(User user, string password);
 
         Task<User> Login(string username, string password);
-
+        Task<object> GetSchoolDetails(string regNo);
         Task<bool> UserExists(string  username);
 
     }

@@ -99,7 +99,7 @@ namespace CoreWebApi.Data
                     //City = "Lahore",
                     //Country = "Pakistan",
                     Email = userDto.Email,
-
+                    SchoolBranchId = Convert.ToInt32(userDto.LoggedIn_BranchId)
                 };
                 byte[] passwordHash, passwordSalt;
                 Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
@@ -266,7 +266,7 @@ namespace CoreWebApi.Data
         {
 
             IEnumerable<int> studentIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
-            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enums.UserType.Student && !studentIds.Contains(m.Id)).ToListAsync();
+            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !studentIds.Contains(m.Id)).ToListAsync();
             return unmappedStudents;
         }
 

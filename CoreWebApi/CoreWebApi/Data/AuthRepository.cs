@@ -30,6 +30,16 @@ namespace CoreWebApi.Data
             return user;
 
         }
+        public async Task<object> GetSchoolDetails(string regNo)
+        {
+            var branch = await _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefaultAsync();
+            var school = await _context.SchoolAcademy.FirstOrDefaultAsync(x => x.Id == branch.SchoolAcademyID);
+            if (school == null)
+                return null;
+            
+            return new { branch, school };
+
+        }
 
         //private bool verifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         //{
@@ -69,13 +79,13 @@ namespace CoreWebApi.Data
         //        passwordSalt = hmac.Key;
         //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 
-               
+
         //       // var hmac = System.Security.Cryptography.HMACSHA512()
         //    }
-          
+
         //}
 
-        public  async Task<bool> UserExists(string  username)
+        public async Task<bool> UserExists(string username)
         {
             if (await _context.Users.AnyAsync(x => x.Username.ToLower() == username.ToLower()))
                 return true;

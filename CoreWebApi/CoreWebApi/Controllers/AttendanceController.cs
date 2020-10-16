@@ -31,7 +31,7 @@ namespace CoreWebApi.Controllers
             _userRepository = userRepository;
             _context = context;
         }
-
+        [NonAction]
         [HttpGet] // not in use
         public async Task<IActionResult> GetAttendancees()
         {

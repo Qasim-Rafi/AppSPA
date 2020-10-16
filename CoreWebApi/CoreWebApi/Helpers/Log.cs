@@ -40,7 +40,6 @@ namespace CoreWebApi.Helpers
                     ex = ex.InnerException;
                 }
                 writer.WriteLine();
-                writer.WriteLine();
             }
         }
     }

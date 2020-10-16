@@ -75,13 +75,15 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpGet("SchoolAcademies")]
-        public async Task<IActionResult> GetSchoolAcademies()
+        public IActionResult GetSchoolAcademies()
         {
-            var schoolId = Convert.ToInt32(_configuration.GetSection("AppSettings:SchoolAcademy").Value);
-            List<SchoolAcademy> list = await _context.SchoolAcademy.Where(m => m.Id == schoolId).ToListAsync();
+            var regNo = _configuration.GetSection("AppSettings:SchoolRegistrationNo").Value;
+            var branch = _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefault();
+            var school = _context.SchoolAcademy.Where(x => x.Id == branch.SchoolAcademyID).FirstOrDefault();
+            if (school == null)
+                return null;
 
-
-            return Ok(list);
+            return Ok(school);
 
         }
     }

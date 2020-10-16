@@ -189,6 +189,7 @@ namespace CoreWebApi.Data
                     foreach (var obj in Classes)
                     {
                         obj.Active = true;
+                        obj.SchoolBranchId = context.SchoolBranch.First().Id;
                         obj.CreatedById = context.Users.FirstOrDefault().Id;
                         context.Class.Add(obj);
                     }
@@ -203,6 +204,7 @@ namespace CoreWebApi.Data
                     foreach (var item in Sections)
                     {
                         item.CreatedById = context.Users.First().Id;
+                        item.SchoolBranchId = context.SchoolBranch.First().Id;
                         context.Sections.Add(item);
                     }
 
@@ -217,6 +219,7 @@ namespace CoreWebApi.Data
                     foreach (var (item, index) in ReturnIndex(Subjects))
                     {
                         item.ClassId = context.Class.First().Id + index;
+
                         context.Subjects.Add(item);
                     }
 
@@ -302,6 +305,8 @@ namespace CoreWebApi.Data
                     var QuestionTypes = JsonConvert.DeserializeObject<List<QuestionTypes>>(QuestionTypesJson);
                     foreach (var obj in QuestionTypes)
                     {
+                        obj.schoolBranchId = context.SchoolBranch.First().Id;
+
                         context.QuestionTypes.Add(obj);
                     }
                     context.SaveChanges();

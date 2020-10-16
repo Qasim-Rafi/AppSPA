@@ -18,11 +18,11 @@ namespace CoreWebApi.Controllers
     //[ApiController]
     public class BaseController : ControllerBase
     {
-        
+
 
         public BaseController()
         {
-            
+
         }
 
         //[NonAction]
@@ -75,15 +75,18 @@ namespace CoreWebApi.Controllers
         //    }
         //    return null;//currentUser.Claims.FirstOrDefault(c => c.Type == name).Value;
         //}
+
         [NonAction]
         public string GetClaim(string name)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
-                
+
                 IEnumerable<Claim> claims = identity.Claims;
-                return identity.FindFirst(name).Value;
+                var property = identity.FindFirst(name);
+                if (property != null)
+                    return property.Value;
             }
             return null;
         }

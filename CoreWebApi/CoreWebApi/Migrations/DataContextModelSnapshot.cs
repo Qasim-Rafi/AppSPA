@@ -80,14 +80,9 @@ namespace CoreWebApi.Migrations
                     b.Property<int>("SchoolBranchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SubjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("SubjectId");
 
                     b.ToTable("Class");
                 });
@@ -118,12 +113,6 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClassId");
-
-                    b.HasIndex("SchoolAcademyId");
-
-                    b.HasIndex("SectionId");
 
                     b.ToTable("ClassSections");
                 });
@@ -436,6 +425,100 @@ namespace CoreWebApi.Migrations
                     b.ToTable("Photos");
                 });
 
+            modelBuilder.Entity("CoreWebApi.Models.QuestionTypes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("schoolBranchId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("schoolBranchId");
+
+                    b.ToTable("QuestionTypes");
+                });
+
+            modelBuilder.Entity("CoreWebApi.Models.QuizAnswers", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Answer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsTrue")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QuizAnswers");
+                });
+
+            modelBuilder.Entity("CoreWebApi.Models.QuizQuestions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double?>("Marks")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Question")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("QuestionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("QuizId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QuizQuestions");
+                });
+
+            modelBuilder.Entity("CoreWebApi.Models.Quizzes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("NoOfQuestions")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("QuizDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.ToTable("Quizzes");
+                });
+
             modelBuilder.Entity("CoreWebApi.Models.SchoolAcademy", b =>
                 {
                     b.Property<int>("Id")
@@ -610,10 +693,13 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassId")
+                        .IsUnique();
 
                     b.ToTable("Subjects");
                 });
@@ -766,32 +852,6 @@ namespace CoreWebApi.Migrations
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.Subject", "Subject")
-                        .WithMany("classes")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.ClassSection", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.Class", "Class")
-                        .WithMany()
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.SchoolAcademy", "SchoolAcademy")
-                        .WithMany()
-                        .HasForeignKey("SchoolAcademyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.Section", "Section")
-                        .WithMany()
-                        .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.ClassSectionAssigmentSubmission", b =>
@@ -825,22 +885,6 @@ namespace CoreWebApi.Migrations
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.ClassSectionUser", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.ClassSection", "ClassSection")
-                        .WithMany()
-                        .HasForeignKey("ClassSectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.ClassSectionUserAssignment", b =>
-
                 {
                     b.HasOne("CoreWebApi.Models.ClassSection", "ClassSection")
                         .WithMany()
@@ -927,6 +971,23 @@ namespace CoreWebApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CoreWebApi.Models.QuestionTypes", b =>
+                {
+                    b.HasOne("CoreWebApi.Models.SchoolBranch", "schoolBranch")
+                        .WithMany()
+                        .HasForeignKey("schoolBranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CoreWebApi.Models.Quizzes", b =>
+                {
+                    b.HasOne("CoreWebApi.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("CoreWebApi.Models.SchoolBranch", b =>
                 {
                     b.HasOne("CoreWebApi.Models.SchoolAcademy", "SchoolAcademy")
@@ -958,6 +1019,15 @@ namespace CoreWebApi.Migrations
                     b.HasOne("CoreWebApi.Models.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CoreWebApi.Models.Subject", b =>
+                {
+                    b.HasOne("CoreWebApi.Models.Class", null)
+                        .WithOne("Subject")
+                        .HasForeignKey("CoreWebApi.Models.Subject", "ClassId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

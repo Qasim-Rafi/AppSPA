@@ -14,10 +14,8 @@ namespace CoreWebApi.Models
         public DateTime? CreatedDate { get; set; }
         public int? CreatedById { get; set; }
 
-        [ForeignKey("CreatedByUserId")]
+        [ForeignKey("CreatedById")]
         public User user { get; set; }
-
-        public int CreatedByUserId { get; set; }
 
     }
 }

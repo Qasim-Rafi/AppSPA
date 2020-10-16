@@ -23,7 +23,7 @@ namespace CoreWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
@@ -38,30 +38,39 @@ namespace CoreWebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                // validate request;
+                userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
+
+                if (await _repo.UserExists(userForRegisterDto.Username))
+                    return BadRequest(new { message = "User Already Exist" });
+
+
+
+                var userToCreate = new User
+                {
+                    Username = userForRegisterDto.Username,
+                    UserTypeId = (int)Helpers.Enumm.UserType.Student,
+                    Email = userForRegisterDto.Email,
+                    SchoolBranchId = Convert.ToInt32(GetClaim(Helpers.Enumm.ClaimType.BranchIdentifier.ToString())),                    
+                    Gender = "male",
+                    Active = true,
+                    CreatedDateTime = DateTime.Now,
+                };
+                var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
+
+                return StatusCode(201);
             }
-            // validate request;
-            userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
-
-            if (await _repo.UserExists(userForRegisterDto.Username))
-                return BadRequest(new { message = "User Already Exist" });
-
-
-
-            var userToCreate = new User
+            catch (Exception ex)
             {
-                Username = userForRegisterDto.Username,
-                UserTypeId = userForRegisterDto.UserTypeId,
-                Email = userForRegisterDto.Email,
-                Gender = "male",
-                Active = true,
-                CreatedDateTime = DateTime.Now,
-            };
-            var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
 
-            return StatusCode(201);
+                return BadRequest(ex);
+            }
 
         }
 
@@ -82,33 +91,37 @@ namespace CoreWebApi.Controllers
                     return Unauthorized();
                 }
 
-                var claims = new[]
+                var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
+                dynamic schoolBranchDetails = await _repo.GetSchoolDetails(regNo);
+
+
+                Claim[] claims = new[]
                 {
-                    new Claim("NameIdentifier", userFromRepo.Id.ToString()),
-                    new Claim("Name", userFromRepo.Username)
+                    new Claim(Helpers.Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
+                    new Claim(Helpers.Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
+                    new Claim(Helpers.Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString())
                 };
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8
-                    .GetBytes(_config.GetSection("AppSettings:Token").Value));
 
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),
                     Expires = DateTime.Now.AddDays(5),
                     SigningCredentials = creds
                 };
-
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
 
+
                 //var session = HttpContext.Session;
                 //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
-                return Ok(new
+                return base.Ok(new
                 {
-                    loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value,
-                    loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals("Name")).Value,
+                    loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Helpers.Enumm.ClaimType.NameIdentifier.ToString())).Value,
+                    loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Helpers.Enumm.ClaimType.Name.ToString())).Value,
+                    schoolName = schoolBranchDetails.school.Name,
                     token = tokenHandler.WriteToken(token)
                 });
             }

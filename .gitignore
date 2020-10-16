@@ -4,3 +4,4 @@ CoreWebApi/CoreWebApi/Properties/PublishProfiles/FolderProfile.pubxml
 CoreWebApi/CoreWebApi/Properties/PublishProfiles/FolderProfile.pubxml.user
 
 CoreWebApi/.vs/CoreWebApi/DesignTimeBuild/.dtbcache.v2
+CoreWebApi/.vs/CoreWebApi/config/applicationhost.config
