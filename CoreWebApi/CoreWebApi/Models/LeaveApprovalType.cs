@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Models
 {
-    public class LeaveType
+    public class LeaveApprovalType
     {
         public int Id { get; set; }
-        public string Type { get; set; }
+        public string   Discription { get; set; }
 
-       public virtual Leave  Leave { get; set; }
+        public virtual Leave Leave { get; set; }
+
     }
 }

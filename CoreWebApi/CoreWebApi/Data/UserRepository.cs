@@ -51,6 +51,7 @@ namespace CoreWebApi.Data
                 item.Url = _File.AppendImagePath(item.Url);
             }
             return user;
+
         }
 
         public async Task<IEnumerable<User>> GetUsers()
@@ -64,6 +65,7 @@ namespace CoreWebApi.Data
                 }
             }
             return users;
+
         }
 
         public async Task<bool> SaveAll()
@@ -94,8 +96,8 @@ namespace CoreWebApi.Data
                     Active = true,
                     DateofBirth = Convert.ToDateTime(userDto.DateofBirth),
                     LastActive = DateTime.Now,
-                    City = "Lahore",
-                    Country = "Pakistan",
+                    //City = "Lahore",
+                    //Country = "Pakistan",
                     Email = userDto.Email,
 
                 };
@@ -132,8 +134,8 @@ namespace CoreWebApi.Data
                     dbUser.FullName = user.FullName;
                     dbUser.Email = user.Email;
                     dbUser.Username = user.Username.ToLower();
-                    dbUser.City = user.City;
-                    dbUser.Country = user.Country;
+                    //dbUser.City = user.City;
+                    //dbUser.Country = user.Country;
                     dbUser.DateofBirth = Convert.ToDateTime(user.DateofBirth);
                     dbUser.Gender = user.Gender;
                     dbUser.Active = user.Active;
@@ -202,7 +204,7 @@ namespace CoreWebApi.Data
                                 Description = "description...",
                                 IsPrimary = user.IsPrimaryPhoto,
                                 UserId = dbUser.Id,
-                                DateAdded = DateTime.Now
+                                //DateAdded = DateTime.Now
                             };
                             if (i == 0)
                                 photo.Url = dbPath;
@@ -256,9 +258,10 @@ namespace CoreWebApi.Data
                     }
                 }
                 return users;
-            }
-        }
 
+            }
+
+<<<<<<< Updated upstream
         public async Task<IEnumerable<User>> GetUnmappedStudents()
         {
 
@@ -281,13 +284,23 @@ namespace CoreWebApi.Data
         //    {
         //        passwordSalt = hmac.Key;
         //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+=======
+            //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+            //{
+            //    byte[] key = new Byte[64];
+            //    using (HMACSHA512 hmac = new HMACSHA512(key))
+            //    {
+            //        passwordSalt = hmac.Key;
+            //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+>>>>>>> Stashed changes
 
 
-        //        // var hmac = System.Security.Cryptography.HMACSHA512()
-        //    }
+            //        // var hmac = System.Security.Cryptography.HMACSHA512()
+            //    }
 
-        //}
+            //}
 
 
+        }
     }
 }

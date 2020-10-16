@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,14 +12,18 @@ namespace CoreWebApi.Models
 
         public int Id { get; set; }
         [Required]
-        public int AssignmentId { get; set; }
+        public int ClassSectionAssignmentId { get; set; }
         [Required]
         public int StudentId { get; set; }
-        public DateTime CreatedDateTime { get; set; }
+        public string  Description { get; set; }
+        public DateTime CreatedDatetime { get; set; }
         [Required]
         public string SubmittedMaterial { get; set; }
 
-        public virtual Assignment Assignment { get; set; }
+        [ForeignKey("ClassSectionAssignmentId")]
+        public virtual ClassSectionAssignment ClassSectionAssignment { get; set; }
+        [ForeignKey("StudentId")]
+        public virtual User User { get; set; }
 
     }
 }

@@ -43,14 +43,14 @@ namespace CoreWebApi.Controllers
                 Absent = o.Absent,
                 Late = o.Late,
                 Comments = o.Comments,
-                LeaveCount = _context.Leaves.Where(m => m.UserId == o.UserId).Count(),
-                AbsentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Absent == true).Count(),
-                LateCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Late == true).Count(),
-                PresentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Present == true).Count(),
-                //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
-                //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
-                //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
-                //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
+                //LeaveCount = _context.Leaves.Where(m => m.UserId == o.UserId).Count(),
+                //AbsentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Absent == true).Count(),
+                //LateCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Late == true).Count(),
+                //PresentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Present == true).Count(),
+                ////LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
+                ////LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
+                ////LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
+                ////LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
             }).ToList();
             //var ToReturn = _mapper.Map<IEnumerable<AttendanceDtoForList>>(attendances);
             return Ok(ToReturn);

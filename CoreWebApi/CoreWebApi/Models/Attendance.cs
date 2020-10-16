@@ -16,9 +16,11 @@ namespace CoreWebApi.Models
         public bool Late { get; set; }
         public string Comments { get; set; }
         public DateTime CreatedDatetime { get; set; }
-        public virtual User User { get; set; }
+
+        //public virtual User User { get; set; }
+
         public virtual ClassSection ClassSection { get; set; }
-        public virtual ICollection<ClassSectionUserAssignment> ClassSectionUserAssignments { get; set; }
+        //public virtual ICollection<ClassSectionUserAssignment> ClassSectionUserAssignments { get; set; }
 
     }
 }

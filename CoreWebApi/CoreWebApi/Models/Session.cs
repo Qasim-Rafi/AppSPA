@@ -17,6 +17,6 @@ namespace CoreWebApi.Models
 
         public Class Class{ get; set; }
 
-        public virtual ClassSectionUserAssignment ClassSectionUserAssignment{ get; set; }
+        //public virtual ClassSectionUserAssignment ClassSectionUserAssignment{ get; set; }
     }
 }

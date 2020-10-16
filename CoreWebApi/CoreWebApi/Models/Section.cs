@@ -14,9 +14,18 @@ namespace CoreWebApi.Models
         [Required]
         [StringLength(2, ErrorMessage = "Section Name cannot be longer than 2 characters")]
         public string SectionName { get; set; }
-        public DateTime CreatedDatetime { get; set; }
+        public DateTime CreationDatetime { get; set; }
         public int CreatedById { get; set; }
+        public int SchoolBranchId { get; set; }
 
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranch { get; set; }
+
+        //public virtual ClassSection ClassSection { get; set; }
+
+<<<<<<< Updated upstream
         //public virtual ICollection<Class> Classes { get; set; }
+=======
+>>>>>>> Stashed changes
     }
 }

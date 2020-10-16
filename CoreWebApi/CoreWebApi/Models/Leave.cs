@@ -3,6 +3,7 @@ using CoreWebApi.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,8 +22,14 @@ namespace CoreWebApi.Models
         [DateValidation(ErrorMessage = "To Date is not in correct format")]
         public DateTime ToDate { get; set; }
 
+        public int LeaveApprovalTypeId { get; set; }
 
+        [ForeignKey("UserId")]
         public virtual User User { get; set; }
+        [ForeignKey("LeaveTypeId")]
         public virtual LeaveType LeaveType { get; set; }
+
+        [ForeignKey("LeaveApprovalTypeId")]
+        public virtual  LeaveApprovalType LeaveApprovalType { get; set; }
     }
 }

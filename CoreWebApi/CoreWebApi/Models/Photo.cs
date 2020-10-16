@@ -9,10 +9,13 @@ namespace CoreWebApi.Models
         //[NotMapped]
         public string Url { get; set; }
         public string  Description { get; set; }
-        public DateTime DateAdded { get; set; }
+        public DateTime CreatedDatetime { get; set; }
         //[Column("IsMain")]
         public bool IsPrimary { get; set; }
         //public User User{ get; set; }
         public int UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
     }
 }

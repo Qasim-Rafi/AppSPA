@@ -32,6 +32,8 @@ namespace CoreWebApi
             isDev = env.IsDevelopment();
         }
 
+    
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -57,7 +59,7 @@ namespace CoreWebApi
                 services.AddScoped<ISubjectRepository, SubjectRepository>();
                 services.AddScoped<IAttendanceRepository, AttendanceRepository>();
                 services.AddScoped<ILeaveRepository, LeaveRepository>();
-                services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+                //services.AddScoped<IAssignmentRepository, AssignmentRepository>();
                 services.AddScoped<IDashboardRepository, DashboardRepository>();
                 services.AddScoped<IExamRepository, ExamRepository>();
 

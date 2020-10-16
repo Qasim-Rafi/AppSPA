@@ -15,12 +15,12 @@ namespace CoreWebApi.Data
     public static class Seed
     {
 
-
+        private static int schoolBranchId = 0;
         public static void SeedLeaveTypes(DataContext context)
         {
             try
             {
-                if (!context.LeaveTypes.Any())
+                if (!context.LeaveType.Any())
                 {
 
                     var fileData = System.IO.File.ReadAllText("Data/LeaveTypeSeedData.json");
@@ -29,7 +29,7 @@ namespace CoreWebApi.Data
                     foreach (var type in leaveTypes)
                     {
 
-                        context.LeaveTypes.Add(type);
+                        context.LeaveType.Add(type);
                     }
                     context.SaveChanges();
 
@@ -54,7 +54,7 @@ namespace CoreWebApi.Data
 
                     foreach (var type in userTypes)
                     {
-                        type.Creatdatetime = DateTime.Now;
+                        //type.Creatdatetime = DateTime.Now;
                         context.UserTypes.Add(type);
                     }
                     context.SaveChanges();
@@ -68,16 +68,81 @@ namespace CoreWebApi.Data
                 throw ex;
             }
         }
+
+        public static void SeedSchoolAcademy(DataContext context)
+        {
+            try
+            {
+                if (!context.SchoolAcademy.Any())
+                {
+
+                    //var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
+                    //var schoolAcademies = JsonConvert.DeserializeObject<List<SchoolAcademy>>(fileData);
+                    var schoolAcademies = context.SchoolAcademy.FirstOrDefault();
+
+                    if (schoolAcademies == null)
+                    {
+                        var schoolAcademy = new SchoolAcademy();
+                        
+                        schoolAcademy.Name = "LGS";
+                        schoolAcademy.PrimaryContactPerson = "Qasim Rafi";
+                        schoolAcademy.SecondaryContactPerson = "Ahsan Meraj";
+                        schoolAcademy.PrimaryphoneNumber = "03217575840";
+                        schoolAcademy.SecondaryphoneNumber = "03003207433";
+                        schoolAcademy.Email = "Qasim@FabIntel.com";
+                        schoolAcademy.PrimaryAddress = "Allama Iqbal Town";
+                        schoolAcademy.SecondaryAddress = "Garden Tonw";
+                        schoolAcademy.Active = true;
+
+                        context.SchoolAcademy.Add(schoolAcademy);
+                        context.SaveChanges();
+                        int schoolAcademyId = schoolAcademy.Id;
+
+                        if (schoolAcademyId > 0)
+                        {
+
+                            var schoolBranhes = new List<SchoolBranch>
+                           {
+                              new SchoolBranch { BranchName ="Dolphin",SchoolAcademyID = schoolAcademyId,CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "10420001"},
+                              new SchoolBranch { BranchName ="Jasmine",SchoolAcademyID = schoolAcademyId,CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "10420002"}
+                          };
+                            context.AddRange(schoolBranhes);
+                            context.SaveChanges();
+
+                            schoolBranchId = schoolBranhes[0].Id;
+
+                        }
+
+                    }
+
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                throw ex;
+            }
+        }
+
+
         public static void SeedUsers(DataContext context)
         {
 
             try
             {
-                if (!context.Users.Any())
+
+               
+               
+              var   schoolBranch = context.SchoolBranch.FirstOrDefault(m => m.Id == schoolBranchId);
+                if (schoolBranch != null )
                 {
 
                     var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
                     var users = JsonConvert.DeserializeObject<List<User>>(fileData);
+
 
                     foreach (var (user, index) in ReturnIndex(users))
                     {
@@ -91,12 +156,15 @@ namespace CoreWebApi.Data
                         user.FullName = "test name " + (index + 1);
                         user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
                         user.CreatedDateTime = DateTime.Now;
+                        user.SchoolBranchId = schoolBranchId;
                         user.Active = true;
                         context.Users.Add(user);
 
 
                     }
                     context.SaveChanges();
+
+
 
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,7 +15,11 @@ namespace CoreWebApi.Models
         public int ReplyMessageId { get; set; }
         public string AttachmentPath { get; set; }
 
-        public virtual User User { get; set; } 
+        //[ForeignKey("MessageFromUserId")]
+        //public virtual User User { get; set; }
+
+        [ForeignKey("MessageToUserId")]
+        public virtual User UserTo { get; set; }
 
     }
 }

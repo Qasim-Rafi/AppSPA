@@ -1,6 +1,7 @@
 ﻿using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,6 +35,9 @@ namespace CoreWebApi.Models
         public byte[] PasswordSalt { get; set; }
         //[Required]
         public DateTime CreatedDateTime { get; set; }
+
+        public int SchoolBranchId { get; set; }
+
         [Required]
         //[DefaultValue("male")]
         public string Gender { get; set; }
@@ -43,18 +47,30 @@ namespace CoreWebApi.Models
         //[Required]
         public DateTime LastActive { get; set; }
 
-        [StringLength(50, ErrorMessage = "City cannot be longer then 50 characters")]
-        public string City { get; set; }
+        [StringLength(50, ErrorMessage = "StateId cannot be longer then 50 characters")]
+        public int? StateId { get; set; }
+
+        [StringLength(50, ErrorMessage = "OtherState cannot be longer then 50 characters")]
+        public string OtherState { get; set; }
 
         [StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
-        public string Country { get; set; }
+        public int? CountryId { get; set; }
         public int UserTypeId { get; set; }
 
         public virtual ICollection<Photo> Photos { get; set; }
-        //[ForeignKey("UserTypeId")]
+        [ForeignKey("UserTypeId")]
         public virtual UserType Usertypes { get; set; }
-        public virtual ICollection<SchoolAcademy> SchoolAcademies { get; set; }
+
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranches { get; set; }
+
         public virtual ICollection<UserAddress> UserAddresses { get; set; }
+
+        [ForeignKey("CountryId")]
+        public virtual Country Country { get; set; }
+
+        [ForeignKey("StateId")]
+        public virtual State State { get; set; }
 
     }
 }

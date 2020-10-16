@@ -42,7 +42,7 @@ namespace CoreWebApi.Data
                 {
                     SectionName = section.SectionName,
                     CreatedById = 1,
-                    CreatedDatetime = DateTime.Now
+                    //CreatedDatetime = DateTime.Now
                 };
 
                 await _context.Sections.AddAsync(objToCreate);

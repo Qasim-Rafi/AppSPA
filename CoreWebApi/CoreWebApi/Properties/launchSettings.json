@@ -14,7 +14,7 @@
       "launchBrowser": true,
       "launchUrl": "weatherforecast", //"swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development" //"Production"
+        "ASPNETCORE_ENVIRONMENT": "Production" //"Production"
       }
     },
     "CoreWebApi": {
@@ -22,7 +22,7 @@
       "launchBrowser": true,
       "launchUrl": "weatherforecast", //"swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development" //"Production"
+        "ASPNETCORE_ENVIRONMENT": "Production" //"Production"
       },
       "applicationUrl": "http://localhost:5001"
     }

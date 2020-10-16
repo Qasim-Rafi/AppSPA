@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Models
 {
-    public class LeaveType
+    public class Country
     {
         public int Id { get; set; }
-        public string Type { get; set; }
+        public string  Name { get; set; }
 
-       public virtual Leave  Leave { get; set; }
     }
 }
