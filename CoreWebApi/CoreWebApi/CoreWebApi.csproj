@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-<<<<<<< Updated upstream
+
     <Compile Remove="Migrations\20200917130928_initialMigration.cs" />
     <Compile Remove="Migrations\20200917130928_initialMigration.Designer.cs" />
     <Compile Remove="Migrations\20200921095020_InitialMigrations.cs" />
@@ -33,13 +33,13 @@
     <Compile Remove="Migrations\20201012095230_updateClass.Designer.cs" />
     <Compile Remove="Migrations\20201012095534_updateClass.cs" />
     <Compile Remove="Migrations\20201012095534_updateClass.Designer.cs" />
-=======
+
     <Compile Remove="Data\AssignmentRepository.cs" />
     <Compile Remove="IData\IAssignmentRepository.cs" />
     <Compile Remove="Migrations\20201014072408_initial.cs" />
     <Compile Remove="Migrations\20201014072408_initial.Designer.cs" />
     <Compile Remove="Models\Assignment.cs" />
->>>>>>> Stashed changes
+
   </ItemGroup>
 
   <ItemGroup>

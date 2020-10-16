@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoreWebApi.Models
 {
@@ -9,5 +10,9 @@ namespace CoreWebApi.Models
         public int? QuestionId { get; set; }
         public string Answer { get; set; }
         public bool? IsTrue { get; set; }
+
+
+
+     
     }
 }

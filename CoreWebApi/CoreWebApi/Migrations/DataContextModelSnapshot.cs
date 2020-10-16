@@ -825,7 +825,6 @@ namespace CoreWebApi.Migrations
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.ClassSectionUser", b =>
-<<<<<<< Updated upstream
                 {
                     b.HasOne("CoreWebApi.Models.ClassSection", "ClassSection")
                         .WithMany()
@@ -841,8 +840,7 @@ namespace CoreWebApi.Migrations
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.ClassSectionUserAssignment", b =>
-=======
->>>>>>> Stashed changes
+
                 {
                     b.HasOne("CoreWebApi.Models.ClassSection", "ClassSection")
                         .WithMany()

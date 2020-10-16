@@ -30,15 +30,12 @@ namespace CoreWebApi.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Photo> Photos { get; set; }
-<<<<<<< Updated upstream
+
         public virtual DbSet<QuestionTypes> QuestionTypes { get; set; }
         public virtual DbSet<QuizAnswers> QuizAnswers { get; set; }
         public virtual DbSet<QuizQuestions> QuizQuestions { get; set; }
         public virtual DbSet<Quizzes> Quizzes { get; set; }
-        public DbSet<SchoolAcademy> SchoolAcademy { get; set; }
-=======
-        //
->>>>>>> Stashed changes
+
         public DbSet<Section> Sections { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Subject> Subjects { get; set; }

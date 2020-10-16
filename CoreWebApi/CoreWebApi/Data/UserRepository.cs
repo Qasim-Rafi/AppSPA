@@ -260,8 +260,8 @@ namespace CoreWebApi.Data
                 return users;
 
             }
+        }
 
-<<<<<<< Updated upstream
         public async Task<IEnumerable<User>> GetUnmappedStudents()
         {
 
@@ -284,23 +284,23 @@ namespace CoreWebApi.Data
         //    {
         //        passwordSalt = hmac.Key;
         //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-=======
-            //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-            //{
-            //    byte[] key = new Byte[64];
-            //    using (HMACSHA512 hmac = new HMACSHA512(key))
-            //    {
-            //        passwordSalt = hmac.Key;
-            //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
->>>>>>> Stashed changes
+
+        //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        //{
+        //    byte[] key = new Byte[64];
+        //    using (HMACSHA512 hmac = new HMACSHA512(key))
+        //    {
+        //        passwordSalt = hmac.Key;
+        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 
 
-            //        // var hmac = System.Security.Cryptography.HMACSHA512()
-            //    }
 
-            //}
+        //        // var hmac = System.Security.Cryptography.HMACSHA512()
+        //    }
+
+        //}
 
 
-        }
     }
 }
+

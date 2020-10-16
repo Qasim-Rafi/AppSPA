@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoreWebApi.Models
 {
@@ -12,6 +13,11 @@ namespace CoreWebApi.Models
         public int SubjectId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int? CreatedById { get; set; }
+
+        [ForeignKey("CreatedByUserId")]
+        public User user { get; set; }
+
+        public int CreatedByUserId { get; set; }
 
     }
 }

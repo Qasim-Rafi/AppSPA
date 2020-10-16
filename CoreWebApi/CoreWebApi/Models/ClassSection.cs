@@ -16,16 +16,7 @@ namespace CoreWebApi.Models
         public DateTime CreatedDatetime { get; set; }
         public int CreatedById { get; set; }
 
-<<<<<<< Updated upstream
-        //public virtual Class Class { get; set; }
-        //public virtual Section Section { get; set; }
-        //public virtual SchoolAcademy SchoolAcademy { get; set; }
-=======
-        //[ForeignKey("ClassId")]
-        //public virtual Class Class { get; set; }
-        //[ForeignKey("SectionId")]
-        //public virtual Section Section { get; set; }
->>>>>>> Stashed changes
+
 
     }
 }

@@ -23,9 +23,5 @@ namespace CoreWebApi.Models
 
         //public virtual ClassSection ClassSection { get; set; }
 
-<<<<<<< Updated upstream
-        //public virtual ICollection<Class> Classes { get; set; }
-=======
->>>>>>> Stashed changes
     }
 }

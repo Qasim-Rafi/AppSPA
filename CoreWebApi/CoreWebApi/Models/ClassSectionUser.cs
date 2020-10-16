@@ -12,13 +12,12 @@ namespace CoreWebApi.Models
         public int ClassSectionId { get; set; }
         public int UserId { get; set; }
 
-<<<<<<< Updated upstream
-        public virtual ClassSection ClassSection { get; set; }
-=======
+      
+
         [ForeignKey("ClassSectionId")]
         public virtual ClassSection ClassSection { get; set; }
         [ForeignKey("UserId")]
->>>>>>> Stashed changes
+
         public virtual User User { get; set; }
     }
 }
