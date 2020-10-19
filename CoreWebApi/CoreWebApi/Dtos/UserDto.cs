@@ -123,6 +123,6 @@ namespace CoreWebApi.Dtos
        
         [EmailAddress]
         public string Email { get; set; }
-        public int UserTypeId { get; set; }
+        public int UserTypeId { get; set; } = 2;
     }
 }
