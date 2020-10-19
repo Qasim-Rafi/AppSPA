@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Models;
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace CoreWebApi.IData
 {
    public interface IAuthRepository
     {
-        Task<User> Register(User user, string password);
+        Task<User> Register(UserForRegisterDto user, string regNo);
 
         Task<User> Login(string username, string password);
         Task<object> GetSchoolDetails(string regNo);

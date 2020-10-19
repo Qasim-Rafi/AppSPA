@@ -52,17 +52,9 @@ namespace CoreWebApi.Controllers
 
 
 
-                var userToCreate = new User
-                {
-                    Username = userForRegisterDto.Username,
-                    UserTypeId = (int)Helpers.Enumm.UserType.Student,
-                    Email = userForRegisterDto.Email,
-                    SchoolBranchId = Convert.ToInt32(GetClaim(Helpers.Enumm.ClaimType.BranchIdentifier.ToString())),                    
-                    Gender = "male",
-                    Active = true,
-                    CreatedDateTime = DateTime.Now,
-                };
-                var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
+                var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
+
+                var createdUser = await _repo.Register(userForRegisterDto, regNo);
 
                 return StatusCode(201);
             }

@@ -234,31 +234,39 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId)
         {
-            if (!string.IsNullOrEmpty(classSectionId.ToString()))
+            try
             {
-                IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == classSectionId).Select(m => m.UserId).Distinct();
-                var users = await _context.Users.Where(m => m.UserTypeId == typeId && studentIds.Contains(m.Id) && m.Active == true).Include(p => p.Photos).ToListAsync();
-                foreach (var user in users)
+                if (!string.IsNullOrEmpty(classSectionId.ToString()))
                 {
-                    foreach (var item in user.Photos)
+                    IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == classSectionId).Select(m => m.UserId).Distinct();
+                    var users = await _context.Users.Where(m => m.UserTypeId == typeId && studentIds.Contains(m.Id) && m.Active == true).Include(p => p.Photos).ToListAsync();
+                    foreach (var user in users)
                     {
-                        item.Url = _File.AppendImagePath(item.Url);
+                        foreach (var item in user.Photos)
+                        {
+                            item.Url = _File.AppendImagePath(item.Url);
+                        }
                     }
+                    return users;
                 }
-                return users;
-            }
-            else
-            {
-                var users = await _context.Users.Where(m => m.UserTypeId == typeId && m.Active == true).Include(p => p.Photos).ToListAsync();
-                foreach (var user in users)
+                else
                 {
-                    foreach (var item in user.Photos)
+                    var users = await _context.Users.Where(m => m.UserTypeId == typeId && m.Active == true).Include(p => p.Photos).ToListAsync();
+                    foreach (var user in users)
                     {
-                        item.Url = _File.AppendImagePath(item.Url);
+                        foreach (var item in user.Photos)
+                        {
+                            item.Url = _File.AppendImagePath(item.Url);
+                        }
                     }
-                }
-                return users;
+                    return users;
 
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                throw ex;
             }
         }
 

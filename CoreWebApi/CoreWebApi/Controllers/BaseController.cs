@@ -15,12 +15,9 @@ using Microsoft.Extensions.Configuration;
 namespace CoreWebApi.Controllers
 {
     //[Route("api/[controller]")]
-    //[ApiController]
-    [NonController]
+    [ApiController]    
     public class BaseController : ControllerBase
     {
-
-
         public BaseController()
         {
 

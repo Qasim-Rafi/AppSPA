@@ -1,4 +1,6 @@
-﻿using CoreWebApi.IData;
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
+using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -20,14 +22,22 @@ namespace CoreWebApi.Data
 
         public async Task<User> Login(string username, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
-            if (user == null)
-                return null;
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
+                if (user == null)
+                    return null;
 
-            if (!Seed.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                return null;
+                if (!Seed.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                    return null;
 
-            return user;
+                return user;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                throw ex;
+            }
 
         }
         public async Task<object> GetSchoolDetails(string regNo)
@@ -57,18 +67,39 @@ namespace CoreWebApi.Data
         //    }
         //}
 
-        public async Task<User> Register(User user, string password)
+        public async Task<User> Register(UserForRegisterDto model, string regNo)
         {
-            byte[] passwordHash, passwordSalt;
-            Seed.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            try
+            {
+                var branch = await _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefaultAsync();
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+                var userToCreate = new User
+                {
+                    Username = model.Username,
+                    UserTypeId = model.UserTypeId,
+                    Email = model.Email,
+                    SchoolBranchId = branch.Id,
+                    Gender = "male",
+                    Active = true,
+                    CreatedDateTime = DateTime.Now,
+                };
+                byte[] passwordHash, passwordSalt;
+                Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
 
-            return user;
+                userToCreate.PasswordHash = passwordHash;
+                userToCreate.PasswordSalt = passwordSalt;
+
+                await _context.Users.AddAsync(userToCreate);
+                await _context.SaveChangesAsync();
+
+                return userToCreate;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                throw ex;
+            }
         }
 
         //private void CreatePasswordHash(string password,out byte[] passwordHash, out byte[] passwordSalt)

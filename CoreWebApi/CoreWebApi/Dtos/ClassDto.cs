@@ -10,14 +10,14 @@ namespace CoreWebApi.Dtos
     {
         
     }
-    public class ClassDtoForAdd
+    public class ClassDtoForAdd : BaseDto
     {
         [Required]
         [StringLength(30, ErrorMessage = "Class Name cannot be longer than 30 characters.")]
         public string Name { get; set; }
 
     }
-    public class ClassDtoForEdit
+    public class ClassDtoForEdit : BaseDto
     {
         [Required]
         [StringLength(30, ErrorMessage = "Class Name cannot be longer than 30 characters.")]
@@ -31,7 +31,7 @@ namespace CoreWebApi.Dtos
     public class ClassDtoForDetail
     {
     }
-    public class ClassSectionDtoForAdd
+    public class ClassSectionDtoForAdd : BaseDto
     {
         [Required]
         public int SchoolAcademyId { get; set; }
@@ -41,7 +41,7 @@ namespace CoreWebApi.Dtos
         public int SectionId { get; set; }
         public bool Active { get; set; }
     }
-    public class ClassSectionDtoForUpdate
+    public class ClassSectionDtoForUpdate : BaseDto
     {
         public int Id { get; set; }
         [Required]
@@ -61,9 +61,9 @@ namespace CoreWebApi.Dtos
     }
     public class ClassSectionUserDtoForAddBulk
     {
-        
+        [Required]
         public int ClassSectionId { get; set; }
-       
+        [Required]
         public List<int> UserIds { get; set; }
     }
 }

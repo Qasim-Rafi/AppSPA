@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Data;
 using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace CoreWebApi.Controllers
     //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class ClassesController : ControllerBase
+    public class ClassesController : BaseController
     {
         private readonly IClassRepository _repo;
         private readonly IMapper _mapper;
@@ -55,6 +56,7 @@ namespace CoreWebApi.Controllers
                 if (await _repo.ClassExists(@class.Name))
                     return BadRequest(new { message = "Class Already Exist" });
 
+                @class.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
                 var createdObj = await _repo.AddClass(@class);
 
                 return StatusCode(StatusCodes.Status201Created);
@@ -120,7 +122,7 @@ namespace CoreWebApi.Controllers
                 }
                 //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
                 //    return BadRequest(new { message = "Class Section Already Exist" });
-
+                classSection.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
                 var createdObj = await _repo.AddClassSectionMapping(classSection);
 
                 return StatusCode(StatusCodes.Status201Created);
@@ -186,7 +188,7 @@ namespace CoreWebApi.Controllers
                 });
             }
         }
-        [HttpPost("AddClassSectionUserMapping")]
+        [HttpPost("AddClassSectionUserMapping")] // not in use
         public async Task<IActionResult> AddClassSectionUser(ClassSectionUserDtoForAdd classSectionUser)
         {
             try

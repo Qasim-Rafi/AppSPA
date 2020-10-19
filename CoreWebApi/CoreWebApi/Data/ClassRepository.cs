@@ -41,7 +41,7 @@ namespace CoreWebApi.Data
                 var objToCreate = new Class
                 {
                     Name = @class.Name,
-                    CreatedById = 1,
+                    CreatedById = Convert.ToInt32(@class.LoggedIn_UserId),
                     CreatedDateTime = DateTime.Now,
                     Active = true
                 };
@@ -91,8 +91,8 @@ namespace CoreWebApi.Data
                     ClassId = classSection.ClassId,
                     SectionId = classSection.SectionId,
                     SchoolAcademyId = classSection.SchoolAcademyId,
-                    Active = classSection.Active,
-                    CreatedById = _context.Users.First().Id
+                    Active = true,
+                    CreatedById = Convert.ToInt32(classSection.LoggedIn_UserId)
                 };
 
                 await _context.ClassSections.AddAsync(objToCreate);
