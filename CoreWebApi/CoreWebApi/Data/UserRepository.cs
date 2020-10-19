@@ -139,7 +139,7 @@ namespace CoreWebApi.Data
                     dbUser.DateofBirth = Convert.ToDateTime(user.DateofBirth);
                     dbUser.Gender = user.Gender;
                     dbUser.Active = user.Active;
-                    dbUser.UserTypeId = user.UserTypeId;
+                    //dbUser.UserTypeId = user.UserTypeId;
                     if (!string.IsNullOrEmpty(user.OldPassword))
                     {
                         if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))

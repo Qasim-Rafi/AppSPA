@@ -41,7 +41,7 @@ namespace CoreWebApi.Dtos
         [StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
         public string Country { get; set; }
 
-        public int UserTypeId { get; set; }
+        public int UserTypeId { get; set; } = 2;
         //public bool Active { get; set; }
 
     }
@@ -75,7 +75,7 @@ namespace CoreWebApi.Dtos
         public string Country { get; set; }
 
         public bool IsPrimaryPhoto { get; set; }
-        public int UserTypeId { get; set; }
+        //public int UserTypeId { get; set; }
         public bool Active { get; set; }
 
         public IFormFileCollection files { get; set; }

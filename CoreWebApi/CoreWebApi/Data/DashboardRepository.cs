@@ -23,12 +23,14 @@ namespace CoreWebApi.Data
             var otherTypeId = _context.UserTypes.Where(n => n.Name != Enumm.UserType.Teacher.ToString() && n.Name != Enumm.UserType.Student.ToString()).FirstOrDefault()?.Id;
             var StudentCount = _context.Users.Where(m => m.UserTypeId == studentTypeId).ToList().Count();
             var TeacherCount = _context.Users.Where(m => m.UserTypeId == teacherTypeId).ToList().Count();
-            var OtherCount = _context.Users.Where(m => m.UserTypeId == otherTypeId).ToList().Count();
+            var EmployeeCount = _context.Users.Where(m => m.UserTypeId == otherTypeId).ToList().Count();
+            var SubjectCount = _context.Subjects.ToList().Count();
             return new
             {
                 StudentCount,
                 TeacherCount,
-                OtherCount
+                EmployeeCount,
+                SubjectCount
             };
         }
     }
