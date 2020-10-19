@@ -12,7 +12,7 @@ namespace CoreWebApi.Dtos
     public class UserDto
     {
     }
-    public class UserForAddDto : GenericDto
+    public class UserForAddDto : BaseDto
     {
         [Required]
         [StringLength(50, ErrorMessage = "Username cannot be longer then 50 characters")]
@@ -45,7 +45,7 @@ namespace CoreWebApi.Dtos
         //public bool Active { get; set; }
 
     }
-    public class UserForUpdateDto : GenericDto
+    public class UserForUpdateDto : BaseDto
     {
         [Required]
         [StringLength(50, ErrorMessage = "Username cannot be longer then 50 characters")]

@@ -11,16 +11,13 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoreWebApi.Controllers
 {
     //[Route("api/[controller]")]
-    [ApiController]
+    [ApiController]    
     public class BaseController : ControllerBase
     {
-
-
         public BaseController()
         {
 
