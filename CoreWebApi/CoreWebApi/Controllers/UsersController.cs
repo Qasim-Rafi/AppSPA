@@ -235,7 +235,7 @@ namespace CoreWebApi.Controllers
                 var Students = _mapper.Map<List<UserForListDto>>(users.mappedStudents);
 
 
-                return Ok(new { Students, TeacherName =users.mappedTeacher?.FullName });
+                return Ok(new { Students, TeacherName = users.mappedTeacher?.FullName });
             }
             catch (Exception ex)
             {

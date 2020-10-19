@@ -28,8 +28,9 @@ namespace CoreWebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAssignmentes()
         {
-            var assignments = await _repo.GetAssignments();
-            var ToReturn = _mapper.Map<IEnumerable<Assignment>>(assignments);
+            var ToReturn = await _repo.GetAssignments();
+           
+            //var ToReturn = _mapper.Map<IEnumerable<Assignment>>(assignments);
             return Ok(ToReturn);
 
         }

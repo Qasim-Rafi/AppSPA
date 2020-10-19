@@ -35,10 +35,19 @@ namespace CoreWebApi.Data
             return assignment;
         }
 
-        public async Task<IEnumerable<Assignment>> GetAssignments()
+        public async Task<object> GetAssignments()
         {
-            var assignments = await _context.Assignments.ToListAsync();
-            return assignments;
+            var assignments = await _context.Assignments.Include(m => m.ClassSection).ToListAsync();
+            var ToReturn = assignments.Select(o => new
+            {
+                o.Id,
+                o.AssignmentName,
+                ClassSectionName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
+                o.RelatedMaterial,
+                o.Details,
+
+            }).ToList();
+            return ToReturn;
         }
         public async Task<Assignment> AddAssignment(AssignmentDtoForAdd assignment)
         {

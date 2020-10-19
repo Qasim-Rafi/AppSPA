@@ -204,18 +204,24 @@ namespace CoreWebApi.Data
         {
             try
             {
+                var existedIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId).ToList();
+                if (existedIds.Count > 0)
+                {
+                    _context.ClassSectionUsers.RemoveRange(existedIds);
+                    await _context.SaveChangesAsync();
+                }
+                List<ClassSectionUser> listToAdd = new List<ClassSectionUser>();
                 foreach (var item in model.UserIds)
                 {
-                    var objToCreate = new ClassSectionUser
+                    listToAdd.Add(new ClassSectionUser
                     {
                         ClassSectionId = model.ClassSectionId,
                         UserId = item
-                    };
+                    });
 
-                    await _context.ClassSectionUsers.AddAsync(objToCreate);
-                    await _context.SaveChangesAsync();
                 }
-                
+                await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
 
                 return true;
             }

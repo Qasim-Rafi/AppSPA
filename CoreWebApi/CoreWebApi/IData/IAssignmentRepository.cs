@@ -9,7 +9,7 @@ namespace CoreWebApi.IData
 {
     public interface IAssignmentRepository
     {
-        Task<IEnumerable<Assignment>> GetAssignments();
+        Task<object> GetAssignments();
         Task<Assignment> GetAssignment(int id);
         //Task<bool> AssignmentExists(string name);
         Task<Assignment> AddAssignment(AssignmentDtoForAdd assignment);
