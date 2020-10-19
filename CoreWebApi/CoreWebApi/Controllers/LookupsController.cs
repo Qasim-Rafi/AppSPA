@@ -74,20 +74,34 @@ namespace CoreWebApi.Controllers
             return Ok(list);
 
         }
+
+
         [HttpGet("SchoolAcademies")]
         public IActionResult GetSchoolAcademies()
         {
             try
             {
+
                 var regNo = _configuration.GetSection("AppSettings:SchoolRegistrationNo").Value;
-                var branch = _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefault();
-                var school = _context.SchoolAcademy.Where(x => x.Id == branch.SchoolAcademyID).FirstOrDefault();
-                if (school == null)
-                    return null;
+                var school = _context.SchoolBranch.
+                Join(_context.SchoolAcademy, sb => sb.SchoolAcademyID, sa => sa.Id,
+                (sb, sa) => new { sb, sa }).
+                Where(z => z.sb.RegistrationNumber == regNo)
+                .Select(m => new
+                {
+                    Name = m.sa.Name
+                });
+
+
+
+                //var branch = _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefault();
+                //var school = _context.SchoolAcademy.Where(x => x.Id == branch.SchoolAcademyID).FirstOrDefault();
+                //if (school == null)
+                //    return null;
 
                 return Ok(school);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new
                 {
