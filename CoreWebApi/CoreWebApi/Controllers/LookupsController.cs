@@ -77,13 +77,20 @@ namespace CoreWebApi.Controllers
         [HttpGet("SchoolAcademies")]
         public IActionResult GetSchoolAcademies()
         {
-            var regNo = _configuration.GetSection("AppSettings:SchoolRegistrationNo").Value;
-            var branch = _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefault();
-            var school = _context.SchoolAcademy.Where(x => x.Id == branch.SchoolAcademyID).FirstOrDefault();
-            if (school == null)
-                return null;
+            try
+            {
+                var regNo = _configuration.GetSection("AppSettings:SchoolRegistrationNo").Value;
+                var branch = _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefault();
+                var school = _context.SchoolAcademy.Where(x => x.Id == branch.SchoolAcademyID).FirstOrDefault();
+                if (school == null)
+                    return null;
 
-            return Ok(school);
+                return Ok(school);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
 
         }
     }

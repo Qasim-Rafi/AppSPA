@@ -33,16 +33,14 @@
     <Compile Remove="Migrations\20201012095230_updateClass.Designer.cs" />
     <Compile Remove="Migrations\20201012095534_updateClass.cs" />
     <Compile Remove="Migrations\20201012095534_updateClass.Designer.cs" />
-
-    <Compile Remove="Data\AssignmentRepository.cs" />
-    <Compile Remove="IData\IAssignmentRepository.cs" />
     <Compile Remove="Migrations\20201014072408_initial.cs" />
     <Compile Remove="Migrations\20201014072408_initial.Designer.cs" />
     <Compile Remove="Migrations\20201016113053_SomeChanges.cs" />
     <Compile Remove="Migrations\20201016113053_SomeChanges.Designer.cs" />
     <Compile Remove="Migrations\20201016113225_Initial.cs" />
     <Compile Remove="Migrations\20201016113225_Initial.Designer.cs" />
-    <Compile Remove="Models\Assignment.cs" />
+    <Compile Remove="Migrations\20201019054847_addAssignment.cs" />
+    <Compile Remove="Migrations\20201019054847_addAssignment.Designer.cs" />
 
   </ItemGroup>
 

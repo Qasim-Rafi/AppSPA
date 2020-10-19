@@ -16,7 +16,7 @@ namespace CoreWebApi.Data
 
         public DbSet<SchoolAcademy> SchoolAcademy { get; set; }
         public DbSet<SchoolBranch> SchoolBranch { get; set; }
-        //public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<Assignment> Assignments { get; set; }
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<Class> Class { get; set; }
         public DbSet<ClassSectionAssigmentSubmission> ClassSectionAssigmentSubmissions { get; set; }

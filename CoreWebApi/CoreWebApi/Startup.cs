@@ -42,12 +42,7 @@ namespace CoreWebApi
             try
             {
                 services.AddDistributedMemoryCache();
-                services.AddSession(options =>
-                {
-                    options.IdleTimeout = TimeSpan.FromHours(1);
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.IsEssential = true;
-                });
+               
                 services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
                 services.AddControllers().AddNewtonsoftJson();
                 services.AddCors();
@@ -59,7 +54,7 @@ namespace CoreWebApi
                 services.AddScoped<ISubjectRepository, SubjectRepository>();
                 services.AddScoped<IAttendanceRepository, AttendanceRepository>();
                 services.AddScoped<ILeaveRepository, LeaveRepository>();
-                //services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+                services.AddScoped<IAssignmentRepository, AssignmentRepository>();
                 services.AddScoped<IDashboardRepository, DashboardRepository>();
                 services.AddScoped<IExamRepository, ExamRepository>();
 
@@ -147,8 +142,7 @@ namespace CoreWebApi
 
                 app.UseAuthorization();
 
-                app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-                app.UseSession();
+                app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());                
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();

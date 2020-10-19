@@ -45,7 +45,7 @@ namespace CoreWebApi.Data
 
         public async Task<User> GetUser(int id)
         {
-            var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id && u.Active == true);
             foreach (var item in user.Photos)
             {
                 item.Url = _File.AppendImagePath(item.Url);
@@ -266,14 +266,14 @@ namespace CoreWebApi.Data
         {
 
             IEnumerable<int> studentIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
-            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !studentIds.Contains(m.Id)).ToListAsync();
+            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !studentIds.Contains(m.Id) && m.Active == true).ToListAsync();
             return unmappedStudents;
         }
 
         public async Task<IEnumerable<User>> GetMappedStudents(int csId)
         {
             IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == csId).Select(m => m.UserId).Distinct();
-            var mappedStudents = await _context.Users.Where(m => studentIds.Contains(m.Id)).ToListAsync();
+            var mappedStudents = await _context.Users.Where(m => studentIds.Contains(m.Id) && m.Active == true).ToListAsync();
             return mappedStudents;
         }
 

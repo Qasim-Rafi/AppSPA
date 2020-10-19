@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
@@ -16,10 +17,14 @@ namespace CoreWebApi.Models
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
         public string Details { get; set; }
-        [StringLength(200,ErrorMessage ="Related Material cannot be longer then 200 characters.")]
+        //[StringLength(200,ErrorMessage ="Related Material cannot be longer then 200 characters.")]
         public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }
 
+        [ForeignKey("ClassSectionId")]
         public virtual ClassSection ClassSection { get; set; }
+        [ForeignKey("CreatedById")]
+        public virtual User User { get; set; }
+
     }
 }
