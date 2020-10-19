@@ -130,12 +130,12 @@ namespace CoreWebApi.Controllers
 
 
 
-                return base.Ok();
+                return Ok();
             }
             catch (Exception ex)
             {
 
-                return base.BadRequest(new
+                return BadRequest(new
                 {
                     message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
                 });
@@ -169,7 +169,10 @@ namespace CoreWebApi.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
             }
 
         }
@@ -215,7 +218,10 @@ namespace CoreWebApi.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
             }
 
         }
@@ -233,7 +239,10 @@ namespace CoreWebApi.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
             }
 
         }

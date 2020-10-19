@@ -89,7 +89,10 @@ namespace CoreWebApi.Controllers
             }
             catch(Exception ex)
             {
-                throw ex;
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
             }
 
         }
