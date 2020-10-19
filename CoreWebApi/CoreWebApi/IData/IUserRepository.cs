@@ -21,6 +21,6 @@ namespace CoreWebApi.IData
         //Task<IEnumerable<UserType>> GetUserTypes();
         Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId);
         Task<IEnumerable<User>> GetUnmappedStudents();
-        Task<IEnumerable<User>> GetMappedStudents(int csId);
+        Task<object> GetMappedStudents(int csId);
     }
 }

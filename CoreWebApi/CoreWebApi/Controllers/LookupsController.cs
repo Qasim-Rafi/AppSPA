@@ -89,6 +89,7 @@ namespace CoreWebApi.Controllers
                 Where(z => z.sb.RegistrationNumber == regNo)
                 .Select(m => new
                 {
+                    Id=m.sa.Id,
                     Name = m.sa.Name
                 });
 

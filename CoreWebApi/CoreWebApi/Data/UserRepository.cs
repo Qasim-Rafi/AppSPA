@@ -273,16 +273,18 @@ namespace CoreWebApi.Data
         public async Task<IEnumerable<User>> GetUnmappedStudents()
         {
 
-            IEnumerable<int> studentIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
-            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !studentIds.Contains(m.Id) && m.Active == true).ToListAsync();
+            IEnumerable<int> userIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
+            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !userIds.Contains(m.Id) && m.Active == true).ToListAsync();
             return unmappedStudents;
         }
 
-        public async Task<IEnumerable<User>> GetMappedStudents(int csId)
+        public async Task<object> GetMappedStudents(int csId)
         {
-            IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == csId).Select(m => m.UserId).Distinct();
-            var mappedStudents = await _context.Users.Where(m => studentIds.Contains(m.Id) && m.Active == true).ToListAsync();
-            return mappedStudents;
+
+            IEnumerable<int> userIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == csId).Select(m => m.UserId).Distinct();
+            List<User> mappedStudents = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student && m.Active == true).ToListAsync();
+            User mappedTeacher = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Teacher && m.Active == true).FirstOrDefaultAsync();
+            return new { mappedStudents, mappedTeacher };
         }
 
         //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

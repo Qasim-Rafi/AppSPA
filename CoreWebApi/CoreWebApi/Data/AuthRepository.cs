@@ -42,12 +42,20 @@ namespace CoreWebApi.Data
         }
         public async Task<object> GetSchoolDetails(string regNo)
         {
-            var branch = await _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefaultAsync();
-            var school = await _context.SchoolAcademy.FirstOrDefaultAsync(x => x.Id == branch.SchoolAcademyID);
-            if (school == null)
+            var schoolDetails = await (from school in _context.SchoolAcademy
+                                       join branch in _context.SchoolBranch
+                                       on school.Id equals branch.SchoolAcademyID
+                                       where branch.RegistrationNumber == regNo
+                                       select new
+                                       {
+                                           school,
+                                           branch
+                                       }
+                                ).FirstOrDefaultAsync();
+            if (schoolDetails == null)
                 return null;
-            
-            return new { branch, school };
+
+            return schoolDetails;
 
         }
 
@@ -77,6 +85,7 @@ namespace CoreWebApi.Data
                 var userToCreate = new User
                 {
                     Username = model.Username,
+                    FullName = model.Username,
                     UserTypeId = model.UserTypeId,
                     Email = model.Email,
                     SchoolBranchId = branch.Id,

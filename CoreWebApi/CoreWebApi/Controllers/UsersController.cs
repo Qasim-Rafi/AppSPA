@@ -42,7 +42,7 @@ namespace CoreWebApi.Controllers
 
             var ToReturn = _mapper.Map<List<UserForListDto>>(users);
             ToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
-           
+
             return Ok(ToReturn);
 
         }
@@ -231,11 +231,11 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                var users = await _repo.GetMappedStudents(csId);
-                var ToReturn = _mapper.Map<List<UserForListDto>>(users);
+                dynamic users = await _repo.GetMappedStudents(csId);
+                var Students = _mapper.Map<List<UserForListDto>>(users.mappedStudents);
 
 
-                return Ok(ToReturn);
+                return Ok(new { Students, TeacherName =users.mappedTeacher.FullName });
             }
             catch (Exception ex)
             {
