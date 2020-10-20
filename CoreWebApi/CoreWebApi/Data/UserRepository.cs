@@ -1,19 +1,16 @@
-﻿using CoreWebApi.Dtos;
+﻿using AutoMapper;
+using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
+using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using CoreWebApi.Data;
-using AutoMapper;
-using AutoMapper.Configuration;
-using Microsoft.AspNetCore.Hosting;
 using System.IO;
-using CoreWebApi.IData;
-using CoreWebApi.Helpers;
-using Microsoft.AspNetCore.Http;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
@@ -320,28 +317,55 @@ namespace CoreWebApi.Data
             return true;
         }
 
-        //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        //{
-        //    byte[] key = new Byte[64];
-        //    using (HMACSHA512 hmac = new HMACSHA512(key))
-        //    {
-        //        passwordSalt = hmac.Key;
-        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        public async Task<object> GetGroupUsers()
+        {
 
-        //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        //{
-        //    byte[] key = new Byte[64];
-        //    using (HMACSHA512 hmac = new HMACSHA512(key))
-        //    {
-        //        passwordSalt = hmac.Key;
-        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            var users = (await _context.GroupUsers
+                .Include(m => m.Group).Include(m => m.User).ToListAsync())
+                .GroupBy(m => m.Group.GroupName)
+                .ToDictionary(e => e.Key, e => e.Select(e2 => new
+                {
+                    Id = e2.User.Id,
+                    FullName = e2.User.FullName
+                }));
+            return users;
+        }
 
+        public async Task<bool> UpdatesersInGroup(UserForAddInGroupDto model)
+        {
+            var group = await _context.Groups.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
 
+            group.GroupName = model.GroupName;
+            group.Active = model.Active ?? true;
+            group.SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId);
 
-        //        // var hmac = System.Security.Cryptography.HMACSHA512()
-        //    }
+            await _context.SaveChangesAsync();
 
-        //}
+            List<GroupUser> listToDelete = await _context.GroupUsers.Where(m => m.GroupId == model.Id).ToListAsync();
+            _context.GroupUsers.RemoveRange(listToDelete);
+            await _context.SaveChangesAsync();
+
+            List<GroupUser> listToAdd = new List<GroupUser>();
+            foreach (var item in model.UserIds)
+            {
+                listToAdd.Add(new GroupUser
+                {
+                    GroupId = group.Id,
+                    UserId = item
+                });
+            }
+            await _context.GroupUsers.AddRangeAsync(listToAdd);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<object> GetGroupUsersById(int id)
+        {
+            var gUser = await _context.GroupUsers.Where(m => m.GroupId == id)
+                .Include(m => m.Group).Include(m => m.User).ToListAsync();
+
+            return gUser;
+        }
 
 
     }

@@ -282,7 +282,72 @@ namespace CoreWebApi.Controllers
             }
 
         }
+        [HttpPost("UpdateGroupUsers")]
+        public async Task<IActionResult> UpdateGroupUsers(UserForAddInGroupDto model)
+        {
+            try
+            {
+                model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+
+                var response = await _repo.UpdatesersInGroup(model);
 
 
+                return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+
+        }
+
+        [HttpGet("GetGroupUsers")]
+        public async Task<IActionResult> GetGroupUsers()
+        {
+            try
+            {
+               
+                var ToReturn = await _repo.GetGroupUsers();
+                //var test = (from u in _context.Users
+                //            join gu in _context.GroupUsers
+                //            on u.Id equals gu.UserId
+                //            join g in _context.Groups
+                //            on gu.GroupId equals g.Id
+
+                //            select new { g, u }).ToList().GroupBy(m=>m.g.Id).ToDictionary(e => e.Key, e => e.Select(e2 =>e2.u));
+
+                return Ok(ToReturn);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+
+        }
+        [HttpGet("GetGroupUsersById/{id}")]
+        public async Task<IActionResult> GetGroupUsersById(int id)
+        {
+            try
+            {
+               
+                var ToReturn = await _repo.GetGroupUsersById(id);
+               
+                return Ok(ToReturn);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+
+        }
     }
 }

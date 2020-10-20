@@ -139,8 +139,11 @@ namespace CoreWebApi.Dtos
 
     public class UserForAddInGroupDto : BaseDto
     {
+        public int? Id { get; set; }
         public int? ClassSectionId { get; set; }
         public string GroupName { get; set; }
         public List<int> UserIds { get; set; }
+        public bool? Active { get; set; }
     }
+
 }
