@@ -284,7 +284,29 @@ namespace CoreWebApi.Data
                     }
                     context.SaveChanges();
                 }
-
+                //
+                if (!context.Countries.Any())
+                {
+                    var CountriesJson = JsonConvert.SerializeObject(dataSet.Tables["Countries"]);
+                    var Countries = JsonConvert.DeserializeObject<List<Country>>(CountriesJson);
+                    foreach (var obj in Countries)
+                    {                       
+                        context.Countries.Add(obj);
+                    }
+                    context.SaveChanges();
+                }
+                //
+                if (!context.States.Any())
+                {
+                    var StatesJson = JsonConvert.SerializeObject(dataSet.Tables["States"]);
+                    var States = JsonConvert.DeserializeObject<List<State>>(StatesJson);
+                    foreach (var obj in States)
+                    {
+                        obj.CountryId = context.Countries.First().Id;
+                        context.States.Add(obj);
+                    }
+                    context.SaveChanges();
+                }
 
                 //
                 //if (!context.SchoolAcademy.Any())

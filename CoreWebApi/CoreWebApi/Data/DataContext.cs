@@ -45,6 +45,8 @@ namespace CoreWebApi.Data
         public DbSet<Value> Values { get; set; }
         public DbSet<ClassSection> ClassSections { get; set; }
         public DbSet<ClassSectionUser> ClassSectionUsers { get; set; }
+        public DbSet<State> States { get; set; }
+        public DbSet<Country> Countries { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

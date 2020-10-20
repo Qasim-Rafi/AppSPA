@@ -53,5 +53,18 @@
     {
       "Type": "Subjective"
     }
+  ],
+  "Countries": [
+    {
+      "Name": "Pakistan"
+    }
+  ],
+  "States": [
+    {
+      "Name": "Lahore"
+    },
+    {
+      "Name": "Islamabad"
+    }
   ]
 }

@@ -74,6 +74,24 @@ namespace CoreWebApi.Controllers
             return Ok(list);
 
         }
+        [HttpGet("States")]
+        public async Task<IActionResult> GetStates()
+        {
+            List<State> list = await _context.States.ToListAsync();
+
+
+            return Ok(list);
+
+        }
+        [HttpGet("Countries")]
+        public async Task<IActionResult> GetCountries()
+        {
+            List<Country> list = await _context.Countries.ToListAsync();
+
+
+            return Ok(list);
+
+        }
 
 
         [HttpGet("SchoolAcademies")]
@@ -89,7 +107,7 @@ namespace CoreWebApi.Controllers
                 Where(z => z.sb.RegistrationNumber == regNo)
                 .Select(m => new
                 {
-                    Id=m.sa.Id,
+                    Id = m.sa.Id,
                     Name = m.sa.Name
                 });
 

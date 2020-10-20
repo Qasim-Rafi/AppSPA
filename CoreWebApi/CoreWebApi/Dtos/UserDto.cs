@@ -33,13 +33,16 @@ namespace CoreWebApi.Dtos
         [DateValidation(ErrorMessage = "Date of birth is not in correct format")]
         public string DateofBirth { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "City cannot be longer then 50 characters")]
-        public string City { get; set; }
+        public int? StateId { get; set; }
+        public int? CountryId { get; set; }
+        public string OtherState { get; set; }
+        //[Required]
+        //[StringLength(50, ErrorMessage = "City cannot be longer then 50 characters")]
+        //public string City { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
-        public string Country { get; set; }
+        //[Required]
+        //[StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
+        //public string Country { get; set; }
 
         public int UserTypeId { get; set; } = 2;
         //public bool Active { get; set; }
@@ -65,14 +68,16 @@ namespace CoreWebApi.Dtos
         //[Required]
         [DateValidation(ErrorMessage = "Date of birth is not in correct format")]
         public string DateofBirth { get; set; }
+        public int? StateId { get; set; }
+        public int? CountryId { get; set; }
+        public string OtherState { get; set; }
+        //[Required]
+        //[StringLength(50, ErrorMessage = "City cannot be longer then 50 characters")]
+        //public string City { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "City cannot be longer then 50 characters")]
-        public string City { get; set; }
-
-        [Required]
-        [StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
-        public string Country { get; set; }
+        //[Required]
+        //[StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
+        //public string Country { get; set; }
 
         public bool IsPrimaryPhoto { get; set; }
         //public int UserTypeId { get; set; }
@@ -89,8 +94,11 @@ namespace CoreWebApi.Dtos
         public string FullName { get; set; }
         public string Gender { get; set; }
         public string DateofBirth { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
+        public int? StateId { get; set; }       
+        public int? CountryId { get; set; }
+        public string StateName { get; set; }
+        public string CountryName { get; set; }
+        public string OtherState { get; set; }
         public bool Active { get; set; }
         public virtual ICollection<Photo> Photos { get; set; }
     }
@@ -103,8 +111,11 @@ namespace CoreWebApi.Dtos
         public string FullName { get; set; }
         public string Gender { get; set; }
         public string DateofBirth { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
+        public int? StateId { get; set; }
+        public int? CountryId { get; set; }
+        public string StateName { get; set; }
+        public string CountryName { get; set; }
+        public string OtherState { get; set; }
         public bool Active { get; set; }
     }
     public class UserForLoginDto

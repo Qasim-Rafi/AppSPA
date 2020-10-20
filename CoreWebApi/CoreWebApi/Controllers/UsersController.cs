@@ -40,8 +40,22 @@ namespace CoreWebApi.Controllers
         {
             var users = await _repo.GetUsers();
 
-            var ToReturn = _mapper.Map<List<UserForListDto>>(users);
-            ToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
+            var ToReturn = users.Select(o => new UserForListDto
+            {
+                FullName = o.FullName,
+                DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                Email = o.Email,
+                Gender = o.Gender,
+                Username = o.Username,
+                CountryId = o.CountryId,
+                StateId = o.StateId,
+                CountryName = o.Country?.Name,
+                StateName = o.State?.Name,
+                OtherState = o.OtherState,
+                Active = o.Active,
+            }).ToList();
+            //var ToReturn = _mapper.Map<List<UserForListDto>>(users);
+            //ToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
 
             return Ok(ToReturn);
 

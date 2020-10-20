@@ -56,7 +56,7 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<User>> GetUsers()
         {
-            var users = await _context.Users.Where(m => m.Active == true).Include(p => p.Photos).ToListAsync();
+            var users = await _context.Users.Where(m => m.Active == true).Include(p => p.Photos).Include(m => m.Country).Include(m => m.State).ToListAsync();
             foreach (var user in users)
             {
                 foreach (var item in user.Photos)
@@ -96,8 +96,9 @@ namespace CoreWebApi.Data
                     Active = true,
                     DateofBirth = Convert.ToDateTime(userDto.DateofBirth),
                     LastActive = DateTime.Now,
-                    //City = "Lahore",
-                    //Country = "Pakistan",
+                    StateId = userDto.StateId,
+                    CountryId = userDto.CountryId,
+                    OtherState = userDto.OtherState,
                     Email = userDto.Email,
                     SchoolBranchId = Convert.ToInt32(userDto.LoggedIn_BranchId)
                 };
@@ -134,8 +135,9 @@ namespace CoreWebApi.Data
                     dbUser.FullName = user.FullName;
                     dbUser.Email = user.Email;
                     dbUser.Username = user.Username.ToLower();
-                    //dbUser.City = user.City;
-                    //dbUser.Country = user.Country;
+                    dbUser.StateId = user.StateId;
+                    dbUser.CountryId = user.CountryId;
+                    dbUser.OtherState = user.OtherState;
                     dbUser.DateofBirth = Convert.ToDateTime(user.DateofBirth);
                     dbUser.Gender = user.Gender;
                     dbUser.Active = user.Active;
