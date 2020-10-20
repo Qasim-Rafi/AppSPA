@@ -42,6 +42,7 @@ namespace CoreWebApi.Controllers
 
             var ToReturn = users.Select(o => new UserForListDto
             {
+                Id = o.Id,
                 FullName = o.FullName,
                 DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
                 Email = o.Email,

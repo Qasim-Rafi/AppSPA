@@ -83,7 +83,7 @@ namespace CoreWebApi.Data
                     if (schoolAcademies == null)
                     {
                         var schoolAcademy = new SchoolAcademy();
-                        
+
                         schoolAcademy.Name = "LGS";
                         schoolAcademy.PrimaryContactPerson = "Qasim Rafi";
                         schoolAcademy.SecondaryContactPerson = "Ahsan Meraj";
@@ -134,10 +134,10 @@ namespace CoreWebApi.Data
             try
             {
 
-               
-               
-              var   schoolBranch = context.SchoolBranch.FirstOrDefault(m => m.Id == schoolBranchId);
-                if (schoolBranch != null )
+
+
+                var schoolBranch = context.SchoolBranch.FirstOrDefault(m => m.Id == schoolBranchId);
+                if (schoolBranch != null)
                 {
 
                     var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
@@ -290,7 +290,7 @@ namespace CoreWebApi.Data
                     var CountriesJson = JsonConvert.SerializeObject(dataSet.Tables["Countries"]);
                     var Countries = JsonConvert.DeserializeObject<List<Country>>(CountriesJson);
                     foreach (var obj in Countries)
-                    {                       
+                    {
                         context.Countries.Add(obj);
                     }
                     context.SaveChanges();
@@ -300,10 +300,21 @@ namespace CoreWebApi.Data
                 {
                     var StatesJson = JsonConvert.SerializeObject(dataSet.Tables["States"]);
                     var States = JsonConvert.DeserializeObject<List<State>>(StatesJson);
-                    foreach (var obj in States)
+                    foreach (var (obj, index) in ReturnIndex(States))
                     {
                         obj.CountryId = context.Countries.First().Id;
+
                         context.States.Add(obj);
+                        if (index == (States.Count - 1))
+                        {
+                            var other = new State
+                            {
+                                Name = "Other",
+                                CountryId = obj.CountryId,
+                            };
+                            context.States.Add(other);
+                        }
+
                     }
                     context.SaveChanges();
                 }
