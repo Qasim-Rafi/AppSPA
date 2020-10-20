@@ -22,5 +22,6 @@ namespace CoreWebApi.IData
         Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId);
         Task<IEnumerable<User>> GetUnmappedStudents();
         Task<object> GetMappedStudents(int csId);
+        Task<bool> AddUsersInGroup(UserForAddInGroupDto model);
     }
 }

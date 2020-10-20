@@ -261,5 +261,28 @@ namespace CoreWebApi.Controllers
             }
 
         }
+        [HttpPost("AddGroupUsers")]
+        public async Task<IActionResult> AddUsersInGroup(UserForAddInGroupDto model)
+        {
+            try
+            {
+                model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+
+                var response = await _repo.AddUsersInGroup(model);
+
+
+                return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+
+        }
+
+
     }
 }

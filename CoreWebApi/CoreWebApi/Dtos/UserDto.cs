@@ -136,4 +136,11 @@ namespace CoreWebApi.Dtos
         public string Email { get; set; }
         public int UserTypeId { get; set; } = 2;
     }
+
+    public class UserForAddInGroupDto : BaseDto
+    {
+        public int? ClassSectionId { get; set; }
+        public string GroupName { get; set; }
+        public List<int> UserIds { get; set; }
+    }
 }

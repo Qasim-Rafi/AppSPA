@@ -46,7 +46,7 @@ namespace CoreWebApi.Data
         public async Task<User> GetUser(int id)
         {
             var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id && u.Active == true);
-            foreach (var item in user.Photos)
+            foreach (var item in user?.Photos)
             {
                 item.Url = _File.AppendImagePath(item.Url);
             }
@@ -59,7 +59,7 @@ namespace CoreWebApi.Data
             var users = await _context.Users.Where(m => m.Active == true).Include(p => p.Photos).Include(m => m.Country).Include(m => m.State).ToListAsync();
             foreach (var user in users)
             {
-                foreach (var item in user.Photos)
+                foreach (var item in user?.Photos)
                 {
                     item.Url = _File.AppendImagePath(item.Url);
                 }
@@ -242,6 +242,13 @@ namespace CoreWebApi.Data
                 {
                     IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == classSectionId).Select(m => m.UserId).Distinct();
                     var users = await _context.Users.Where(m => m.UserTypeId == typeId && studentIds.Contains(m.Id) && m.Active == true).Include(p => p.Photos).ToListAsync();
+                    //var users = await (from u in _context.Users
+                    //                   join csU in _context.ClassSectionUsers
+                    //                   on u.Id equals csU.UserId
+                    //                   where u.UserTypeId == typeId
+                    //                   && csU.ClassSectionId == classSectionId
+                    //                   && u.Active == true
+                    //                   select u).Include(p => p.Photos).ToListAsync();
                     foreach (var user in users)
                     {
                         foreach (var item in user.Photos)
@@ -287,6 +294,30 @@ namespace CoreWebApi.Data
             List<User> mappedStudents = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student && m.Active == true).ToListAsync();
             User mappedTeacher = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Teacher && m.Active == true).FirstOrDefaultAsync();
             return new { mappedStudents, mappedTeacher };
+        }
+
+        public async Task<bool> AddUsersInGroup(UserForAddInGroupDto model)
+        {
+            var group = new Group
+            {
+                GroupName = model.GroupName,
+                Active = true,
+                SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId)
+            };
+            await _context.Groups.AddAsync(group);
+            await _context.SaveChangesAsync();
+            List<GroupUser> listToAdd = new List<GroupUser>();
+            foreach (var item in model.UserIds)
+            {
+                listToAdd.Add(new GroupUser
+                {
+                    GroupId = group.Id,
+                    UserId = item
+                });
+            }
+            await _context.GroupUsers.AddRangeAsync(listToAdd);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

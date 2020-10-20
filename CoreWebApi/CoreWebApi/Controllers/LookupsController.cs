@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CoreWebApi.Data;
+using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +20,12 @@ namespace CoreWebApi.Controllers
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-
-        public LookupsController(DataContext context, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public LookupsController(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             _configuration = configuration;
             _context = context;
+            _mapper = mapper;
         }
         [HttpGet("UserTypes")]
         public async Task<IActionResult> GetUserTypes()
@@ -88,6 +92,20 @@ namespace CoreWebApi.Controllers
         {
             List<Country> list = await _context.Countries.ToListAsync();
 
+
+            return Ok(list);
+
+        }
+        [HttpGet("Users/{csId}")]
+        public async Task<IActionResult> GetUsersByClassSection(int csId)
+        {
+            var users = await (from u in _context.Users
+                              join csU in _context.ClassSectionUsers
+                              on u.Id equals csU.UserId
+                              where csU.ClassSectionId == csId
+                              && u.UserTypeId == (int)Enumm.UserType.Student
+                              select u).ToListAsync();
+            var list = _mapper.Map<List<UserForListDto>>(users);
 
             return Ok(list);
 
