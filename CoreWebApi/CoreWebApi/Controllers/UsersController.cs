@@ -289,7 +289,7 @@ namespace CoreWebApi.Controllers
             {
                 model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
-                var response = await _repo.UpdatesersInGroup(model);
+                var response = await _repo.UpdateUsersInGroup(model);
 
 
                 return StatusCode(StatusCodes.Status201Created);
@@ -309,15 +309,20 @@ namespace CoreWebApi.Controllers
         {
             try
             {
-               
+
                 var ToReturn = await _repo.GetGroupUsers();
-                //var test = (from u in _context.Users
+                //var ToReturn = (from u in _context.Users
                 //            join gu in _context.GroupUsers
                 //            on u.Id equals gu.UserId
                 //            join g in _context.Groups
                 //            on gu.GroupId equals g.Id
-
-                //            select new { g, u }).ToList().GroupBy(m=>m.g.Id).ToDictionary(e => e.Key, e => e.Select(e2 =>e2.u));
+                //            select new
+                //            {
+                //                GroupId = g.Id,
+                //                GroupName = g.GroupName,
+                //                UserId = u.Id,
+                //                FullName = u.FullName
+                //            }).ToList();
 
                 return Ok(ToReturn);
             }
@@ -335,9 +340,9 @@ namespace CoreWebApi.Controllers
         {
             try
             {
-               
+
                 var ToReturn = await _repo.GetGroupUsersById(id);
-               
+
                 return Ok(ToReturn);
             }
             catch (Exception ex)

@@ -327,11 +327,11 @@ namespace CoreWebApi.Data
                 {
                     Id = e2.User.Id,
                     FullName = e2.User.FullName
-                }));
+                })).ToList();
             return users;
         }
 
-        public async Task<bool> UpdatesersInGroup(UserForAddInGroupDto model)
+        public async Task<bool> UpdateUsersInGroup(UserForAddInGroupDto model)
         {
             var group = await _context.Groups.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
 
@@ -361,10 +361,16 @@ namespace CoreWebApi.Data
 
         public async Task<object> GetGroupUsersById(int id)
         {
-            var gUser = await _context.GroupUsers.Where(m => m.GroupId == id)
-                .Include(m => m.Group).Include(m => m.User).ToListAsync();
+            var gusers = (await _context.GroupUsers.Where(m => m.GroupId == id)
+                  .Include(m => m.Group).Include(m => m.User).ToListAsync())
+                  .GroupBy(m => m.Group.GroupName)
+                  .ToDictionary(e => e.Key, e => e.Select(e2 => new
+                  {
+                      Id = e2.User.Id,
+                      FullName = e2.User.FullName
+                  })).ToList();
+            return gusers;
 
-            return gUser;
         }
 
 
