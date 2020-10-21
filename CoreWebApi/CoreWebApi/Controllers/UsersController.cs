@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : BaseController
@@ -312,17 +312,17 @@ namespace CoreWebApi.Controllers
 
                 var ToReturn = await _repo.GetGroupUsers();
                 //var ToReturn = (from u in _context.Users
-                //            join gu in _context.GroupUsers
-                //            on u.Id equals gu.UserId
-                //            join g in _context.Groups
-                //            on gu.GroupId equals g.Id
-                //            select new
-                //            {
-                //                GroupId = g.Id,
-                //                GroupName = g.GroupName,
-                //                UserId = u.Id,
-                //                FullName = u.FullName
-                //            }).ToList();
+                //                join gu in _context.GroupUsers
+                //                on u.Id equals gu.UserId
+                //                join g in _context.Groups
+                //                on gu.GroupId equals g.Id
+                //                select new
+                //                {
+                //                    GroupId = g.Id,
+                //                    GroupName = g.GroupName,
+                //                    UserId = u.Id,
+                //                    FullName = u.FullName
+                //                }).ToList();
 
                 return Ok(ToReturn);
             }
