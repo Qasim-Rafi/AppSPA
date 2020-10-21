@@ -413,7 +413,7 @@ namespace CoreWebApi.Data
             if (groupList.Count > 0)
                 users = JsonConvert.SerializeObject(groupList);
             return users;
-        }       
+        }
 
         public async Task<bool> UpdateUsersInGroup(UserForAddInGroupDto model)
         {
@@ -445,15 +445,82 @@ namespace CoreWebApi.Data
 
         public async Task<object> GetGroupUsersById(int id)
         {
-            var gusers = (await _context.GroupUsers.Where(m => m.GroupId == id)
-                  .Include(m => m.Group).Include(m => m.User).ToListAsync())
-                  .GroupBy(m => m.Group.GroupName)
-                  .ToDictionary(e => e.Key, e => e.Select(e2 => new
-                  {
-                      Id = e2.User.Id,
-                      FullName = e2.User.FullName
-                  })).ToList();
-            return gusers;
+            List<GroupList> groupList = new List<GroupList>();
+
+            //var users = (await _context.GroupUsers
+            // .Include(m => m.Group).Include(m => m.User).ToListAsync())
+            // .GroupBy(m => m.Group.GroupName)
+            // .ToDictionary(e => e.Key, e => e.Select(e2 => new
+            // {
+            // Id = e2.User.Id,
+            // FullName = e2.User.FullName
+            // })).ToList();
+
+
+
+
+
+            var result = _context.Groups
+            .Join(_context.GroupUsers
+            , od => od.Id
+            , o => o.GroupId
+            , (o, od) => new
+            {
+                o.Id,
+                od.Group.GroupName
+            })
+            .Select(s => s).Where(m => m.Id == id).FirstOrDefault();
+
+
+            var users = string.Empty;
+
+            if (result != null)
+            {
+
+                groupList.Add(new GroupList
+                {
+                    Id = result.Id,
+                    groupName = result.GroupName,
+                });
+
+            }
+
+
+            foreach (var item in groupList)
+            {
+                var user = _context.Groups.Where(x => x.Id == item.Id).
+                Join(_context.GroupUsers, g => g.Id,
+                gu => gu.GroupId, (Group, GroupUser) => new
+                {
+                    Group = Group,
+                    GroupUser = GroupUser
+                }).Join(_context.Users, gu => gu.GroupUser.UserId, u => u.Id, (GroupUser, User) => new
+                {
+                    GroupUser = GroupUser,
+                    User = User
+                })
+                .Select(p => p).Where(m => m.GroupUser.Group.Id == id).ToList();
+
+                foreach (var item_u in user)
+                {
+                    if (item.Id == item_u.GroupUser.Group.Id)
+                    {
+
+                        item.Children.Add(new GroupUserList
+                        {
+                            display = item_u.User.FullName,
+                            value = item_u.User.Id
+                        });
+                    }
+
+                }
+            }
+
+
+
+            if (groupList.Count > 0)
+                users = JsonConvert.SerializeObject(groupList);
+            return users;
 
         }
 

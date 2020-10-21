@@ -59,7 +59,7 @@ namespace CoreWebApi.Data
                     CreatedById = Convert.ToInt32(assignment.LoggedIn_UserId),
                     CreatedDateTime = DateTime.Now,
                     Details = assignment.Details,
-                    TeacherName=assignment.TeacherName,
+                    TeacherName = assignment.TeacherName,
                     ClassSectionId = assignment.ClassSectionId
                 };
 
@@ -111,7 +111,8 @@ namespace CoreWebApi.Data
                     dbObj.AssignmentName = assignment.AssignmentName;
                     dbObj.Details = assignment.Details;
                     dbObj.ClassSectionId = assignment.ClassSectionId;
-                    dbObj.TeacherName = assignment.TeacherName;
+                    //dbObj.TeacherName = assignment.TeacherName;
+                    
                     // _context.Assignments.Attach(assignment);
                     // _context.Entry(assignment).State = EntityState.Modified;
                     if (assignment.files != null && assignment.files.Count() > 0)
