@@ -52,6 +52,7 @@ namespace CoreWebApi.Data
                 QuizDate = Convert.ToDateTime(model.QuizDate),
                 NoOfQuestions = model.NoOfQuestions,
                 SubjectId = model.SubjectId,
+                ClassSectionId=model.ClassSectionId,
                 CreatedDate = DateTime.Now,
                 CreatedById = _context.Users.First().Id
             };
@@ -151,6 +152,7 @@ namespace CoreWebApi.Data
                 quiz.QuizDate = Convert.ToDateTime(model.QuizDate);
                 quiz.NoOfQuestions = model.NoOfQuestions;
                 quiz.SubjectId = model.SubjectId;
+                quiz.ClassSectionId = model.ClassSectionId;
                 await _context.SaveChangesAsync();
             }
             return quiz.Id;

@@ -20,7 +20,7 @@ namespace CoreWebApi.Models
         //[StringLength(200,ErrorMessage ="Related Material cannot be longer then 200 characters.")]
         public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }
-
+        public string TeacherName { get; set; }
         [ForeignKey("ClassSectionId")]
         public virtual ClassSection ClassSection { get; set; }
         [ForeignKey("CreatedById")]

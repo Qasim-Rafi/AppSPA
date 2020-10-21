@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Dtos;
 using CoreWebApi.IData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWebApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ExamsController : ControllerBase

@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : BaseController

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +13,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWebApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class AssignmentsController : ControllerBase
+    public class AssignmentsController : BaseController
     {
         private readonly IAssignmentRepository _repo;
         private readonly IMapper _mapper;
@@ -53,6 +54,7 @@ namespace CoreWebApi.Controllers
                 //if (await _repo.AssignmentExists(assignment.AssignmentName))
                 //    return BadRequest(new { message = "Assignment Already Exist" });
 
+                assignment.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
                 var createdObj = await _repo.AddAssignment(assignment);
 
                 return StatusCode(StatusCodes.Status201Created);

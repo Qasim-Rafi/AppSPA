@@ -19,6 +19,8 @@ namespace CoreWebApi.Dtos
         public int NoOfQuestions { get; set; }
         [Required]
         public int SubjectId { get; set; }
+        [Required] 
+        public int ClassSectionId { get; set; }
     }
    
     public class QuizQuestionDtoForAdd
@@ -31,7 +33,7 @@ namespace CoreWebApi.Dtos
         [Required]
         public double Marks { get; set; }
         [Required]
-        public int QuestionTypeId { get; set; }
+        public int QuestionTypeId { get; set; }       
         public List<QuizAnswerDtoForAdd> Answers { get; set; }
     }
     public class QuizAnswerDtoForAdd
@@ -44,7 +46,6 @@ namespace CoreWebApi.Dtos
         public string Answer { get; set; }
         [Required]
         [BoolValidation(ErrorMessage = "The field must be true of false")]
-
         public bool IsTrue { get; set; }
     }
     public class QuizDtoForList

@@ -11,7 +11,7 @@ namespace CoreWebApi.Dtos
     {
 
     }
-    public class AssignmentDtoForAdd
+    public class AssignmentDtoForAdd : BaseDto
     {
         [Required]
         [StringLength(30, ErrorMessage = "Assignment Name cannot be longer than 30 characters")]
@@ -19,7 +19,8 @@ namespace CoreWebApi.Dtos
         [StringLength(200, ErrorMessage = "Related Material cannot be longer then 200 characters.")]
         public string Details { get; set; }
         //public string RelatedMaterial { get; set; }
-        public int ClassSectionId { get; set; }
+        public int ClassSectionId { get; set; }        
+        public string TeacherName { get; set; }
         public IFormFileCollection files { get; set; }
 
     }
@@ -32,6 +33,7 @@ namespace CoreWebApi.Dtos
         public string Details { get; set; }
         //public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }
+        public string TeacherName { get; set; }
         public IFormFileCollection files { get; set; }
 
     }
