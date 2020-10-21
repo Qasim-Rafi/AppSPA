@@ -319,18 +319,28 @@ namespace CoreWebApi.Data
             return true;
         }
 
-        private class GroupUserList
+        public class GroupUserList
         {
             public int value { get; set; }
             public string display { get; set; }
-            public string  groupName { get; set; }
+        }
+        public class GroupList
+        {
+            public int Id { get; set; }
+            public string groupName { get; set; }
+            public List<GroupUserList> groupUserList = new List<GroupUserList>();
+            public List<GroupUserList> GetList()
+            {
+                return groupUserList;
+            }
         }
 
         public async Task<object> GetGroupUsers()
         {
-            List<GroupUserList> groupUserList = new List<GroupUserList>();
+            List<GroupList> groupList = new List<GroupList>();
+            //List<GroupUserList> groupUserList = new List<GroupUserList>();
 
-            //var users = (await _context.GroupUsers
+            //var test0 = (await _context.GroupUsers
             //    .Include(m => m.Group).Include(m => m.User).ToListAsync())
             //    .GroupBy(m => m.Group.GroupName)
             //    .ToDictionary(e => e.Key, e => e.Select(e2 => new
@@ -343,7 +353,7 @@ namespace CoreWebApi.Data
 
 
 
-            var result =  _context.Groups
+            var result = _context.Groups
                .Join(_context.GroupUsers
                , od => od.Id
                , o => o.GroupId
@@ -359,7 +369,7 @@ namespace CoreWebApi.Data
 
             foreach (var item in result)
             {
-                var user =   _context.Groups.Where(x => x.Id == item.Id).
+                var user = _context.Groups.Where(x => x.Id == item.Id).
                            Join(_context.GroupUsers, g => g.Id,
                      gu => gu.GroupId, (Group, GroupUser) => new
                      {
@@ -374,20 +384,26 @@ namespace CoreWebApi.Data
 
                 foreach (var item_U in user)
                 {
-                    groupUserList.Add(new GroupUserList
-                    {
-                        groupName = item.GroupName,
-                        value = item_U.User.Id,
-                        display = item_U.User.FullName
-                    }) ;
-                } 
-                   
-                 
+
+                    var gList = new GroupList();
+                    gList.Id = item.Id;
+                    gList.groupName = item.GroupName;
+
+                    var guList = new GroupUserList();
+                    guList.display = item_U.User.FullName;
+                    guList.value = item_U.User.Id;
+                    gList.groupUserList.Add(guList);
+
+                    groupList.Add(gList);
+
+                }
+
+
             }
 
-            if (groupUserList.Count > 0)
-                users = JsonConvert.SerializeObject(groupUserList);
-            return users;
+            //if (groupUserList.Count > 0)
+            //    users = JsonConvert.SerializeObject(groupUserList);
+            return groupList;
         }
 
         public async Task<bool> UpdateUsersInGroup(UserForAddInGroupDto model)
