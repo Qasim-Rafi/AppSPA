@@ -57,6 +57,10 @@ namespace CoreWebApi.Models
         public int? CountryId { get; set; }
         public int UserTypeId { get; set; }
 
+        [Required]
+        [StringLength(50, ErrorMessage = "Roll Number cannot be longer then 50 characters")]
+        public string RollNumber { get; set; }
+
         public virtual ICollection<Photo> Photos { get; set; }
         [ForeignKey("UserTypeId")]
         public virtual UserType Usertypes { get; set; }

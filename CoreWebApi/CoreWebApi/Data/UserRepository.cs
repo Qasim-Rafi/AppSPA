@@ -99,6 +99,7 @@ namespace CoreWebApi.Data
                     CountryId = userDto.CountryId,
                     OtherState = userDto.OtherState,
                     Email = userDto.Email,
+                    RollNumber = userDto.RollNumber,
                     SchoolBranchId = Convert.ToInt32(userDto.LoggedIn_BranchId)
                 };
                 byte[] passwordHash, passwordSalt;
@@ -318,93 +319,101 @@ namespace CoreWebApi.Data
             await _context.SaveChangesAsync();
             return true;
         }
-
-        public class GroupUserList
+        private class GroupUserList
         {
             public int value { get; set; }
             public string display { get; set; }
         }
-        public class GroupList
+        private class GroupList
         {
+            public GroupList()
+            {
+                Children = new List<GroupUserList>();
+            }
             public int Id { get; set; }
             public string groupName { get; set; }
-            public List<GroupUserList> groupUserList = new List<GroupUserList>();
-            public List<GroupUserList> GetList()
-            {
-                return groupUserList;
-            }
+            public List<GroupUserList> Children { get; set; }
         }
 
         public async Task<object> GetGroupUsers()
         {
             List<GroupList> groupList = new List<GroupList>();
-            //List<GroupUserList> groupUserList = new List<GroupUserList>();
 
-            //var test0 = (await _context.GroupUsers
-            //    .Include(m => m.Group).Include(m => m.User).ToListAsync())
-            //    .GroupBy(m => m.Group.GroupName)
-            //    .ToDictionary(e => e.Key, e => e.Select(e2 => new
-            //    {
-            //        Id = e2.User.Id,
-            //        FullName = e2.User.FullName
-            //    })).ToList();
+            //var users = (await _context.GroupUsers
+            // .Include(m => m.Group).Include(m => m.User).ToListAsync())
+            // .GroupBy(m => m.Group.GroupName)
+            // .ToDictionary(e => e.Key, e => e.Select(e2 => new
+            // {
+            // Id = e2.User.Id,
+            // FullName = e2.User.FullName
+            // })).ToList();
 
 
 
 
 
             var result = _context.Groups
-               .Join(_context.GroupUsers
-               , od => od.Id
-               , o => o.GroupId
-               , (o, od) => new
-               {
-                   o.Id,
-                   od.Group.GroupName
-               })
-                .Select(s => s).Distinct().ToList();
+            .Join(_context.GroupUsers
+            , od => od.Id
+            , o => o.GroupId
+            , (o, od) => new
+            {
+                o.Id,
+                od.Group.GroupName
+            })
+            .Select(s => s).Distinct().ToList();
 
 
             var users = string.Empty;
 
             foreach (var item in result)
             {
-                var user = _context.Groups.Where(x => x.Id == item.Id).
-                           Join(_context.GroupUsers, g => g.Id,
-                     gu => gu.GroupId, (Group, GroupUser) => new
-                     {
-                         Group = Group,
-                         GroupUser = GroupUser
-                     }).Join(_context.Users, gu => gu.GroupUser.UserId, u => u.Id, (GroupUser, User) => new
-                     {
-                         GroupUser = GroupUser,
-                         User = User
-                     })
-                                      .Select(p => p).ToList();
 
-                foreach (var item_U in user)
+                groupList.Add(new GroupList
                 {
-
-                    var gList = new GroupList();
-                    gList.Id = item.Id;
-                    gList.groupName = item.GroupName;
-
-                    var guList = new GroupUserList();
-                    guList.display = item_U.User.FullName;
-                    guList.value = item_U.User.Id;
-                    gList.groupUserList.Add(guList);
-
-                    groupList.Add(gList);
-
-                }
-
+                    Id = item.Id,
+                    groupName = item.GroupName,
+                });
 
             }
 
-            //if (groupUserList.Count > 0)
-            //    users = JsonConvert.SerializeObject(groupUserList);
-            return groupList;
-        }
+
+            foreach (var item in groupList)
+            {
+                var user = _context.Groups.Where(x => x.Id == item.Id).
+                Join(_context.GroupUsers, g => g.Id,
+                gu => gu.GroupId, (Group, GroupUser) => new
+                {
+                    Group = Group,
+                    GroupUser = GroupUser
+                }).Join(_context.Users, gu => gu.GroupUser.UserId, u => u.Id, (GroupUser, User) => new
+                {
+                    GroupUser = GroupUser,
+                    User = User
+                })
+                .Select(p => p).ToList();
+
+                foreach (var item_u in user)
+                {
+                    if (item.Id == item_u.GroupUser.Group.Id)
+                    {
+
+                        item.Children.Add(new GroupUserList
+                        {
+                            display = item_u.User.FullName,
+                            value = item_u.User.Id
+                        });
+                    }
+
+                }
+            }
+
+
+
+            if (groupList.Count > 0)
+                users = JsonConvert.SerializeObject(groupList);
+            return users;
+        }       
 
         public async Task<bool> UpdateUsersInGroup(UserForAddInGroupDto model)
         {
