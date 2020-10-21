@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -54,14 +55,13 @@ namespace CoreWebApi.Data
         {
             foreach (IMutableForeignKey relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-                //var name = relationship.DeclaringEntityType.ClrType.Name;
-                //var properties = relationship.DeclaringEntityType.ClrType.GetProperties();
-                //if (name != "GroupUser" && (properties.Where(m => m.Name == "GroupId") != null || properties.Where(m => m.Name == "UserId") != null))
-                //{
-                //    relationship.DeleteBehavior = DeleteBehavior.Restrict;
-                //}
-                
+
+                string name = relationship.DeclaringEntityType.ClrType.Name;
+                PropertyInfo[] properties = relationship.DeclaringEntityType.ClrType.GetProperties();
+                if (name != "GroupUser" && (properties.Where(m => m.Name == "GroupId") != null || properties.Where(m => m.Name == "UserId") != null))
+                    relationship.DeleteBehavior = DeleteBehavior.Restrict;
+                else
+                    relationship.DeleteBehavior = DeleteBehavior.Cascade;
             }
         }
 
