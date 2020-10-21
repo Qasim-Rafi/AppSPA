@@ -524,7 +524,13 @@ namespace CoreWebApi.Data
 
         }
 
-
+        public async Task<object> DeleteGroup(int id)
+        {
+            var group = _context.Groups.Where(m => m.Id == id).FirstOrDefault();
+            _context.Groups.Remove(group);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
 

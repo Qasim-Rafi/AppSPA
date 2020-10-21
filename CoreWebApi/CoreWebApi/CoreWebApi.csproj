@@ -43,6 +43,8 @@
     <Compile Remove="Migrations\20201019054847_addAssignment.Designer.cs" />
     <Compile Remove="Migrations\20201021094453_addUserRollNo_addAssignmntCSId.cs" />
     <Compile Remove="Migrations\20201021094453_addUserRollNo_addAssignmntCSId.Designer.cs" />
+    <Compile Remove="Migrations\20201021122949_test.cs" />
+    <Compile Remove="Migrations\20201021122949_test.Designer.cs" />
 
   </ItemGroup>
 

@@ -354,5 +354,24 @@ namespace CoreWebApi.Controllers
             }
 
         }
+        [HttpDelete("DeleteGroup/{id}")]
+        public async Task<IActionResult> DeleteGroup(int id)
+        {
+            try
+            {
+
+                var ToReturn = await _repo.DeleteGroup(id);
+                
+                return Ok(ToReturn);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+
+        }
     }
 }
