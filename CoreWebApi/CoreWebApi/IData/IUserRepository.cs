@@ -11,22 +11,21 @@ namespace CoreWebApi.IData
     {
         void Add<T>(T entity) where T : class;
         void Delete<T>(Task entity) where T : class;
-        Task<bool> SaveAll();
+        Task<ServiceResponse<bool>> SaveAll();
         Task<IEnumerable<User>> GetUsers();
 
-        Task<User> GetUser(int i);
+        Task<ServiceResponse<User>> GetUser(int i);
         Task<bool> UserExists(string username);
-        Task<User> AddUser(UserForAddDto user);
-        Task<string> EditUser(int id, UserForUpdateDto userForAddDto);
+        Task<ServiceResponse<User>> AddUser(UserForAddDto user);
+        Task<ServiceResponse<string>> EditUser(int id, UserForUpdateDto userForAddDto);
         //Task<IEnumerable<UserType>> GetUserTypes();
         Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId);
-        Task<IEnumerable<User>> GetUnmappedStudents();
-        Task<object> GetMappedStudents(int csId);
-        Task<bool> AddUsersInGroup(UserForAddInGroupDto model);
-        Task<bool> UpdateUsersInGroup(UserForAddInGroupDto model);
-        Task<object> GetGroupUsers();
-        Task<object> GetGroupUsersById(int id);
-        Task<object> DeleteGroup(int id);
+        Task<ServiceResponse<IEnumerable<User>>> GetUnmappedStudents();
+        Task<ServiceResponse<object>> GetMappedStudents(int csId);
+        Task<ServiceResponse<bool>> AddUsersInGroup(UserForAddInGroupDto model);
+        Task<ServiceResponse<bool>> UpdateUsersInGroup(UserForAddInGroupDto model);
+        Task<ServiceResponse<object>> GetGroupUsers();
+        Task<ServiceResponse<object>> GetGroupUsersById(int id);
 
 
     }
