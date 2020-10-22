@@ -301,6 +301,7 @@ namespace CoreWebApi.Data
             var group = new Group
             {
                 GroupName = model.GroupName,
+                ClassSectionId = model.ClassSectionId,
                 Active = true,
                 SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId)
             };
@@ -333,7 +334,7 @@ namespace CoreWebApi.Data
             // FullName = e2.User.FullName
             // })).ToList();
 
-            var result = _context.Groups
+            var result = await _context.Groups
             .Join(_context.GroupUsers
             , od => od.Id
             , o => o.GroupId
@@ -342,7 +343,7 @@ namespace CoreWebApi.Data
                 o.Id,
                 od.Group.GroupName
             })
-            .Select(s => s).Distinct().ToList();
+            .Select(s => s).Distinct().ToListAsync();
             var users = string.Empty;
 
             foreach (var item in result)
@@ -396,6 +397,7 @@ namespace CoreWebApi.Data
             var group = await _context.Groups.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
 
             group.GroupName = model.GroupName;
+            //group.ClassSectionId = model.ClassSectionId;
             group.Active = model.Active ?? true;
             group.SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId);
 
@@ -430,9 +432,10 @@ namespace CoreWebApi.Data
                                 select new
                                 {
                                     g.Id,
-                                    g.GroupName
+                                    g.GroupName,
+                                    g.ClassSectionId
                                 }).FirstOrDefaultAsync();
-           
+
             var users = string.Empty;
 
             if (result != null)
@@ -442,6 +445,7 @@ namespace CoreWebApi.Data
                 {
                     Id = result.Id,
                     groupName = result.GroupName,
+                    classSectionId = result.ClassSectionId
                 });
 
             }
