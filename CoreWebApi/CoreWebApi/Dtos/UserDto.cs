@@ -149,5 +149,34 @@ namespace CoreWebApi.Dtos
         public List<int> UserIds { get; set; }
         public bool? Active { get; set; }
     }
-
+    public class GroupUserListDto
+    {
+        public int value { get; set; }
+        public string display { get; set; }
+    }
+    public class GroupListDto
+    {
+        public GroupListDto()
+        {
+            Children = new List<GroupUserListDto>();
+        }
+        public int Id { get; set; }
+        public string groupName { get; set; }
+        public List<GroupUserListDto> Children { get; set; }
+    }
+    public class GroupUserListForEditDto
+    {
+        public int id { get; set; }
+        public string fullName { get; set; }
+    }
+    public class GroupListForEditDto
+    {
+        public GroupListForEditDto()
+        {
+            Students = new List<GroupUserListForEditDto>();
+        }
+        public int Id { get; set; }
+        public string groupName { get; set; }
+        public List<GroupUserListForEditDto> Students { get; set; }
+    }
 }

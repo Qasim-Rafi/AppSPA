@@ -319,25 +319,10 @@ namespace CoreWebApi.Data
             await _context.SaveChangesAsync();
             return true;
         }
-        private class GroupUserList
-        {
-            public int value { get; set; }
-            public string display { get; set; }
-        }
-        private class GroupList
-        {
-            public GroupList()
-            {
-                Children = new List<GroupUserList>();
-            }
-            public int Id { get; set; }
-            public string groupName { get; set; }
-            public List<GroupUserList> Children { get; set; }
-        }
 
         public async Task<object> GetGroupUsers()
         {
-            List<GroupList> groupList = new List<GroupList>();
+            List<GroupListDto> groupList = new List<GroupListDto>();
 
             //var users = (await _context.GroupUsers
             // .Include(m => m.Group).Include(m => m.User).ToListAsync())
@@ -347,10 +332,6 @@ namespace CoreWebApi.Data
             // Id = e2.User.Id,
             // FullName = e2.User.FullName
             // })).ToList();
-
-
-
-
 
             var result = _context.Groups
             .Join(_context.GroupUsers
@@ -362,21 +343,18 @@ namespace CoreWebApi.Data
                 od.Group.GroupName
             })
             .Select(s => s).Distinct().ToList();
-
-
             var users = string.Empty;
 
             foreach (var item in result)
             {
 
-                groupList.Add(new GroupList
+                groupList.Add(new GroupListDto
                 {
                     Id = item.Id,
                     groupName = item.GroupName,
                 });
 
             }
-
 
             foreach (var item in groupList)
             {
@@ -398,7 +376,7 @@ namespace CoreWebApi.Data
                     if (item.Id == item_u.GroupUser.Group.Id)
                     {
 
-                        item.Children.Add(new GroupUserList
+                        item.Children.Add(new GroupUserListDto
                         {
                             display = item_u.User.FullName,
                             value = item_u.User.Id
@@ -407,8 +385,6 @@ namespace CoreWebApi.Data
 
                 }
             }
-
-
 
             if (groupList.Count > 0)
                 users = JsonConvert.SerializeObject(groupList);
@@ -445,39 +421,24 @@ namespace CoreWebApi.Data
 
         public async Task<object> GetGroupUsersById(int id)
         {
-            List<GroupList> groupList = new List<GroupList>();
+            List<GroupListForEditDto> groupList = new List<GroupListForEditDto>();
 
-            //var users = (await _context.GroupUsers
-            // .Include(m => m.Group).Include(m => m.User).ToListAsync())
-            // .GroupBy(m => m.Group.GroupName)
-            // .ToDictionary(e => e.Key, e => e.Select(e2 => new
-            // {
-            // Id = e2.User.Id,
-            // FullName = e2.User.FullName
-            // })).ToList();
-
-
-
-
-
-            var result = _context.Groups
-            .Join(_context.GroupUsers
-            , od => od.Id
-            , o => o.GroupId
-            , (o, od) => new
-            {
-                o.Id,
-                od.Group.GroupName
-            })
-            .Select(s => s).Where(m => m.Id == id).FirstOrDefault();
-
-
+            var result = await (from g in _context.Groups
+                                join gu in _context.GroupUsers
+                                on g.Id equals gu.GroupId
+                                where g.Id == id
+                                select new
+                                {
+                                    g.Id,
+                                    g.GroupName
+                                }).FirstOrDefaultAsync();
+           
             var users = string.Empty;
 
             if (result != null)
             {
 
-                groupList.Add(new GroupList
+                groupList.Add(new GroupListForEditDto
                 {
                     Id = result.Id,
                     groupName = result.GroupName,
@@ -488,28 +449,27 @@ namespace CoreWebApi.Data
 
             foreach (var item in groupList)
             {
-                var user = _context.Groups.Where(x => x.Id == item.Id).
-                Join(_context.GroupUsers, g => g.Id,
-                gu => gu.GroupId, (Group, GroupUser) => new
-                {
-                    Group = Group,
-                    GroupUser = GroupUser
-                }).Join(_context.Users, gu => gu.GroupUser.UserId, u => u.Id, (GroupUser, User) => new
-                {
-                    GroupUser = GroupUser,
-                    User = User
-                })
-                .Select(p => p).Where(m => m.GroupUser.Group.Id == id).ToList();
+                var user = await (from u in _context.Users
+                                  join gu in _context.GroupUsers
+                                  on u.Id equals gu.UserId
+                                  join g in _context.Groups
+                                  on gu.GroupId equals g.Id
+                                  select new
+                                  {
+                                      GroupUser = gu,
+                                      User = u,
+                                      Group = g
+                                  }).ToListAsync();
 
                 foreach (var item_u in user)
                 {
                     if (item.Id == item_u.GroupUser.Group.Id)
                     {
 
-                        item.Children.Add(new GroupUserList
+                        item.Students.Add(new GroupUserListForEditDto
                         {
-                            display = item_u.User.FullName,
-                            value = item_u.User.Id
+                            fullName = item_u.User.FullName,
+                            id = item_u.User.Id
                         });
                     }
 
