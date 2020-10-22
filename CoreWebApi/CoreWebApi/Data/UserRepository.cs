@@ -9,8 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -131,7 +133,8 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
-                serviceResponse.Message = ex.Message;
+                var currentMethodName = Log.TraceMethod("get method name");
+                serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
                 serviceResponse.Success = false;
                 return serviceResponse;
                 //Log.Exception(ex);
@@ -251,7 +254,11 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
                 Log.Exception(ex);
-                throw ex;
+
+                var currentMethodName = Log.TraceMethod("get method name");
+                serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                serviceResponse.Success = false;
+                return serviceResponse;
             }
         }
 
@@ -312,6 +319,7 @@ namespace CoreWebApi.Data
             IEnumerable<int> userIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
             List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !userIds.Contains(m.Id) && m.Active == true).ToListAsync();
             serviceResponse.Data = unmappedStudents;
+            serviceResponse.Success = true;
             return serviceResponse;
         }
 
@@ -322,6 +330,7 @@ namespace CoreWebApi.Data
             List<User> mappedStudents = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student && m.Active == true).ToListAsync();
             User mappedTeacher = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Teacher && m.Active == true).FirstOrDefaultAsync();
             serviceResponse.Data = new { mappedStudents, mappedTeacher };
+            serviceResponse.Success = true;
             return serviceResponse;
         }
 
@@ -355,14 +364,15 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
-                _serviceResponse.Message = ex.Message;
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
                 return _serviceResponse;
             }
         }
 
 
-        public async Task<object> GetGroupUsers()
+        public async Task<ServiceResponse<object>> GetGroupUsers()
         {
             try
             {
@@ -401,7 +411,7 @@ namespace CoreWebApi.Data
                     groupList.Add(new GroupListDto
                     {
                         Id = item.Id,
-                        groupName = item.GroupName,
+                        GroupName = item.GroupName,
                     });
 
                 }
@@ -429,8 +439,8 @@ namespace CoreWebApi.Data
 
                             item.Children.Add(new GroupUserListDto
                             {
-                                display = item_u.User.FullName,
-                                value = item_u.User.Id
+                                Display = item_u.User.FullName,
+                                Value = item_u.User.Id
                             });
                         }
 
@@ -439,19 +449,25 @@ namespace CoreWebApi.Data
 
 
 
+
+
                 if (groupList.Count > 0)
-                    users = JsonConvert.SerializeObject(groupList);
-                return users;
+                    _serviceResponse.Data = groupList;// JsonConvert.SerializeObject(groupList);
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+
             }
             catch (Exception ex)
             {
-                throw ex;
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
             }
         }
 
         public async Task<ServiceResponse<object>> UpdateUsersInGroup(UserForAddInGroupDto model)
         {
-            bool isOk = false;
             try
             {
 
@@ -478,8 +494,7 @@ namespace CoreWebApi.Data
                 }
                 await _context.GroupUsers.AddRangeAsync(listToAdd);
                 await _context.SaveChangesAsync();
-                isOk = true;
-                _serviceResponse.Data = isOk;
+                _serviceResponse.Success = true;
                 return _serviceResponse;
             }
             catch (Exception ex)
@@ -490,7 +505,7 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<object> GetGroupUsersById(int id)
+        public async Task<ServiceResponse<object>> GetGroupUsersById(int id)
         {
             try
             {
@@ -515,8 +530,8 @@ namespace CoreWebApi.Data
                     groupList.Add(new GroupListForEditDto
                     {
                         Id = result.Id,
-                        groupName = result.GroupName,
-                        classSectionId = result.ClassSectionId
+                        GroupName = result.GroupName,
+                        ClassSectionId = result.ClassSectionId
                     });
 
                 }
@@ -543,8 +558,8 @@ namespace CoreWebApi.Data
 
                             item.Students.Add(new GroupUserListForEditDto
                             {
-                                fullName = item_u.User.FullName,
-                                id = item_u.User.Id
+                                FullName = item_u.User.FullName,
+                                Id = item_u.User.Id
                             });
                         }
 
@@ -554,9 +569,9 @@ namespace CoreWebApi.Data
 
 
                 if (groupList.Count > 0)
-                    users = JsonConvert.SerializeObject(groupList);
-                //_serviceResponse.Data = users;
-                return users;
+                    _serviceResponse.Data = groupList;// JsonConvert.SerializeObject(groupList);
+                _serviceResponse.Success = true;
+                return _serviceResponse;
             }
             catch (Exception ex)
             {
@@ -572,6 +587,7 @@ namespace CoreWebApi.Data
             var group = _context.Groups.Where(m => m.Id == id).FirstOrDefault();
             _context.Groups.Remove(group);
             await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
             return _serviceResponse;
         }
 

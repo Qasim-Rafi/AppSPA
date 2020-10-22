@@ -151,8 +151,8 @@ namespace CoreWebApi.Dtos
     }
     public class GroupUserListDto
     {
-        public int value { get; set; }
-        public string display { get; set; }
+        public int Value { get; set; }
+        public string Display { get; set; }
     }
     public class GroupListDto
     {
@@ -161,13 +161,13 @@ namespace CoreWebApi.Dtos
             Children = new List<GroupUserListDto>();
         }
         public int Id { get; set; }
-        public string groupName { get; set; }
+        public string GroupName { get; set; }
         public List<GroupUserListDto> Children { get; set; }
     }
     public class GroupUserListForEditDto
     {
-        public int id { get; set; }
-        public string fullName { get; set; }
+        public int Id { get; set; }
+        public string FullName { get; set; }
     }
     public class GroupListForEditDto
     {
@@ -176,8 +176,8 @@ namespace CoreWebApi.Dtos
             Students = new List<GroupUserListForEditDto>();
         }
         public int Id { get; set; }
-        public string groupName { get; set; }
-        public int classSectionId { get; set; }
+        public string GroupName { get; set; }
+        public int ClassSectionId { get; set; }
         public List<GroupUserListForEditDto> Students { get; set; }
     }
 }

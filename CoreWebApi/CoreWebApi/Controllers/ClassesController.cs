@@ -98,11 +98,13 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetClassSectionMapping")]
         public async Task<IActionResult> GetClassSectionMapping()
         {
-            var list = await _repo.GetClassSectionMapping();
+            IEnumerable<ClassSection> list = await _repo.GetClassSectionMapping();
 
             var ToReturn = list.Select(o => new
             {
                 ClassSectionId = o.Id,
+                o.SchoolAcademyId,
+                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolAcademyId)?.Name,
                 o.ClassId,
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
                 o.SectionId,

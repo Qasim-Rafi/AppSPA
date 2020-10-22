@@ -69,21 +69,10 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _repo.GetUser(id);
-            var uerToReturn = _mapper.Map<UserForDetailedDto>(user);
+            var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
             uerToReturn.DateofBirth = DateFormat.ToDate(uerToReturn.DateofBirth);
             return Ok(uerToReturn);
         }
-
-        //[HttpPut("{id}")]
-        //public IActionResult PUT(int id, UserForRegisterDto userForRegisterDto)
-        //{
-        //    var dbUsers = _repo.GetUser(id);
-        //    dbUsers.
-        //    dbStudent.Name = student.Name;
-        //    dbStudent.IsRegularStudent = student.IsRegularStudent;
-        //    _context.SaveChanges();
-        //    return NoContent();
-        //}
 
 
         [HttpPost("AddUser")]
@@ -102,17 +91,14 @@ namespace CoreWebApi.Controllers
                     return base.BadRequest(new { message = "User Already Exist" });
 
                 userForAddDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-                var createdUser = await _repo.AddUser(userForAddDto);
+                var response = await _repo.AddUser(userForAddDto);
 
-                return base.StatusCode(StatusCodes.Status201Created);
+                return Ok(response);
+
             }
             catch (Exception ex)
             {
-
-                return base.BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
 
@@ -143,20 +129,17 @@ namespace CoreWebApi.Controllers
 
                 userForUpdateDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
-                var updatedUser = await _repo.EditUser(id, userForUpdateDto);
+                var response = await _repo.EditUser(id, userForUpdateDto);
 
 
 
 
-                return Ok();
+                return Ok(response);
             }
             catch (Exception ex)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
 
             }
         }
@@ -229,17 +212,14 @@ namespace CoreWebApi.Controllers
             {
 
                 var users = await _repo.GetUnmappedStudents();
-                var ToReturn = _mapper.Map<List<UserForListDto>>(users.Data);
+                _response.Data = _mapper.Map<List<UserForListDto>>(users.Data);
 
 
-                return Ok(ToReturn);
+                return Ok(_response);
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
 
         }
@@ -308,10 +288,10 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                var res = await _repo.GetGroupUsers();
+                _response = await _repo.GetGroupUsers();
 
 
-                return Ok(res);
+                return Ok(_response);
             }
             catch (Exception ex)
             {
@@ -326,8 +306,8 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                var res = await _repo.GetGroupUsersById(id);
-                return Ok(res);
+                _response = await _repo.GetGroupUsersById(id);
+                return Ok(_response);
             }
             catch (Exception ex)
             {

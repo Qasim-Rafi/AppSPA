@@ -42,5 +42,10 @@ namespace CoreWebApi.Helpers
                 writer.WriteLine();
             }
         }
+
+        public static string TraceMethod(string message, [System.Runtime.CompilerServices.CallerMemberName] string methodName = "")
+        {
+            return methodName;
+        }
     }
 }
