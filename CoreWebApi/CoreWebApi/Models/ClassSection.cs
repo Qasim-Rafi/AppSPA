@@ -12,6 +12,7 @@ namespace CoreWebApi.Models
         public int ClassId { get; set; }
         public int SectionId { get; set; }
         public int SchoolAcademyId { get; set; }
+        public int NumberOfStudents { get; set; }
         public bool Active { get; set; }
         public DateTime CreatedDatetime { get; set; }
         public int CreatedById { get; set; }

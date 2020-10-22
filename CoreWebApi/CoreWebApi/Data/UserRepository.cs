@@ -478,22 +478,24 @@ namespace CoreWebApi.Data
                 group.SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId);
 
                 await _context.SaveChangesAsync();
-
-                List<GroupUser> listToDelete = await _context.GroupUsers.Where(m => m.GroupId == model.Id).ToListAsync();
-                _context.GroupUsers.RemoveRange(listToDelete);
-                await _context.SaveChangesAsync();
-
-                List<GroupUser> listToAdd = new List<GroupUser>();
-                foreach (var item in model.UserIds)
+                if (model.UserIds.Count() > 0)
                 {
-                    listToAdd.Add(new GroupUser
+                    List<GroupUser> listToDelete = await _context.GroupUsers.Where(m => m.GroupId == model.Id).ToListAsync();
+                    _context.GroupUsers.RemoveRange(listToDelete);
+                    await _context.SaveChangesAsync();
+
+                    List<GroupUser> listToAdd = new List<GroupUser>();
+                    foreach (var item in model.UserIds)
                     {
-                        GroupId = group.Id,
-                        UserId = item
-                    });
+                        listToAdd.Add(new GroupUser
+                        {
+                            GroupId = group.Id,
+                            UserId = item
+                        });
+                    }
+                    await _context.GroupUsers.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
                 }
-                await _context.GroupUsers.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
@@ -585,9 +587,13 @@ namespace CoreWebApi.Data
         {
 
             var group = _context.Groups.Where(m => m.Id == id).FirstOrDefault();
-            _context.Groups.Remove(group);
-            await _context.SaveChangesAsync();
-            _serviceResponse.Success = true;
+            if (group != null)
+            {
+                _context.Groups.Remove(group);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+            }
+            
             return _serviceResponse;
         }
 

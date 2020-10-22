@@ -109,6 +109,7 @@ namespace CoreWebApi.Controllers
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
                 o.SectionId,
                 SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
+                o.NumberOfStudents
             });
             return Ok(ToReturn);
 

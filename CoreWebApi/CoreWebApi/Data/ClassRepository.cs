@@ -91,8 +91,10 @@ namespace CoreWebApi.Data
                     ClassId = classSection.ClassId,
                     SectionId = classSection.SectionId,
                     SchoolAcademyId = classSection.SchoolAcademyId,
+                    NumberOfStudents = classSection.NumberOfStudents,
                     Active = true,
-                    CreatedById = Convert.ToInt32(classSection.LoggedIn_UserId)
+                    CreatedById = Convert.ToInt32(classSection.LoggedIn_UserId),
+                    CreatedDatetime = DateTime.Now
                 };
 
                 await _context.ClassSections.AddAsync(objToCreate);
