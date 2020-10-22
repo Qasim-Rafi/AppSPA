@@ -22,11 +22,11 @@ namespace CoreWebApi.IData
         Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId);
         Task<ServiceResponse<IEnumerable<User>>> GetUnmappedStudents();
         Task<ServiceResponse<object>> GetMappedStudents(int csId);
-        Task<ServiceResponse<bool>> AddUsersInGroup(UserForAddInGroupDto model);
-        Task<ServiceResponse<bool>> UpdateUsersInGroup(UserForAddInGroupDto model);
+        Task<ServiceResponse<object>> AddUsersInGroup(UserForAddInGroupDto model);
+        Task<ServiceResponse<object>> UpdateUsersInGroup(UserForAddInGroupDto model);
         Task<ServiceResponse<object>> GetGroupUsers();
         Task<ServiceResponse<object>> GetGroupUsersById(int id);
-
+        Task<ServiceResponse<object>> DeleteGroup(int id);
 
     }
 }

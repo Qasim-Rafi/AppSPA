@@ -27,12 +27,15 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly IFilesRepository _File;
         private readonly DataContext _context;
+        ServiceResponse<object> _response;
+
         public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context)
         {
             _mapper = mapper;
             _repo = repo;
             _File = file;
             _context = context;
+            _response = new ServiceResponse<object>();
         }
 
         [HttpGet]
@@ -268,38 +271,33 @@ namespace CoreWebApi.Controllers
             {
                 model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
-                var response = await _repo.AddUsersInGroup(model);
+                _response = await _repo.AddUsersInGroup(model);
 
 
-                return StatusCode(StatusCodes.Status201Created);
+                return Ok(_response);
+
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
 
         }
-        [HttpPost("UpdateGroupUsers")]
+        [HttpPut("UpdateGroupUsers")]
         public async Task<IActionResult> UpdateGroupUsers(UserForAddInGroupDto model)
         {
             try
             {
                 model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
-                var response = await _repo.UpdateUsersInGroup(model);
+                _response = await _repo.UpdateUsersInGroup(model);
 
+                return Ok(_response);
 
-                return StatusCode(StatusCodes.Status201Created);
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
 
         }
@@ -310,17 +308,15 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                var ToReturn = await _repo.GetGroupUsers();
-              
+                _response = await _repo.GetGroupUsers();
 
-                return Ok(ToReturn);
+
+                return Ok(_response);
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
+
             }
 
         }
@@ -330,16 +326,14 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                var ToReturn = await _repo.GetGroupUsersById(id);
+                _response = await _repo.GetGroupUsersById(id);
 
-                return Ok(ToReturn);
+                return Ok(_response);
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
+               
             }
 
         }
@@ -349,16 +343,13 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                var ToReturn = await _repo.DeleteGroup(id);
-                
-                return Ok(ToReturn);
+                _response = await _repo.DeleteGroup(id);
+
+                return Ok(_response);
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
 
         }

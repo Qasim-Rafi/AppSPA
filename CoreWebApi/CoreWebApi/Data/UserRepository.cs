@@ -24,6 +24,7 @@ namespace CoreWebApi.Data
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _HostEnvironment;
         private readonly IFilesRepository _File;
+        ServiceResponse<object> _serviceResponse;
 
         public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file)
         {
@@ -31,6 +32,7 @@ namespace CoreWebApi.Data
             _mapper = mapper;
             _HostEnvironment = HostEnvironment;
             _File = file;
+            _serviceResponse = new ServiceResponse<object>();
         }
 
         public void Add<T>(T entity) where T : class
@@ -59,7 +61,7 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<User>> GetUsers()
         {
-           
+
 
             var users = await _context.Users.Where(m => m.Active == true).Include(p => p.Photos).Include(m => m.Country).Include(m => m.State).ToListAsync();
             foreach (var user in users)
@@ -69,7 +71,7 @@ namespace CoreWebApi.Data
                     item.Url = _File.AppendImagePath(item.Url);
                 }
             }
-         
+
             return users;
 
         }
@@ -87,9 +89,9 @@ namespace CoreWebApi.Data
             ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
             bool isExist = false;
             if (await _context.Users.AnyAsync(x => x.Username == username))
-               isExist = true;
+                isExist = true;
 
-         
+
             return isExist;
         }
 
@@ -99,7 +101,7 @@ namespace CoreWebApi.Data
             ServiceResponse<User> serviceResponse = new ServiceResponse<User>();
             try
             {
-               
+
                 var userToCreate = new User
                 {
                     FullName = userDto.FullName,
@@ -142,7 +144,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<string>> EditUser(int id, UserForUpdateDto user)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-  
+
             try
             {
 
@@ -258,7 +260,7 @@ namespace CoreWebApi.Data
         public async Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId)
         {
 
-            
+
             try
             {
                 if (!string.IsNullOrEmpty(classSectionId.ToString()))
@@ -279,7 +281,7 @@ namespace CoreWebApi.Data
                             item.Url = _File.AppendImagePath(item.Url);
                         }
                     }
-                 
+
                     return users;
                 }
                 else
@@ -292,7 +294,7 @@ namespace CoreWebApi.Data
                             item.Url = _File.AppendImagePath(item.Url);
                         }
                     }
-                  
+
                     return users;
 
                 }
@@ -323,15 +325,14 @@ namespace CoreWebApi.Data
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<bool>> AddUsersInGroup(UserForAddInGroupDto model)
+        public async Task<ServiceResponse<object>> AddUsersInGroup(UserForAddInGroupDto model)
         {
-            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
-            bool isOk = false;
             try
             {
                 var group = new Group
                 {
                     GroupName = model.GroupName,
+                    ClassSectionId = model.ClassSectionId,
                     Active = true,
                     SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId)
                 };
@@ -348,121 +349,109 @@ namespace CoreWebApi.Data
                 }
                 await _context.GroupUsers.AddRangeAsync(listToAdd);
                 await _context.SaveChangesAsync();
-                isOk = true;
-                serviceResponse.Data = isOk;
-                return serviceResponse;
-              
-            }catch(Exception ex)
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+
+            }
+            catch (Exception ex)
             {
-                serviceResponse.Message = ex.Message;
-                serviceResponse.Success = false;
-                return serviceResponse;
+                _serviceResponse.Message = ex.Message;
+                _serviceResponse.Success = false;
+                return _serviceResponse;
             }
         }
 
-        private class GroupUserList
-        {
-            public int value { get; set; }
-            public string display { get; set; }
-        }
-
-
-        private class GroupList
-        {
-            public GroupList()
-            {
-                Children = new List<GroupUserList>();
-            }
-            public int Id { get; set; }
-            public string  groupName { get; set; }
-            public List<GroupUserList> Children { get; set; }
-        }
 
         public async Task<ServiceResponse<object>> GetGroupUsers()
         {
-            ServiceResponse<object> serviceResponse = new ServiceResponse<object>();
-            List <GroupList> groupList = new List<GroupList>();
-
-            //var users = (await _context.GroupUsers
-            //    .Include(m => m.Group).Include(m => m.User).ToListAsync())
-            //    .GroupBy(m => m.Group.GroupName)
-            //    .ToDictionary(e => e.Key, e => e.Select(e2 => new
-            //    {
-            //        Id = e2.User.Id,
-            //        FullName = e2.User.FullName
-            //    })).ToList();
-
-
-
-
-
-            var result =await  _context.Groups
-               .Join(_context.GroupUsers
-               , od => od.Id
-               , o => o.GroupId
-               , (o, od) => new
-               {
-                   o.Id,
-                   od.Group.GroupName
-               })
-                .Select(s => s).Distinct().ToListAsync();
-
-
-            var users = string.Empty;
-
-            foreach (var item in result)
+            try
             {
-                
-                    groupList.Add(new GroupList
+                List<GroupListDto> groupList = new List<GroupListDto>();
+
+                //var users = (await _context.GroupUsers
+                //    .Include(m => m.Group).Include(m => m.User).ToListAsync())
+                //    .GroupBy(m => m.Group.GroupName)
+                //    .ToDictionary(e => e.Key, e => e.Select(e2 => new
+                //    {
+                //        Id = e2.User.Id,
+                //        FullName = e2.User.FullName
+                //    })).ToList();
+
+
+
+
+
+                var result = await _context.Groups
+                   .Join(_context.GroupUsers
+                   , od => od.Id
+                   , o => o.GroupId
+                   , (o, od) => new
+                   {
+                       o.Id,
+                       od.Group.GroupName
+                   })
+                    .Select(s => s).Distinct().ToListAsync();
+
+
+                var users = string.Empty;
+
+                foreach (var item in result)
+                {
+
+                    groupList.Add(new GroupListDto
                     {
                         Id = item.Id,
                         groupName = item.GroupName,
-                    }) ;
-             
-            }
-
-
-            foreach (var item in groupList)
-            {
-                var user = await _context.Groups.Where(x => x.Id == item.Id).
-                           Join(_context.GroupUsers, g => g.Id,
-                     gu => gu.GroupId, (Group, GroupUser) => new
-                     {
-                         Group = Group,
-                         GroupUser = GroupUser
-                     }).Join(_context.Users, gu => gu.GroupUser.UserId, u => u.Id, (GroupUser, User) => new
-                     {
-                         GroupUser = GroupUser,
-                         User = User
-                     })
-                                      .Select(p => p).ToListAsync();
-
-                foreach (var item_u in user)
-                {
-                    if (item.Id == item_u.GroupUser.Group.Id)
-                    {
-                   
-                        item.Children.Add(new GroupUserList
-                        {
-                            display = item_u.User.FullName,
-                            value = item_u.User.Id
-                        });
-                            }
+                    });
 
                 }
+
+
+                foreach (var item in groupList)
+                {
+                    var user = await _context.Groups.Where(x => x.Id == item.Id).
+                               Join(_context.GroupUsers, g => g.Id,
+                         gu => gu.GroupId, (Group, GroupUser) => new
+                         {
+                             Group = Group,
+                             GroupUser = GroupUser
+                         }).Join(_context.Users, gu => gu.GroupUser.UserId, u => u.Id, (GroupUser, User) => new
+                         {
+                             GroupUser = GroupUser,
+                             User = User
+                         })
+                                          .Select(p => p).ToListAsync();
+
+                    foreach (var item_u in user)
+                    {
+                        if (item.Id == item_u.GroupUser.Group.Id)
+                        {
+
+                            item.Children.Add(new GroupUserListDto
+                            {
+                                display = item_u.User.FullName,
+                                value = item_u.User.Id
+                            });
+                        }
+
+                    }
+                }
+
+
+
+                if (groupList.Count > 0)
+                    users = JsonConvert.SerializeObject(groupList);
+                _serviceResponse.Data = users;
+                return _serviceResponse;
             }
-
-
-
-            if (groupList.Count > 0)
-                users =  JsonConvert.SerializeObject(groupList);
-            serviceResponse.Data = users;
-            return serviceResponse;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public async Task<ServiceResponse<bool>> UpdateUsersInGroup(UserForAddInGroupDto model)
+        public async Task<ServiceResponse<object>> UpdateUsersInGroup(UserForAddInGroupDto model)
         {
-            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
             bool isOk = false;
             try
             {
@@ -491,31 +480,100 @@ namespace CoreWebApi.Data
                 await _context.GroupUsers.AddRangeAsync(listToAdd);
                 await _context.SaveChangesAsync();
                 isOk = true;
-                serviceResponse.Data = isOk;
-                return serviceResponse;
-            }catch (Exception ex)
+                _serviceResponse.Data = isOk;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
             {
-                serviceResponse.Message = "Unable to Add Data";
-                serviceResponse.Success = false;
-                return serviceResponse;
+                _serviceResponse.Message = "Unable to Add Data";
+                _serviceResponse.Success = false;
+                return _serviceResponse;
             }
         }
 
         public async Task<ServiceResponse<object>> GetGroupUsersById(int id)
         {
-            ServiceResponse<object> serviceRespponse = new ServiceResponse<object>();
+            try
+            {
+                List<GroupListForEditDto> groupList = new List<GroupListForEditDto>();
 
-            var gusers = (await _context.GroupUsers.Where(m => m.GroupId == id)
-                  .Include(m => m.Group).Include(m => m.User).ToListAsync())
-                  .GroupBy(m => m.Group.GroupName)
-                  .ToDictionary(e => e.Key, e => e.Select(e2 => new
-                  {
-                      Id = e2.User.Id,
-                      FullName = e2.User.FullName
-                  })).ToList();
-            serviceRespponse.Data = gusers;
-            return serviceRespponse;
+                var result = await (from g in _context.Groups
+                                    join gu in _context.GroupUsers
+                                    on g.Id equals gu.GroupId
+                                    where g.Id == id
+                                    select new
+                                    {
+                                        g.Id,
+                                        g.GroupName,
+                                        g.ClassSectionId
+                                    }).FirstOrDefaultAsync();
 
+                var users = string.Empty;
+
+                if (result != null)
+                {
+
+                    groupList.Add(new GroupListForEditDto
+                    {
+                        Id = result.Id,
+                        groupName = result.GroupName,
+                        classSectionId = result.ClassSectionId
+                    });
+
+                }
+
+
+                foreach (var item in groupList)
+                {
+                    var user = await (from u in _context.Users
+                                      join gu in _context.GroupUsers
+                                      on u.Id equals gu.UserId
+                                      join g in _context.Groups
+                                      on gu.GroupId equals g.Id
+                                      select new
+                                      {
+                                          GroupUser = gu,
+                                          User = u,
+                                          Group = g
+                                      }).ToListAsync();
+
+                    foreach (var item_u in user)
+                    {
+                        if (item.Id == item_u.GroupUser.Group.Id)
+                        {
+
+                            item.Students.Add(new GroupUserListForEditDto
+                            {
+                                fullName = item_u.User.FullName,
+                                id = item_u.User.Id
+                            });
+                        }
+
+                    }
+                }
+
+
+
+                if (groupList.Count > 0)
+                    users = JsonConvert.SerializeObject(groupList);
+                _serviceResponse.Data = users;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                _serviceResponse.Message = "Unable to Add Data";
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> DeleteGroup(int id)
+        {
+
+            var group = _context.Groups.Where(m => m.Id == id).FirstOrDefault();
+            _context.Groups.Remove(group);
+            await _context.SaveChangesAsync();
+            return _serviceResponse;
         }
 
 
