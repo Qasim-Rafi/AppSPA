@@ -229,7 +229,7 @@ namespace CoreWebApi.Controllers
             {
 
                 var users = await _repo.GetUnmappedStudents();
-                var ToReturn = _mapper.Map<List<UserForListDto>>(users);
+                var ToReturn = _mapper.Map<List<UserForListDto>>(users.Data);
 
 
                 return Ok(ToReturn);
@@ -250,7 +250,7 @@ namespace CoreWebApi.Controllers
             {
 
                 dynamic users = await _repo.GetMappedStudents(csId);
-                var Students = _mapper.Map<List<UserForListDto>>(users.mappedStudents);
+                var Students = _mapper.Map<List<UserForListDto>>(users.Data.mappedStudents);
 
 
                 return Ok(new { Students, TeacherName = users.mappedTeacher?.FullName });
@@ -308,10 +308,10 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                _response = await _repo.GetGroupUsers();
+                var res = await _repo.GetGroupUsers();
 
 
-                return Ok(_response);
+                return Ok(res);
             }
             catch (Exception ex)
             {

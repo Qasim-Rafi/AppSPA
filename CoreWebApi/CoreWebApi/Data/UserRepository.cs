@@ -362,7 +362,7 @@ namespace CoreWebApi.Data
         }
 
 
-        public async Task<ServiceResponse<object>> GetGroupUsers()
+        public async Task<object> GetGroupUsers()
         {
             try
             {
@@ -441,8 +441,7 @@ namespace CoreWebApi.Data
 
                 if (groupList.Count > 0)
                     users = JsonConvert.SerializeObject(groupList);
-                _serviceResponse.Data = users;
-                return _serviceResponse;
+                return users;
             }
             catch (Exception ex)
             {

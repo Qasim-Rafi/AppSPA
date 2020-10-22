@@ -24,7 +24,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetMappedStudents(int csId);
         Task<ServiceResponse<object>> AddUsersInGroup(UserForAddInGroupDto model);
         Task<ServiceResponse<object>> UpdateUsersInGroup(UserForAddInGroupDto model);
-        Task<ServiceResponse<object>> GetGroupUsers();
+        Task<object> GetGroupUsers();
         Task<ServiceResponse<object>> GetGroupUsersById(int id);
         Task<ServiceResponse<object>> DeleteGroup(int id);
 
