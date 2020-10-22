@@ -490,7 +490,7 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ServiceResponse<object>> GetGroupUsersById(int id)
+        public async Task<object> GetGroupUsersById(int id)
         {
             try
             {
@@ -555,8 +555,8 @@ namespace CoreWebApi.Data
 
                 if (groupList.Count > 0)
                     users = JsonConvert.SerializeObject(groupList);
-                _serviceResponse.Data = users;
-                return _serviceResponse;
+                //_serviceResponse.Data = users;
+                return users;
             }
             catch (Exception ex)
             {

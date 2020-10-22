@@ -253,7 +253,7 @@ namespace CoreWebApi.Controllers
                 var Students = _mapper.Map<List<UserForListDto>>(users.Data.mappedStudents);
 
 
-                return Ok(new { Students, TeacherName = users.mappedTeacher?.FullName });
+                return Ok(new { Students, TeacherName = users.Data.mappedTeacher?.FullName });
             }
             catch (Exception ex)
             {
@@ -326,9 +326,8 @@ namespace CoreWebApi.Controllers
             try
             {
 
-                _response = await _repo.GetGroupUsersById(id);
-
-                return Ok(_response);
+                var res = await _repo.GetGroupUsersById(id);
+                return Ok(res);
             }
             catch (Exception ex)
             {
