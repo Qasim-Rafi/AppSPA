@@ -37,6 +37,7 @@ namespace CoreWebApi.Data
         public virtual DbSet<QuizAnswers> QuizAnswers { get; set; }
         public virtual DbSet<QuizQuestions> QuizQuestions { get; set; }
         public virtual DbSet<Quizzes> Quizzes { get; set; }
+        public virtual DbSet<QuizSubmission> QuizSubmissions { get; set; }
 
         public DbSet<Section> Sections { get; set; }
         public DbSet<Session> Sessions { get; set; }

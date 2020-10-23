@@ -13,9 +13,11 @@ namespace CoreWebApi.Data
     public class ClassRepository : IClassRepository
     {
         private readonly DataContext _context;
+        ServiceResponse<object> _serviceResponse;
         public ClassRepository(DataContext context)
         {
             _context = context;
+            _serviceResponse = new ServiceResponse<object>();
         }
         public async Task<bool> ClassExists(string name)
         {
@@ -117,28 +119,39 @@ namespace CoreWebApi.Data
 
         }
 
-        //public async Task<ClassSection> UpdateClassSectionMapping(ClassSectionDtoForUpdate model)
-        //{
-        //    try
-        //    {
-        //        var objToUpdate = _context.ClassSections.Where(m => m.Id == model.Id).FirstOrDefault();
+        public async Task<ServiceResponse<object>> UpdateClassSectionMapping(ClassSectionDtoForUpdate model)
+        {
+            try
+            {
+                var objToUpdate = _context.ClassSections.Where(m => m.Id == model.Id).FirstOrDefault();
+                if (objToUpdate != null)
+                {
+                    objToUpdate.ClassId = model.ClassId;
+                    objToUpdate.SectionId = model.SectionId;
+                    objToUpdate.Active = model.Active;
+                    objToUpdate.SchoolAcademyId = model.SchoolAcademyId;
+                    objToUpdate.NumberOfStudents = model.NumberOfStudents;
 
-        //        objToUpdate.ClassId = model.ClassId;
-        //        objToUpdate.SectionId = model.SectionId;
-        //        objToUpdate.Active = model.Active;
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                }
+                else
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = "Record Not Found";
+                }
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                var currentMethodName = Log.TraceMethod("get method name");
 
-        //        await _context.ClassSections.AddAsync(objToUpdate);
-        //        await _context.SaveChangesAsync();
-
-        //        return objToUpdate;
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        Log.Exception(ex);
-        //        throw ex;
-        //    }
-        //}
+                Log.Exception(ex);
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                return _serviceResponse;
+            }
+        }
         public async Task<ClassSectionUser> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
         {
             try
@@ -233,6 +246,14 @@ namespace CoreWebApi.Data
                 Log.Exception(ex);
                 throw ex;
             }
+        }
+
+        public async Task<ServiceResponse<IEnumerable<ClassSection>>> GetClassSectionById(int id)
+        {
+            ServiceResponse<IEnumerable<ClassSection>> serviceResponse = new ServiceResponse<IEnumerable<ClassSection>>();
+            serviceResponse.Success = true;
+            serviceResponse.Data = await _context.ClassSections.Where(m => m.Id == id).ToListAsync();
+            return serviceResponse;
         }
     }
 }

@@ -45,6 +45,10 @@
     <Compile Remove="Migrations\20201021094453_addUserRollNo_addAssignmntCSId.Designer.cs" />
     <Compile Remove="Migrations\20201021122949_test.cs" />
     <Compile Remove="Migrations\20201021122949_test.Designer.cs" />
+    <Compile Remove="Migrations\20201023064839_addQuizSubmission_updateQuizColKeys.cs" />
+    <Compile Remove="Migrations\20201023064839_addQuizSubmission_updateQuizColKeys.Designer.cs" />
+    <Compile Remove="Migrations\20201023071244_test.cs" />
+    <Compile Remove="Migrations\20201023071244_test.Designer.cs" />
 
   </ItemGroup>
 

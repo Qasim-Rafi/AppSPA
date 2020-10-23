@@ -12,9 +12,12 @@ namespace CoreWebApi.Data
     public class ExamRepository : IExamRepository
     {
         private readonly DataContext _context;
+        ServiceResponse<object> _serviceResponse;
+
         public ExamRepository(DataContext context)
         {
             _context = context;
+            _serviceResponse = new ServiceResponse<object>();
         }
 
         public async Task<bool> AddQuestion(QuizQuestionDtoForAdd model)
@@ -52,7 +55,7 @@ namespace CoreWebApi.Data
                 QuizDate = Convert.ToDateTime(model.QuizDate),
                 NoOfQuestions = model.NoOfQuestions,
                 SubjectId = model.SubjectId,
-                ClassSectionId=model.ClassSectionId,
+                ClassSectionId = model.ClassSectionId,
                 CreatedDate = DateTime.Now,
                 CreatedById = _context.Users.First().Id
             };
@@ -108,6 +111,22 @@ namespace CoreWebApi.Data
                                answers = _context.QuizAnswers.Where(m => m.QuestionId == question.Id).ToList()
                            }).ToListAsync();
             return await quizzes;
+        }
+
+        public async Task<ServiceResponse<object>> SubmitQuiz(QuizSubmissionDto model)
+        {
+            var submission = new QuizSubmission
+            {
+                QuizId = model.QuizId,
+                QuestionId = model.QuestionId,
+                AnswerId = model.AnswerId,
+                Description = model.Description,
+                CreatedDateTime = DateTime.Now,
+                UserId = Convert.ToInt32(model.LoggedIn_UserId)
+            };
+            await _context.QuizSubmissions.AddAsync(submission);
+            await _context.SaveChangesAsync();
+            return _serviceResponse;
         }
 
         public async Task<bool> UpdateQuestion(int id, QuizQuestionDtoForAdd model)

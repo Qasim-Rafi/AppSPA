@@ -6,15 +6,10 @@ using CoreWebApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -52,6 +47,7 @@ namespace CoreWebApi.Data
             ServiceResponse<User> serviceResponse = new ServiceResponse<User>();
 
             var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id && u.Active == true);
+
             foreach (var item in user?.Photos)
             {
                 item.Url = _File.AppendImagePath(item.Url);
@@ -593,7 +589,7 @@ namespace CoreWebApi.Data
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
             }
-            
+
             return _serviceResponse;
         }
 

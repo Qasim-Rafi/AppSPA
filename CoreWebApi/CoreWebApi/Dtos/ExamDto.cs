@@ -48,7 +48,11 @@ namespace CoreWebApi.Dtos
         [BoolValidation(ErrorMessage = "The field must be true of false")]
         public bool IsTrue { get; set; }
     }
-    public class QuizDtoForList
+    public class QuizSubmissionDto : BaseDto
     {
+        public int QuizId { get; set; }
+        public int QuestionId { get; set; }
+        public int AnswerId { get; set; }
+        public string Description { get; set; }
     }
 }
