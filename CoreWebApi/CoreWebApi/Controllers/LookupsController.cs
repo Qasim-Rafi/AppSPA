@@ -105,9 +105,9 @@ namespace CoreWebApi.Controllers
                               where csU.ClassSectionId == csId
                               && u.UserTypeId == (int)Enumm.UserType.Student
                               select u).ToListAsync();
-            var list = _mapper.Map<List<UserForListDto>>(users);
+            //var list = _mapper.Map<List<UserForListDto>>(users);
 
-            return Ok(list);
+            return Ok(users);
 
         }
 

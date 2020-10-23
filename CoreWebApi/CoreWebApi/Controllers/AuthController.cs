@@ -48,7 +48,7 @@ namespace CoreWebApi.Controllers
                 userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
                 if (await _repo.UserExists(userForRegisterDto.Username))
-                    return BadRequest(new { message = "User Already Exist" });
+                    return BadRequest(new { message = CustomMessage.UserAlreadyExist });
 
 
 

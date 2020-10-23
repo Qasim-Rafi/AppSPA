@@ -193,6 +193,28 @@ namespace CoreWebApi.Controllers
                 return BadRequest(_response);
             }
         }
+        [HttpDelete("DeleteClassSectionMapping/{id}")]
+        public async Task<IActionResult> DeleteClassSectionMapping(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+                //    return BadRequest(new { message = "Class Section Already Exist" });
+
+                _response = await _repo.DeleteClassSectionMapping(id);
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(_response);
+            }
+        }
 
         [HttpPost("AddClassSectionUserMappingInBulk")]
         public async Task<IActionResult> AddClassSectionUserMappingInBulk(ClassSectionUserDtoForAddBulk classSectionUser)

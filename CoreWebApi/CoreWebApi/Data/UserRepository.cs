@@ -187,7 +187,7 @@ namespace CoreWebApi.Data
                         }
                         else
                         {
-                            throw new Exception("Password does not match");
+                            throw new Exception(CustomMessage.PasswordNotMatched);
                         }
 
                     }
@@ -240,7 +240,7 @@ namespace CoreWebApi.Data
                 }
                 else
                 {
-                    serviceResponse.Message = "Record Not Found";
+                    serviceResponse.Message = CustomMessage.RecordNotFound;
                     serviceResponse.Success = false;
                     return serviceResponse;
                     //throw new Exception("Record Not Found");
@@ -497,7 +497,7 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
-                _serviceResponse.Message = "Unable to Add Data";
+                _serviceResponse.Message = CustomMessage.UnableToAdd;
                 _serviceResponse.Success = false;
                 return _serviceResponse;
             }
@@ -573,7 +573,7 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
-                _serviceResponse.Message = "Unable to Add Data";
+                _serviceResponse.Message = CustomMessage.UnableToAdd;
                 _serviceResponse.Success = false;
                 return _serviceResponse;
             }

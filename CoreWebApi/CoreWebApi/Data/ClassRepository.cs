@@ -138,7 +138,7 @@ namespace CoreWebApi.Data
                 else
                 {
                     _serviceResponse.Success = false;
-                    _serviceResponse.Message = "Record Not Found";
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
                 }
                 return _serviceResponse;
             }
@@ -254,6 +254,19 @@ namespace CoreWebApi.Data
             serviceResponse.Success = true;
             serviceResponse.Data = await _context.ClassSections.Where(m => m.Id == id).ToListAsync();
             return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> DeleteClassSectionMapping(int id)
+        {
+            var classSection = _context.ClassSections.Where(m => m.Id == id).FirstOrDefault();
+            if (classSection != null)
+            {
+                _context.ClassSections.Remove(classSection);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+            }
+
+            return _serviceResponse;
         }
     }
 }

@@ -52,6 +52,7 @@ namespace CoreWebApi.Dtos
         public int ClassId { get; set; }
         [Required]
         public int SectionId { get; set; }
+        [Required]
         public int NumberOfStudents { get; set; }
         public bool Active { get; set; }
     }

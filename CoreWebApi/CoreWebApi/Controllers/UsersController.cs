@@ -88,7 +88,7 @@ namespace CoreWebApi.Controllers
 
 
                 if (await _repo.UserExists(userForAddDto.Username))
-                    return base.BadRequest(new { message = "User Already Exist" });
+                    return base.BadRequest(new { message = CustomMessage.UserAlreadyExist });
 
                 userForAddDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
                 var response = await _repo.AddUser(userForAddDto);
