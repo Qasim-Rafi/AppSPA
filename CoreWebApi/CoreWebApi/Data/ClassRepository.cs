@@ -115,7 +115,7 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<ClassSection>> GetClassSectionMapping()
         {
-            return await _context.ClassSections.ToListAsync();
+            return await _context.ClassSections.OrderByDescending(m => m.Id).ToListAsync();
 
         }
 
@@ -152,7 +152,7 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-        public async Task<ClassSectionUser> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
+        public async Task<ServiceResponse<object>> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
         {
             try
             {
@@ -164,37 +164,44 @@ namespace CoreWebApi.Data
 
                 await _context.ClassSectionUsers.AddAsync(objToCreate);
                 await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
 
-                return objToCreate;
+                return _serviceResponse;
             }
             catch (Exception ex)
             {
+                var currentMethodName = Log.TraceMethod("get method name");
 
                 Log.Exception(ex);
-                throw ex;
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                return _serviceResponse;
             }
         }
 
-        public async Task<ClassSectionUser> UpdateClassSectionUserMapping(ClassSectionUserDtoForAdd model)
+        public async Task<ServiceResponse<object>> UpdateClassSectionUserMapping(ClassSectionUserDtoForUpdate model)
         {
             try
             {
-                var objToUpdate = _context.ClassSectionUsers.FirstOrDefault(m => m.Id == model.ClassSectionId);
+                var objToUpdate = _context.ClassSectionUsers.FirstOrDefault(m => m.Id == model.Id);
 
                 objToUpdate.ClassSectionId = model.ClassSectionId;
                 objToUpdate.UserId = model.UserId;
 
 
-                await _context.ClassSectionUsers.AddAsync(objToUpdate);
                 await _context.SaveChangesAsync();
 
-                return objToUpdate;
+                _serviceResponse.Success = true;
+
+                return _serviceResponse;
             }
             catch (Exception ex)
             {
-
                 Log.Exception(ex);
-                throw ex;
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                return _serviceResponse;
             }
         }
 
@@ -202,10 +209,10 @@ namespace CoreWebApi.Data
         {
             try
             {
-                var obj = _context.ClassSectionUsers.FirstOrDefaultAsync(m => m.ClassSectionId == csId && m.UserId == userId);
+                var obj = await _context.ClassSectionUsers.FirstOrDefaultAsync(m => m.ClassSectionId == csId && m.UserId == userId);
 
 
-                return await obj;
+                return obj;
             }
             catch (Exception ex)
             {
@@ -220,7 +227,7 @@ namespace CoreWebApi.Data
             try
             {
                 var existedIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId).ToList();
-                if (existedIds.Count > 0)
+                if (existedIds.Count > 0 && model.UserIds.Count() > 0)
                 {
                     _context.ClassSectionUsers.RemoveRange(existedIds);
                     await _context.SaveChangesAsync();
@@ -262,6 +269,51 @@ namespace CoreWebApi.Data
             if (classSection != null)
             {
                 _context.ClassSections.Remove(classSection);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+            }
+
+            return _serviceResponse;
+        }
+
+        public async Task<bool> ClassSectionExists(int classId, int sectionId)
+        {
+            if (await _context.ClassSections.AnyAsync(x => x.ClassId == classId && x.SectionId == sectionId))
+                return true;
+            return false;
+        }
+
+        public async Task<bool> ClassSectionUserExists(int csId, int userId)
+        {
+            if (await _context.ClassSectionUsers.AnyAsync(x => x.ClassSectionId == csId && x.UserId == userId))
+                return true;
+            return false;
+        }
+
+        public async Task<ServiceResponse<IEnumerable<ClassSectionUser>>> GetClassSectionUserMapping()
+        {
+            try
+            {
+                ServiceResponse<IEnumerable<ClassSectionUser>> serviceResponse = new ServiceResponse<IEnumerable<ClassSectionUser>>();
+                serviceResponse.Data = await _context.ClassSectionUsers.Include(m => m.ClassSection).Include(m => m.User).OrderByDescending(m => m.Id).ToListAsync();
+
+
+                return serviceResponse;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                throw ex;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> DeleteClassSectionUserMapping(int id)
+        {
+            var classSectionUser = _context.ClassSectionUsers.Where(m => m.Id == id).FirstOrDefault();
+            if (classSectionUser != null)
+            {
+                _context.ClassSectionUsers.Remove(classSectionUser);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
             }

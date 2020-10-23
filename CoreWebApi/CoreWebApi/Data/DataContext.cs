@@ -56,25 +56,35 @@ namespace CoreWebApi.Data
         {
             foreach (IMutableForeignKey relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
-               
-                string name = relationship.DeclaringEntityType.ClrType.Name;
-                PropertyInfo[] properties = relationship.DeclaringEntityType.ClrType.GetProperties();
-                bool condition1 = name != nameof(GroupUser) && (properties.Where(m => m.Name == "GroupId") != null || properties.Where(m => m.Name == "UserId") != null);
-                bool condition2 = name != nameof(ClassSectionUser) && properties.Where(m => m.Name == nameof(ClassSectionUser.ClassSectionId)) != null;
-                if (condition1 || condition2)
-                    relationship.DeleteBehavior = DeleteBehavior.Restrict;
-                else
-                    relationship.DeleteBehavior = DeleteBehavior.Cascade;
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
+            //
+            modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>
+            {
+                b.HasOne("CoreWebApi.Models.Group", "Group")
+                    .WithMany()
+                    .HasForeignKey("GroupId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.HasOne("CoreWebApi.Models.User", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
+            //
+            modelBuilder.Entity("CoreWebApi.Models.ClassSectionUser", b =>
+            {
+                b.HasOne("CoreWebApi.Models.ClassSection", "ClassSection")
+                         .WithMany()
+                         .HasForeignKey("ClassSectionId")
+                         .OnDelete(DeleteBehavior.Cascade)
+                         .IsRequired();
+            });
+
         }
-
-
-
-
-
-
-
-
 
 
     }

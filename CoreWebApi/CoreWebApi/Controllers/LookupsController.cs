@@ -96,18 +96,29 @@ namespace CoreWebApi.Controllers
             return Ok(list);
 
         }
-        [HttpGet("Users/{csId}")]
+        [HttpGet("Users/{csId}")] // for students
         public async Task<IActionResult> GetUsersByClassSection(int csId)
         {
             var users = await (from u in _context.Users
-                              join csU in _context.ClassSectionUsers
-                              on u.Id equals csU.UserId
-                              where csU.ClassSectionId == csId
-                              && u.UserTypeId == (int)Enumm.UserType.Student
-                              select u).ToListAsync();
-            //var list = _mapper.Map<List<UserForListDto>>(users);
+                               join csU in _context.ClassSectionUsers
+                               on u.Id equals csU.UserId
+                               where csU.ClassSectionId == csId
+                               && u.UserTypeId == (int)Enumm.UserType.Student
+                               select u).ToListAsync();
+            var list = _mapper.Map<List<UserForListDto>>(users);
 
-            return Ok(users);
+            return Ok(list);
+
+        }
+        [HttpGet("Teachers")] 
+        public async Task<IActionResult> GetTeachers()
+        {
+            var users = await (from u in _context.Users
+                               where u.UserTypeId == (int)Enumm.UserType.Teacher
+                               select u).ToListAsync();
+            var list = _mapper.Map<List<UserForListDto>>(users);
+
+            return Ok(list);
 
         }
 

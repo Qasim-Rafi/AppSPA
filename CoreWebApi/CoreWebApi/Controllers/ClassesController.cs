@@ -154,8 +154,8 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
-                //    return BadRequest(new { message = "Class Section Already Exist" });
+                if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+                    return BadRequest(new { message = "Class Section Already Exist" });
                 classSection.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
                 var createdObj = await _repo.AddClassSectionMapping(classSection);
 
@@ -202,8 +202,6 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
-                //    return BadRequest(new { message = "Class Section Already Exist" });
 
                 _response = await _repo.DeleteClassSectionMapping(id);
 
@@ -216,7 +214,7 @@ namespace CoreWebApi.Controllers
             }
         }
 
-        [HttpPost("AddClassSectionUserMappingInBulk")]
+        [HttpPost("AddClassSectionUserMappingInBulk")] // for students
         public async Task<IActionResult> AddClassSectionUserMappingInBulk(ClassSectionUserDtoForAddBulk classSectionUser)
         {
             try
@@ -241,7 +239,24 @@ namespace CoreWebApi.Controllers
                 });
             }
         }
-        [HttpPost("AddClassSectionUserMapping")] // not in use
+        [HttpGet("GetClassSectionUserMapping")] // for teacher
+        public async Task<IActionResult> GetClassSectionUserMappings()
+        {
+            var result = await _repo.GetClassSectionUserMapping();
+            _response.Data = result.Data.Select(o => new
+            {
+                o.Id,
+                o.ClassSectionId,
+                ClassSectionName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
+                o.UserId,
+                UserName = o.User.FullName,
+
+            });
+
+            return Ok(_response);
+
+        }
+        [HttpPost("AddClassSectionUserMapping")]  // for teacher
         public async Task<IActionResult> AddClassSectionUser(ClassSectionUserDtoForAdd classSectionUser)
         {
             try
@@ -250,20 +265,17 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
-                //    return BadRequest(new { message = "Class Section Already Exist" });
+                if (await _repo.ClassSectionUserExists(classSectionUser.ClassSectionId, classSectionUser.UserId))
+                    return BadRequest(new { message = "Class Section Teacher Already Exist" });
 
-                var createdObj = await _repo.AddClassSectionUserMapping(classSectionUser);
+                _response = await _repo.AddClassSectionUserMapping(classSectionUser);
 
-                return StatusCode(StatusCodes.Status201Created);
+                return Ok(_response);
             }
             catch (Exception ex)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
         [HttpGet("GetClassSectionUserMapping/{csId}/{userId}")]
@@ -275,30 +287,47 @@ namespace CoreWebApi.Controllers
             return Ok(ToReturn);
 
         }
-        //[HttpPut("UpdateClassSectionUserMapping")]
-        //public async Task<IActionResult> UpdateClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
-        //{
-        //    try
-        //    {
-        //        if (!ModelState.IsValid)
-        //        {
-        //            return BadRequest(ModelState);
-        //        }
-        //        //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
-        //        //    return BadRequest(new { message = "Class Section Already Exist" });
+        [HttpPut("UpdateClassSectionUserMapping")] // for teacher
+        public async Task<IActionResult> UpdateClassSectionUserMapping(ClassSectionUserDtoForUpdate classSectionUser)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                //if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
+                //    return BadRequest(new { message = "Class Section Already Exist" });
 
-        //        var createdObj = await _repo.UpdateClassSectionUserMapping(classSectionUser);
+                _response = await _repo.UpdateClassSectionUserMapping(classSectionUser);
 
-        //        return StatusCode(StatusCodes.Status201Created);
-        //    }
-        //    catch (Exception ex)
-        //    {
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
 
-        //        return BadRequest(new
-        //        {
-        //            message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-        //        });
-        //    }
-        //}
+                return BadRequest(_response);
+            }
+        }
+        [HttpDelete("DeleteClassSectionUserMapping/{id}")] // for teacher
+        public async Task<IActionResult> DeleteClassSectionUserMapping(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _response = await _repo.DeleteClassSectionUserMapping(id);
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(_response);
+            }
+        }
     }
 }

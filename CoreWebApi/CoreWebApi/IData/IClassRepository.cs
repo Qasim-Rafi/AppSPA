@@ -16,16 +16,19 @@ namespace CoreWebApi.IData
         Task<Class> EditClass(int id, ClassDtoForEdit @class);
 
         //Task<IEnumerable<ClassSection>> GetClassSections();
-        //Task<bool> ClassSectionExists(int classId, int sectionId);
+        Task<bool> ClassSectionExists(int classId, int sectionId);
         Task<IEnumerable<ClassSection>> GetClassSectionMapping();
         Task<ServiceResponse<IEnumerable<ClassSection>>> GetClassSectionById(int id);
         Task<ClassSection> AddClassSectionMapping(ClassSectionDtoForAdd classSection);
         Task<ServiceResponse<object>> UpdateClassSectionMapping(ClassSectionDtoForUpdate classSection);
         Task<ServiceResponse<object>> DeleteClassSectionMapping(int id);
-        Task<ClassSectionUser> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser);
+        Task<ServiceResponse<object>> DeleteClassSectionUserMapping(int id);
+        Task<ServiceResponse<object>> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser);
         Task<bool> AddClassSectionUserMappingBulk(ClassSectionUserDtoForAddBulk classSectionUser);
-        Task<ClassSectionUser> UpdateClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser);
+        Task<ServiceResponse<object>> UpdateClassSectionUserMapping(ClassSectionUserDtoForUpdate classSectionUser);
         Task<ClassSectionUser> GetClassSectionUserMappingById(int csId, int userId);
+        Task<ServiceResponse<IEnumerable<ClassSectionUser>>> GetClassSectionUserMapping();
+        Task<bool> ClassSectionUserExists(int csId, int userId);
 
     }
 }
