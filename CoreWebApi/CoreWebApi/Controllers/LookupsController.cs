@@ -103,18 +103,16 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUsersByClassSection(int csId)
         {
             var users = await _repo.GetUsersByClassSection(csId);
-            var list = _mapper.Map<List<UserForListDto>>(users);
 
-            return Ok(list);
+            return Ok(users);
 
         }
         [HttpGet("Teachers")]
         public async Task<IActionResult> GetTeachers()
         {
             var users = await _repo.GetTeachers();
-            var list = _mapper.Map<List<UserForListDto>>(users);
 
-            return Ok(list);
+            return Ok(users);
 
         }
 
@@ -139,5 +137,6 @@ namespace CoreWebApi.Controllers
             }
 
         }
+
     }
 }

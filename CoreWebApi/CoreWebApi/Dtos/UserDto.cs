@@ -85,7 +85,7 @@ namespace CoreWebApi.Dtos
 
         public bool IsPrimaryPhoto { get; set; }
         //public int UserTypeId { get; set; }
-        public bool Active { get; set; }       
+        public bool Active { get; set; }
 
         public IFormFileCollection files { get; set; }
     }
@@ -98,13 +98,13 @@ namespace CoreWebApi.Dtos
         public string FullName { get; set; }
         public string Gender { get; set; }
         public string DateofBirth { get; set; }
-        public int? StateId { get; set; }       
+        public int? StateId { get; set; }
         public int? CountryId { get; set; }
         public string StateName { get; set; }
         public string CountryName { get; set; }
         public string OtherState { get; set; }
         public bool Active { get; set; }
-        public virtual ICollection<Photo> Photos { get; set; }
+        public List<Photo> Photos { get; set; }
     }
     public class UserForListDto
     {
@@ -121,6 +121,25 @@ namespace CoreWebApi.Dtos
         public string CountryName { get; set; }
         public string OtherState { get; set; }
         public bool Active { get; set; }
+        public List<Photo> Photos { get; set; }
+    }
+
+    public class UserByTypeListDto
+    {
+        public int ClassSectionId { get; set; }
+        public int UserTypeId { get; set; }
+        public string FullName { get; set; }
+        public int UserId { get; set; }
+        public bool Present { get; set; }
+        public bool Absent { get; set; }
+        public bool Late { get; set; }
+        public string Comments { get; set; }
+        public string CreatedDatetime { get; set; }
+        public int LateCount { get; set; }
+        public int AbsentCount { get; set; }
+        public int LeaveCount { get; set; }
+        public int PresentCount { get; set; }
+        public List<Photo> Photos { get; set; }
     }
     public class UserForLoginDto
     {
@@ -135,7 +154,7 @@ namespace CoreWebApi.Dtos
         [StringLength(8, MinimumLength = 4, ErrorMessage = "You must specify password between 4 and 8 characters")]
         public string Password { get; set; }
         public string Gender { get; set; }
-       
+
         [EmailAddress]
         public string Email { get; set; }
         public int UserTypeId { get; set; } = 2;
@@ -180,4 +199,5 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public List<GroupUserListForEditDto> Students { get; set; }
     }
+
 }

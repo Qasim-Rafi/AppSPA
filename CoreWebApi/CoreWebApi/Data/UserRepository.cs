@@ -42,33 +42,74 @@ namespace CoreWebApi.Data
             _context.Remove(entity);
         }
 
-        public async Task<ServiceResponse<User>> GetUser(int id)
+        public async Task<ServiceResponse<UserForDetailedDto>> GetUser(int id)
         {
-            ServiceResponse<User> serviceResponse = new ServiceResponse<User>();
-
-            var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id && u.Active == true);
-
-            foreach (var item in user?.Photos)
+            ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
+            try
             {
-                item.Url = _File.AppendImagePath(item.Url);
-            }
-            serviceResponse.Data = user;
-            return serviceResponse;
-
-        }
-
-        public async Task<IEnumerable<User>> GetUsers()
-        {
-
-
-            var users = await _context.Users.Where(m => m.Active == true).Include(p => p.Photos).Include(m => m.Country).Include(m => m.State).ToListAsync();
-            foreach (var user in users)
-            {
-                foreach (var item in user?.Photos)
+                serviceResponse.Data = await _context.Users.Where(u => u.Id == id && u.Active == true).Select(s => new UserForDetailedDto()
                 {
-                    item.Url = _File.AppendImagePath(item.Url);
-                }
+                    Id = s.Id,
+                    FullName = s.FullName,
+                    Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList()
+                }).FirstOrDefaultAsync();
+                //    foreach (var item in user?.Photos)
+                //    {
+                //        item.Url = _File.AppendImagePath(item.Url);
+                //    }
+                serviceResponse.Data.DateofBirth = DateFormat.ToDate(serviceResponse.Data.DateofBirth);
+
             }
+            catch (Exception ex)
+            {
+                string s = ex.Message;
+            }
+
+            return serviceResponse;
+        }
+        //public async Task<ServiceResponse<User>> GetUser(int id)
+        //{
+        //    ServiceResponse<User> serviceResponse = new ServiceResponse<User>();
+
+        //    var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id && u.Active == true);
+
+        //    foreach (var item in user?.Photos)
+        //    {
+        //        item.Url = _File.AppendImagePath(item.Url);
+        //    }
+        //    serviceResponse.Data = user;
+        //    return serviceResponse;
+
+        //}
+
+        public async Task<IEnumerable<UserForListDto>> GetUsers()
+        {
+
+
+            var users = await _context.Users.Where(m => m.Active == true).Include(p => p.Photos).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+            {
+                Id = o.Id,
+                FullName = o.FullName,
+                DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                Email = o.Email,
+                Gender = o.Gender,
+                Username = o.Username,
+                CountryId = o.CountryId,
+                StateId = o.StateId,
+                CountryName = o.Country.Name,
+                StateName = o.State.Name,
+                OtherState = o.OtherState,
+                Active = o.Active,
+                Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+            }).ToListAsync();
+
+            //foreach (var user in users)
+            //{
+            //    foreach (var item in user?.Photos)
+            //    {
+            //        item.Url = _File.AppendImagePath(item.Url);
+            //    }
+            //}
 
             return users;
 
@@ -260,45 +301,83 @@ namespace CoreWebApi.Data
 
 
 
-        public async Task<IEnumerable<User>> GetUsersByType(int typeId, int? classSectionId)
+        public async Task<IEnumerable<UserByTypeListDto>> GetUsersByType(int typeId, int? classSectionId)
         {
 
 
             try
             {
+
+                var today = DateTime.Now;
+                var thisMonth = new DateTime(today.Year, today.Month, 1);
                 if (!string.IsNullOrEmpty(classSectionId.ToString()))
                 {
-                    IEnumerable<int> studentIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == classSectionId).Select(m => m.UserId).Distinct();
-                    var users = await _context.Users.Where(m => m.UserTypeId == typeId && studentIds.Contains(m.Id) && m.Active == true).Include(p => p.Photos).ToListAsync();
-                    //var users = await (from u in _context.Users
-                    //                   join csU in _context.ClassSectionUsers
-                    //                   on u.Id equals csU.UserId
-                    //                   where u.UserTypeId == typeId
-                    //                   && csU.ClassSectionId == classSectionId
-                    //                   && u.Active == true
-                    //                   select u).Include(p => p.Photos).ToListAsync();
-                    foreach (var user in users)
-                    {
-                        foreach (var item in user.Photos)
-                        {
-                            item.Url = _File.AppendImagePath(item.Url);
-                        }
-                    }
+                    var users = await (from u in _context.Users
+                                       join csU in _context.ClassSectionUsers
+                                       on u.Id equals csU.UserId
+                                       where u.UserTypeId == typeId
+                                       && csU.ClassSectionId == classSectionId
+                                       && u.Active == true
+                                       select u).ToListAsync();
 
-                    return users;
+                    var ToReturn = users.Select(o => new UserByTypeListDto
+                    {
+                        UserId = o.Id,
+                        FullName = o.FullName,
+                        Present = false,
+                        Absent = false,
+                        Late = false,
+                        Comments = "",
+                        UserTypeId = o.UserTypeId,
+                        ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault().ClassSectionId,
+                        LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
+                        AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                        LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                        PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                        //Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                    }).ToList();
+                    //foreach (var user in users)
+                    //{
+                    //    foreach (var item in user.Photos)
+                    //    {
+                    //        item.Url = _File.AppendImagePath(item.Url);
+                    //    }
+                    //}
+
+                    return ToReturn;
                 }
                 else
                 {
-                    var users = await _context.Users.Where(m => m.UserTypeId == typeId && m.Active == true).Include(p => p.Photos).ToListAsync();
-                    foreach (var user in users)
+                    var users = await (from u in _context.Users
+                                       where u.UserTypeId == typeId
+                                       && u.Active == true
+                                       select u).Include(p => p.Photos).ToListAsync();
+                    var ToReturn = users.Select(o => new UserByTypeListDto
                     {
-                        foreach (var item in user.Photos)
-                        {
-                            item.Url = _File.AppendImagePath(item.Url);
-                        }
-                    }
+                        UserId = o.Id,
+                        FullName = o.FullName,
+                        Present = false,
+                        Absent = false,
+                        Late = false,
+                        Comments = "",
+                        UserTypeId = o.UserTypeId,
+                        ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault().ClassSectionId,
+                        LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
+                        AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                        LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                        PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                        //Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                    }).ToList();
+                    //var users = await _context.Users.Where(m => m.UserTypeId == typeId && m.Active == true).Include(p => p.Photos).ToListAsync();
+                    //foreach (var user in users)
+                    //{
+                    //    foreach (var item in user.Photos)
+                    //    {
+                    //        item.Url = _File.AppendImagePath(item.Url);
+                    //    }
+                    //}
 
-                    return users;
+                    return ToReturn;
 
                 }
             }
@@ -360,6 +439,7 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
+                Log.Exception(ex); 
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
@@ -455,6 +535,7 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
+                Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
@@ -497,6 +578,7 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
+                Log.Exception(ex);
                 _serviceResponse.Message = CustomMessage.UnableToAdd;
                 _serviceResponse.Success = false;
                 return _serviceResponse;
@@ -573,6 +655,7 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
+                Log.Exception(ex);
                 _serviceResponse.Message = CustomMessage.UnableToAdd;
                 _serviceResponse.Success = false;
                 return _serviceResponse;

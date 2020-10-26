@@ -20,7 +20,7 @@ namespace CoreWebApi.Data
             _serviceResponse = new ServiceResponse<object>();
         }
 
-        public async Task<bool> AddQuestion(QuizQuestionDtoForAdd model)
+        public async Task<ServiceResponse<object>> AddQuestion(QuizQuestionDtoForAdd model)
         {
             var question = new QuizQuestions
             {
@@ -44,7 +44,9 @@ namespace CoreWebApi.Data
                 await _context.QuizAnswers.AddAsync(answer);
                 await _context.SaveChangesAsync();
             }
-            return true;
+            _serviceResponse.Data = new { QuestionCount = _context.QuizQuestions.Count() };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
         public async Task<int> AddQuiz(QuizDtoForAdd model)
@@ -56,6 +58,7 @@ namespace CoreWebApi.Data
                 NoOfQuestions = model.NoOfQuestions,
                 SubjectId = model.SubjectId,
                 ClassSectionId = model.ClassSectionId,
+                TeacherName = model.TeacherName,
                 CreatedDate = DateTime.Now,
                 CreatedById = _context.Users.First().Id
             };
@@ -81,6 +84,7 @@ namespace CoreWebApi.Data
                                question.Question,
                                question.QuestionTypeId,
                                question.Marks,
+                               questionCount= _context.QuizQuestions.Where(m => m.QuizId == quiz.Id).Count(),
                                answers = _context.QuizAnswers.Where(m => m.QuestionId == question.Id).ToList()
                            }).ToListAsync();
             return await quizzes;
@@ -172,6 +176,7 @@ namespace CoreWebApi.Data
                 quiz.NoOfQuestions = model.NoOfQuestions;
                 quiz.SubjectId = model.SubjectId;
                 quiz.ClassSectionId = model.ClassSectionId;
+                quiz.TeacherName = model.TeacherName;
                 await _context.SaveChangesAsync();
             }
             return quiz.Id;

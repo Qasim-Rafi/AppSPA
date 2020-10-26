@@ -13,7 +13,7 @@ namespace CoreWebApi.IData
         Task<object> GetQuizById(int id);
         Task<int> AddQuiz(QuizDtoForAdd model);
         Task<int> UpdateQuiz(int id, QuizDtoForAdd model);
-        Task<bool> AddQuestion(QuizQuestionDtoForAdd model);
+        Task<ServiceResponse<object>> AddQuestion(QuizQuestionDtoForAdd model);
         Task<ServiceResponse<object>> SubmitQuiz(QuizSubmissionDto model);
         Task<bool> UpdateQuestion(int id, QuizQuestionDtoForAdd model);
 

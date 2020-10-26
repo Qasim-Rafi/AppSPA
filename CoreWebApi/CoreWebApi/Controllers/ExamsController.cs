@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ExamsController : BaseController
@@ -105,9 +105,9 @@ namespace CoreWebApi.Controllers
                 //if (await _repo.SubjectExists(subject.Name))
                 //    return BadRequest(new { message = "Subject Already Exist" });
 
-                var createdObj = await _repo.AddQuestion(model);
+                _response = await _repo.AddQuestion(model);
 
-                return StatusCode(StatusCodes.Status201Created);
+                return Ok(_response);
             }
             catch (Exception ex)
             {

@@ -15,6 +15,7 @@ namespace CoreWebApi.Dtos
         [Required]
         [DateValidation(ErrorMessage = "QuizDate is not in correct format")]
         public string QuizDate { get; set; }
+        public string TeacherName { get; set; }
         [Required]
         public int NoOfQuestions { get; set; }
         [Required]

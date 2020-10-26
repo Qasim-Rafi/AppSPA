@@ -60,27 +60,30 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetAttendanceToDisplay(AttendanceDtoForDisplay model)
         {
             var users = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
-            var userIds = users.Select(m => m.Id);
             var DTdate = Convert.ToDateTime(model.date);
-            var ToReturn = _context.Attendances.Where(m => userIds.Contains(m.UserId) && m.CreatedDatetime.Date == DTdate.Date).Select(o => new AttendanceDtoForList
-            {
-                UserId = o.UserId,
-                ClassSectionId = o.ClassSectionId,
-                FullName = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
-                CreatedDatetime = DateFormat.ToDate(o.CreatedDatetime.ToString()),
-                Present = o.Present,
-                Absent = o.Absent,
-                Late = o.Late,
-                Comments = o.Comments,
-                LeaveCount = _context.Leaves.Where(m => m.UserId == o.UserId).Count(),
-                AbsentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Absent == true).Count(),
-                LateCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Late == true).Count(),
-                PresentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Present == true).Count(),
-                //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
-                //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
-                //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
-                //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
-            }).ToList();
+            var ToReturn = (from u in users
+                            join att in _context.Attendances
+                            on u.UserId equals att.UserId
+                            where att.CreatedDatetime.Date == DTdate.Date
+                            select att).Select(o => new AttendanceDtoForList
+                            {
+                                UserId = o.UserId,
+                                ClassSectionId = o.ClassSectionId,
+                                FullName = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
+                                CreatedDatetime = DateFormat.ToDate(o.CreatedDatetime.ToString()),
+                                Present = o.Present,
+                                Absent = o.Absent,
+                                Late = o.Late,
+                                Comments = o.Comments,
+                                LeaveCount = _context.Leaves.Where(m => m.UserId == o.UserId).Count(),
+                                AbsentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Absent == true).Count(),
+                                LateCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Late == true).Count(),
+                                PresentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Present == true).Count(),
+                                //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
+                                //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
+                                //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
+                                //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
+                            }).ToList();
             return Ok(ToReturn);
 
         }

@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : BaseController
@@ -43,25 +43,7 @@ namespace CoreWebApi.Controllers
         {
             var users = await _repo.GetUsers();
 
-            var ToReturn = users.Select(o => new UserForListDto
-            {
-                Id = o.Id,
-                FullName = o.FullName,
-                DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
-                Email = o.Email,
-                Gender = o.Gender,
-                Username = o.Username,
-                CountryId = o.CountryId,
-                StateId = o.StateId,
-                CountryName = o.Country?.Name,
-                StateName = o.State?.Name,
-                OtherState = o.OtherState,
-                Active = o.Active,
-            }).ToList();
-            //var ToReturn = _mapper.Map<List<UserForListDto>>(users);
-            //ToReturn.ForEach(m => m.DateofBirth = DateFormat.ToDate(m.DateofBirth));
-
-            return Ok(ToReturn);
+            return Ok(users);
 
         }
 
@@ -69,9 +51,8 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _repo.GetUser(id);
-            var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
-            uerToReturn.DateofBirth = DateFormat.ToDate(uerToReturn.DateofBirth);
-            return Ok(uerToReturn);
+            //var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
+            return Ok(user);
         }
 
 
@@ -151,22 +132,8 @@ namespace CoreWebApi.Controllers
             {
 
                 var users = await _repo.GetUsers();
-                var ToReturn = users.Select(o => new
-                {
-                    UserId = o.Id,
-                    o.FullName,
-                    Present = false,
-                    Absent = false,
-                    Late = false,
-                    Comments = "",
-                    o.UserTypeId,
-                    UserType = _context.UserTypes.Where(m => m.Id == o.UserTypeId).FirstOrDefault()?.Name,
-                    LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
-                    AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true).Count(),
-                    LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true).Count(),
-                    PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true).Count(),
-                }).ToList();
-                return Ok(ToReturn);
+
+                return Ok(users);
             }
             catch (Exception ex)
             {
@@ -182,26 +149,11 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetUsersByType/{typeId}/{classSectionId?}")]
         public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
         {
-            var today = DateTime.Now;
-            var thisMonth = new DateTime(today.Year, today.Month, 1);
+           
             var users = await _repo.GetUsersByType(typeId, classSectionId);
-            var ToReturn = users.Select(o => new
-            {
-                UserId = o.Id,
-                o.FullName,
-                Present = false,
-                Absent = false,
-                Late = false,
-                Comments = "",
-                o.UserTypeId,
-                ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault()?.ClassSectionId,
-                LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
-                AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-            }).ToList();
+           
             //var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
-            return Ok(ToReturn);
+            return Ok(users);
 
         }
 
@@ -312,7 +264,7 @@ namespace CoreWebApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest(_response);
-               
+
             }
 
         }

@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Dtos;
+﻿using AutoMapper;
+using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
@@ -15,11 +16,13 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public LookupRepository(DataContext context, IConfiguration configuration)
+        public LookupRepository(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             _context = context;
             _configuration = configuration;
+            _mapper = mapper;
 
         }
         public async Task<List<Class>> GetClasses()
@@ -31,12 +34,12 @@ namespace CoreWebApi.Data
 
         public async Task<List<ClassSection>> GetClassSections()
         {
-           return await _context.ClassSections.ToListAsync();
+            return await _context.ClassSections.ToListAsync();
         }
 
         public async Task<List<Country>> GetCountries()
         {
-           return await _context.Countries.ToListAsync();
+            return await _context.Countries.ToListAsync();
         }
 
         public object GetSchoolAcademies()
@@ -56,34 +59,38 @@ namespace CoreWebApi.Data
 
         public async Task<List<Section>> GetSections()
         {
-           return await _context.Sections.ToListAsync();
+            return await _context.Sections.ToListAsync();
         }
 
         public async Task<List<State>> GetStates()
         {
-           return await _context.States.ToListAsync();
+            return await _context.States.ToListAsync();
         }
 
         public async Task<List<Subject>> GetSubjects()
         {
-           return await _context.Subjects.ToListAsync();
+            return await _context.Subjects.ToListAsync();
         }
 
-        public async Task<List<User>> GetTeachers()
+        public async Task<List<UserForListDto>> GetTeachers()
         {
-            return await (from u in _context.Users
-                         where u.UserTypeId == (int)Enumm.UserType.Teacher
-                         select u).ToListAsync();
+            var users = await (from u in _context.Users
+                               where u.UserTypeId == (int)Enumm.UserType.Teacher
+                               select u).ToListAsync();
+            return _mapper.Map<List<UserForListDto>>(users);
+
         }
 
-        public async Task<List<User>> GetUsersByClassSection(int csId)
+        public async Task<List<UserForListDto>> GetUsersByClassSection(int csId)
         {
-            return await (from u in _context.Users
-                         join csU in _context.ClassSectionUsers
-                         on u.Id equals csU.UserId
-                         where csU.ClassSectionId == csId
-                         && u.UserTypeId == (int)Enumm.UserType.Student
-                         select u).ToListAsync();
+            var users = await (from u in _context.Users
+                               join csU in _context.ClassSectionUsers
+                               on u.Id equals csU.UserId
+                               where csU.ClassSectionId == csId
+                               && u.UserTypeId == (int)Enumm.UserType.Student
+                               select u).ToListAsync();
+            return _mapper.Map<List<UserForListDto>>(users);
+
         }
 
         public async Task<List<UserType>> GetUserTypes()
