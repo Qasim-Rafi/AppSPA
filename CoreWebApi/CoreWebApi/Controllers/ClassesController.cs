@@ -248,9 +248,10 @@ namespace CoreWebApi.Controllers
             {
                 Id = o.Id,
                 ClassSectionId = o.ClassSectionId,
-                ClassSectionName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
                 UserId = o.UserId,
-                UserName = o.User.FullName,
+                FullName = o.User.FullName,
 
             });
 
@@ -287,9 +288,10 @@ namespace CoreWebApi.Controllers
             {
                 Id = result.Data.Id,
                 ClassSectionId = result.Data.ClassSectionId,
-                ClassSectionName = _context.Class.FirstOrDefault(m => m.Id == result.Data.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == result.Data.ClassSection.SectionId)?.SectionName,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == result.Data.ClassSection.ClassId)?.Name,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == result.Data.ClassSection.SectionId)?.SectionName,
                 UserId = result.Data.UserId,
-                UserName = result.Data.User.FullName,
+                FullName = result.Data.User.FullName,
 
             };
 

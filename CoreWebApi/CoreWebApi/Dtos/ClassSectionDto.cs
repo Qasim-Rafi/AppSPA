@@ -88,7 +88,8 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public int ClassSectionId { get; set; }
         public int UserId { get; set; }
-        public string UserName { get; set; }
-        public string ClassSectionName { get; set; }
+        public string FullName { get; set; }
+        public string ClassName { get; set; }
+        public string SectionName { get; set; }
     }
 }
