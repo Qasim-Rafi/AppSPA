@@ -205,20 +205,25 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ClassSectionUser> GetClassSectionUserMappingById(int csId, int userId)
+        public async Task<ServiceResponse<ClassSectionUser>> GetClassSectionUserMappingById(int csId, int userId)
         {
+            ServiceResponse<ClassSectionUser> serviceResponse = new ServiceResponse<ClassSectionUser>();
             try
             {
-                var obj = await _context.ClassSectionUsers.FirstOrDefaultAsync(m => m.ClassSectionId == csId && m.UserId == userId);
 
+                serviceResponse.Data = await _context.ClassSectionUsers.Include(m => m.ClassSection).Include(m => m.User).Where(m => m.ClassSectionId == csId && m.UserId == userId).FirstOrDefaultAsync();
 
-                return obj;
+                serviceResponse.Success = true;
+
+                return serviceResponse;
             }
             catch (Exception ex)
             {
-
                 Log.Exception(ex);
-                throw ex;
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                return serviceResponse;
             }
         }
 

@@ -103,16 +103,16 @@ namespace CoreWebApi.Controllers
         {
             IEnumerable<ClassSection> list = await _repo.GetClassSectionMapping();
 
-            var ToReturn = list.Select(o => new
+            var ToReturn = list.Select(o => new ClassSectionForListDto
             {
                 ClassSectionId = o.Id,
-                o.SchoolAcademyId,
+                SchoolAcademyId = o.SchoolAcademyId,
                 SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolAcademyId)?.Name,
-                o.ClassId,
+                ClassId = o.ClassId,
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
-                o.SectionId,
+                SectionId = o.SectionId,
                 SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
-                o.NumberOfStudents
+                NumberOfStudents = o.NumberOfStudents
             });
             return Ok(ToReturn);
 
@@ -126,16 +126,17 @@ namespace CoreWebApi.Controllers
 
                 _response.Success = result.Success;
                 _response.Message = result.Message;
-                _response.Data = result.Data.Select(o => new
+                _response.Data = result.Data.Select(o => new ClassSectionForDetailsDto
                 {
                     ClassSectionId = o.Id,
-                    o.SchoolAcademyId,
+                    SchoolAcademyId = o.SchoolAcademyId,
                     SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolAcademyId)?.Name,
-                    o.ClassId,
+                    ClassId = o.ClassId,
                     ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
-                    o.SectionId,
+                    SectionId = o.SectionId,
                     SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
-                    o.NumberOfStudents
+                    NumberOfStudents = o.NumberOfStudents,
+
                 });
                 return Ok(_response);
             }
@@ -243,12 +244,12 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetClassSectionUserMappings()
         {
             var result = await _repo.GetClassSectionUserMapping();
-            _response.Data = result.Data.Select(o => new
+            _response.Data = result.Data.Select(o => new ClassSectionUserForListDto
             {
-                o.Id,
-                o.ClassSectionId,
+                Id = o.Id,
+                ClassSectionId = o.ClassSectionId,
                 ClassSectionName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
-                o.UserId,
+                UserId = o.UserId,
                 UserName = o.User.FullName,
 
             });
@@ -281,10 +282,18 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetClassSectionUserMapping/{csId}/{userId}")]
         public async Task<IActionResult> GetClassSectionUserMappingById(int csId, int userId)
         {
-            var ToReturn = await _repo.GetClassSectionUserMappingById(csId, userId);
+            var result = await _repo.GetClassSectionUserMappingById(csId, userId);
+            _response.Data = new ClassSectionUserForListDto
+            {
+                Id = result.Data.Id,
+                ClassSectionId = result.Data.ClassSectionId,
+                ClassSectionName = _context.Class.FirstOrDefault(m => m.Id == result.Data.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == result.Data.ClassSection.SectionId)?.SectionName,
+                UserId = result.Data.UserId,
+                UserName = result.Data.User.FullName,
 
+            };
 
-            return Ok(ToReturn);
+            return Ok(_response);
 
         }
         [HttpPut("UpdateClassSectionUserMapping")] // for teacher

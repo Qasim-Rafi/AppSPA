@@ -60,6 +60,7 @@ namespace CoreWebApi
 
 
                 
+                services.AddScoped<ILookupRepository, LookupRepository>();
                 services.AddScoped<IFilesRepository, FilesRepository>();
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
