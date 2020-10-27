@@ -1,4 +1,5 @@
 ﻿using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -80,7 +81,7 @@ namespace CoreWebApi.Data
                                           select new QuizForListDto
                                           {
                                               QuizId = quiz.Id,
-                                              QuizDate = quiz.QuizDate.ToString(),
+                                              QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
                                               TeacherName = quiz.TeacherName,
                                               NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
                                               SubjectId = quiz.SubjectId,
@@ -100,7 +101,7 @@ namespace CoreWebApi.Data
             var quizzes = await _context.Quizzes.Where(m => _context.QuizQuestions.Where(n => n.QuizId == m.Id).Count() < m.NoOfQuestions).Select(o => new QuizForListDto
             {
                 QuizId = o.Id,
-                QuizDate = o.QuizDate.ToString(),
+                QuizDate = DateFormat.ToDate(o.QuizDate.ToString()),
                 TeacherName = o.TeacherName,
                 NoOfQuestions = Convert.ToInt32(o.NoOfQuestions),
                 SubjectId = o.SubjectId,
@@ -123,7 +124,7 @@ namespace CoreWebApi.Data
                                                   select new QuizForListDto
                                                   {
                                                       QuizId = quiz.Id,
-                                                      QuizDate = quiz.QuizDate.ToString(),
+                                                      QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
                                                       TeacherName = quiz.TeacherName,
                                                       NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
                                                       SubjectId = quiz.SubjectId,
