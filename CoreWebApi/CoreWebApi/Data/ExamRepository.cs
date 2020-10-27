@@ -44,6 +44,7 @@ namespace CoreWebApi.Data
                 await _context.QuizAnswers.AddAsync(answer);
                 await _context.SaveChangesAsync();
             }
+
             _serviceResponse.Data = new { QuestionCount = _context.QuizQuestions.Where(m => m.QuizId == model.QuizId).Count() };
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -130,6 +131,7 @@ namespace CoreWebApi.Data
                                                       ClassSectionId = quiz.ClassSectionId,
                                                       ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
                                                       SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
+                                                      QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                                   }).ToListAsync();
 
             foreach (var quiz in quizzes)

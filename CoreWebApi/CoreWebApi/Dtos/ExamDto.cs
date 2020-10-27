@@ -26,6 +26,10 @@ namespace CoreWebApi.Dtos
    
     public class QuizQuestionDtoForAdd
     {
+        public QuizQuestionDtoForAdd()
+        {
+            Answers = new List<QuizAnswerDtoForAdd>();
+        }
         [Required]
         public int QuizId { get; set; }
         [Required]
@@ -71,8 +75,9 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }      
         public string ClassName { get; set; }
         public string SectionName { get; set; }
-        public List<QuestionForListDto> Questions { get; set; }
         public int QuestionCount { get; set; }
+        public List<QuestionForListDto> Questions { get; set; }
+        
     }
     public class QuestionForListDto
     {

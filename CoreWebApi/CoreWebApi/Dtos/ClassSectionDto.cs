@@ -77,6 +77,10 @@ namespace CoreWebApi.Dtos
     }
     public class ClassSectionUserDtoForAddBulk
     {
+        public ClassSectionUserDtoForAddBulk()
+        {
+            UserIds = new List<int>();
+        }
         [Required]
         public int ClassSectionId { get; set; }
         [Required]
