@@ -9,8 +9,9 @@ namespace CoreWebApi.IData
 {
     public interface IExamRepository
     {
-        Task<object> GetQuizzes();
-        Task<object> GetQuizById(int id);
+        Task<ServiceResponse<object>> GetQuizzes();
+        Task<ServiceResponse<object>> GetQuizById(int id);
+        Task<ServiceResponse<object>> GetPendingQuiz();
         Task<int> AddQuiz(QuizDtoForAdd model);
         Task<int> UpdateQuiz(int id, QuizDtoForAdd model);
         Task<ServiceResponse<object>> AddQuestion(QuizQuestionDtoForAdd model);

@@ -56,4 +56,41 @@ namespace CoreWebApi.Dtos
         public int AnswerId { get; set; }
         public string Description { get; set; }
     }
+    public class QuizForListDto
+    {
+        public QuizForListDto()
+        {
+            Questions = new List<QuestionForListDto>();
+        }
+        public int QuizId { get; set; }
+        public string QuizDate { get; set; }
+        public string TeacherName { get; set; }
+        public int NoOfQuestions { get; set; }
+        public int SubjectId { get; set; }
+        public string SubjectName { get; set; }
+        public int ClassSectionId { get; set; }      
+        public string ClassName { get; set; }
+        public string SectionName { get; set; }
+        public List<QuestionForListDto> Questions { get; set; }
+        public int QuestionCount { get; set; }
+    }
+    public class QuestionForListDto
+    {
+        public QuestionForListDto()
+        {
+            Answers = new List<AnswerForListDto>();
+        }
+        public int QuestionId { get; set; }       
+        public string Question { get; set; }
+        public double Marks { get; set; }
+        public int QuestionTypeId { get; set; }
+        public string QuestionType { get; set; }
+        public List<AnswerForListDto> Answers { get; set; }
+    }
+    public class AnswerForListDto
+    {
+        public int AnswerId { get; set; }       
+        public string Answer { get; set; }        
+        public bool IsTrue { get; set; }
+    }
 }

@@ -42,6 +42,13 @@ namespace CoreWebApi.Controllers
             return Ok(ToReturn);
 
         }
+        [HttpGet("GetPendingQuiz")]
+        public async Task<IActionResult> GetPendingQuiz()
+        {
+            var ToReturn = await _repo.GetPendingQuiz();
+            return Ok(ToReturn);
+
+        }
 
         [HttpPost("AddQuiz")]
         public async Task<IActionResult> PostQuiz(QuizDtoForAdd model)
