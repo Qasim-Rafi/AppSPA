@@ -51,20 +51,24 @@ namespace CoreWebApi.Data
                 {
                     Id = s.Id,
                     FullName = s.FullName,
+                    DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
                     Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList()
                 }).FirstOrDefaultAsync();
                 //    foreach (var item in user?.Photos)
                 //    {
                 //        item.Url = _File.AppendImagePath(item.Url);
                 //    }
-                serviceResponse.Data.DateofBirth = DateFormat.ToDate(serviceResponse.Data.DateofBirth);
 
             }
             catch (Exception ex)
             {
-                string s = ex.Message;
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                serviceResponse.Success = false;
+                return serviceResponse;
             }
-
+            serviceResponse.Success = true;
             return serviceResponse;
         }
         //public async Task<ServiceResponse<User>> GetUser(int id)
@@ -86,7 +90,7 @@ namespace CoreWebApi.Data
         {
 
 
-            var users = await _context.Users.Where(m => m.Active == true).Include(p => p.Photos).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+            var users = await _context.Users.Where(m => m.Active == true).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
             {
                 Id = o.Id,
                 FullName = o.FullName,
@@ -291,7 +295,6 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
                 Log.Exception(ex);
-
                 var currentMethodName = Log.TraceMethod("get method name");
                 serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
                 serviceResponse.Success = false;

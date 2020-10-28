@@ -22,8 +22,9 @@ namespace CoreWebApi.Dtos
         public int SubjectId { get; set; }
         [Required] 
         public int ClassSectionId { get; set; }
+        public bool IsPosted { get; set; }
     }
-   
+
     public class QuizQuestionDtoForAdd
     {
         public QuizQuestionDtoForAdd()
@@ -76,6 +77,7 @@ namespace CoreWebApi.Dtos
         public string ClassName { get; set; }
         public string SectionName { get; set; }
         public int QuestionCount { get; set; }
+        public bool IsPosted { get; set; }
         public List<QuestionForListDto> Questions { get; set; }
         
     }

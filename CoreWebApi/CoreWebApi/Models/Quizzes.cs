@@ -13,6 +13,8 @@ namespace CoreWebApi.Models
         public int? NoOfQuestions { get; set; }
         public int SubjectId { get; set; }
         public int ClassSectionId { get; set; }   
+        public bool IsPosted { get; set; }   
+
         public DateTime? CreatedDate { get; set; }
         public int? CreatedById { get; set; }
 

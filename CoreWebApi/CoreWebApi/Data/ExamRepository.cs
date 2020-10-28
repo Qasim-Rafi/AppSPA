@@ -61,6 +61,7 @@ namespace CoreWebApi.Data
                 SubjectId = model.SubjectId,
                 ClassSectionId = model.ClassSectionId,
                 TeacherName = model.TeacherName,
+                IsPosted = model.IsPosted,
                 CreatedDate = DateTime.Now,
                 CreatedById = _context.Users.First().Id
             };
@@ -84,6 +85,7 @@ namespace CoreWebApi.Data
                                               QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
                                               TeacherName = quiz.TeacherName,
                                               NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
+                                              IsPosted = quiz.IsPosted,
                                               SubjectId = quiz.SubjectId,
                                               SubjectName = subject.Name,
                                               ClassSectionId = quiz.ClassSectionId,
@@ -91,6 +93,33 @@ namespace CoreWebApi.Data
                                               SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
                                               QuestionCount = _context.QuizQuestions.Where(m => m.QuizId == quiz.Id).Count()
                                           }).FirstOrDefaultAsync();
+
+            List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
+                                                        join qType in _context.QuestionTypes
+                                                        on q.QuestionTypeId equals qType.Id
+                                                        where q.QuizId == quizz.QuizId
+                                                        select new QuestionForListDto
+                                                        {
+                                                            QuestionId = q.Id,
+                                                            Question = q.Question,
+                                                            QuestionTypeId = q.QuestionTypeId,
+                                                            QuestionType = qType.Type,
+                                                            Marks = Convert.ToInt32(q.Marks),
+                                                        }).ToListAsync();
+            quizz.Questions.AddRange(questions);
+
+            foreach (var question in questions)
+            {
+                List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
+                                                        where ans.QuestionId == question.QuestionId
+                                                        select new AnswerForListDto
+                                                        {
+                                                            AnswerId = ans.Id,
+                                                            Answer = ans.Answer,
+                                                            IsTrue = Convert.ToBoolean(ans.IsTrue),
+                                                        }).ToListAsync();
+                question.Answers.AddRange(answers);
+            }
             _serviceResponse.Success = true;
             _serviceResponse.Data = quizz;
             return _serviceResponse;
@@ -121,12 +150,14 @@ namespace CoreWebApi.Data
                                                   on quiz.SubjectId equals subject.Id
                                                   join classSection in _context.ClassSections
                                                   on quiz.ClassSectionId equals classSection.Id
+                                                  orderby quiz.Id descending
                                                   select new QuizForListDto
                                                   {
                                                       QuizId = quiz.Id,
                                                       QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
                                                       TeacherName = quiz.TeacherName,
                                                       NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
+                                                      IsPosted = quiz.IsPosted,
                                                       SubjectId = quiz.SubjectId,
                                                       SubjectName = subject.Name,
                                                       ClassSectionId = quiz.ClassSectionId,
@@ -229,6 +260,7 @@ namespace CoreWebApi.Data
                 quiz.SubjectId = model.SubjectId;
                 quiz.ClassSectionId = model.ClassSectionId;
                 quiz.TeacherName = model.TeacherName;
+                quiz.IsPosted = model.IsPosted;
                 await _context.SaveChangesAsync();
             }
             return quiz.Id;
