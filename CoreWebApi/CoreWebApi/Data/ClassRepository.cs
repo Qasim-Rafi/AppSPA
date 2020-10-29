@@ -134,6 +134,7 @@ namespace CoreWebApi.Data
 
                     await _context.SaveChangesAsync();
                     _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
                 }
                 else
                 {
@@ -165,6 +166,7 @@ namespace CoreWebApi.Data
                 await _context.ClassSectionUsers.AddAsync(objToCreate);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
 
                 return _serviceResponse;
             }
@@ -192,6 +194,7 @@ namespace CoreWebApi.Data
                 await _context.SaveChangesAsync();
 
                 _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
 
                 return _serviceResponse;
             }

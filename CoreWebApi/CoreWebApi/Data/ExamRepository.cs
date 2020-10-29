@@ -76,6 +76,7 @@ namespace CoreWebApi.Data
                 Questions = questions
             };
             _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added; 
             return _serviceResponse;
         }
 

@@ -170,12 +170,13 @@ namespace CoreWebApi.Data
                 await _context.Users.AddAsync(userToCreate);
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = userToCreate;
+                serviceResponse.Message = CustomMessage.Added;
                 return serviceResponse;
             }
             catch (Exception ex)
             {
                 var currentMethodName = Log.TraceMethod("get method name");
-                serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 serviceResponse.Success = false;
                 return serviceResponse;
                 //Log.Exception(ex);
@@ -437,12 +438,13 @@ namespace CoreWebApi.Data
                 await _context.GroupUsers.AddRangeAsync(listToAdd);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
                 return _serviceResponse;
 
             }
             catch (Exception ex)
             {
-                Log.Exception(ex); 
+                Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
@@ -577,6 +579,7 @@ namespace CoreWebApi.Data
                     await _context.SaveChangesAsync();
                 }
                 _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
                 return _serviceResponse;
             }
             catch (Exception ex)
@@ -653,6 +656,8 @@ namespace CoreWebApi.Data
 
                 if (groupList.Count > 0)
                     _serviceResponse.Data = groupList;// JsonConvert.SerializeObject(groupList);
+                else
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
