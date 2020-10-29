@@ -23,21 +23,21 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddQuestion(QuizQuestionDtoForAdd model)
         {
-            var question = new QuizQuestions
+            var questionObj = new QuizQuestions
             {
                 QuizId = model.QuizId,
                 QuestionTypeId = model.QuestionTypeId,
                 Question = model.Question,
                 Marks = model.Marks
             };
-            await _context.QuizQuestions.AddAsync(question);
+            await _context.QuizQuestions.AddAsync(questionObj);
             await _context.SaveChangesAsync();
 
             foreach (var item in model.Answers)
             {
                 var answer = new QuizAnswers
                 {
-                    QuestionId = question.Id,
+                    QuestionId = questionObj.Id,
                     Answer = item.Answer,
                     IsTrue = item.IsTrue
 
@@ -45,8 +45,36 @@ namespace CoreWebApi.Data
                 await _context.QuizAnswers.AddAsync(answer);
                 await _context.SaveChangesAsync();
             }
+            List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
+                                                        join qType in _context.QuestionTypes
+                                                        on q.QuestionTypeId equals qType.Id
+                                                        where q.QuizId == model.QuizId
+                                                        select new QuestionForListDto
+                                                        {
+                                                            QuestionId = q.Id,
+                                                            Question = q.Question,
+                                                            QuestionTypeId = q.QuestionTypeId,
+                                                            QuestionType = qType.Type,
+                                                            Marks = Convert.ToInt32(q.Marks),
+                                                        }).ToListAsync();
 
-            _serviceResponse.Data = new { QuestionCount = _context.QuizQuestions.Where(m => m.QuizId == model.QuizId).Count() };
+            foreach (var question in questions)
+            {
+                List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
+                                                        where ans.QuestionId == question.QuestionId
+                                                        select new AnswerForListDto
+                                                        {
+                                                            AnswerId = ans.Id,
+                                                            Answer = ans.Answer,
+                                                            IsTrue = Convert.ToBoolean(ans.IsTrue),
+                                                        }).ToListAsync();
+                question.Answers.AddRange(answers);
+            }
+            _serviceResponse.Data = new
+            {
+                QuestionCount = questions.Count(),
+                Questions = questions
+            };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

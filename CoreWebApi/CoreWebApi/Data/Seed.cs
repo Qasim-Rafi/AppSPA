@@ -153,10 +153,11 @@ namespace CoreWebApi.Data
                         user.PasswordSalt = passwordSalt;
                         user.Username = user.Username.ToLower();
                         user.Email = "test@email";
-                        user.FullName = "test name " + (index + 1);
+                        user.FullName = "test name 0" + (index + 1);
                         user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
                         user.CreatedDateTime = DateTime.Now;
                         user.SchoolBranchId = schoolBranchId;
+                        user.RollNumber = "R-00" + (index + 1);
                         user.Active = true;
                         context.Users.Add(user);
 
