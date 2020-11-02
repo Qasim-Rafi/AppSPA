@@ -31,7 +31,16 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetAllQuiz")]
         public async Task<IActionResult> GetQuizzes()
         {
+            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
             var ToReturn = await _repo.GetQuizzes();
+            return Ok(ToReturn);
+
+        }
+        [HttpGet("GetAllAssignedQuiz")]
+        public async Task<IActionResult> GetAssignedQuiz()
+        {
+            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            var ToReturn = await _repo.GetAssignedQuiz(loggedInUserId);
             return Ok(ToReturn);
 
         }
