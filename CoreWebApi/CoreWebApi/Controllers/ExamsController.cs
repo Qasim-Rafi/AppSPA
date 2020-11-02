@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWebApi.Controllers
 {
-    //[Authorize]
+    [Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class ExamsController : BaseController

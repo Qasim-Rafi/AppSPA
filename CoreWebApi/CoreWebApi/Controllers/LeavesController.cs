@@ -6,12 +6,13 @@ using AutoMapper;
 using CoreWebApi.Dtos;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWebApi.Controllers
 {
-    //[Authorize]
+    [Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class LeavesController : ControllerBase

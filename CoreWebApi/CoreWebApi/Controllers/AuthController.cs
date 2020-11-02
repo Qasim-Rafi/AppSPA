@@ -114,6 +114,7 @@ namespace CoreWebApi.Controllers
                 {
                     loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value,
                     loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.Name.ToString())).Value,
+                    role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
                     schoolName = schoolBranchDetails.school.Name,
                     token = tokenHandler.WriteToken(token)
                 });

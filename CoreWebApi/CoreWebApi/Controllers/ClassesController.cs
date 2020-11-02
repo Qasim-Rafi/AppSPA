@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Player,Admin") ]
+    [Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class ClassesController : BaseController
@@ -40,15 +40,12 @@ namespace CoreWebApi.Controllers
             _role = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
 
-       
-
-
         [HttpGet]
         public async Task<IActionResult> GetClasses()
         {
             var classes = await _repo.GetClasses();
-            var ToReturn = _role.Equals("Admin") ? _mapper.Map<IEnumerable<Class>>(classes) :
-                _mapper.Map<IEnumerable<Class>>(classes);
+            var ToReturn = _role.Equals("Admin") ? _mapper.Map<IEnumerable<ClassDtoForList>>(classes) :
+                _mapper.Map<IEnumerable<ClassDtoForList>>(classes);
             return Ok(ToReturn);
 
         }
@@ -56,7 +53,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetClass(int id)
         {
             var @class = await _repo.GetClass(id);
-            var ToReturn = _mapper.Map<Class>(@class);
+            var ToReturn = _mapper.Map<ClassDtoForDetail>(@class);
             return Ok(ToReturn);
         }
         [HttpPost("Add")]
