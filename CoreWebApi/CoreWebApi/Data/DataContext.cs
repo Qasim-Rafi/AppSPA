@@ -84,6 +84,9 @@ namespace CoreWebApi.Data
                          .IsRequired();
             });
 
+            modelBuilder.Entity<User>()
+                .Property(user => user.Role).HasDefaultValue("Student");
+
         }
 
 

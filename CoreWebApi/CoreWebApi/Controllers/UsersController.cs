@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
-    //[Authorize]
+    [Authorize(Roles = "Player")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : BaseController
@@ -54,6 +54,7 @@ namespace CoreWebApi.Controllers
             //var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
             return Ok(user);
         }
+
 
 
         [HttpPost("AddUser")]

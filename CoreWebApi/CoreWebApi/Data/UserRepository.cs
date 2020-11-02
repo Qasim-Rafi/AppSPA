@@ -71,6 +71,38 @@ namespace CoreWebApi.Data
             serviceResponse.Success = true;
             return serviceResponse;
         }
+
+
+        public async Task<ServiceResponse<UserForDetailedDto>> GetUserRole(int id)
+        {
+            ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
+            try
+            {
+                serviceResponse.Data = await _context.Users.Where(u => u.Id == id && u.Active == true).Select(s => new UserForDetailedDto()
+                {
+                    Id = s.Id,
+                    FullName = s.FullName,
+                    DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
+                    Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList()
+                }).FirstOrDefaultAsync();
+                //    foreach (var item in user?.Photos)
+                //    {
+                //        item.Url = _File.AppendImagePath(item.Url);
+                //    }
+
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                serviceResponse.Success = false;
+                return serviceResponse;
+            }
+            serviceResponse.Success = true;
+            return serviceResponse;
+        }
+
         //public async Task<ServiceResponse<User>> GetUser(int id)
         //{
         //    ServiceResponse<User> serviceResponse = new ServiceResponse<User>();

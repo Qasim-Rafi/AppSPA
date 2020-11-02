@@ -91,7 +91,8 @@ namespace CoreWebApi.Controllers
                 {
                     new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
                     new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
-                    new Claim(Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString())
+                    new Claim(Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString()),
+                    new Claim(ClaimTypes.Role,userFromRepo.Role)
                 };
 
 

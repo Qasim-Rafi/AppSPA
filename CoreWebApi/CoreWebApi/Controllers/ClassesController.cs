@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Data;
@@ -8,13 +10,15 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CoreWebApi.Controllers
 {
-    //[Authorize]
+    [Authorize(Roles = "Player,Admin") ]
     [Route("api/[controller]")]
     [ApiController]
     public class ClassesController : BaseController
@@ -23,20 +27,28 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         ServiceResponse<object> _response;
+     
+        private string _role;
 
-        public ClassesController(IClassRepository repo, IMapper mapper, DataContext context)
+
+        public ClassesController(IClassRepository repo, IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _context = context;
             _response = new ServiceResponse<object>();
+            _role = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
+
+       
+
 
         [HttpGet]
         public async Task<IActionResult> GetClasses()
         {
             var classes = await _repo.GetClasses();
-            var ToReturn = _mapper.Map<IEnumerable<Class>>(classes);
+            var ToReturn = _role.Equals("Admin") ? _mapper.Map<IEnumerable<Class>>(classes) :
+                _mapper.Map<IEnumerable<Class>>(classes);
             return Ok(ToReturn);
 
         }

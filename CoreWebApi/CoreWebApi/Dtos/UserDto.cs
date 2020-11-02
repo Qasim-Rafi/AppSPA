@@ -145,6 +145,7 @@ namespace CoreWebApi.Dtos
     {
         public string Username { get; set; }
         public string password { get; set; }
+
     }
     public class UserForRegisterDto
     {

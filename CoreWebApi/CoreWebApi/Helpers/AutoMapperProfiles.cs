@@ -16,6 +16,7 @@ namespace CoreWebApi.Helpers
             CreateMap<User, UserForListDto>();
             CreateMap<User, UserForDetailedDto>();
             CreateMap<User, UserForAddDto>();
+            CreateMap<User, UserForLoginDto>();
         }
     }
 }

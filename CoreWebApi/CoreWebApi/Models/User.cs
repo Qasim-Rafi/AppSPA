@@ -76,5 +76,8 @@ namespace CoreWebApi.Models
         [ForeignKey("StateId")]
         public virtual State State { get; set; }
 
+        [Required]
+        public string  Role { get; set; }
+
     }
 }
