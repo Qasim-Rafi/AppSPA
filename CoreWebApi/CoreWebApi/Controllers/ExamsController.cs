@@ -33,7 +33,8 @@ namespace CoreWebApi.Controllers
         {
             try
             {
-                _response = await _repo.GetQuizzes();
+                var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+                _response = await _repo.GetQuizzes(loggedInUserId);
                 return Ok(_response);
             }
             catch (Exception)

@@ -207,11 +207,12 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetQuizzes()
+        public async Task<ServiceResponse<object>> GetQuizzes(string loggedInUserId)
         {
 
             try
             {
+                var userDetails = _context.Users.Where(m => m.Id == Convert.ToInt32(loggedInUserId)).FirstOrDefault();
                 List<QuizForListDto> quizzes = await (from quiz in _context.Quizzes
                                                       join subject in _context.Subjects
                                                       on quiz.SubjectId equals subject.Id
@@ -257,7 +258,7 @@ namespace CoreWebApi.Data
                                                                 {
                                                                     AnswerId = ans.Id,
                                                                     Answer = ans.Answer,
-                                                                    IsTrue = Convert.ToBoolean(ans.IsTrue),
+                                                                    IsTrue = userDetails.UserTypeId != (int)Enumm.UserType.Student && Convert.ToBoolean(ans.IsTrue),
                                                                 }).ToListAsync();
                         question.Answers.AddRange(answers);
                     }
@@ -362,7 +363,7 @@ namespace CoreWebApi.Data
                                                                 {
                                                                     AnswerId = ans.Id,
                                                                     Answer = ans.Answer,
-                                                                    IsTrue = Convert.ToBoolean(ans.IsTrue),
+                                                                    IsTrue = userDetails.UserTypeId != (int)Enumm.UserType.Student && Convert.ToBoolean(ans.IsTrue),
                                                                 }).ToListAsync();
                         question.Answers.AddRange(answers);
                     }
