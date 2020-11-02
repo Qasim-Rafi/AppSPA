@@ -150,7 +150,7 @@ namespace CoreWebApi.Data
                 Log.Exception(ex);
                 _serviceResponse.Success = false;
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                throw ex;
+                return _serviceResponse;
             }
         }
         public async Task<ServiceResponse<object>> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
@@ -177,7 +177,8 @@ namespace CoreWebApi.Data
                 Log.Exception(ex);
                 _serviceResponse.Success = false;
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                throw ex;
+                return _serviceResponse;
+
             }
         }
 
@@ -224,9 +225,9 @@ namespace CoreWebApi.Data
             {
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                throw ex;
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                return serviceResponse;
             }
         }
 
@@ -314,7 +315,8 @@ namespace CoreWebApi.Data
                 var currentMethodName = Log.TraceMethod("get method name");
                 serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 serviceResponse.Success = false;
-                throw ex;
+                return serviceResponse;
+
             }
         }
 
@@ -338,7 +340,7 @@ namespace CoreWebApi.Data
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                throw ex;
+                return _serviceResponse;
             }
         }
     }

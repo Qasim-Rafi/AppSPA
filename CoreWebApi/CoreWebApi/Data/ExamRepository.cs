@@ -88,7 +88,7 @@ namespace CoreWebApi.Data
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                throw ex;
+                return _serviceResponse;
             }
         }
 
@@ -116,9 +116,9 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
                 Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                _serviceResponse.Success = false;
+                //var currentMethodName = Log.TraceMethod("get method name");
+                //_serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                //_serviceResponse.Success = false;
                 throw ex;
             }
         }
@@ -186,7 +186,7 @@ namespace CoreWebApi.Data
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                throw ex;
+                return _serviceResponse;
             }
         }
 
@@ -273,7 +273,7 @@ namespace CoreWebApi.Data
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                throw ex;
+                return _serviceResponse;
             }
         }
         public async Task<ServiceResponse<object>> GetAssignedQuiz(string loggedInUserId)
@@ -378,7 +378,7 @@ namespace CoreWebApi.Data
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                throw ex;
+                return _serviceResponse;
             }
         }
 
@@ -412,7 +412,7 @@ namespace CoreWebApi.Data
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                throw ex;
+                return _serviceResponse;
             }
         }
 
