@@ -31,25 +31,47 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetAllQuiz")]
         public async Task<IActionResult> GetQuizzes()
         {
-            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-            var ToReturn = await _repo.GetQuizzes();
-            return Ok(ToReturn);
+            try
+            {
+                _response = await _repo.GetQuizzes();
+                return Ok(_response);
+            }
+            catch (Exception)
+            {
+                return BadRequest(_response);
 
+            }
         }
         [HttpGet("GetAllAssignedQuiz")]
         public async Task<IActionResult> GetAssignedQuiz()
         {
-            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-            var ToReturn = await _repo.GetAssignedQuiz(loggedInUserId);
-            return Ok(ToReturn);
+            try
+            {
+                var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+                _response = await _repo.GetAssignedQuiz(loggedInUserId);
+                return Ok(_response);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest(_response);
+            }
 
         }
         [HttpGet("GetQuizById/{id}")]
         public async Task<IActionResult> GetQuizById(int id)
         {
-            var ToReturn = await _repo.GetQuizById(id);
-            return Ok(ToReturn);
+            try
+            {
+                var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+                _response = await _repo.GetQuizById(id, loggedInUserId);
+                return Ok(_response);
+            }
+            catch (Exception)
+            {
 
+                return BadRequest(_response);
+            }
         }
         [HttpGet("GetPendingQuiz")]
         public async Task<IActionResult> GetPendingQuiz()
@@ -132,7 +154,7 @@ namespace CoreWebApi.Controllers
             }
         }
         [HttpPost("SubmitQuiz")]
-        public async Task<IActionResult> PostQuizSubmission(QuizSubmissionDto model)
+        public async Task<IActionResult> PostQuizSubmission(List<QuizSubmissionDto> model)
         {
             try
             {
@@ -142,13 +164,13 @@ namespace CoreWebApi.Controllers
                 }
                 //if (await _repo.SubjectExists(subject.Name))
                 //    return BadRequest(new { message = "Subject Already Exist" });
-                model.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+                var LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
 
-                _response = await _repo.SubmitQuiz(model);
+                _response = await _repo.SubmitQuiz(model, LoggedIn_UserId);
 
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 return BadRequest(_response);
