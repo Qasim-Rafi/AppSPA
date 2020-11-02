@@ -23,135 +23,168 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddQuestion(QuizQuestionDtoForAdd model)
         {
-            var questionObj = new QuizQuestions
+            try
             {
-                QuizId = model.QuizId,
-                QuestionTypeId = model.QuestionTypeId,
-                Question = model.Question,
-                Marks = model.Marks
-            };
-            await _context.QuizQuestions.AddAsync(questionObj);
-            await _context.SaveChangesAsync();
-
-            foreach (var item in model.Answers)
-            {
-                var answer = new QuizAnswers
+                var questionObj = new QuizQuestions
                 {
-                    QuestionId = questionObj.Id,
-                    Answer = item.Answer,
-                    IsTrue = item.IsTrue
-
+                    QuizId = model.QuizId,
+                    QuestionTypeId = model.QuestionTypeId,
+                    Question = model.Question,
+                    Marks = model.Marks
                 };
-                await _context.QuizAnswers.AddAsync(answer);
+                await _context.QuizQuestions.AddAsync(questionObj);
                 await _context.SaveChangesAsync();
-            }
-            List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
-                                                        join qType in _context.QuestionTypes
-                                                        on q.QuestionTypeId equals qType.Id
-                                                        where q.QuizId == model.QuizId
-                                                        select new QuestionForListDto
-                                                        {
-                                                            QuestionId = q.Id,
-                                                            Question = q.Question,
-                                                            QuestionTypeId = q.QuestionTypeId,
-                                                            QuestionType = qType.Type,
-                                                            Marks = Convert.ToInt32(q.Marks),
-                                                        }).ToListAsync();
 
-            foreach (var question in questions)
-            {
-                List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
-                                                        where ans.QuestionId == question.QuestionId
-                                                        select new AnswerForListDto
-                                                        {
-                                                            AnswerId = ans.Id,
-                                                            Answer = ans.Answer,
-                                                            IsTrue = Convert.ToBoolean(ans.IsTrue),
-                                                        }).ToListAsync();
-                question.Answers.AddRange(answers);
+                foreach (var item in model.Answers)
+                {
+                    var answer = new QuizAnswers
+                    {
+                        QuestionId = questionObj.Id,
+                        Answer = item.Answer,
+                        IsTrue = item.IsTrue
+
+                    };
+                    await _context.QuizAnswers.AddAsync(answer);
+                    await _context.SaveChangesAsync();
+                }
+                List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
+                                                            join qType in _context.QuestionTypes
+                                                            on q.QuestionTypeId equals qType.Id
+                                                            where q.QuizId == model.QuizId
+                                                            select new QuestionForListDto
+                                                            {
+                                                                QuestionId = q.Id,
+                                                                Question = q.Question,
+                                                                QuestionTypeId = q.QuestionTypeId,
+                                                                QuestionType = qType.Type,
+                                                                Marks = Convert.ToInt32(q.Marks),
+                                                            }).ToListAsync();
+
+                foreach (var question in questions)
+                {
+                    List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
+                                                            where ans.QuestionId == question.QuestionId
+                                                            select new AnswerForListDto
+                                                            {
+                                                                AnswerId = ans.Id,
+                                                                Answer = ans.Answer,
+                                                                IsTrue = Convert.ToBoolean(ans.IsTrue),
+                                                            }).ToListAsync();
+                    question.Answers.AddRange(answers);
+                }
+                _serviceResponse.Data = new
+                {
+                    QuestionCount = questions.Count(),
+                    Questions = questions
+                };
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
+                return _serviceResponse;
             }
-            _serviceResponse.Data = new
+            catch (Exception ex)
             {
-                QuestionCount = questions.Count(),
-                Questions = questions
-            };
-            _serviceResponse.Success = true;
-            _serviceResponse.Message = CustomMessage.Added; 
-            return _serviceResponse;
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                throw ex;
+            }
         }
 
         public async Task<int> AddQuiz(QuizDtoForAdd model)
         {
 
-            var quiz = new Quizzes
+            try
             {
-                QuizDate = Convert.ToDateTime(model.QuizDate),
-                NoOfQuestions = model.NoOfQuestions,
-                SubjectId = model.SubjectId,
-                ClassSectionId = model.ClassSectionId,
-                TeacherName = model.TeacherName,
-                IsPosted = model.IsPosted,
-                CreatedDate = DateTime.Now,
-                CreatedById = _context.Users.First().Id
-            };
+                var quiz = new Quizzes
+                {
+                    QuizDate = Convert.ToDateTime(model.QuizDate),
+                    NoOfQuestions = model.NoOfQuestions,
+                    SubjectId = model.SubjectId,
+                    ClassSectionId = model.ClassSectionId,
+                    TeacherName = model.TeacherName,
+                    IsPosted = model.IsPosted,
+                    CreatedDate = DateTime.Now,
+                    CreatedById = _context.Users.First().Id
+                };
 
-            await _context.Quizzes.AddAsync(quiz);
-            await _context.SaveChangesAsync();
-            return quiz.Id;
+                await _context.Quizzes.AddAsync(quiz);
+                await _context.SaveChangesAsync();
+                return quiz.Id;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                throw ex;
+            }
         }
 
         public async Task<ServiceResponse<object>> GetQuizById(int id)
         {
-            QuizForListDto quizz = await (from quiz in _context.Quizzes
-                                          join subject in _context.Subjects
-                                          on quiz.SubjectId equals subject.Id
-                                          join classSection in _context.ClassSections
-                                          on quiz.ClassSectionId equals classSection.Id
-                                          where quiz.Id == id
-                                          select new QuizForListDto
-                                          {
-                                              QuizId = quiz.Id,
-                                              QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
-                                              TeacherName = quiz.TeacherName,
-                                              NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
-                                              IsPosted = quiz.IsPosted,
-                                              SubjectId = quiz.SubjectId,
-                                              SubjectName = subject.Name,
-                                              ClassSectionId = quiz.ClassSectionId,
-                                              ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
-                                              SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
-                                              QuestionCount = _context.QuizQuestions.Where(m => m.QuizId == quiz.Id).Count()
-                                          }).FirstOrDefaultAsync();
-
-            List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
-                                                        join qType in _context.QuestionTypes
-                                                        on q.QuestionTypeId equals qType.Id
-                                                        where q.QuizId == quizz.QuizId
-                                                        select new QuestionForListDto
-                                                        {
-                                                            QuestionId = q.Id,
-                                                            Question = q.Question,
-                                                            QuestionTypeId = q.QuestionTypeId,
-                                                            QuestionType = qType.Type,
-                                                            Marks = Convert.ToInt32(q.Marks),
-                                                        }).ToListAsync();
-            quizz.Questions.AddRange(questions);
-
-            foreach (var question in questions)
+            try
             {
-                List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
-                                                        where ans.QuestionId == question.QuestionId
-                                                        select new AnswerForListDto
-                                                        {
-                                                            AnswerId = ans.Id,
-                                                            Answer = ans.Answer,
-                                                            IsTrue = Convert.ToBoolean(ans.IsTrue),
-                                                        }).ToListAsync();
-                question.Answers.AddRange(answers);
+                QuizForListDto quizz = await (from quiz in _context.Quizzes
+                                              join subject in _context.Subjects
+                                              on quiz.SubjectId equals subject.Id
+                                              join classSection in _context.ClassSections
+                                              on quiz.ClassSectionId equals classSection.Id
+                                              where quiz.Id == id
+                                              select new QuizForListDto
+                                              {
+                                                  QuizId = quiz.Id,
+                                                  QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
+                                                  TeacherName = quiz.TeacherName,
+                                                  NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
+                                                  IsPosted = quiz.IsPosted,
+                                                  SubjectId = quiz.SubjectId,
+                                                  SubjectName = subject.Name,
+                                                  ClassSectionId = quiz.ClassSectionId,
+                                                  ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
+                                                  SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
+                                                  QuestionCount = _context.QuizQuestions.Where(m => m.QuizId == quiz.Id).Count()
+                                              }).FirstOrDefaultAsync();
+
+                List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
+                                                            join qType in _context.QuestionTypes
+                                                            on q.QuestionTypeId equals qType.Id
+                                                            where q.QuizId == quizz.QuizId
+                                                            select new QuestionForListDto
+                                                            {
+                                                                QuestionId = q.Id,
+                                                                Question = q.Question,
+                                                                QuestionTypeId = q.QuestionTypeId,
+                                                                QuestionType = qType.Type,
+                                                                Marks = Convert.ToInt32(q.Marks),
+                                                            }).ToListAsync();
+                quizz.Questions.AddRange(questions);
+
+                foreach (var question in questions)
+                {
+                    List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
+                                                            where ans.QuestionId == question.QuestionId
+                                                            select new AnswerForListDto
+                                                            {
+                                                                AnswerId = ans.Id,
+                                                                Answer = ans.Answer,
+                                                                IsTrue = Convert.ToBoolean(ans.IsTrue),
+                                                            }).ToListAsync();
+                    question.Answers.AddRange(answers);
+                }
+                _serviceResponse.Success = true;
+                _serviceResponse.Data = quizz;
+                return _serviceResponse;
             }
-            _serviceResponse.Success = true;
-            _serviceResponse.Data = quizz;
-            return _serviceResponse;
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                throw ex;
+            }
         }
 
         public async Task<ServiceResponse<object>> GetPendingQuiz()
@@ -174,109 +207,142 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetQuizzes()
         {
 
-            List<QuizForListDto> quizzes = await (from quiz in _context.Quizzes
-                                                  join subject in _context.Subjects
-                                                  on quiz.SubjectId equals subject.Id
-                                                  join classSection in _context.ClassSections
-                                                  on quiz.ClassSectionId equals classSection.Id
-                                                  orderby quiz.Id descending
-                                                  select new QuizForListDto
-                                                  {
-                                                      QuizId = quiz.Id,
-                                                      QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
-                                                      TeacherName = quiz.TeacherName,
-                                                      NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
-                                                      IsPosted = quiz.IsPosted,
-                                                      SubjectId = quiz.SubjectId,
-                                                      SubjectName = subject.Name,
-                                                      ClassSectionId = quiz.ClassSectionId,
-                                                      ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
-                                                      SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
-                                                      QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
-                                                  }).ToListAsync();
-
-            foreach (var quiz in quizzes)
+            try
             {
-                List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
-                                                            join qType in _context.QuestionTypes
-                                                            on q.QuestionTypeId equals qType.Id
-                                                            where q.QuizId == quiz.QuizId
-                                                            select new QuestionForListDto
-                                                            {
-                                                                QuestionId = q.Id,
-                                                                Question = q.Question,
-                                                                QuestionTypeId = q.QuestionTypeId,
-                                                                QuestionType = qType.Type,
-                                                                Marks = Convert.ToInt32(q.Marks),
-                                                            }).ToListAsync();
-                quiz.Questions.AddRange(questions);
+                List<QuizForListDto> quizzes = await (from quiz in _context.Quizzes
+                                                      join subject in _context.Subjects
+                                                      on quiz.SubjectId equals subject.Id
+                                                      join classSection in _context.ClassSections
+                                                      on quiz.ClassSectionId equals classSection.Id
+                                                      orderby quiz.Id descending
+                                                      select new QuizForListDto
+                                                      {
+                                                          QuizId = quiz.Id,
+                                                          QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
+                                                          TeacherName = quiz.TeacherName,
+                                                          NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
+                                                          IsPosted = quiz.IsPosted,
+                                                          SubjectId = quiz.SubjectId,
+                                                          SubjectName = subject.Name,
+                                                          ClassSectionId = quiz.ClassSectionId,
+                                                          ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
+                                                          SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
+                                                          QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
+                                                      }).ToListAsync();
 
-                foreach (var question in questions)
+                foreach (var quiz in quizzes)
                 {
-                    List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
-                                                            where ans.QuestionId == question.QuestionId
-                                                            select new AnswerForListDto
-                                                            {
-                                                                AnswerId = ans.Id,
-                                                                Answer = ans.Answer,
-                                                                IsTrue = Convert.ToBoolean(ans.IsTrue),
-                                                            }).ToListAsync();
-                    question.Answers.AddRange(answers);
+                    List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
+                                                                join qType in _context.QuestionTypes
+                                                                on q.QuestionTypeId equals qType.Id
+                                                                where q.QuizId == quiz.QuizId
+                                                                select new QuestionForListDto
+                                                                {
+                                                                    QuestionId = q.Id,
+                                                                    Question = q.Question,
+                                                                    QuestionTypeId = q.QuestionTypeId,
+                                                                    QuestionType = qType.Type,
+                                                                    Marks = Convert.ToInt32(q.Marks),
+                                                                }).ToListAsync();
+                    quiz.Questions.AddRange(questions);
+
+                    foreach (var question in questions)
+                    {
+                        List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
+                                                                where ans.QuestionId == question.QuestionId
+                                                                select new AnswerForListDto
+                                                                {
+                                                                    AnswerId = ans.Id,
+                                                                    Answer = ans.Answer,
+                                                                    IsTrue = Convert.ToBoolean(ans.IsTrue),
+                                                                }).ToListAsync();
+                        question.Answers.AddRange(answers);
+                    }
                 }
+                _serviceResponse.Success = true;
+                _serviceResponse.Data = quizzes;
+                return _serviceResponse;
             }
-            _serviceResponse.Success = true;
-            _serviceResponse.Data = quizzes;
-            return _serviceResponse;
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                throw ex;
+            }
         }
 
         public async Task<ServiceResponse<object>> SubmitQuiz(QuizSubmissionDto model)
         {
-            var submission = new QuizSubmission
+            try
             {
-                QuizId = model.QuizId,
-                QuestionId = model.QuestionId,
-                AnswerId = model.AnswerId,
-                Description = model.Description,
-                CreatedDateTime = DateTime.Now,
-                UserId = Convert.ToInt32(model.LoggedIn_UserId)
-            };
-            await _context.QuizSubmissions.AddAsync(submission);
-            await _context.SaveChangesAsync();
-            return _serviceResponse;
+                var submission = new QuizSubmission
+                {
+                    QuizId = model.QuizId,
+                    QuestionId = model.QuestionId,
+                    AnswerId = model.AnswerId,
+                    Description = model.Description,
+                    CreatedDateTime = DateTime.Now,
+                    UserId = Convert.ToInt32(model.LoggedIn_UserId)
+                };
+                await _context.QuizSubmissions.AddAsync(submission);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Data = CustomMessage.Added;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                throw ex;
+            }
         }
 
         public async Task<bool> UpdateQuestion(int id, QuizQuestionDtoForAdd model)
         {
-            var question = _context.QuizQuestions.Where(m => m.Id == id).FirstOrDefault();
-            if (question != null)
+            try
             {
-                question.QuestionTypeId = model.QuestionTypeId;
-                question.Question = model.Question;
-                question.Marks = model.Marks;
-                await _context.SaveChangesAsync();
-            }
-            foreach (var item in model.Answers)
-            {
-                var getAnswer = _context.QuizAnswers.Where(m => m.Id == item.Id).FirstOrDefault();
-                if (getAnswer != null)
+                var question = _context.QuizQuestions.Where(m => m.Id == id).FirstOrDefault();
+                if (question != null)
                 {
-                    getAnswer.Answer = item.Answer;
-                    getAnswer.IsTrue = item.IsTrue;
+                    question.QuestionTypeId = model.QuestionTypeId;
+                    question.Question = model.Question;
+                    question.Marks = model.Marks;
+                    await _context.SaveChangesAsync();
                 }
-                //else
-                //{
-                //    var answer = new QuizAnswers
-                //    {
-                //        QuestionId = question.Id,
-                //        Answer = item.Answer,
-                //        IsTrue = item.IsTrue
+                foreach (var item in model.Answers)
+                {
+                    var getAnswer = _context.QuizAnswers.Where(m => m.Id == item.Id).FirstOrDefault();
+                    if (getAnswer != null)
+                    {
+                        getAnswer.Answer = item.Answer;
+                        getAnswer.IsTrue = item.IsTrue;
+                    }
+                    //else
+                    //{
+                    //    var answer = new QuizAnswers
+                    //    {
+                    //        QuestionId = question.Id,
+                    //        Answer = item.Answer,
+                    //        IsTrue = item.IsTrue
 
-                //    };
-                //    await _context.QuizAnswers.AddAsync(answer);
-                //}
-                await _context.SaveChangesAsync();
+                    //    };
+                    //    await _context.QuizAnswers.AddAsync(answer);
+                    //}
+                    await _context.SaveChangesAsync();
+                }
+
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                Log.Exception(ex);              
+                throw ex;
+            }
         }
 
         public async Task<int> UpdateQuiz(int id, QuizDtoForAdd model)

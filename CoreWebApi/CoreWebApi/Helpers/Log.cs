@@ -19,11 +19,11 @@ namespace CoreWebApi.Helpers
             {
                 Directory.CreateDirectory(folderPath);
             }
-            //var fileModifiedDate = File.GetLastWriteTime(filePath);
-            //if (DateTime.Now.Date > fileModifiedDate.Date)
-            //{
-            //    File.WriteAllText(filePath, string.Empty);
-            //}
+            var fileModifiedDate = File.GetLastWriteTime(filePath);
+            if ((DateTime.Now - fileModifiedDate).Days > 6)
+            {
+                File.WriteAllText(filePath, string.Empty);
+            }
             using (StreamWriter writer = new StreamWriter(filePath, true))// (File.Exists(filePath)) ? File.AppendText(filePath) : File.CreateText(filePath))
             {
 

@@ -67,6 +67,7 @@ namespace CoreWebApi.Controllers
                             where att.CreatedDatetime.Date == DTdate.Date
                             select att).Select(o => new AttendanceDtoForList
                             {
+                                Id = o.Id,
                                 UserId = o.UserId,
                                 ClassSectionId = o.ClassSectionId,
                                 FullName = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,

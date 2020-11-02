@@ -119,10 +119,7 @@ namespace CoreWebApi.Controllers
             catch (Exception ex)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
         [HttpPost("SubmitQuiz")]
@@ -138,17 +135,14 @@ namespace CoreWebApi.Controllers
                 //    return BadRequest(new { message = "Subject Already Exist" });
                 model.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
 
-                var createdObj = await _repo.SubmitQuiz(model);
+                _response = await _repo.SubmitQuiz(model);
 
-                return StatusCode(StatusCodes.Status201Created);
+                return Ok(_response);
             }
             catch (Exception ex)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
         [HttpPut("UpdateQuestion/{id}")]

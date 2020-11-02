@@ -64,9 +64,9 @@ namespace CoreWebApi.Data
             {
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
-                serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 serviceResponse.Success = false;
-                return serviceResponse;
+                throw ex;
             }
             serviceResponse.Success = true;
             return serviceResponse;
@@ -139,9 +139,9 @@ namespace CoreWebApi.Data
         }
 
 
-        public async Task<ServiceResponse<User>> AddUser(UserForAddDto userDto)
+        public async Task<ServiceResponse<UserForListDto>> AddUser(UserForAddDto userDto)
         {
-            ServiceResponse<User> serviceResponse = new ServiceResponse<User>();
+            ServiceResponse<UserForListDto> serviceResponse = new ServiceResponse<UserForListDto>();
             try
             {
 
@@ -169,18 +169,20 @@ namespace CoreWebApi.Data
 
                 await _context.Users.AddAsync(userToCreate);
                 await _context.SaveChangesAsync();
-                serviceResponse.Data = userToCreate;
+
+                var createdUser = _mapper.Map<UserForListDto>(userToCreate);
+
+                serviceResponse.Data = createdUser;
                 serviceResponse.Message = CustomMessage.Added;
                 return serviceResponse;
             }
             catch (Exception ex)
             {
+                Log.Exception(ex); 
                 var currentMethodName = Log.TraceMethod("get method name");
                 serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 serviceResponse.Success = false;
-                return serviceResponse;
-                //Log.Exception(ex);
-                //throw ex;
+                throw ex;
             }
         }
 
@@ -297,9 +299,9 @@ namespace CoreWebApi.Data
             {
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
-                serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 serviceResponse.Success = false;
-                return serviceResponse;
+                throw ex;
             }
         }
 
@@ -446,9 +448,9 @@ namespace CoreWebApi.Data
             {
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                return _serviceResponse;
+                throw ex;
             }
         }
 
@@ -542,9 +544,9 @@ namespace CoreWebApi.Data
             {
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                return _serviceResponse;
+                throw ex;
             }
         }
 
@@ -587,7 +589,7 @@ namespace CoreWebApi.Data
                 Log.Exception(ex);
                 _serviceResponse.Message = CustomMessage.UnableToAdd;
                 _serviceResponse.Success = false;
-                return _serviceResponse;
+                throw ex;
             }
         }
 
@@ -666,7 +668,7 @@ namespace CoreWebApi.Data
                 Log.Exception(ex);
                 _serviceResponse.Message = CustomMessage.UnableToAdd;
                 _serviceResponse.Success = false;
-                return _serviceResponse;
+                throw ex;
             }
         }
 

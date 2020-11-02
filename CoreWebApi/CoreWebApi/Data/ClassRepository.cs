@@ -149,8 +149,8 @@ namespace CoreWebApi.Data
 
                 Log.Exception(ex);
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
-                return _serviceResponse;
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                throw ex;
             }
         }
         public async Task<ServiceResponse<object>> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
@@ -176,8 +176,8 @@ namespace CoreWebApi.Data
 
                 Log.Exception(ex);
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
-                return _serviceResponse;
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                throw ex;
             }
         }
 
@@ -203,8 +203,8 @@ namespace CoreWebApi.Data
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
-                return _serviceResponse;
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                throw ex;
             }
         }
 
@@ -225,8 +225,8 @@ namespace CoreWebApi.Data
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = "Method Name: " + currentMethodName + " Message: " + ex.Message ?? ex.InnerException.ToString();
-                return serviceResponse;
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                throw ex;
             }
         }
 
@@ -300,33 +300,46 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<IEnumerable<ClassSectionUser>>> GetClassSectionUserMapping()
         {
+            ServiceResponse<IEnumerable<ClassSectionUser>> serviceResponse = new ServiceResponse<IEnumerable<ClassSectionUser>>();
             try
             {
-                ServiceResponse<IEnumerable<ClassSectionUser>> serviceResponse = new ServiceResponse<IEnumerable<ClassSectionUser>>();
                 serviceResponse.Data = await _context.ClassSectionUsers.Include(m => m.ClassSection).Include(m => m.User).OrderByDescending(m => m.Id).ToListAsync();
-
+                serviceResponse.Success = true;
 
                 return serviceResponse;
             }
             catch (Exception ex)
             {
-
                 Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                serviceResponse.Success = false;
                 throw ex;
             }
         }
 
         public async Task<ServiceResponse<object>> DeleteClassSectionUserMapping(int id)
         {
-            var classSectionUser = _context.ClassSectionUsers.Where(m => m.Id == id).FirstOrDefault();
-            if (classSectionUser != null)
+            try
             {
-                _context.ClassSectionUsers.Remove(classSectionUser);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-            }
+                var classSectionUser = _context.ClassSectionUsers.Where(m => m.Id == id).FirstOrDefault();
+                if (classSectionUser != null)
+                {
+                    _context.ClassSectionUsers.Remove(classSectionUser);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                }
 
-            return _serviceResponse;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                throw ex;
+            }
         }
     }
 }

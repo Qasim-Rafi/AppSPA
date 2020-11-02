@@ -125,7 +125,7 @@ namespace CoreWebApi.Controllers
             }
         }
 
-        [HttpGet("GetUsersForAttendance")]//not in use
+        [HttpGet("GetUsersForAttendance"), NonAction]//not in use
         public async Task<IActionResult> GetListForAttendance()
         {
             try
@@ -149,9 +149,9 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetUsersByType/{typeId}/{classSectionId?}")]
         public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
         {
-           
+
             var users = await _repo.GetUsersByType(typeId, classSectionId);
-           
+
             //var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
             return Ok(users);
 
