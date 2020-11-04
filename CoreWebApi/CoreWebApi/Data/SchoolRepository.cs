@@ -26,9 +26,23 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetTimeSlots()
         {
-            var list = await _context.LectureTiming.ToListAsync();
-            //var groupedList = list.GroupBy(m => m.Day).ToList();
-            _serviceResponse.Data = list;
+            var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
+
+            var Days = _context.LectureTiming.Select(o => o.Day).Distinct().ToList();
+            Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
+            var Timings = _context.LectureTiming.ToList().OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
+            var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
+            var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
+            List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
+            for (int i = 0; i < StartTimings.Count; i++)
+            {
+                TimeSlots.Add(new TimeSlotsForListDto
+                {
+                    StartTime = StartTimings[i].ToString(),
+                    EndTime = EndTimings[i].ToString()
+                });
+            }
+            _serviceResponse.Data = new { Days, TimeSlots, Timings };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
