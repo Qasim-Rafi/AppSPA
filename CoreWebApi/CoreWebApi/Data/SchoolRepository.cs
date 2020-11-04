@@ -27,8 +27,8 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetTimeSlots()
         {
             var list = await _context.LectureTiming.ToListAsync();
-            var groupedList = list.GroupBy(m => m.Day);
-            _serviceResponse.Data = new { list, groupedList };
+            //var groupedList = list.GroupBy(m => m.Day).ToList();
+            _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
