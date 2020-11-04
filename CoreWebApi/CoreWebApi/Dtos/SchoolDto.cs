@@ -19,4 +19,11 @@ namespace CoreWebApi.Dtos
         [Required]
         public string Day { get; set; }
     }
+    public class TimeSlotsForListDto
+    {
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public bool IsBreak { get; set; }
+        public string Day { get; set; }
+    }
 }

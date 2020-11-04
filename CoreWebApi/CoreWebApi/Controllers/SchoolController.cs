@@ -28,7 +28,7 @@ namespace CoreWebApi.Controllers
 
 
         [HttpPost("AddTimeSlots")]
-        public async Task<IActionResult> Post(List<TimeSlotsForAddDto> model)
+        public async Task<IActionResult> AddTimeSlots(List<TimeSlotsForAddDto> model)
         {
             try
             {
@@ -37,9 +37,32 @@ namespace CoreWebApi.Controllers
                     return BadRequest(ModelState);
                 }
                
-                var createdObj = await _repo.SaveTimeSlots(model);
+                _response = await _repo.SaveTimeSlots(model);
 
-                return StatusCode(StatusCodes.Status201Created);
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
+        [HttpGet("GetTimeSlots")]
+        public async Task<IActionResult> GetTimeSlots()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _response = await _repo.GetTimeSlots();
+
+                return Ok(_response);
             }
             catch (Exception ex)
             {

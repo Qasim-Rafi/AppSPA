@@ -34,17 +34,17 @@ namespace CoreWebApi.Migrations
                 name: "ClassLectureAssignment",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     LectureId = table.Column<int>(nullable: false),
                     TeacherId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ClassSectionId = table.Column<int>(nullable: false),
                     SubjectId = table.Column<int>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassLectureAssignment", x => new { x.Id, x.LectureId, x.TeacherId });
+                    table.PrimaryKey("PK_ClassLectureAssignment", x => new { x.LectureId, x.TeacherId });
                     table.ForeignKey(
                         name: "FK_ClassLectureAssignment_ClassSections_ClassSectionId",
                         column: x => x.ClassSectionId,
@@ -75,11 +75,6 @@ namespace CoreWebApi.Migrations
                 name: "IX_ClassLectureAssignment_ClassSectionId",
                 table: "ClassLectureAssignment",
                 column: "ClassSectionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClassLectureAssignment_LectureId",
-                table: "ClassLectureAssignment",
-                column: "LectureId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClassLectureAssignment_SubjectId",

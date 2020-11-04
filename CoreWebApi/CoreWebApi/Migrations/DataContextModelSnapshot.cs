@@ -128,11 +128,6 @@ namespace CoreWebApi.Migrations
 
             modelBuilder.Entity("CoreWebApi.Models.ClassLectureAssignment", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<int>("LectureId")
                         .HasColumnType("int");
 
@@ -145,14 +140,17 @@ namespace CoreWebApi.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id", "LectureId", "TeacherId");
+                    b.HasKey("LectureId", "TeacherId");
 
                     b.HasIndex("ClassSectionId");
-
-                    b.HasIndex("LectureId");
 
                     b.HasIndex("SubjectId");
 

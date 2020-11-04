@@ -90,7 +90,7 @@ namespace CoreWebApi.Data
                 .Property(user => user.Role).HasDefaultValue("Student");
             // composite primary key
             modelBuilder.Entity<ClassLectureAssignment>()
-                 .HasKey(c => new { c.Id, c.LectureId, c.TeacherId });
+                 .HasKey(c => new { c.LectureId, c.TeacherId });
 
 
         }
