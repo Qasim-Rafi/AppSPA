@@ -27,24 +27,23 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         ServiceResponse<object> _response;
-     
-        private string _role;
 
 
         public ClassesController(IClassRepository repo, IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _context = context;
             _response = new ServiceResponse<object>();
-            _role = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            //_role = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetClasses()
         {
             var classes = await _repo.GetClasses();
-            var ToReturn = _role.Equals("Admin") ? _mapper.Map<IEnumerable<ClassDtoForList>>(classes) :
+            var ToReturn = _userRole.Equals(Enumm.UserType.Student.ToString()) ? _mapper.Map<IEnumerable<ClassDtoForList>>(classes) :
                 _mapper.Map<IEnumerable<ClassDtoForList>>(classes);
             return Ok(ToReturn);
 

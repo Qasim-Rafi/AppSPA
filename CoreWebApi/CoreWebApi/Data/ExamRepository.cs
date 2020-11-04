@@ -344,7 +344,7 @@ namespace CoreWebApi.Data
                     List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
                                                                 join qType in _context.QuestionTypes
                                                                 on q.QuestionTypeId equals qType.Id
-                                                                where q.QuizId == quiz.QuizId
+                                                                where q.QuizId == quiz.QuizId                                                                
                                                                 select new QuestionForListDto
                                                                 {
                                                                     QuestionId = q.Id,

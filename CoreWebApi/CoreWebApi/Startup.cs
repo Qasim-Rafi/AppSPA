@@ -59,12 +59,13 @@ namespace CoreWebApi
                 services.AddScoped<IAssignmentRepository, AssignmentRepository>();
                 services.AddScoped<IDashboardRepository, DashboardRepository>();
                 services.AddScoped<IExamRepository, ExamRepository>();
-                services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                services.AddScoped<ISchoolRepository, SchoolRepository>();
 
 
 
                 services.AddScoped<ILookupRepository, LookupRepository>();
                 services.AddScoped<IFilesRepository, FilesRepository>();
+                services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(optinos =>

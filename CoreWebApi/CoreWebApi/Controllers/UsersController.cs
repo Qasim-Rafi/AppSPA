@@ -29,7 +29,8 @@ namespace CoreWebApi.Controllers
         private readonly DataContext _context;
         ServiceResponse<object> _response;
 
-        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context)
+        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context, IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
@@ -42,7 +43,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _repo.GetUsers();
-
+            
             return Ok(users);
 
         }
@@ -64,13 +65,13 @@ namespace CoreWebApi.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return base.BadRequest(ModelState);
+                    return BadRequest(ModelState);
                 }
                 userForAddDto.Username = userForAddDto.Username.ToLower();
 
 
                 if (await _repo.UserExists(userForAddDto.Username))
-                    return base.BadRequest(new { message = CustomMessage.UserAlreadyExist });
+                    return BadRequest(new { message = CustomMessage.UserAlreadyExist });
 
                 userForAddDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
                 var response = await _repo.AddUser(userForAddDto);
@@ -106,7 +107,7 @@ namespace CoreWebApi.Controllers
                 //};
                 if (!ModelState.IsValid)
                 {
-                    return base.BadRequest(ModelState);
+                    return BadRequest(ModelState);
                 }
 
                 userForUpdateDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());

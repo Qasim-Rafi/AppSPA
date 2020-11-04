@@ -18,8 +18,11 @@ namespace CoreWebApi.Controllers
     [ApiController]    
     public class BaseController : ControllerBase
     {
-        public BaseController()
+        protected string _userRole;
+
+        public BaseController(IHttpContextAccessor httpContextAccessor)
         {
+            _userRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
 
         }
 
@@ -55,7 +58,7 @@ namespace CoreWebApi.Controllers
 
 
 
-       
+
         [NonAction]
         public string GetClaim(string name)
         {

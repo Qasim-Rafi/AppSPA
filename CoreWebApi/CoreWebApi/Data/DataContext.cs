@@ -50,6 +50,8 @@ namespace CoreWebApi.Data
         public DbSet<ClassSectionUser> ClassSectionUsers { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Country> Countries { get; set; }
+        public DbSet<LectureTiming> LectureTiming { get; set; }
+        public DbSet<ClassLectureAssignment> ClassLectureAssignment { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -83,9 +85,13 @@ namespace CoreWebApi.Data
                          .OnDelete(DeleteBehavior.Cascade)
                          .IsRequired();
             });
-
+            //
             modelBuilder.Entity<User>()
                 .Property(user => user.Role).HasDefaultValue("Student");
+            // composite primary key
+            modelBuilder.Entity<ClassLectureAssignment>()
+                 .HasKey(c => new { c.Id, c.LectureId, c.TeacherId });
+
 
         }
 

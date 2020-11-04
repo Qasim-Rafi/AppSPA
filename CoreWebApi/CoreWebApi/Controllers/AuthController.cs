@@ -29,7 +29,8 @@ namespace CoreWebApi.Controllers
         private readonly IConfiguration _config;
 
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config, IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _config = config;
             _repo = repo;

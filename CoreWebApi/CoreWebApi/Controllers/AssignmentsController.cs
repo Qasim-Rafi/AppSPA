@@ -20,7 +20,8 @@ namespace CoreWebApi.Controllers
     {
         private readonly IAssignmentRepository _repo;
         private readonly IMapper _mapper;
-        public AssignmentsController(IAssignmentRepository repo, IMapper mapper)
+        public AssignmentsController(IAssignmentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;

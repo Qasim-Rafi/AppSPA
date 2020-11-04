@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
@@ -10,6 +6,9 @@ using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
 {
@@ -22,11 +21,13 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
 
-        public ExamsController(IExamRepository repo, IMapper mapper)
+        public ExamsController(IExamRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _response = new ServiceResponse<object>();
+
         }
         [HttpGet("GetAllQuiz")]
         public async Task<IActionResult> GetQuizzes()
@@ -148,7 +149,7 @@ namespace CoreWebApi.Controllers
 
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 return BadRequest(_response);
