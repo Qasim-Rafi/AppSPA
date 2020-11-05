@@ -79,7 +79,7 @@ namespace CoreWebApi.Data
                                            ClassSectionId = main.ClassSectionId,
                                            Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
                                            Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
-                                           //IsBreak = l.IsBreak
+                                           IsBreak = l.IsBreak
                                        }).ToListAsync();
 
                 var Days = TimeTable.Select(o => o.Day).Distinct().ToList();

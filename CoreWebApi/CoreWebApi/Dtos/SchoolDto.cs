@@ -43,7 +43,7 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }       
         public string Class { get; set; }
         public string Section { get; set; }
-        //public bool IsBreak { get; set; }
+        public bool IsBreak { get; set; }
     }
     public class TimeSlotsForListDto
     {
