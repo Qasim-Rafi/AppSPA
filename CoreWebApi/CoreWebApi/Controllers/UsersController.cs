@@ -47,6 +47,14 @@ namespace CoreWebApi.Controllers
             return Ok(users);
 
         }
+        [HttpGet("GetInActiveUsers")]
+        public async Task<IActionResult> GetInActiveUsers()
+        {
+            var users = await _repo.GetInActiveUsers();
+            
+            return Ok(users);
+
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
@@ -126,6 +134,30 @@ namespace CoreWebApi.Controllers
 
             }
         }
+        //[HttpDelete("ChangeActiveStatus/{id}")] // not in use
+        //public async Task<IActionResult> ActiveInActiveUser(int id, bool status)
+        //{
+
+        //    try
+        //    {
+                
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return BadRequest(ModelState);
+        //        }
+
+
+        //        var response = await _repo.ActiveInActiveUser(id, status);
+
+        //        return Ok(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        return BadRequest(_response);
+
+        //    }
+        //}
 
         [HttpGet("GetUsersForAttendance"), NonAction]//not in use
         public async Task<IActionResult> GetListForAttendance()

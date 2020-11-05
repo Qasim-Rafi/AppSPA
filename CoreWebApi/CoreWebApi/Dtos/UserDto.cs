@@ -46,8 +46,8 @@ namespace CoreWebApi.Dtos
 
         public int UserTypeId { get; set; } //= 2;
 
-        [Required]
-        [StringLength(50, ErrorMessage = "Roll Number cannot be longer then 50 characters")]
+        //[Required]
+        //[StringLength(50, ErrorMessage = "Roll Number cannot be longer then 50 characters")]
         public string RollNumber { get; set; }
         //public bool Active { get; set; }
 
@@ -86,6 +86,7 @@ namespace CoreWebApi.Dtos
         public bool IsPrimaryPhoto { get; set; }
         //public int UserTypeId { get; set; }
         public bool Active { get; set; }
+        public string RollNumber { get; set; }
 
         public IFormFileCollection files { get; set; }
     }

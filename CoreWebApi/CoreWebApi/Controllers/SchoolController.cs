@@ -96,6 +96,29 @@ namespace CoreWebApi.Controllers
                 });
             }
         }
+        [HttpGet("GetTimeTable")]
+        public async Task<IActionResult> GetTimeTable()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _response = await _repo.GetTimeTable();
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
        
     }
 }

@@ -4,7 +4,6 @@ using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -52,7 +51,16 @@ namespace CoreWebApi.Data
                     Id = s.Id,
                     FullName = s.FullName,
                     DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                    Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList()
+                    Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList(),
+                    Email = s.Email,
+                    Gender = s.Gender,
+                    Username = s.Username,
+                    CountryId = s.CountryId,
+                    StateId = s.StateId,
+                    CountryName = s.Country.Name,
+                    StateName = s.State.Name,
+                    OtherState = s.OtherState,
+                    Active = s.Active,
                 }).FirstOrDefaultAsync();
                 //    foreach (var item in user?.Photos)
                 //    {
@@ -69,7 +77,7 @@ namespace CoreWebApi.Data
                 serviceResponse.Success = false;
                 return serviceResponse;
             }
-           
+
         }
 
 
@@ -150,11 +158,42 @@ namespace CoreWebApi.Data
             return users;
 
         }
+        public async Task<IEnumerable<UserForListDto>> GetInActiveUsers()
+        {
+            var users = await _context.Users.Where(m => m.Active == false).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+            {
+                Id = o.Id,
+                FullName = o.FullName,
+                DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                Email = o.Email,
+                Gender = o.Gender,
+                Username = o.Username,
+                CountryId = o.CountryId,
+                StateId = o.StateId,
+                CountryName = o.Country.Name,
+                StateName = o.State.Name,
+                OtherState = o.OtherState,
+                Active = o.Active,
+                Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+            }).ToListAsync();
 
+            //foreach (var user in users)
+            //{
+            //    foreach (var item in user?.Photos)
+            //    {
+            //        item.Url = _File.AppendImagePath(item.Url);
+            //    }
+            //}
+
+            return users;
+
+        }
         public async Task<ServiceResponse<bool>> SaveAll()
         {
-            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
-            serviceResponse.Data = await _context.SaveChangesAsync() > 0;
+            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>
+            {
+                Data = await _context.SaveChangesAsync() > 0
+            };
             return serviceResponse;
 
         }
@@ -164,8 +203,9 @@ namespace CoreWebApi.Data
             ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
             bool isExist = false;
             if (await _context.Users.AnyAsync(x => x.Username == username))
+            {
                 isExist = true;
-
+            }
 
             return isExist;
         }
@@ -204,13 +244,14 @@ namespace CoreWebApi.Data
 
                 var createdUser = _mapper.Map<UserForListDto>(userToCreate);
 
-                serviceResponse.Data = createdUser;
+                //serviceResponse.Data = createdUser;
+                serviceResponse.Success = true;
                 serviceResponse.Message = CustomMessage.Added;
                 return serviceResponse;
             }
             catch (Exception ex)
             {
-                Log.Exception(ex); 
+                Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
                 serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 serviceResponse.Success = false;
@@ -307,15 +348,20 @@ namespace CoreWebApi.Data
                                 //DateAdded = DateTime.Now
                             };
                             if (i == 0)
+                            {
                                 photo.Url = dbPath;
+                            }
                             else
+                            {
                                 photo.Url = photo.Url + " || " + dbPath;
+                            }
 
                             await _context.Photos.AddAsync(photo);
                             await _context.SaveChangesAsync();
                         }
                     }
-                    serviceResponse.Data = StatusCodes.Status200OK.ToString();
+                    serviceResponse.Message = CustomMessage.Updated;
+                    serviceResponse.Success = true;
                     return serviceResponse;
                 }
                 else
@@ -567,7 +613,10 @@ namespace CoreWebApi.Data
 
 
                 if (groupList.Count > 0)
+                {
                     _serviceResponse.Data = groupList;// JsonConvert.SerializeObject(groupList);
+                }
+
                 _serviceResponse.Success = true;
                 return _serviceResponse;
 
@@ -689,9 +738,14 @@ namespace CoreWebApi.Data
 
 
                 if (groupList.Count > 0)
+                {
                     _serviceResponse.Data = groupList;// JsonConvert.SerializeObject(groupList);
+                }
                 else
+                {
                     _serviceResponse.Message = CustomMessage.RecordNotFound;
+                }
+
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
@@ -718,7 +772,26 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-
+        public async Task<ServiceResponse<object>> ActiveInActiveUser(int id, bool status)
+        {
+            try
+            {
+                var user = _context.Users.Where(m => m.Id == id).FirstOrDefault();
+                user.Active = status;
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Deleted;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
     }
 }
 

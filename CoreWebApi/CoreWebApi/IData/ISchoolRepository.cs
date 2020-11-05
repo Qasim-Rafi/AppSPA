@@ -12,5 +12,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> SaveTimeSlots(List<TimeSlotsForAddDto> model);
         Task<ServiceResponse<object>> SaveTimeTable(List<TimeTableForAddDto> model);
         Task<ServiceResponse<object>> GetTimeSlots();
+        Task<ServiceResponse<object>> GetTimeTable();
     }
 }
