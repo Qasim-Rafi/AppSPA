@@ -50,6 +50,29 @@ namespace CoreWebApi.Controllers
                 });
             }
         }
+        [HttpPost("AddTimeTable")]
+        public async Task<IActionResult> AddTimeTable(List<TimeTableForAddDto> model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+               
+                _response = await _repo.SaveTimeTable(model);
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
         [HttpGet("GetTimeSlots")]
         public async Task<IActionResult> GetTimeSlots()
         {

@@ -19,6 +19,17 @@ namespace CoreWebApi.Dtos
         [Required]
         public string Day { get; set; }
     }
+    public class TimeTableForAddDto
+    {
+        [Required]
+        public int LectureId { get; set; }
+        [Required]
+        public int TeacherId { get; set; }
+        [Required]
+        public int SubjectId { get; set; }
+        [Required]
+        public int ClassSectionId { get; set; }       
+    }
     public class TimeSlotsForListDto
     {
         //public int Id { get; set; }

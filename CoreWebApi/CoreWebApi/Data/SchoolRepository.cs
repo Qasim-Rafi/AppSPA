@@ -29,7 +29,7 @@ namespace CoreWebApi.Data
             var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
 
             var Days = _context.LectureTiming.Select(o => o.Day).Distinct().ToList();
-            Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
+            Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList(); //.Substring(0,1).ToUpper()
             var Timings = _context.LectureTiming.ToList().OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
             var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
             var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
@@ -39,7 +39,8 @@ namespace CoreWebApi.Data
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
                     StartTime = StartTimings[i].ToString(),
-                    EndTime = EndTimings[i].ToString()
+                    EndTime = EndTimings[i].ToString(),
+                    IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak
                 });
             }
             _serviceResponse.Data = new { Days, TimeSlots, Timings };
@@ -65,6 +66,40 @@ namespace CoreWebApi.Data
                 }
 
                 await _context.LectureTiming.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> SaveTimeTable(List<TimeTableForAddDto> model)
+        {
+            try
+            {
+                List<ClassLectureAssignment> listToAdd = new List<ClassLectureAssignment>();
+                foreach (var item in model)
+                {
+                    listToAdd.Add(new ClassLectureAssignment
+                    {
+                        LectureId = item.LectureId,
+                        TeacherId = item.TeacherId,
+                        SubjectId = item.SubjectId,
+                        ClassSectionId = item.ClassSectionId,
+                        Date = DateTime.Now
+                    });
+                }
+
+                await _context.ClassLectureAssignment.AddRangeAsync(listToAdd);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
