@@ -4,6 +4,7 @@ using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,44 +56,51 @@ namespace CoreWebApi.Data
             {
                 var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
 
-                var TimeTable = (from main in _context.ClassLectureAssignment
-                                 join l in _context.LectureTiming
-                                 on main.LectureId equals l.Id
-                                 join u in _context.Users
-                                 on main.TeacherId equals u.Id
-                                 join s in _context.Subjects
-                                 on main.SubjectId equals s.Id
-                                 join cs in _context.ClassSections
-                                 on main.ClassSectionId equals cs.Id
-                                 where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                 select new TimeTableForListDto
-                                 {
-                                     LectureId = main.LectureId,
-                                     StartTime = l.StartTime.ToString(),
-                                     EndTime = l.EndTime.ToString(),
-                                     TeacherId = main.TeacherId,
-                                     Teacher = u.FullName,
-                                     SubjectId = main.SubjectId,
-                                     Subject = s.Name,
-                                     ClassSectionId = main.ClassSectionId,
-                                     Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
-                                     Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
-                                     IsBreak = l.IsBreak
-                                 }).ToList();
+                var TimeTable = await (from main in _context.ClassLectureAssignment
+                                       join l in _context.LectureTiming
+                                       on main.LectureId equals l.Id
+                                       join u in _context.Users
+                                       on main.TeacherId equals u.Id
+                                       join s in _context.Subjects
+                                       on main.SubjectId equals s.Id
+                                       join cs in _context.ClassSections
+                                       on main.ClassSectionId equals cs.Id
+                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                       select new TimeTableForListDto
+                                       {
+                                           LectureId = main.LectureId,
+                                           Day = l.Day,
+                                           //StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
+                                           //EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
+                                           TeacherId = main.TeacherId,
+                                           Teacher = u.FullName,
+                                           SubjectId = main.SubjectId,
+                                           Subject = s.Name,
+                                           ClassSectionId = main.ClassSectionId,
+                                           Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
+                                           Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
+                                           //IsBreak = l.IsBreak
+                                       }).ToListAsync();
 
-                var Days = await _context.LectureTiming.Select(o => o.Day).Distinct().ToListAsync();
+                var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
                 Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
+                var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day)).ToListAsync();
                 var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
                 var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
                 List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
+                //List<string> Days = new List<string>();
                 for (int i = 0; i < StartTimings.Count; i++)
                 {
-                    TimeSlots.Add(new TimeSlotsForListDto
+                    foreach (var item in Days)
                     {
-                        StartTime = StartTimings[i].ToString(),
-                        EndTime = EndTimings[i].ToString(),
-                        IsBreak = TimeTable.FirstOrDefault(m => m.StartTime == StartTimings[i].ToString() && m.EndTime == EndTimings[i].ToString()) != null ? TimeTable.FirstOrDefault(m => m.StartTime == StartTimings[i].ToString() && m.EndTime == EndTimings[i].ToString()).IsBreak : false
-                    });
+
+                        TimeSlots.Add(new TimeSlotsForListDto
+                        {
+                            StartTime = StartTimings[i].ToString(),
+                            EndTime = EndTimings[i].ToString(),
+                            IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
+                        });
+                    }
                 }
 
                 _serviceResponse.Data = new { Days, TimeSlots, TimeTable };

@@ -32,10 +32,10 @@ namespace CoreWebApi.Dtos
     }
     public class TimeTableForListDto
     {
-        //public string Day { get; set; }
+        public string Day { get; set; }
         public int LectureId { get; set; }
-        public string StartTime { get; set; }
-        public string EndTime { get; set; }
+        //public string StartTime { get; set; }
+        //public string EndTime { get; set; }
         public int TeacherId { get; set; }
         public string Teacher { get; set; }
         public int SubjectId { get; set; }
@@ -43,7 +43,7 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }       
         public string Class { get; set; }
         public string Section { get; set; }
-        public bool IsBreak { get; set; }
+        //public bool IsBreak { get; set; }
     }
     public class TimeSlotsForListDto
     {
