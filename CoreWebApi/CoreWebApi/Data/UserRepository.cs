@@ -46,7 +46,7 @@ namespace CoreWebApi.Data
             ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
             try
             {
-                serviceResponse.Data = await _context.Users.Where(u => u.Id == id && u.Active == true).Select(s => new UserForDetailedDto()
+                serviceResponse.Data = await _context.Users.Where(u => u.Id == id).Select(s => new UserForDetailedDto()
                 {
                     Id = s.Id,
                     FullName = s.FullName,
