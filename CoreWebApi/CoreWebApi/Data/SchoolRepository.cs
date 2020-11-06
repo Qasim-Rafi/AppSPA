@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -246,33 +247,38 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> UpdateTimeTable(int id, TimeTableForAddDto model)
         {
             try
-            {
+            {               
                 var ToRemove = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
-                if (ToRemove != null)
-                {
-                    _context.ClassLectureAssignment.Remove(ToRemove);
-                    await _context.SaveChangesAsync();
+                ToRemove.LectureId = model.LectureId;
+                ToRemove.TeacherId = model.TeacherId;
+                await _context.SaveChangesAsync();
 
-                    var ToAdd = new ClassLectureAssignment
-                    {
-                        LectureId = model.LectureId,
-                        TeacherId = model.TeacherId,
-                        SubjectId = model.SubjectId,
-                        ClassSectionId = model.ClassSectionId,
-                        Date = DateTime.Now
-                    };
 
-                    await _context.ClassLectureAssignment.AddRangeAsync(ToAdd);
-                    await _context.SaveChangesAsync();
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Updated;
-                    _serviceResponse.Data = ToAdd.Id;
-                }
-                else
-                {
-                    _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.RecordNotFound;
-                }
+                //if (ToRemove != null)
+                //{
+                //    _context.ClassLectureAssignment.Remove(ToRemove);
+                //    await _context.SaveChangesAsync();
+
+                //    var ToAdd = new ClassLectureAssignment
+                //    {
+                //        LectureId = model.LectureId,
+                //        TeacherId = model.TeacherId,
+                //        SubjectId = model.SubjectId,
+                //        ClassSectionId = model.ClassSectionId,
+                //        Date = DateTime.Now
+                //    };
+
+                //    await _context.ClassLectureAssignment.AddRangeAsync(ToAdd);
+                //    await _context.SaveChangesAsync();
+                //    _serviceResponse.Success = true;
+                //    _serviceResponse.Message = CustomMessage.Updated;
+                //    _serviceResponse.Data = ToAdd.Id;
+                //}
+                //else
+                //{
+                //    _serviceResponse.Success = false;
+                //    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                //}
 
                 return _serviceResponse;
             }
