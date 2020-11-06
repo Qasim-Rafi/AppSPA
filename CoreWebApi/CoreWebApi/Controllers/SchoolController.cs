@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using CoreWebApi.Dtos;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
 {
@@ -37,16 +35,13 @@ namespace CoreWebApi.Controllers
                 }
 
                 _response = await _repo.GetTimeSlots();
-
+               
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
         [HttpGet("GetTimeTable")]
@@ -63,13 +58,10 @@ namespace CoreWebApi.Controllers
 
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
         [HttpGet("GetTimeTableById/{id}")]
@@ -86,13 +78,10 @@ namespace CoreWebApi.Controllers
 
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
         [HttpPost("AddTimeSlots")]
@@ -104,7 +93,7 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-               
+
                 _response = await _repo.SaveTimeSlots(model);
 
                 return Ok(_response);
@@ -127,18 +116,15 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-               
+
                 _response = await _repo.SaveTimeTable(model);
 
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
         [HttpPut("UpdateTimeTable/{id}")]
@@ -150,21 +136,21 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-               
-                _response = await _repo.UpdateTimeTable(id, model);
 
+                _response = await _repo.UpdateTimeTable(id, model);
+                if (_response.Success)
+                {
+                    _response = await _repo.GetTimeTableById(Convert.ToInt32(_response.Data));
+                }
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(_response);
             }
         }
-        
-       
+
+
     }
 }

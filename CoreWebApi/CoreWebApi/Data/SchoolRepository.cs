@@ -98,7 +98,7 @@ namespace CoreWebApi.Data
                         IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                     });
                 }
-                // adding break record(s) manually
+
                 TimeTable.AddRange(TimeSlots.Where(m => m.IsBreak == true).Select(o => new TimeTableForListDto
                 {
                     IsBreak = o.IsBreak,
@@ -151,8 +151,17 @@ namespace CoreWebApi.Data
                                            Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
                                            //IsBreak = l.IsBreak
                                        }).FirstOrDefaultAsync();
-                _serviceResponse.Data = new { TimeTable };
-                _serviceResponse.Success = true;
+                if (TimeTable != null)
+                {
+                    _serviceResponse.Data = new { TimeTable };
+                    _serviceResponse.Success = true;
+                }
+                else
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                }
+
                 return _serviceResponse;
             }
             catch (Exception ex)
@@ -243,21 +252,28 @@ namespace CoreWebApi.Data
                 {
                     _context.ClassLectureAssignment.Remove(ToRemove);
                     await _context.SaveChangesAsync();
+
+                    var ToAdd = new ClassLectureAssignment
+                    {
+                        LectureId = model.LectureId,
+                        TeacherId = model.TeacherId,
+                        SubjectId = model.SubjectId,
+                        ClassSectionId = model.ClassSectionId,
+                        Date = DateTime.Now
+                    };
+
+                    await _context.ClassLectureAssignment.AddRangeAsync(ToAdd);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
+                    _serviceResponse.Data = ToAdd.Id;
                 }
-                var ToAdd = new ClassLectureAssignment
+                else
                 {
-                    LectureId = model.LectureId,
-                    TeacherId = model.TeacherId,
-                    SubjectId = model.SubjectId,
-                    ClassSectionId = model.ClassSectionId,
-                    Date = DateTime.Now
-                };
-                //_context.Attach(toUpdate);
-                //_context.Entry(toUpdate).State = EntityState.Modified;
-                await _context.ClassLectureAssignment.AddRangeAsync(ToAdd);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Updated;
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                }
+
                 return _serviceResponse;
             }
             catch (Exception ex)
