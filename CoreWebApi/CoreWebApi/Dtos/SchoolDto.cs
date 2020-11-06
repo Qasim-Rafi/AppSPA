@@ -29,13 +29,15 @@ namespace CoreWebApi.Dtos
         public int SubjectId { get; set; }
         [Required]
         public int ClassSectionId { get; set; }       
-    }
+    } 
+  
     public class TimeTableForListDto
     {
+        public int Id { get; set; }
         public string Day { get; set; }
         public int LectureId { get; set; }
-        //public string StartTime { get; set; }
-        //public string EndTime { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
         public int TeacherId { get; set; }
         public string Teacher { get; set; }
         public int SubjectId { get; set; }

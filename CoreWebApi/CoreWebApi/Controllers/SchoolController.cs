@@ -26,53 +26,6 @@ namespace CoreWebApi.Controllers
             _response = new ServiceResponse<object>();
         }
 
-
-        [HttpPost("AddTimeSlots")]
-        public async Task<IActionResult> AddTimeSlots(List<TimeSlotsForAddDto> model)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-               
-                _response = await _repo.SaveTimeSlots(model);
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
-        }
-        [HttpPost("AddTimeTable")]
-        public async Task<IActionResult> AddTimeTable(List<TimeTableForAddDto> model)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-               
-                _response = await _repo.SaveTimeTable(model);
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
-        }
         [HttpGet("GetTimeSlots")]
         public async Task<IActionResult> GetTimeSlots()
         {
@@ -119,6 +72,99 @@ namespace CoreWebApi.Controllers
                 });
             }
         }
+        [HttpGet("GetTimeTableById/{id}")]
+        public async Task<IActionResult> GetTimeTableById(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _response = await _repo.GetTimeTableById(id);
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
+        [HttpPost("AddTimeSlots")]
+        public async Task<IActionResult> AddTimeSlots(List<TimeSlotsForAddDto> model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+               
+                _response = await _repo.SaveTimeSlots(model);
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
+        [HttpPost("AddTimeTable")]
+        public async Task<IActionResult> AddTimeTable(List<TimeTableForAddDto> model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+               
+                _response = await _repo.SaveTimeTable(model);
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
+        [HttpPut("UpdateTimeTable/{id}")]
+        public async Task<IActionResult> UpdateTimeTable(int id, TimeTableForAddDto model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+               
+                _response = await _repo.UpdateTimeTable(id, model);
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new
+                {
+                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
+                });
+            }
+        }
+        
        
     }
 }

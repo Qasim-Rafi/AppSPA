@@ -61,6 +61,10 @@
     <Compile Remove="Migrations\20201103123410_addTimetable.Designer.cs" />
     <Compile Remove="Migrations\20201103132620_addTimetable.cs" />
     <Compile Remove="Migrations\20201103132620_addTimetable.Designer.cs" />
+    <Compile Remove="Migrations\20201106075302_test.cs" />
+    <Compile Remove="Migrations\20201106075302_test.Designer.cs" />
+    <Compile Remove="Migrations\20201106075425_test.cs" />
+    <Compile Remove="Migrations\20201106075425_test.Designer.cs" />
 
   </ItemGroup>
 

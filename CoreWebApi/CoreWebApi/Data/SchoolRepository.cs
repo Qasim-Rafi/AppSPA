@@ -68,10 +68,11 @@ namespace CoreWebApi.Data
                                        where u.UserTypeId == (int)Enumm.UserType.Teacher
                                        select new TimeTableForListDto
                                        {
+                                           Id = main.Id,
                                            LectureId = main.LectureId,
                                            Day = l.Day,
-                                           //StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
-                                           //EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
+                                           StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
+                                           EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
                                            TeacherId = main.TeacherId,
                                            Teacher = u.FullName,
                                            SubjectId = main.SubjectId,
@@ -88,22 +89,69 @@ namespace CoreWebApi.Data
                 var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
                 var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
                 List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
-                //List<string> Days = new List<string>();
                 for (int i = 0; i < StartTimings.Count; i++)
                 {
-                    foreach (var item in Days)
+                    TimeSlots.Add(new TimeSlotsForListDto
                     {
-
-                        TimeSlots.Add(new TimeSlotsForListDto
-                        {
-                            StartTime = StartTimings[i].ToString(),
-                            EndTime = EndTimings[i].ToString(),
-                            IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
-                        });
-                    }
+                        StartTime = StartTimings[i].ToString(),
+                        EndTime = EndTimings[i].ToString(),
+                        IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
+                    });
                 }
-
+                // adding break record(s) manually
+                TimeTable.AddRange(TimeSlots.Where(m => m.IsBreak == true).Select(o => new TimeTableForListDto
+                {
+                    IsBreak = o.IsBreak,
+                    StartTime = o.StartTime,
+                    EndTime = o.EndTime,
+                }).ToList());
                 _serviceResponse.Data = new { Days, TimeSlots, TimeTable };
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> GetTimeTableById(int id)
+        {
+            try
+            {
+                var TimeTable = await (from main in _context.ClassLectureAssignment
+                                       join l in _context.LectureTiming
+                                       on main.LectureId equals l.Id
+                                       join u in _context.Users
+                                       on main.TeacherId equals u.Id
+                                       join s in _context.Subjects
+                                       on main.SubjectId equals s.Id
+                                       join cs in _context.ClassSections
+                                       on main.ClassSectionId equals cs.Id
+                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                       && main.Id == id
+                                       select new TimeTableForListDto
+                                       {
+                                           Id = main.Id,
+                                           LectureId = main.LectureId,
+                                           Day = l.Day,
+                                           StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
+                                           EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
+                                           TeacherId = main.TeacherId,
+                                           Teacher = u.FullName,
+                                           SubjectId = main.SubjectId,
+                                           Subject = s.Name,
+                                           ClassSectionId = main.ClassSectionId,
+                                           Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
+                                           Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
+                                           //IsBreak = l.IsBreak
+                                       }).FirstOrDefaultAsync();
+                _serviceResponse.Data = new { TimeTable };
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
@@ -178,6 +226,42 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
 
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> UpdateTimeTable(int id, TimeTableForAddDto model)
+        {
+            try
+            {
+                var ToRemove = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
+                if (ToRemove != null)
+                {
+                    _context.ClassLectureAssignment.Remove(ToRemove);
+                    await _context.SaveChangesAsync();
+                }
+                var ToAdd = new ClassLectureAssignment
+                {
+                    LectureId = model.LectureId,
+                    TeacherId = model.TeacherId,
+                    SubjectId = model.SubjectId,
+                    ClassSectionId = model.ClassSectionId,
+                    Date = DateTime.Now
+                };
+                //_context.Attach(toUpdate);
+                //_context.Entry(toUpdate).State = EntityState.Modified;
+                await _context.ClassLectureAssignment.AddRangeAsync(ToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
