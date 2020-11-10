@@ -9,7 +9,7 @@ namespace CoreWebApi.Dtos
     public class SchoolDto
     {
     }
-    public class TimeSlotsForAddDto
+    public class TimeSlotsForAddDto : BaseDto
     {
         [Required]
         public string StartTime { get; set; }
@@ -28,9 +28,9 @@ namespace CoreWebApi.Dtos
         [Required]
         public int SubjectId { get; set; }
         [Required]
-        public int ClassSectionId { get; set; }       
-    } 
-  
+        public int ClassSectionId { get; set; }
+    }
+
     public class TimeTableForListDto
     {
         public int Id { get; set; }
@@ -42,7 +42,7 @@ namespace CoreWebApi.Dtos
         public string Teacher { get; set; }
         public int SubjectId { get; set; }
         public string Subject { get; set; }
-        public int ClassSectionId { get; set; }       
+        public int ClassSectionId { get; set; }
         public string Class { get; set; }
         public string Section { get; set; }
         public bool IsBreak { get; set; }
@@ -57,5 +57,24 @@ namespace CoreWebApi.Dtos
     public class TimeSlotDaysDto
     {
         public string Day { get; set; }
+    }
+
+    public class EventForListDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string Color { get; set; }
+    }
+    public class EventForAddDto
+    {
+        [Required]
+        public string Title { get; set; }
+        [Required]
+        public string StartDate { get; set; }
+        [Required]
+        public string EndDate { get; set; }
+        public string Color { get; set; }
     }
 }

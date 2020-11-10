@@ -26,6 +26,8 @@ namespace CoreWebApi.Data
 
         }
 
+
+
         public async Task<ServiceResponse<object>> GetTimeSlots()
         {
             var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
@@ -176,7 +178,7 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ServiceResponse<object>> SaveTimeSlots(List<TimeSlotsForAddDto> model)
+        public async Task<ServiceResponse<object>> SaveTimeSlots(string loggedInBranchId, List<TimeSlotsForAddDto> model)
         {
             try
             {
@@ -189,7 +191,7 @@ namespace CoreWebApi.Data
                         EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
                         IsBreak = item.IsBreak,
                         Day = item.Day,
-                        SchoolBranchId = 1
+                        SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
                     });
                 }
 
@@ -247,7 +249,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> UpdateTimeTable(int id, TimeTableForAddDto model)
         {
             try
-            {               
+            {
                 var ToRemove = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
                 ToRemove.LectureId = model.LectureId;
                 ToRemove.TeacherId = model.TeacherId;
@@ -284,6 +286,94 @@ namespace CoreWebApi.Data
             }
             catch (Exception ex)
             {
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> AddEvents(string loggedInBranchId, List<EventForAddDto> model)
+        {
+            try
+            {
+                List<Event> listToAdd = new List<Event>();
+                foreach (var item in model)
+                {
+                    listToAdd.Add(new Event
+                    {
+                        Title = item.Title,
+                        StartDate = Convert.ToDateTime(item.StartDate),
+                        EndDate = Convert.ToDateTime(item.EndDate),
+                        Color = item.Color,
+                        SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
+                    });
+                }
+
+                await _context.Events.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+        public async Task<ServiceResponse<object>> UpdateEvent(int id, string loggedInBranchId, EventForAddDto model)
+        {
+            try
+            {
+                var ToUpdate = await _context.Events.Where(m => m.Id == id).FirstOrDefaultAsync();
+
+                ToUpdate.Title = model.Title;
+                ToUpdate.StartDate = Convert.ToDateTime(model.StartDate);
+                ToUpdate.EndDate = Convert.ToDateTime(model.EndDate);
+                ToUpdate.Color = model.Color;
+                ToUpdate.SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1;
+
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> GetEvents()
+        {
+            try
+            {
+                var list = await _context.Events.Select(o => new EventForListDto
+                {
+                    Id = o.Id,
+                    Title = o.Title,
+                    StartDate = o.StartDate.ToString(),
+                    EndDate = o.EndDate.ToString(),
+                    Color = o.Color
+                }).ToListAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Data = list;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();

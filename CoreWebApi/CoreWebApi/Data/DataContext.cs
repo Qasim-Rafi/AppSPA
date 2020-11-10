@@ -52,6 +52,7 @@ namespace CoreWebApi.Data
         public DbSet<Country> Countries { get; set; }
         public DbSet<LectureTiming> LectureTiming { get; set; }
         public DbSet<ClassLectureAssignment> ClassLectureAssignment { get; set; }
+        public DbSet<Event> Events { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -91,10 +92,10 @@ namespace CoreWebApi.Data
             // composite primary key
             modelBuilder.Entity<ClassLectureAssignment>()
                  .HasKey(c => new { c.LectureId, c.TeacherId });
-           // modelBuilder.Entity<ClassLectureAssignment>()
-           // .Property(p => p.TeacherId).ValueGeneratedNever();
-           // modelBuilder.Entity<ClassLectureAssignment>()
-           // .Property(p => p.LectureId).ValueGeneratedNever();
+            // modelBuilder.Entity<ClassLectureAssignment>()
+            // .Property(p => p.TeacherId).ValueGeneratedNever();
+            // modelBuilder.Entity<ClassLectureAssignment>()
+            // .Property(p => p.LectureId).ValueGeneratedNever();
         }
 
 

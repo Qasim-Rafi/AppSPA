@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,12 +14,13 @@ namespace CoreWebApi.Controllers
     //[Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
-    public class SchoolController : ControllerBase
+    public class SchoolController : BaseController
     {
         private readonly ISchoolRepository _repo;
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
-        public SchoolController(ISchoolRepository repo, IMapper mapper)
+        public SchoolController(ISchoolRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
@@ -35,7 +38,7 @@ namespace CoreWebApi.Controllers
                 }
 
                 _response = await _repo.GetTimeSlots();
-               
+
                 return Ok(_response);
             }
             catch (Exception)
@@ -93,8 +96,8 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
-                _response = await _repo.SaveTimeSlots(model);
+                string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+                _response = await _repo.SaveTimeSlots(loggedInBranchId, model);
 
                 return Ok(_response);
             }
@@ -151,6 +154,67 @@ namespace CoreWebApi.Controllers
             }
         }
 
+        [HttpGet("GetEvents")]
+        public async Task<IActionResult> GetEvents()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
+                _response = await _repo.GetEvents();
+
+                return Ok(_response);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest(_response);
+            }
+        }
+        [HttpPost("AddEvents")]
+        public async Task<IActionResult> AddEvents(List<EventForAddDto> model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+                _response = await _repo.AddEvents(loggedInBranchId, model);
+
+                return Ok(_response);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest(_response);
+
+            }
+        }
+        [HttpPost("UpdateEvent/{id}")]
+        public async Task<IActionResult> UpdateEvent(int id, EventForAddDto model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+                _response = await _repo.UpdateEvent(id, loggedInBranchId, model);
+
+                return Ok(_response);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest(_response);
+
+            }
+        }
     }
 }
