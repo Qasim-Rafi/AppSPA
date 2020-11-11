@@ -335,7 +335,9 @@ namespace CoreWebApi.Data
                         ToUpdate.Color = item.Color;
                         ToUpdate.SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1;
 
-                        
+                        _context.Events.Update(ToUpdate);
+                        await _context.SaveChangesAsync();
+
                     }
                 }
                 if (listToAdd.Count > 0)
@@ -347,6 +349,7 @@ namespace CoreWebApi.Data
                 }
                 else
                 {
+                    
                     _serviceResponse.Success = true;
                     _serviceResponse.Message = CustomMessage.Updated;
                 }
@@ -362,18 +365,14 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-        public async Task<ServiceResponse<object>> UpdateEvent(int id, string loggedInBranchId, EventForAddDto model)
+        public async Task<ServiceResponse<object>> UpdateEvent(int id, bool active)
         {
             try
             {
                 var ToUpdate = await _context.Events.Where(m => m.Id == id).FirstOrDefaultAsync();
+                ToUpdate.Active = active;
 
-                ToUpdate.Title = model.Title;
-                ToUpdate.StartDate = Convert.ToDateTime(model.StartDate);
-                ToUpdate.EndDate = Convert.ToDateTime(model.EndDate);
-                ToUpdate.Color = model.Color;
-                ToUpdate.SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1;
-
+                _context.Events.Update(ToUpdate);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Updated;
