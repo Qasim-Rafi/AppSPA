@@ -72,9 +72,7 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         [Required]
         public string Title { get; set; }
-        [Required]
         public string StartDate { get; set; }
-        [Required]
         public string EndDate { get; set; }
         public string Color { get; set; }
     }
