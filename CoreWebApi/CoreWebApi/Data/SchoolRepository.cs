@@ -250,10 +250,22 @@ namespace CoreWebApi.Data
         {
             try
             {
-                var ToRemove = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
-                ToRemove.LectureId = model.LectureId;
-                ToRemove.TeacherId = model.TeacherId;
-                await _context.SaveChangesAsync();
+                var ToUpdate = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
+                if (ToUpdate != null)
+                {
+                    ToUpdate.LectureId = model.LectureId;
+                    ToUpdate.TeacherId = model.TeacherId;
+                    _context.ClassLectureAssignment.Update(ToUpdate);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Data = ToUpdate.Id;
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
+                }
+                else
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                }
 
 
                 //if (ToRemove != null)
