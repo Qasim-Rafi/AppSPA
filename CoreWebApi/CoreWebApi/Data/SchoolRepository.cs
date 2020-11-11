@@ -349,7 +349,7 @@ namespace CoreWebApi.Data
                 }
                 else
                 {
-                    
+
                     _serviceResponse.Success = true;
                     _serviceResponse.Message = CustomMessage.Updated;
                 }
@@ -393,7 +393,7 @@ namespace CoreWebApi.Data
         {
             try
             {
-                var list = await _context.Events.Select(o => new EventForListDto
+                var list = await _context.Events.Where(m => m.Active == true).Select(o => new EventForListDto
                 {
                     Id = o.Id,
                     Title = o.Title,
