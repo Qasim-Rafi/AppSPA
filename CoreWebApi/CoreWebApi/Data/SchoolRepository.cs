@@ -322,6 +322,7 @@ namespace CoreWebApi.Data
                             StartDate = Convert.ToDateTime(item.StartDate),
                             EndDate = Convert.ToDateTime(item.EndDate),
                             Color = item.Color,
+                            Active = true,
                             SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
                         });
                     }
@@ -333,7 +334,7 @@ namespace CoreWebApi.Data
                         ToUpdate.StartDate = Convert.ToDateTime(item.StartDate);
                         ToUpdate.EndDate = Convert.ToDateTime(item.EndDate);
                         ToUpdate.Color = item.Color;
-                        ToUpdate.SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1;
+                        //ToUpdate.SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1;
 
                         _context.Events.Update(ToUpdate);
                         await _context.SaveChangesAsync();
@@ -375,7 +376,7 @@ namespace CoreWebApi.Data
                 _context.Events.Update(ToUpdate);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Updated;
+                _serviceResponse.Message = CustomMessage.Deleted;
                 return _serviceResponse;
             }
             catch (Exception ex)

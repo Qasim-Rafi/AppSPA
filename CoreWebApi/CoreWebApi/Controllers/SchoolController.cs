@@ -195,8 +195,8 @@ namespace CoreWebApi.Controllers
 
             }
         }
-        [HttpPut("UpdateEventStatus/{id}")]
-        public async Task<IActionResult> UpdateEventStatus(int id, [FromBody] bool active)
+        [HttpPut("UpdateEventStatus/{id}/{active}")]
+        public async Task<IActionResult> UpdateEventStatus(int id, bool active)
         {
             try
             {
