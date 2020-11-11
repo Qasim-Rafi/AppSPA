@@ -195,7 +195,7 @@ namespace CoreWebApi.Controllers
 
             }
         }
-        [HttpPost("UpdateEvent/{id}")]
+        [HttpPost("UpdateEvent/{id}"), NonAction] // not in use
         public async Task<IActionResult> UpdateEvent(int id, EventForAddDto model)
         {
             try
@@ -205,7 +205,7 @@ namespace CoreWebApi.Controllers
                     return BadRequest(ModelState);
                 }
                 string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-                _response = await _repo.UpdateEvent(id, loggedInBranchId, model);
+                //_response = await _repo.UpdateEvent(id, loggedInBranchId, model);
 
                 return Ok(_response);
             }

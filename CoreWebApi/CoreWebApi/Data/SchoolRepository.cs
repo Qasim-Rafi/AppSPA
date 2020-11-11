@@ -298,23 +298,46 @@ namespace CoreWebApi.Data
         {
             try
             {
+
                 List<Event> listToAdd = new List<Event>();
                 foreach (var item in model)
                 {
-                    listToAdd.Add(new Event
+                    if (!string.IsNullOrEmpty(item.Id.ToString()))
                     {
-                        Title = item.Title,
-                        StartDate = Convert.ToDateTime(item.StartDate),
-                        EndDate = Convert.ToDateTime(item.EndDate),
-                        Color = item.Color,
-                        SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
-                    });
-                }
+                        listToAdd.Add(new Event
+                        {
+                            Title = item.Title,
+                            StartDate = Convert.ToDateTime(item.StartDate),
+                            EndDate = Convert.ToDateTime(item.EndDate),
+                            Color = item.Color,
+                            SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
+                        });
+                    }
+                    else
+                    {
+                        var ToUpdate = await _context.Events.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
 
-                await _context.Events.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Added;
+                        ToUpdate.Title = item.Title;
+                        ToUpdate.StartDate = Convert.ToDateTime(item.StartDate);
+                        ToUpdate.EndDate = Convert.ToDateTime(item.EndDate);
+                        ToUpdate.Color = item.Color;
+                        ToUpdate.SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1;
+
+                        
+                    }
+                }
+                if (listToAdd.Count > 0)
+                {
+                    await _context.Events.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Added;
+                }
+                else
+                {
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
+                }
                 return _serviceResponse;
             }
             catch (Exception ex)

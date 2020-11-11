@@ -17,6 +17,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetTimeTableById(int id);
         Task<ServiceResponse<object>> AddEvents(string loggedInBranchId, List<EventForAddDto> model);
         Task<ServiceResponse<object>> GetEvents();
-        Task<ServiceResponse<object>> UpdateEvent(int id, string loggedInBranchId, EventForAddDto model);
+        //Task<ServiceResponse<object>> UpdateEvent(int id, string loggedInBranchId, EventForAddDto model);
     }
 }
