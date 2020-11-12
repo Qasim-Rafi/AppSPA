@@ -383,12 +383,13 @@ namespace CoreWebApi.Data
                                                where e.Active == true
                                                select new EventDaysForListDto
                                                {
-                                                   Id = e.Id,
+                                                   Id = ed.Id,
                                                    EventId = e.Id,
                                                    Title = e.Title,
                                                    Start = ed.StartDate.ToString(),
                                                    End = ed.EndDate != null ? ed.EndDate.ToString() : "",
-                                                   AllDay = ed.AllDay
+                                                   AllDay = ed.AllDay,
+                                                   Color = e.Color
                                                }).ToListAsync();
                 _serviceResponse.Success = true;
                 _serviceResponse.Data = new { EventsForList, EventsForCalendar };
@@ -431,7 +432,11 @@ namespace CoreWebApi.Data
                         var ToUpdate = await _context.EventDaysAssignments.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
 
                         ToUpdate.StartDate = Convert.ToDateTime(item.Start);
-                        ToUpdate.EndDate = Convert.ToDateTime(item.End);
+                        if (!string.IsNullOrEmpty(item.End))
+                            ToUpdate.EndDate = Convert.ToDateTime(item.End);
+                        else
+                            ToUpdate.EndDate = null;
+                        ToUpdate.AllDay = item.AllDay;
 
                         _context.EventDaysAssignments.Update(ToUpdate);
                         await _context.SaveChangesAsync();

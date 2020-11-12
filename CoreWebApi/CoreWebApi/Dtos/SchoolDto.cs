@@ -73,6 +73,7 @@ namespace CoreWebApi.Dtos
         public string Start { get; set; }
         public string End { get; set; }
         public bool? AllDay { get; set; }
+        public string Color { get; set; }
     }
     public class EventForAddDto
     {
