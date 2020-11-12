@@ -319,8 +319,8 @@ namespace CoreWebApi.Data
                         listToAdd.Add(new Event
                         {
                             Title = item.Title,
-                            StartDate = Convert.ToDateTime(item.StartDate),
-                            EndDate = Convert.ToDateTime(item.EndDate),
+                            StartDate = null,
+                            EndDate = null,
                             Color = item.Color,
                             Active = true,
                             SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
@@ -331,8 +331,8 @@ namespace CoreWebApi.Data
                         var ToUpdate = await _context.Events.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
 
                         ToUpdate.Title = item.Title;
-                        ToUpdate.StartDate = Convert.ToDateTime(item.StartDate);
-                        ToUpdate.EndDate = Convert.ToDateTime(item.EndDate);
+                        ToUpdate.StartDate = Convert.ToDateTime(item.Start);
+                        ToUpdate.EndDate = Convert.ToDateTime(item.End);
                         ToUpdate.Color = item.Color;
                         //ToUpdate.SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1;
 
@@ -394,16 +394,28 @@ namespace CoreWebApi.Data
         {
             try
             {
-                var list = await _context.Events.Where(m => m.Active == true).Select(o => new EventForListDto
+                var EventsForList = await _context.Events.Where(m => m.Active == true).Select(o => new EventForListDto
                 {
                     Id = o.Id,
                     Title = o.Title,
-                    StartDate = o.StartDate.ToString(),
-                    EndDate = o.EndDate.ToString(),
+                    Start = "",
+                    End = "",
+                    Color = o.Color
+                }).ToListAsync();
+
+                var EventsForCalendar = await _context.Events.Where(m =>
+                m.Active == true
+                && !string.IsNullOrEmpty(m.StartDate.ToString())
+                && !string.IsNullOrEmpty(m.EndDate.ToString())).Select(o => new EventForListDto
+                {
+                    Id = o.Id,
+                    Title = o.Title,
+                    Start = o.StartDate.ToString(),
+                    End = o.EndDate.ToString(),
                     Color = o.Color
                 }).ToListAsync();
                 _serviceResponse.Success = true;
-                _serviceResponse.Data = list;
+                _serviceResponse.Data = new { EventsForList, EventsForCalendar };
                 return _serviceResponse;
             }
             catch (Exception ex)

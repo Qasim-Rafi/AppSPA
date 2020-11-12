@@ -63,8 +63,8 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string StartDate { get; set; }
-        public string EndDate { get; set; }
+        public string Start { get; set; }
+        public string End { get; set; }
         public string Color { get; set; }
     }
     public class EventForAddDto
@@ -72,8 +72,8 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         [Required]
         public string Title { get; set; }
-        public string StartDate { get; set; }
-        public string EndDate { get; set; }
+        public string Start { get; set; }
+        public string End { get; set; }
         public string Color { get; set; }
     }
 }
