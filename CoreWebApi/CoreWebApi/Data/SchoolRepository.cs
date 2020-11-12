@@ -314,7 +314,7 @@ namespace CoreWebApi.Data
                 List<Event> listToAdd = new List<Event>();
                 foreach (var item in model)
                 {
-                    if (!string.IsNullOrEmpty(item.Id.ToString()))
+                    if (string.IsNullOrEmpty(item.Id.ToString()))
                     {
                         listToAdd.Add(new Event
                         {
