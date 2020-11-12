@@ -314,46 +314,20 @@ namespace CoreWebApi.Data
                 List<Event> listToAdd = new List<Event>();
                 foreach (var item in model)
                 {
-                    if (string.IsNullOrEmpty(item.Id.ToString()))
+                    listToAdd.Add(new Event
                     {
-                        listToAdd.Add(new Event
-                        {
-                            Title = item.Title,
-                            StartDate = null,
-                            EndDate = null,
-                            Color = item.Color,
-                            Active = true,
-                            SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
-                        });
-                    }
-                    else
-                    {
-                        var ToUpdate = await _context.Events.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
+                        Title = item.Title,
+                        Color = item.Color,
+                        Active = true,
+                        SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
+                    });
 
-                        ToUpdate.Title = item.Title;
-                        ToUpdate.StartDate = Convert.ToDateTime(item.Start);
-                        ToUpdate.EndDate = Convert.ToDateTime(item.End);
-                        ToUpdate.Color = item.Color;
-                        //ToUpdate.SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1;
-
-                        _context.Events.Update(ToUpdate);
-                        await _context.SaveChangesAsync();
-
-                    }
                 }
-                if (listToAdd.Count > 0)
-                {
-                    await _context.Events.AddRangeAsync(listToAdd);
-                    await _context.SaveChangesAsync();
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Added;
-                }
-                else
-                {
+                await _context.Events.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
 
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Updated;
-                }
                 return _serviceResponse;
             }
             catch (Exception ex)
@@ -366,7 +340,7 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-        public async Task<ServiceResponse<object>> UpdateEvent(int id, bool active)
+        public async Task<ServiceResponse<object>> UpdateEventStatus(int id, bool active)
         {
             try
             {
@@ -394,28 +368,88 @@ namespace CoreWebApi.Data
         {
             try
             {
-                var EventsForList = await _context.Events.Where(m => m.Active == true).Select(o => new EventForListDto
-                {
-                    Id = o.Id,
-                    Title = o.Title,
-                    Start = "",
-                    End = "",
-                    Color = o.Color
-                }).ToListAsync();
+                var EventsForList = await (from e in _context.Events
+                                           where e.Active == true
+                                           select new EventsForListDto
+                                           {
+                                               Id = e.Id,
+                                               Title = e.Title,
+                                               Color = e.Color
+                                           }).ToListAsync();
 
-                var EventsForCalendar = await _context.Events.Where(m =>
-                m.Active == true
-                && !string.IsNullOrEmpty(m.StartDate.ToString())
-                && !string.IsNullOrEmpty(m.EndDate.ToString())).Select(o => new EventForListDto
-                {
-                    Id = o.Id,
-                    Title = o.Title,
-                    Start = o.StartDate.ToString(),
-                    End = o.EndDate.ToString(),
-                    Color = o.Color
-                }).ToListAsync();
+                var EventsForCalendar = await (from e in _context.Events
+                                               join ed in _context.EventDaysAssignments
+                                               on e.Id equals ed.EventId
+                                               where e.Active == true
+                                               select new EventDaysForListDto
+                                               {
+                                                   Id = e.Id,
+                                                   EventId = e.Id,
+                                                   Title = e.Title,
+                                                   Start = ed.StartDate.ToString(),
+                                                   End = ed.EndDate != null ? ed.EndDate.ToString() : "",
+                                                   AllDay = ed.AllDay
+                                               }).ToListAsync();
                 _serviceResponse.Success = true;
                 _serviceResponse.Data = new { EventsForList, EventsForCalendar };
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> UpdateEvents(string loggedInBranchId, List<EventDayAssignmentForAddDto> model)
+        {
+            try
+            {
+
+                List<EventDayAssignment> listToAdd = new List<EventDayAssignment>();
+                foreach (var item in model)
+                {
+                    if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
+                    {
+                        var dayAssignment = new EventDayAssignment();
+                        dayAssignment.StartDate = Convert.ToDateTime(item.Start);
+                        if (!string.IsNullOrEmpty(item.End))
+                            dayAssignment.EndDate = Convert.ToDateTime(item.End);
+                        else
+                            dayAssignment.EndDate = null;
+                        dayAssignment.EventId = item.EventId;
+                        dayAssignment.AllDay = item.AllDay;
+
+                        listToAdd.Add(dayAssignment);
+                    }
+                    else
+                    {
+                        var ToUpdate = await _context.EventDaysAssignments.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
+
+                        ToUpdate.StartDate = Convert.ToDateTime(item.Start);
+                        ToUpdate.EndDate = Convert.ToDateTime(item.End);
+
+                        _context.EventDaysAssignments.Update(ToUpdate);
+                        await _context.SaveChangesAsync();
+
+                    }
+                }
+                if (listToAdd.Count > 0)
+                {
+                    await _context.EventDaysAssignments.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Added;
+                }
+                else
+                {
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
+                }
                 return _serviceResponse;
             }
             catch (Exception ex)

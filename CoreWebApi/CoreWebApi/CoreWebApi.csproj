@@ -65,6 +65,12 @@
     <Compile Remove="Migrations\20201106075302_test.Designer.cs" />
     <Compile Remove="Migrations\20201106075425_test.cs" />
     <Compile Remove="Migrations\20201106075425_test.Designer.cs" />
+    <Compile Remove="Migrations\20201112090043_updateEvent-addEventAssign.cs" />
+    <Compile Remove="Migrations\20201112090043_updateEvent-addEventAssign.Designer.cs" />
+    <Compile Remove="Migrations\20201112090207_updateEvent-addEventAssign.cs" />
+    <Compile Remove="Migrations\20201112090207_updateEvent-addEventAssign.Designer.cs" />
+    <Compile Remove="Migrations\20201112091546_updateEvent-addEventAssign.cs" />
+    <Compile Remove="Migrations\20201112091546_updateEvent-addEventAssign.Designer.cs" />
 
   </ItemGroup>
 

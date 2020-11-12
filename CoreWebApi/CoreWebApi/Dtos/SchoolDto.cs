@@ -59,21 +59,34 @@ namespace CoreWebApi.Dtos
         public string Day { get; set; }
     }
 
-    public class EventForListDto
+    public class EventsForListDto
     {
         public int Id { get; set; }
+        public string Title { get; set; }      
+        public string Color { get; set; }
+    }
+    public class EventDaysForListDto
+    {
+        public int Id { get; set; }
+        public int EventId { get; set; }       
         public string Title { get; set; }
         public string Start { get; set; }
         public string End { get; set; }
-        public string Color { get; set; }
+        public bool? AllDay { get; set; }
     }
     public class EventForAddDto
     {
         public int Id { get; set; }
         [Required]
-        public string Title { get; set; }
+        public string Title { get; set; }       
+        public string Color { get; set; }
+    }
+    public class EventDayAssignmentForAddDto
+    {
+        public int Id { get; set; }
+        public int EventId { get; set; }       
         public string Start { get; set; }
         public string End { get; set; }
-        public string Color { get; set; }
+        public bool? AllDay { get; set; }
     }
 }

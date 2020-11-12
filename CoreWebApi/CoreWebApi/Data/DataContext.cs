@@ -53,6 +53,7 @@ namespace CoreWebApi.Data
         public DbSet<LectureTiming> LectureTiming { get; set; }
         public DbSet<ClassLectureAssignment> ClassLectureAssignment { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<EventDayAssignment> EventDaysAssignments { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

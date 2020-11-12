@@ -195,6 +195,27 @@ namespace CoreWebApi.Controllers
 
             }
         }
+        [HttpPut("AssignEvents")]
+        public async Task<IActionResult> AssignEvents(List<EventDayAssignmentForAddDto> model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+                _response = await _repo.UpdateEvents(loggedInBranchId, model);
+
+                return Ok(_response);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest(_response);
+
+            }
+        }
         [HttpPut("UpdateEventStatus/{id}/{active}")]
         public async Task<IActionResult> UpdateEventStatus(int id, bool active)
         {
@@ -204,7 +225,7 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                _response = await _repo.UpdateEvent(id, active);
+                _response = await _repo.UpdateEventStatus(id, active);
 
                 return Ok(_response);
             }
