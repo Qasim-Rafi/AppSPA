@@ -88,6 +88,15 @@ namespace CoreWebApi.Data
                          .IsRequired();
             });
             //
+            modelBuilder.Entity("CoreWebApi.Models.EventDayAssignment", b =>
+            {
+                b.HasOne("CoreWebApi.Models.Event", "Event")
+                    .WithMany()
+                    .HasForeignKey("EventId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+            //
             modelBuilder.Entity<User>()
                 .Property(user => user.Role).HasDefaultValue("Student");
             // primary key

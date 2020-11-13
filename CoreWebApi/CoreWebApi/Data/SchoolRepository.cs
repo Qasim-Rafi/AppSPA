@@ -340,17 +340,32 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-        public async Task<ServiceResponse<object>> UpdateEventStatus(int id, bool active)
+        public async Task<ServiceResponse<object>> DeleteEvent(int id)
         {
             try
             {
-                var ToUpdate = await _context.Events.Where(m => m.Id == id).FirstOrDefaultAsync();
-                ToUpdate.Active = active;
-
-                _context.Events.Update(ToUpdate);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Deleted;
+                var ToRemove = await _context.Events.Where(m => m.Id == id).FirstOrDefaultAsync();
+                if (ToRemove != null)
+                {
+                    var Count = await _context.EventDaysAssignments.Where(m => m.EventId == ToRemove.Id).CountAsync();
+                    if (Count > 0)
+                    {
+                        _serviceResponse.Success = false;
+                        _serviceResponse.Message = CustomMessage.ChildRecordExist;
+                    }
+                    else
+                    {
+                        _context.Events.Remove(ToRemove);
+                        await _context.SaveChangesAsync();
+                        _serviceResponse.Success = true;
+                        _serviceResponse.Message = CustomMessage.Deleted;
+                    }
+                }
+                else
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                }
                 return _serviceResponse;
             }
             catch (Exception ex)
@@ -460,6 +475,35 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
 
+                Log.Exception(ex);
+                var currentMethodName = Log.TraceMethod("get method name");
+                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> DeleteEventDay(int id)
+        {
+            try
+            {
+                var ToRemove = await _context.EventDaysAssignments.Where(m => m.Id == id).FirstOrDefaultAsync();
+                if (ToRemove != null)
+                {
+                    _context.EventDaysAssignments.Remove(ToRemove);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Deleted;
+                }
+                else
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                }
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
                 Log.Exception(ex);
                 var currentMethodName = Log.TraceMethod("get method name");
                 _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();

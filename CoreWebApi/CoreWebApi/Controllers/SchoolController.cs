@@ -216,8 +216,8 @@ namespace CoreWebApi.Controllers
 
             }
         }
-        [HttpPut("UpdateEventStatus/{id}/{active}")]
-        public async Task<IActionResult> UpdateEventStatus(int id, bool active)
+        [HttpDelete("DeleteEvent/{id}")]
+        public async Task<IActionResult> DeleteEvent(int id)
         {
             try
             {
@@ -225,7 +225,27 @@ namespace CoreWebApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                _response = await _repo.UpdateEventStatus(id, active);
+                _response = await _repo.DeleteEvent(id);
+
+                return Ok(_response);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest(_response);
+
+            }
+        }
+        [HttpDelete("DeleteEventDay/{id}")]
+        public async Task<IActionResult> DeleteEventDay(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                _response = await _repo.DeleteEventDay(id);
 
                 return Ok(_response);
             }
