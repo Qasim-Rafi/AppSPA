@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoreWebApi.Middleware;
 using AutoMapper;
 using CoreWebApi.Controllers;
 using CoreWebApi.Data;
@@ -133,9 +134,11 @@ namespace CoreWebApi
         {
             try
             {
+                app.UseMiddleware<ExceptionMiddleware>();
+
                 if (env.IsDevelopment())
                 {
-                    app.UseDeveloperExceptionPage();
+                    //app.UseDeveloperExceptionPage();
                     app.UseSwagger();
                     app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v2/swagger.json", "PlaceInfo Services"));
 

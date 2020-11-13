@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Data;
@@ -18,7 +19,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]
+    //[Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : BaseController
@@ -27,9 +28,11 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly IFilesRepository _File;
         private readonly DataContext _context;
+        
         ServiceResponse<object> _response;
 
-        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context, IHttpContextAccessor httpContextAccessor)
+        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context,
+            IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
@@ -37,6 +40,7 @@ namespace CoreWebApi.Controllers
             _File = file;
             _context = context;
             _response = new ServiceResponse<object>();
+     
         }
 
         [HttpGet]
@@ -60,6 +64,10 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _repo.GetUser(id);
+            if (user.Data == null)
+            {
+                return NotFound();
+            }
             //var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
             return Ok(user);
         }
