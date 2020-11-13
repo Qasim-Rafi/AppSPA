@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -401,8 +403,8 @@ namespace CoreWebApi.Data
                                                    Id = ed.Id,
                                                    EventId = e.Id,
                                                    Title = e.Title,
-                                                   Start = ed.StartDate.ToString(),
-                                                   End = ed.EndDate != null ? ed.EndDate.ToString() : "",
+                                                   Start = CheckDate(ed.StartDate.ToString()),// ed.StartDate != null ? Convert.ToDateTime(ed.StartDate).ToString("yyyy-MM-dd hh:mm:ss") : "",
+                                                   End = ed.EndDate != null ? CheckDate(ed.EndDate.ToString()) : "",
                                                    AllDay = ed.AllDay,
                                                    Color = e.Color
                                                }).ToListAsync();
@@ -419,6 +421,27 @@ namespace CoreWebApi.Data
                 _serviceResponse.Success = false;
                 return _serviceResponse;
             }
+        }
+
+        private static string CheckDate(string date)
+        {
+            if (!string.IsNullOrEmpty(date))
+            {
+                var exist = date.Contains("00:00:00");
+                if (exist)
+                {
+                    return Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                }
+                else
+                {
+                    return date;
+                }
+            }
+            else
+            {
+                return "";
+            }
+           
         }
 
         public async Task<ServiceResponse<object>> UpdateEvents(string loggedInBranchId, List<EventDayAssignmentForAddDto> model)
