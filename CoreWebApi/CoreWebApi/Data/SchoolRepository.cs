@@ -57,370 +57,291 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetTimeTable()
         {
-            try
+
+            var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
+
+            var TimeTable = await (from main in _context.ClassLectureAssignment
+                                   join l in _context.LectureTiming
+                                   on main.LectureId equals l.Id
+                                   join u in _context.Users
+                                   on main.TeacherId equals u.Id
+                                   join s in _context.Subjects
+                                   on main.SubjectId equals s.Id
+                                   join cs in _context.ClassSections
+                                   on main.ClassSectionId equals cs.Id
+                                   where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                   select new TimeTableForListDto
+                                   {
+                                       Id = main.Id,
+                                       LectureId = main.LectureId,
+                                       Day = l.Day,
+                                       StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
+                                       EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
+                                       TeacherId = main.TeacherId,
+                                       Teacher = u.FullName,
+                                       SubjectId = main.SubjectId,
+                                       Subject = s.Name,
+                                       ClassSectionId = main.ClassSectionId,
+                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
+                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
+                                       IsBreak = l.IsBreak
+                                   }).ToListAsync();
+
+            var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
+            Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
+            var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day)).ToListAsync();
+            var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
+            var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
+            List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
+            for (int i = 0; i < StartTimings.Count; i++)
             {
-                var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
-
-                var TimeTable = await (from main in _context.ClassLectureAssignment
-                                       join l in _context.LectureTiming
-                                       on main.LectureId equals l.Id
-                                       join u in _context.Users
-                                       on main.TeacherId equals u.Id
-                                       join s in _context.Subjects
-                                       on main.SubjectId equals s.Id
-                                       join cs in _context.ClassSections
-                                       on main.ClassSectionId equals cs.Id
-                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                       select new TimeTableForListDto
-                                       {
-                                           Id = main.Id,
-                                           LectureId = main.LectureId,
-                                           Day = l.Day,
-                                           StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
-                                           EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
-                                           TeacherId = main.TeacherId,
-                                           Teacher = u.FullName,
-                                           SubjectId = main.SubjectId,
-                                           Subject = s.Name,
-                                           ClassSectionId = main.ClassSectionId,
-                                           Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
-                                           Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
-                                           IsBreak = l.IsBreak
-                                       }).ToListAsync();
-
-                var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
-                Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
-                var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day)).ToListAsync();
-                var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
-                var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
-                List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
-                for (int i = 0; i < StartTimings.Count; i++)
+                TimeSlots.Add(new TimeSlotsForListDto
                 {
-                    TimeSlots.Add(new TimeSlotsForListDto
-                    {
-                        StartTime = StartTimings[i].ToString(),
-                        EndTime = EndTimings[i].ToString(),
-                        IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
-                    });
-                }
-
-                TimeTable.AddRange(TimeSlots.Where(m => m.IsBreak == true).Select(o => new TimeTableForListDto
-                {
-                    IsBreak = o.IsBreak,
-                    StartTime = o.StartTime,
-                    EndTime = o.EndTime,
-                }).ToList());
-                _serviceResponse.Data = new { Days, TimeSlots, TimeTable };
-                _serviceResponse.Success = true;
-                return _serviceResponse;
+                    StartTime = StartTimings[i].ToString(),
+                    EndTime = EndTimings[i].ToString(),
+                    IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
+                });
             }
-            catch (Exception ex)
+
+            TimeTable.AddRange(TimeSlots.Where(m => m.IsBreak == true).Select(o => new TimeTableForListDto
             {
+                IsBreak = o.IsBreak,
+                StartTime = o.StartTime,
+                EndTime = o.EndTime,
+            }).ToList());
+            _serviceResponse.Data = new { Days, TimeSlots, TimeTable };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
 
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                _serviceResponse.Success = false;
-                return _serviceResponse;
-            }
         }
 
         public async Task<ServiceResponse<object>> GetTimeTableById(int id)
         {
-            try
-            {
-                var TimeTable = await (from main in _context.ClassLectureAssignment
-                                       join l in _context.LectureTiming
-                                       on main.LectureId equals l.Id
-                                       join u in _context.Users
-                                       on main.TeacherId equals u.Id
-                                       join s in _context.Subjects
-                                       on main.SubjectId equals s.Id
-                                       join cs in _context.ClassSections
-                                       on main.ClassSectionId equals cs.Id
-                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                       && main.Id == id
-                                       select new TimeTableForListDto
-                                       {
-                                           Id = main.Id,
-                                           LectureId = main.LectureId,
-                                           Day = l.Day,
-                                           StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
-                                           EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
-                                           TeacherId = main.TeacherId,
-                                           Teacher = u.FullName,
-                                           SubjectId = main.SubjectId,
-                                           Subject = s.Name,
-                                           ClassSectionId = main.ClassSectionId,
-                                           Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
-                                           Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
-                                           //IsBreak = l.IsBreak
-                                       }).FirstOrDefaultAsync();
-                if (TimeTable != null)
-                {
-                    _serviceResponse.Data = new { TimeTable };
-                    _serviceResponse.Success = true;
-                }
-                else
-                {
-                    _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.RecordNotFound;
-                }
 
-                return _serviceResponse;
+            var TimeTable = await (from main in _context.ClassLectureAssignment
+                                   join l in _context.LectureTiming
+                                   on main.LectureId equals l.Id
+                                   join u in _context.Users
+                                   on main.TeacherId equals u.Id
+                                   join s in _context.Subjects
+                                   on main.SubjectId equals s.Id
+                                   join cs in _context.ClassSections
+                                   on main.ClassSectionId equals cs.Id
+                                   where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                   && main.Id == id
+                                   select new TimeTableForListDto
+                                   {
+                                       Id = main.Id,
+                                       LectureId = main.LectureId,
+                                       Day = l.Day,
+                                       StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
+                                       EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
+                                       TeacherId = main.TeacherId,
+                                       Teacher = u.FullName,
+                                       SubjectId = main.SubjectId,
+                                       Subject = s.Name,
+                                       ClassSectionId = main.ClassSectionId,
+                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
+                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
+                                       //IsBreak = l.IsBreak
+                                   }).FirstOrDefaultAsync();
+            if (TimeTable != null)
+            {
+                _serviceResponse.Data = new { TimeTable };
+                _serviceResponse.Success = true;
             }
-            catch (Exception ex)
+            else
             {
-
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                return _serviceResponse;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
             }
+
+            return _serviceResponse;
+
         }
 
         public async Task<ServiceResponse<object>> SaveTimeSlots(string loggedInBranchId, List<TimeSlotsForAddDto> model)
         {
-            try
+
+            List<LectureTiming> listToAdd = new List<LectureTiming>();
+            foreach (var item in model)
             {
-                List<LectureTiming> listToAdd = new List<LectureTiming>();
-                foreach (var item in model)
+                listToAdd.Add(new LectureTiming
                 {
-                    listToAdd.Add(new LectureTiming
-                    {
-                        StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay,
-                        EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
-                        IsBreak = item.IsBreak,
-                        Day = item.Day,
-                        SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
-                    });
-                }
-
-                await _context.LectureTiming.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Added;
-                return _serviceResponse;
+                    StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay,
+                    EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
+                    IsBreak = item.IsBreak,
+                    Day = item.Day,
+                    SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
+                });
             }
-            catch (Exception ex)
-            {
 
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                _serviceResponse.Success = false;
-                return _serviceResponse;
-            }
+            await _context.LectureTiming.AddRangeAsync(listToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+
         }
 
         public async Task<ServiceResponse<object>> SaveTimeTable(List<TimeTableForAddDto> model)
         {
-            try
+
+            List<ClassLectureAssignment> listToAdd = new List<ClassLectureAssignment>();
+            foreach (var item in model)
             {
-                List<ClassLectureAssignment> listToAdd = new List<ClassLectureAssignment>();
-                foreach (var item in model)
+                listToAdd.Add(new ClassLectureAssignment
                 {
-                    listToAdd.Add(new ClassLectureAssignment
-                    {
-                        LectureId = item.LectureId,
-                        TeacherId = item.TeacherId,
-                        SubjectId = item.SubjectId,
-                        ClassSectionId = item.ClassSectionId,
-                        Date = DateTime.Now
-                    });
-                }
-
-                await _context.ClassLectureAssignment.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Added;
-                return _serviceResponse;
+                    LectureId = item.LectureId,
+                    TeacherId = item.TeacherId,
+                    SubjectId = item.SubjectId,
+                    ClassSectionId = item.ClassSectionId,
+                    Date = DateTime.Now
+                });
             }
-            catch (Exception ex)
-            {
 
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                _serviceResponse.Success = false;
-                return _serviceResponse;
-            }
+            await _context.ClassLectureAssignment.AddRangeAsync(listToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+
         }
 
         public async Task<ServiceResponse<object>> UpdateTimeTable(int id, TimeTableForAddDto model)
         {
-            try
+
+            var ToUpdate = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
+            if (ToUpdate != null)
             {
-                var ToUpdate = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
-                if (ToUpdate != null)
-                {
-                    ToUpdate.LectureId = model.LectureId;
-                    ToUpdate.TeacherId = model.TeacherId;
-                    _context.ClassLectureAssignment.Update(ToUpdate);
-                    await _context.SaveChangesAsync();
-                    _serviceResponse.Data = ToUpdate.Id;
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Updated;
-                }
-                else
-                {
-                    _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.RecordNotFound;
-                }
-
-
-                //if (ToRemove != null)
-                //{
-                //    _context.ClassLectureAssignment.Remove(ToRemove);
-                //    await _context.SaveChangesAsync();
-
-                //    var ToAdd = new ClassLectureAssignment
-                //    {
-                //        LectureId = model.LectureId,
-                //        TeacherId = model.TeacherId,
-                //        SubjectId = model.SubjectId,
-                //        ClassSectionId = model.ClassSectionId,
-                //        Date = DateTime.Now
-                //    };
-
-                //    await _context.ClassLectureAssignment.AddRangeAsync(ToAdd);
-                //    await _context.SaveChangesAsync();
-                //    _serviceResponse.Success = true;
-                //    _serviceResponse.Message = CustomMessage.Updated;
-                //    _serviceResponse.Data = ToAdd.Id;
-                //}
-                //else
-                //{
-                //    _serviceResponse.Success = false;
-                //    _serviceResponse.Message = CustomMessage.RecordNotFound;
-                //}
-
-                return _serviceResponse;
+                ToUpdate.LectureId = model.LectureId;
+                ToUpdate.TeacherId = model.TeacherId;
+                _context.ClassLectureAssignment.Update(ToUpdate);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Data = ToUpdate.Id;
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
             }
-            catch (Exception ex)
+            else
             {
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                return _serviceResponse;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
             }
+
+
+            //if (ToRemove != null)
+            //{
+            //    _context.ClassLectureAssignment.Remove(ToRemove);
+            //    await _context.SaveChangesAsync();
+
+            //    var ToAdd = new ClassLectureAssignment
+            //    {
+            //        LectureId = model.LectureId,
+            //        TeacherId = model.TeacherId,
+            //        SubjectId = model.SubjectId,
+            //        ClassSectionId = model.ClassSectionId,
+            //        Date = DateTime.Now
+            //    };
+
+            //    await _context.ClassLectureAssignment.AddRangeAsync(ToAdd);
+            //    await _context.SaveChangesAsync();
+            //    _serviceResponse.Success = true;
+            //    _serviceResponse.Message = CustomMessage.Updated;
+            //    _serviceResponse.Data = ToAdd.Id;
+            //}
+            //else
+            //{
+            //    _serviceResponse.Success = false;
+            //    _serviceResponse.Message = CustomMessage.RecordNotFound;
+            //}
+
+            return _serviceResponse;
+
         }
 
         public async Task<ServiceResponse<object>> AddEvents(string loggedInBranchId, List<EventForAddDto> model)
         {
-            try
-            {
 
-                List<Event> listToAdd = new List<Event>();
-                foreach (var item in model)
+
+            List<Event> listToAdd = new List<Event>();
+            foreach (var item in model)
+            {
+                listToAdd.Add(new Event
                 {
-                    listToAdd.Add(new Event
-                    {
-                        Title = item.Title,
-                        Color = item.Color,
-                        Active = true,
-                        SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
-                    });
+                    Title = item.Title,
+                    Color = item.Color,
+                    Active = true,
+                    SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
+                });
 
-                }
-                await _context.Events.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Added;
-
-                return _serviceResponse;
             }
-            catch (Exception ex)
-            {
+            await _context.Events.AddRangeAsync(listToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
 
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                _serviceResponse.Success = false;
-                return _serviceResponse;
-            }
+            return _serviceResponse;
+
         }
         public async Task<ServiceResponse<object>> DeleteEvent(int id)
         {
-            try
+
+            var ToRemove = await _context.Events.Where(m => m.Id == id).FirstOrDefaultAsync();
+            if (ToRemove != null)
             {
-                var ToRemove = await _context.Events.Where(m => m.Id == id).FirstOrDefaultAsync();
-                if (ToRemove != null)
+                var Count = await _context.EventDaysAssignments.Where(m => m.EventId == ToRemove.Id).CountAsync();
+                if (Count > 0)
                 {
-                    var Count = await _context.EventDaysAssignments.Where(m => m.EventId == ToRemove.Id).CountAsync();
-                    if (Count > 0)
-                    {
-                        _serviceResponse.Success = false;
-                        _serviceResponse.Message = CustomMessage.ChildRecordExist;
-                    }
-                    else
-                    {
-                        _context.Events.Remove(ToRemove);
-                        await _context.SaveChangesAsync();
-                        _serviceResponse.Success = true;
-                        _serviceResponse.Message = CustomMessage.Deleted;
-                    }
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.ChildRecordExist;
                 }
                 else
                 {
-                    _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                    _context.Events.Remove(ToRemove);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Deleted;
                 }
-                return _serviceResponse;
             }
-            catch (Exception ex)
+            else
             {
-
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                return _serviceResponse;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
             }
+            return _serviceResponse;
+
         }
 
         public async Task<ServiceResponse<object>> GetEvents()
         {
-            try
-            {
-                var EventsForList = await (from e in _context.Events
+            
+            var EventsForList = await (from e in _context.Events
+                                       where e.Active == true
+                                       select new EventsForListDto
+                                       {
+                                           Id = e.Id,
+                                           Title = e.Title,
+                                           Color = e.Color
+                                       }).ToListAsync();
+
+            var EventsForCalendar = await (from e in _context.Events
+                                           join ed in _context.EventDaysAssignments
+                                           on e.Id equals ed.EventId
                                            where e.Active == true
-                                           select new EventsForListDto
+                                           select new EventDaysForListDto
                                            {
-                                               Id = e.Id,
+                                               Id = ed.Id,
+                                               EventId = e.Id,
                                                Title = e.Title,
+                                               Start = CheckDate(ed.StartDate.ToString()),// ed.StartDate != null ? Convert.ToDateTime(ed.StartDate).ToString("yyyy-MM-dd hh:mm:ss") : "",
+                                               End = ed.EndDate != null ? CheckDate(ed.EndDate.ToString()) : "",
+                                               AllDay = ed.AllDay,
                                                Color = e.Color
                                            }).ToListAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = new { EventsForList, EventsForCalendar };
+            return _serviceResponse;
 
-                var EventsForCalendar = await (from e in _context.Events
-                                               join ed in _context.EventDaysAssignments
-                                               on e.Id equals ed.EventId
-                                               where e.Active == true
-                                               select new EventDaysForListDto
-                                               {
-                                                   Id = ed.Id,
-                                                   EventId = e.Id,
-                                                   Title = e.Title,
-                                                   Start = CheckDate(ed.StartDate.ToString()),// ed.StartDate != null ? Convert.ToDateTime(ed.StartDate).ToString("yyyy-MM-dd hh:mm:ss") : "",
-                                                   End = ed.EndDate != null ? CheckDate(ed.EndDate.ToString()) : "",
-                                                   AllDay = ed.AllDay,
-                                                   Color = e.Color
-                                               }).ToListAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Data = new { EventsForList, EventsForCalendar };
-                return _serviceResponse;
-            }
-            catch (Exception ex)
-            {
-
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                _serviceResponse.Success = false;
-                return _serviceResponse;
-            }
         }
 
         private static string CheckDate(string date)
@@ -441,98 +362,79 @@ namespace CoreWebApi.Data
             {
                 return "";
             }
-           
+
         }
 
         public async Task<ServiceResponse<object>> UpdateEvents(string loggedInBranchId, List<EventDayAssignmentForAddDto> model)
         {
-            try
+
+
+            List<EventDayAssignment> listToAdd = new List<EventDayAssignment>();
+            foreach (var item in model)
             {
-
-                List<EventDayAssignment> listToAdd = new List<EventDayAssignment>();
-                foreach (var item in model)
+                if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
                 {
-                    if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
-                    {
-                        var dayAssignment = new EventDayAssignment();
-                        dayAssignment.StartDate = Convert.ToDateTime(item.Start);
-                        if (!string.IsNullOrEmpty(item.End))
-                            dayAssignment.EndDate = Convert.ToDateTime(item.End);
-                        else
-                            dayAssignment.EndDate = null;
-                        dayAssignment.EventId = item.EventId;
-                        dayAssignment.AllDay = item.AllDay;
-
-                        listToAdd.Add(dayAssignment);
-                    }
+                    var dayAssignment = new EventDayAssignment();
+                    dayAssignment.StartDate = Convert.ToDateTime(item.Start);
+                    if (!string.IsNullOrEmpty(item.End))
+                        dayAssignment.EndDate = Convert.ToDateTime(item.End);
                     else
-                    {
-                        var ToUpdate = await _context.EventDaysAssignments.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
+                        dayAssignment.EndDate = null;
+                    dayAssignment.EventId = item.EventId;
+                    dayAssignment.AllDay = item.AllDay;
 
-                        ToUpdate.StartDate = Convert.ToDateTime(item.Start);
-                        if (!string.IsNullOrEmpty(item.End))
-                            ToUpdate.EndDate = Convert.ToDateTime(item.End);
-                        else
-                            ToUpdate.EndDate = null;
-                        ToUpdate.AllDay = item.AllDay;
-
-                        _context.EventDaysAssignments.Update(ToUpdate);
-                        await _context.SaveChangesAsync();
-
-                    }
-                }
-                if (listToAdd.Count > 0)
-                {
-                    await _context.EventDaysAssignments.AddRangeAsync(listToAdd);
-                    await _context.SaveChangesAsync();
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Added;
+                    listToAdd.Add(dayAssignment);
                 }
                 else
                 {
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Updated;
-                }
-                return _serviceResponse;
-            }
-            catch (Exception ex)
-            {
+                    var ToUpdate = await _context.EventDaysAssignments.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
 
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
-                _serviceResponse.Success = false;
-                return _serviceResponse;
+                    ToUpdate.StartDate = Convert.ToDateTime(item.Start);
+                    if (!string.IsNullOrEmpty(item.End))
+                        ToUpdate.EndDate = Convert.ToDateTime(item.End);
+                    else
+                        ToUpdate.EndDate = null;
+                    ToUpdate.AllDay = item.AllDay;
+
+                    _context.EventDaysAssignments.Update(ToUpdate);
+                    await _context.SaveChangesAsync();
+
+                }
             }
+            if (listToAdd.Count > 0)
+            {
+                await _context.EventDaysAssignments.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
+            }
+            else
+            {
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
+            }
+            return _serviceResponse;
+
         }
 
         public async Task<ServiceResponse<object>> DeleteEventDay(int id)
         {
-            try
+
+            var ToRemove = await _context.EventDaysAssignments.Where(m => m.Id == id).FirstOrDefaultAsync();
+            if (ToRemove != null)
             {
-                var ToRemove = await _context.EventDaysAssignments.Where(m => m.Id == id).FirstOrDefaultAsync();
-                if (ToRemove != null)
-                {
-                    _context.EventDaysAssignments.Remove(ToRemove);
-                    await _context.SaveChangesAsync();
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Deleted;
-                }
-                else
-                {
-                    _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.RecordNotFound;
-                }
-                return _serviceResponse;
+                _context.EventDaysAssignments.Remove(ToRemove);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Deleted;
             }
-            catch (Exception ex)
+            else
             {
-                Log.Exception(ex);
-                var currentMethodName = Log.TraceMethod("get method name");
-                _serviceResponse.Message = "Method Name: " + currentMethodName + ", Message: " + ex.Message ?? ex.InnerException.ToString();
                 _serviceResponse.Success = false;
-                return _serviceResponse;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
             }
+            return _serviceResponse;
+
         }
     }
 }

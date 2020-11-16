@@ -40,71 +40,57 @@ namespace CoreWebApi.Data
         }
         public async Task<string> AddAttendance(List<AttendanceDtoForAdd> list)
         {
-            try
+
+            foreach (var attendance in list)
             {
-                foreach (var attendance in list)
+                var attendanceExist = _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.UserId == attendance.UserId).FirstOrDefault();
+                if (attendanceExist != null)
                 {
-                    var attendanceExist = _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.UserId == attendance.UserId).FirstOrDefault();
-                    if (attendanceExist != null)
-                    {
-                        attendanceExist.Present = attendance.Present;
-                        attendanceExist.Absent = attendance.Absent;
-                        attendanceExist.Late = attendance.Late;
-                        attendanceExist.Comments = attendance.Comments;
-                        attendanceExist.UserId = attendance.UserId;
-                        attendanceExist.ClassSectionId = attendance.ClassSectionId;
+                    attendanceExist.Present = attendance.Present;
+                    attendanceExist.Absent = attendance.Absent;
+                    attendanceExist.Late = attendance.Late;
+                    attendanceExist.Comments = attendance.Comments;
+                    attendanceExist.UserId = attendance.UserId;
+                    attendanceExist.ClassSectionId = attendance.ClassSectionId;
 
-                        await _context.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        var objToCreate = new Attendance
-                        {
-                            Present = attendance.Present,
-                            Absent = attendance.Absent,
-                            Late = attendance.Late,
-                            Comments = attendance.Comments,
-                            UserId = attendance.UserId,
-                            ClassSectionId = attendance.ClassSectionId,
-                            CreatedDatetime = DateTime.Now
-                        };
-
-                        await _context.Attendances.AddAsync(objToCreate);
-                        await _context.SaveChangesAsync();
-                    }
+                    await _context.SaveChangesAsync();
                 }
+                else
+                {
+                    var objToCreate = new Attendance
+                    {
+                        Present = attendance.Present,
+                        Absent = attendance.Absent,
+                        Late = attendance.Late,
+                        Comments = attendance.Comments,
+                        UserId = attendance.UserId,
+                        ClassSectionId = attendance.ClassSectionId,
+                        CreatedDatetime = DateTime.Now
+                    };
 
-
-                return StatusCodes.Status200OK.ToString();
+                    await _context.Attendances.AddAsync(objToCreate);
+                    await _context.SaveChangesAsync();
+                }
             }
-            catch (Exception ex)
-            {
 
-                Log.Exception(ex);
-                throw ex;
-            }
+
+            return StatusCodes.Status200OK.ToString();
+
         }
         public async Task<Attendance> EditAttendance(int id, AttendanceDtoForEdit attendance)
         {
-            try
-            {
-                Attendance dbObj = _context.Attendances.FirstOrDefault(s => s.Id.Equals(id));
-                if (dbObj != null)
-                {
-                    dbObj.Comments = attendance.Comments;
-                    dbObj.Present = attendance.Present;
-                    dbObj.Absent = attendance.Absent;
-                    dbObj.Late = attendance.Late;
-                    await _context.SaveChangesAsync();
-                }
-                return dbObj;
-            }
-            catch (Exception ex)
-            {
 
-                Log.Exception(ex);
-                throw ex;
+            Attendance dbObj = _context.Attendances.FirstOrDefault(s => s.Id.Equals(id));
+            if (dbObj != null)
+            {
+                dbObj.Comments = attendance.Comments;
+                dbObj.Present = attendance.Present;
+                dbObj.Absent = attendance.Absent;
+                dbObj.Late = attendance.Late;
+                await _context.SaveChangesAsync();
             }
+            return dbObj;
+
         }
 
         public Task<IEnumerable<Attendance>> GetAttendanceToDisplay(int typeId, int? classSectionId, string date)

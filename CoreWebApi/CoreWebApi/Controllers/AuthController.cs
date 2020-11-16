@@ -39,57 +39,49 @@ namespace CoreWebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                // validate request;
-                userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
-
-                if (await _repo.UserExists(userForRegisterDto.Username))
-                    return BadRequest(new { message = CustomMessage.UserAlreadyExist });
-
-
-
-                var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
-
-                var createdUser = await _repo.Register(userForRegisterDto, regNo);
-
-                return StatusCode(201);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            // validate request;
+            userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
-                return BadRequest(ex);
-            }
+            if (await _repo.UserExists(userForRegisterDto.Username))
+                return BadRequest(new { message = CustomMessage.UserAlreadyExist });
+
+
+
+            var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
+
+            var createdUser = await _repo.Register(userForRegisterDto, regNo);
+
+            return StatusCode(201);
 
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-           
-            try
+
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.password);
+                return BadRequest(ModelState);
+            }
+            var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.password);
 
-                if (userFromRepo == null)
-                {
-                    return Unauthorized();
-                }
+            if (userFromRepo == null)
+            {
+                return Unauthorized();
+            }
 
-                var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
-                dynamic schoolBranchDetails = await _repo.GetSchoolDetails(regNo);
+            var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
+            dynamic schoolBranchDetails = await _repo.GetSchoolDetails(regNo);
 
 
-                Claim[] claims = new[]
-                {
+            Claim[] claims = new[]
+            {
                     new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
                     new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
                     new Claim(Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString()),
@@ -97,36 +89,29 @@ namespace CoreWebApi.Controllers
                 };
 
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.Now.AddDays(5),
-                    SigningCredentials = creds
-                };
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-
-
-                //var session = HttpContext.Session;
-                //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
-                return base.Ok(new
-                {
-                    loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value,
-                    loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.Name.ToString())).Value,
-                    role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
-                    schoolName = schoolBranchDetails.school.Name,
-                    token = tokenHandler.WriteToken(token)
-                });
-            }
-            catch (Exception ex)
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                return BadRequest(new
-                {
-                    message = ex.Message ?? ex.InnerException.ToString()
-                });
-            }
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(5),
+                SigningCredentials = creds
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+
+            //var session = HttpContext.Session;
+            //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
+            return base.Ok(new
+            {
+                loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value,
+                loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.Name.ToString())).Value,
+                role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
+                schoolName = schoolBranchDetails.school.Name,
+                token = tokenHandler.WriteToken(token)
+            });
+
 
         }
 

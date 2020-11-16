@@ -30,231 +30,159 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetTimeSlots")]
         public async Task<IActionResult> GetTimeSlots()
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                _response = await _repo.GetTimeSlots();
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
 
-                return BadRequest(_response);
-            }
+            _response = await _repo.GetTimeSlots();
+
+            return Ok(_response);
+
         }
         [HttpGet("GetTimeTable")]
         public async Task<IActionResult> GetTimeTable()
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                _response = await _repo.GetTimeTable();
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
 
-                return BadRequest(_response);
-            }
+            _response = await _repo.GetTimeTable();
+
+            return Ok(_response);
+
         }
         [HttpGet("GetTimeTableById/{id}")]
         public async Task<IActionResult> GetTimeTableById(int id)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                _response = await _repo.GetTimeTableById(id);
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
 
-                return BadRequest(_response);
-            }
+            _response = await _repo.GetTimeTableById(id);
+
+            return Ok(_response);
+
         }
         [HttpPost("AddTimeSlots")]
         public async Task<IActionResult> AddTimeSlots(List<TimeSlotsForAddDto> model)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-                _response = await _repo.SaveTimeSlots(loggedInBranchId, model);
 
-                return Ok(_response);
-            }
-            catch (Exception ex)
+            if (!ModelState.IsValid)
             {
-
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+                return BadRequest(ModelState);
             }
+            string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            _response = await _repo.SaveTimeSlots(loggedInBranchId, model);
+
+            return Ok(_response);
+
         }
         [HttpPost("AddTimeTable")]
         public async Task<IActionResult> AddTimeTable(List<TimeTableForAddDto> model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                _response = await _repo.SaveTimeTable(model);
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
 
-                return BadRequest(_response);
-            }
+            _response = await _repo.SaveTimeTable(model);
+
+            return Ok(_response);
+
         }
         [HttpPut("UpdateTimeTable/{id}")]
         public async Task<IActionResult> UpdateTimeTable(int id, TimeTableForAddDto model)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
 
-                _response = await _repo.UpdateTimeTable(id, model);
-                if (_response.Success)
-                {
-                    _response = await _repo.GetTimeTableById(Convert.ToInt32(_response.Data));
-                }
-                return Ok(_response);
-            }
-            catch (Exception)
+            if (!ModelState.IsValid)
             {
-
-                return BadRequest(_response);
+                return BadRequest(ModelState);
             }
+
+            _response = await _repo.UpdateTimeTable(id, model);
+            if (_response.Success)
+            {
+                _response = await _repo.GetTimeTableById(Convert.ToInt32(_response.Data));
+            }
+            return Ok(_response);
+
         }
 
         [HttpGet("GetEvents")]
         public async Task<IActionResult> GetEvents()
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                _response = await _repo.GetEvents();
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
 
-                return BadRequest(_response);
-            }
+            _response = await _repo.GetEvents();
+
+            return Ok(_response);
+
+
         }
         [HttpPost("AddEvents")]
         public async Task<IActionResult> AddEvents(List<EventForAddDto> model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-                _response = await _repo.AddEvents(loggedInBranchId, model);
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
+            string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            _response = await _repo.AddEvents(loggedInBranchId, model);
 
-                return BadRequest(_response);
+            return Ok(_response);
 
-            }
         }
         [HttpPut("AssignEvents")]
         public async Task<IActionResult> AssignEvents(List<EventDayAssignmentForAddDto> model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-                _response = await _repo.UpdateEvents(loggedInBranchId, model);
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
+            string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            _response = await _repo.UpdateEvents(loggedInBranchId, model);
 
-                return BadRequest(_response);
+            return Ok(_response);
 
-            }
         }
         [HttpDelete("DeleteEvent/{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                _response = await _repo.DeleteEvent(id);
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
+            _response = await _repo.DeleteEvent(id);
 
-                return BadRequest(_response);
+            return Ok(_response);
 
-            }
         }
         [HttpDelete("DeleteEventDay/{id}")]
         public async Task<IActionResult> DeleteEventDay(int id)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                _response = await _repo.DeleteEventDay(id);
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
+            _response = await _repo.DeleteEventDay(id);
 
-                return BadRequest(_response);
+            return Ok(_response);
 
-            }
         }
     }
 }

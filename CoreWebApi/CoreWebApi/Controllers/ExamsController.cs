@@ -32,48 +32,30 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetAllQuiz")]
         public async Task<IActionResult> GetQuizzes()
         {
-            try
-            {
-                var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-                _response = await _repo.GetQuizzes(loggedInUserId);
-                return Ok(_response);
-            }
-            catch (Exception)
-            {
-                return BadRequest(_response);
 
-            }
+            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            _response = await _repo.GetQuizzes(loggedInUserId);
+            return Ok(_response);
+
         }
         [HttpGet("GetAllAssignedQuiz")]
         public async Task<IActionResult> GetAssignedQuiz()
         {
-            try
-            {
-                var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-                _response = await _repo.GetAssignedQuiz(loggedInUserId);
-                return Ok(_response);
-            }
-            catch (Exception)
-            {
 
-                return BadRequest(_response);
-            }
+            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            _response = await _repo.GetAssignedQuiz(loggedInUserId);
+            return Ok(_response);
+
 
         }
         [HttpGet("GetQuizById/{id}")]
         public async Task<IActionResult> GetQuizById(int id)
         {
-            try
-            {
-                var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-                _response = await _repo.GetQuizById(id, loggedInUserId);
-                return Ok(_response);
-            }
-            catch (Exception)
-            {
 
-                return BadRequest(_response);
-            }
+            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            _response = await _repo.GetQuizById(id, loggedInUserId);
+            return Ok(_response);
+
         }
         [HttpGet("GetPendingQuiz")]
         public async Task<IActionResult> GetPendingQuiz()
@@ -86,122 +68,83 @@ namespace CoreWebApi.Controllers
         [HttpPost("AddQuiz")]
         public async Task<IActionResult> PostQuiz(QuizDtoForAdd model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                //if (await _repo.SubjectExists(subject.Name))
-                //    return BadRequest(new { message = "Subject Already Exist" });
-
-                var createdObjId = await _repo.AddQuiz(model);
-
-                return Ok(new { createdQuizId = createdObjId });
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            var createdObjId = await _repo.AddQuiz(model);
+
+            return Ok(new { createdQuizId = createdObjId });
+
         }
         [HttpPut("UpdateQuiz/{id}")]
         public async Task<IActionResult> PutQuiz(int id, QuizDtoForAdd model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                //if (await _repo.SubjectExists(subject.Name))
-                //    return BadRequest(new { message = "Subject Already Exist" });
-
-                var createdObjId = await _repo.UpdateQuiz(id, model);
-
-                return Ok(createdObjId);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            var createdObjId = await _repo.UpdateQuiz(id, model);
+
+            return Ok(createdObjId);
+
         }
         [HttpPost("AddQuestion")]
         public async Task<IActionResult> PostQuizQuestion(QuizQuestionDtoForAdd model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                //if (await _repo.SubjectExists(subject.Name))
-                //    return BadRequest(new { message = "Subject Already Exist" });
-
-                _response = await _repo.AddQuestion(model);
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
 
-                return BadRequest(_response);
-            }
+            _response = await _repo.AddQuestion(model);
+
+            return Ok(_response);
+
         }
         [HttpPost("SubmitQuiz")]
         public async Task<IActionResult> PostQuizSubmission(List<QuizSubmissionDto> model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                //if (await _repo.SubjectExists(subject.Name))
-                //    return BadRequest(new { message = "Subject Already Exist" });
-                var LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-
-                _response = await _repo.SubmitQuiz(model, LoggedIn_UserId);
-
-                return Ok(_response);
+                return BadRequest(ModelState);
             }
-            catch (Exception)
-            {
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
+            var LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
 
-                return BadRequest(_response);
-            }
+            _response = await _repo.SubmitQuiz(model, LoggedIn_UserId);
+
+            return Ok(_response);
+
         }
         [HttpPut("UpdateQuestion/{id}")]
         public async Task<IActionResult> PutQuizQuestion(int id, QuizQuestionDtoForAdd model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                //if (await _repo.SubjectExists(subject.Name))
-                //    return BadRequest(new { message = "Subject Already Exist" });
-
-                var createdObj = await _repo.UpdateQuestion(id, model);
-
-                return Ok(createdObj);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            var createdObj = await _repo.UpdateQuestion(id, model);
+
+            return Ok(createdObj);
+
         }
     }
 }

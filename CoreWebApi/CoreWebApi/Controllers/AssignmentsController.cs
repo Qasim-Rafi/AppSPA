@@ -31,7 +31,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetAssignmentes()
         {
             var ToReturn = await _repo.GetAssignments();
-           
+
             //var ToReturn = _mapper.Map<IEnumerable<Assignment>>(assignments);
             return Ok(ToReturn);
 
@@ -46,52 +46,33 @@ namespace CoreWebApi.Controllers
         [HttpPost("Add")]
         public async Task<IActionResult> Post([FromForm] AssignmentDtoForAdd assignment)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                //if (await _repo.AssignmentExists(assignment.AssignmentName))
-                //    return BadRequest(new { message = "Assignment Already Exist" });
-
-                assignment.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-                var createdObj = await _repo.AddAssignment(assignment);
-
-                return StatusCode(StatusCodes.Status201Created);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            //if (await _repo.AssignmentExists(assignment.AssignmentName))
+            //    return BadRequest(new { message = "Assignment Already Exist" });
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            assignment.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            var createdObj = await _repo.AddAssignment(assignment);
+
+            return StatusCode(StatusCodes.Status201Created);
+
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromForm] AssignmentDtoForEdit assignment)
         {
 
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var updatedObj = await _repo.EditAssignment(id, assignment);
-
-                return StatusCode(StatusCodes.Status200OK);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            var updatedObj = await _repo.EditAssignment(id, assignment);
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+            return StatusCode(StatusCodes.Status200OK);
 
-            }
         }
     }
 }

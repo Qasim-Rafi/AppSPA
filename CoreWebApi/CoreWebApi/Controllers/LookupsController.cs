@@ -120,21 +120,13 @@ namespace CoreWebApi.Controllers
         [HttpGet("SchoolAcademies")]
         public IActionResult GetSchoolAcademies()
         {
-            try
-            {
-
-                var school = _repo.GetSchoolAcademies();
 
 
-                return Ok(school);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            var school = _repo.GetSchoolAcademies();
+
+
+            return Ok(school);
+
 
         }
 

@@ -23,6 +23,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace CoreWebApi
 {
@@ -146,6 +148,14 @@ namespace CoreWebApi
 
                 //app.UseHttpsRedirection();
                 app.UseAuthentication();
+
+                app.UseStaticFiles();
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"StaticFiles")),
+                    RequestPath = new PathString("/StaticFiles")
+                });
+
                 app.UseRouting();
 
                 app.UseAuthorization();

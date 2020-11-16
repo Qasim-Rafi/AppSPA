@@ -99,45 +99,26 @@ namespace CoreWebApi.Controllers
         [HttpPost("Add")]
         public async Task<IActionResult> Post(List<AttendanceDtoForAdd> list)
         {
-            try
-            {
 
-                //if (await _repo.AttendanceExists(attendance.UserId))
-                //    return BadRequest(new { message = "Attendance Already Exist" });
 
-                var createdObj = await _repo.AddAttendance(list);
+            //if (await _repo.AttendanceExists(attendance.UserId))
+            //    return BadRequest(new { message = "Attendance Already Exist" });
 
-                return StatusCode(StatusCodes.Status201Created);
-            }
-            catch (Exception ex)
-            {
+            var createdObj = await _repo.AddAttendance(list);
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            return StatusCode(StatusCodes.Status201Created);
+
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, AttendanceDtoForEdit attendance)
         {
 
-            try
-            {
 
-                var updatedObj = await _repo.EditAttendance(id, attendance);
 
-                return StatusCode(StatusCodes.Status200OK);
-            }
-            catch (Exception ex)
-            {
+            var updatedObj = await _repo.EditAttendance(id, attendance);
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+            return StatusCode(StatusCodes.Status200OK);
 
-            }
         }
     }
 }

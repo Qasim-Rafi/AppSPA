@@ -14,7 +14,7 @@ namespace CoreWebApi.Helpers
         public static void Exception(Exception ex)
         {
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles");
-            string filePath = Directory.GetCurrentDirectory() + @"/StaticFiles/Log.txt";
+            string filePath = Directory.GetCurrentDirectory() + @"/StaticFiles/Logs.txt";
             if (!File.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);

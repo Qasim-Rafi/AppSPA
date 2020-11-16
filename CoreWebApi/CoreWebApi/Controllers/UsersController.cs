@@ -28,7 +28,7 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly IFilesRepository _File;
         private readonly DataContext _context;
-        
+
         ServiceResponse<object> _response;
 
         public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context,
@@ -40,14 +40,14 @@ namespace CoreWebApi.Controllers
             _File = file;
             _context = context;
             _response = new ServiceResponse<object>();
-     
+
         }
 
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _repo.GetUsers();
-            
+
             return Ok(users);
 
         }
@@ -55,7 +55,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetInActiveUsers()
         {
             var users = await _repo.GetInActiveUsers();
-            
+
             return Ok(users);
 
         }
@@ -77,70 +77,58 @@ namespace CoreWebApi.Controllers
         [HttpPost("AddUser")]
         public async Task<IActionResult> AddUser(UserForAddDto userForAddDto)//[FromForm]
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                userForAddDto.Username = userForAddDto.Username.ToLower();
-
-
-                if (await _repo.UserExists(userForAddDto.Username))
-                    return BadRequest(new { message = CustomMessage.UserAlreadyExist });
-
-                userForAddDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-                var response = await _repo.AddUser(userForAddDto);
-
-                return Ok(response);
-
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return BadRequest(_response);
-            }
+            userForAddDto.Username = userForAddDto.Username.ToLower();
+
+
+            if (await _repo.UserExists(userForAddDto.Username))
+                return BadRequest(new { message = CustomMessage.UserAlreadyExist });
+
+            userForAddDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            var response = await _repo.AddUser(userForAddDto);
+
+            return Ok(response);
+
+
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PUT(int id, [FromForm] UserForUpdateDto userForUpdateDto)// [FromForm]
         {
 
-            try
+
+            //var userToEdit = _mapper.Map<User>(userForAddDto);
+            //userToEdit.Country = "Pakistan2";
+            //userToEdit.City = "Lahore2";
+
+            //var userToEdit = new User
+            //{
+            //    Username = userForAddDto.Username,
+            //    DateofBirth = Convert.ToDateTime(userForAddDto.DateofBirth),
+            //    LastActive = Convert.ToDateTime(userForAddDto.LastActive),
+            //    //city = "Lahore",
+            //    Country = "Pakistan01",
+
+
+            //};
+            if (!ModelState.IsValid)
             {
-                //var userToEdit = _mapper.Map<User>(userForAddDto);
-                //userToEdit.Country = "Pakistan2";
-                //userToEdit.City = "Lahore2";
-
-                //var userToEdit = new User
-                //{
-                //    Username = userForAddDto.Username,
-                //    DateofBirth = Convert.ToDateTime(userForAddDto.DateofBirth),
-                //    LastActive = Convert.ToDateTime(userForAddDto.LastActive),
-                //    //city = "Lahore",
-                //    Country = "Pakistan01",
-
-
-                //};
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                userForUpdateDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-
-                var response = await _repo.EditUser(id, userForUpdateDto);
-
-
-
-
-                return Ok(response);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
 
-                return BadRequest(_response);
+            userForUpdateDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
-            }
+            var response = await _repo.EditUser(id, userForUpdateDto);
+
+
+
+
+            return Ok(response);
+
         }
         //[HttpDelete("ChangeActiveStatus/{id}")] // not in use
         //public async Task<IActionResult> ActiveInActiveUser(int id, bool status)
@@ -148,7 +136,7 @@ namespace CoreWebApi.Controllers
 
         //    try
         //    {
-                
+
         //        if (!ModelState.IsValid)
         //        {
         //            return BadRequest(ModelState);
@@ -170,20 +158,12 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetUsersForAttendance"), NonAction]//not in use
         public async Task<IActionResult> GetListForAttendance()
         {
-            try
-            {
 
-                var users = await _repo.GetUsers();
 
-                return Ok(users);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            var users = await _repo.GetUsers();
+
+            return Ok(users);
+
 
         }
 
@@ -202,128 +182,88 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetUnmappedStudents")]
         public async Task<IActionResult> GetUnmappedStudents()
         {
-            try
-            {
-
-                var users = await _repo.GetUnmappedStudents();
-                _response.Data = _mapper.Map<List<UserForListDto>>(users.Data);
 
 
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_response);
-            }
+            var users = await _repo.GetUnmappedStudents();
+            _response.Data = _mapper.Map<List<UserForListDto>>(users.Data);
+
+
+            return Ok(_response);
+
 
         }
         [HttpGet("GetMappedStudents/{csId}")]
         public async Task<IActionResult> GetMappedStudents(int csId)
         {
-            try
-            {
-
-                dynamic users = await _repo.GetMappedStudents(csId);
-                var Students = _mapper.Map<List<UserForListDto>>(users.Data.mappedStudents);
 
 
-                return Ok(new { Students, TeacherName = users.Data.mappedTeacher?.FullName });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            dynamic users = await _repo.GetMappedStudents(csId);
+            var Students = _mapper.Map<List<UserForListDto>>(users.Data.mappedStudents);
+
+
+            return Ok(new { Students, TeacherName = users.Data.mappedTeacher?.FullName });
+
 
         }
         [HttpPost("AddGroupUsers")]
         public async Task<IActionResult> AddUsersInGroup(UserForAddInGroupDto model)
         {
-            try
-            {
-                model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
-                _response = await _repo.AddUsersInGroup(model);
+            model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+
+            _response = await _repo.AddUsersInGroup(model);
 
 
-                return Ok(_response);
+            return Ok(_response);
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_response);
-            }
+
 
         }
         [HttpPut("UpdateGroupUsers")]
         public async Task<IActionResult> UpdateGroupUsers(UserForAddInGroupDto model)
         {
-            try
-            {
-                model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
-                _response = await _repo.UpdateUsersInGroup(model);
+            model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
-                return Ok(_response);
+            _response = await _repo.UpdateUsersInGroup(model);
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_response);
-            }
+            return Ok(_response);
+
+
 
         }
 
         [HttpGet("GetGroupUsers")]
         public async Task<IActionResult> GetGroupUsers()
         {
-            try
-            {
-
-                _response = await _repo.GetGroupUsers();
 
 
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_response);
+            _response = await _repo.GetGroupUsers();
 
-            }
+
+            return Ok(_response);
+
 
         }
         [HttpGet("GetGroupUsersById/{id}")]
         public async Task<IActionResult> GetGroupUsersById(int id)
         {
-            try
-            {
 
-                _response = await _repo.GetGroupUsersById(id);
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_response);
 
-            }
+            _response = await _repo.GetGroupUsersById(id);
+            return Ok(_response);
+
 
         }
         [HttpDelete("DeleteGroup/{id}")]
         public async Task<IActionResult> DeleteGroup(int id)
         {
-            try
-            {
 
-                _response = await _repo.DeleteGroup(id);
 
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_response);
-            }
+            _response = await _repo.DeleteGroup(id);
+
+            return Ok(_response);
+
 
         }
     }
