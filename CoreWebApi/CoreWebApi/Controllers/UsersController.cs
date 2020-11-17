@@ -63,11 +63,7 @@ namespace CoreWebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            var user = await _repo.GetUser(id);
-            if (user.Data == null)
-            {
-                return NotFound();
-            }
+            ServiceResponse<UserForDetailedDto> user = await _repo.GetUser(id);            
             //var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
             return Ok(user);
         }

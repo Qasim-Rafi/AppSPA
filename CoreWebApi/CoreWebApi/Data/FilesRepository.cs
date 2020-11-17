@@ -16,21 +16,25 @@ namespace CoreWebApi.Data
     {
         protected readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _HostEnvironment;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-       
-        public FilesRepository(IConfiguration configuration, IWebHostEnvironment HostEnvironment)
+
+        public FilesRepository(IConfiguration configuration, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _HostEnvironment = HostEnvironment;
+            _httpContextAccessor = httpContextAccessor;
 
         }
 
         public string AppendImagePath(string imageName)
         {
-            //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
-            string contentRootPath = _HostEnvironment.ContentRootPath;
+            string virtualUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}";
 
-            var path = Path.Combine(contentRootPath, imageName);
+            //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
+            //string contentRootPath = _HostEnvironment.WebRootPath;
+            //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+            var path = Path.Combine(virtualUrl, imageName);
             return path;
         }
         //public void Upload(IFormFileCollection files)

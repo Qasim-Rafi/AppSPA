@@ -4,6 +4,7 @@ using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,7 @@ namespace CoreWebApi.Data
             _HostEnvironment = HostEnvironment;
             _File = file;
             _serviceResponse = new ServiceResponse<object>();
+
         }
 
         public void Add<T>(T entity) where T : class
@@ -60,15 +62,23 @@ namespace CoreWebApi.Data
                 OtherState = s.OtherState,
                 Active = s.Active,
             }).FirstOrDefaultAsync();
-            foreach (var item in user?.Photos)
+            if (user != null)
             {
-                item.Url = _File.AppendImagePath(item.Url);
-            }
-                       
-            serviceResponse.Success = true;
-            serviceResponse.Data = user;
-            return serviceResponse;
+                foreach (var item in user?.Photos)
+                {
+                    item.Url = _File.AppendImagePath(item.Url);
+                }
 
+                serviceResponse.Success = true;
+                serviceResponse.Data = user;
+                return serviceResponse;
+            }
+            else
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = CustomMessage.RecordNotFound;
+                return serviceResponse;
+            }
 
         }
 
