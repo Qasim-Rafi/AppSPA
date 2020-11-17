@@ -44,8 +44,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<UserForDetailedDto>> GetUser(int id)
         {
             ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
-
-            serviceResponse.Data = await _context.Users.Where(u => u.Id == id).Select(s => new UserForDetailedDto()
+            var user =  await _context.Users.Where(u => u.Id == id).Select(s => new UserForDetailedDto()
             {
                 Id = s.Id,
                 FullName = s.FullName,
@@ -61,11 +60,13 @@ namespace CoreWebApi.Data
                 OtherState = s.OtherState,
                 Active = s.Active,
             }).FirstOrDefaultAsync();
-            //    foreach (var item in user?.Photos)
-            //    {
-            //        item.Url = _File.AppendImagePath(item.Url);
-            //    }
+            foreach (var item in user?.Photos)
+            {
+                item.Url = _File.AppendImagePath(item.Url);
+            }
+                       
             serviceResponse.Success = true;
+            serviceResponse.Data = user;
             return serviceResponse;
 
 
@@ -84,10 +85,10 @@ namespace CoreWebApi.Data
                 Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList()
             }).FirstOrDefaultAsync();
 
-            foreach (var item in serviceResponse.Data?.Photos)
-            {
-                item.Url = _File.AppendImagePath(item.Url);
-            }
+            //foreach (var item in serviceResponse.Data?.Photos)
+            //{
+            //    item.Url = _File.AppendImagePath(item.Url);
+            //}
             serviceResponse.Data = user;
             serviceResponse.Success = true;
             return serviceResponse;

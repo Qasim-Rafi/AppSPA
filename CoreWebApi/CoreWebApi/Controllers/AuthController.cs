@@ -82,11 +82,11 @@ namespace CoreWebApi.Controllers
 
             Claim[] claims = new[]
             {
-                    new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
-                    new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
-                    new Claim(Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString()),
-                    new Claim(ClaimTypes.Role,userFromRepo.Role)
-                };
+                new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
+                new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
+                new Claim(Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString()),
+                new Claim(ClaimTypes.Role,userFromRepo.Role)
+            };
 
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
