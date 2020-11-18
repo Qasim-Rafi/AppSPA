@@ -46,7 +46,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<UserForDetailedDto>> GetUser(int id)
         {
             ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
-            var user =  await _context.Users.Where(u => u.Id == id).Select(s => new UserForDetailedDto()
+            var user = await _context.Users.Where(u => u.Id == id).Select(s => new UserForDetailedDto()
             {
                 Id = s.Id,
                 FullName = s.FullName,
@@ -719,6 +719,45 @@ namespace CoreWebApi.Data
             _serviceResponse.Message = CustomMessage.Deleted;
             return _serviceResponse;
 
+        }
+
+        public async Task<ServiceResponse<object>> GetUsersByClassSection(int classSectionId)
+        {
+            var users = await (from u in _context.Users
+                               join csU in _context.ClassSectionUsers
+                               on u.Id equals csU.UserId
+                               where u.UserTypeId == (int)Enumm.UserType.Student
+                               && csU.ClassSectionId == classSectionId
+                               && u.Active == true
+                               select u).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                               {
+                                   Id = o.Id,
+                                   FullName = o.FullName,
+                                   DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                                   Email = o.Email,
+                                   Gender = o.Gender,
+                                   Username = o.Username,
+                                   CountryId = o.CountryId,
+                                   StateId = o.StateId,
+                                   CountryName = o.Country.Name,
+                                   StateName = o.State.Name,
+                                   OtherState = o.OtherState,
+                                   Active = o.Active,
+                                   Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                               }).ToListAsync();
+
+            foreach (var user in users)
+            {
+                foreach (var item in user?.Photos)
+                {
+                    item.Url = _File.AppendImagePath(item.Url);
+                }
+            }
+
+
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = users;
+            return _serviceResponse;
         }
     }
 }
