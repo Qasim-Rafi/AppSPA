@@ -18,6 +18,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddEvents(string loggedInBranchId, List<EventForAddDto> model);
         Task<ServiceResponse<object>> UpdateEvents(string loggedInBranchId, List<EventDayAssignmentForAddDto> model);
         Task<ServiceResponse<object>> GetEvents();
+        Task<ServiceResponse<object>> GetUpcomingEvents();
+        Task<ServiceResponse<object>> GetBirthdays();
         Task<ServiceResponse<object>> DeleteEvent(int id);
         Task<ServiceResponse<object>> DeleteEventDay(int id);
     }

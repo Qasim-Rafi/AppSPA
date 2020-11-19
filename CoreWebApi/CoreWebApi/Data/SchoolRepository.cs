@@ -19,11 +19,13 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IFilesRepository _File;
         ServiceResponse<object> _serviceResponse;
-        public SchoolRepository(DataContext context, IMapper mapper)
+        public SchoolRepository(DataContext context, IMapper mapper, IFilesRepository file)
         {
             _context = context;
             _mapper = mapper;
+            _File = file;
             _serviceResponse = new ServiceResponse<object>();
 
         }
@@ -314,7 +316,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetEvents()
         {
-            
+
             var EventsForList = await (from e in _context.Events
                                        where e.Active == true
                                        select new EventsForListDto
@@ -435,6 +437,50 @@ namespace CoreWebApi.Data
             }
             return _serviceResponse;
 
+        }
+
+        public async Task<ServiceResponse<object>> GetUpcomingEvents()
+        {
+            var List = await (from e in _context.Events
+                              join ed in _context.EventDaysAssignments
+                              on e.Id equals ed.EventId
+                              where e.Active == true
+                              && ed.StartDate.Value.Date >= DateTime.Now.Date
+                              select new EventDaysForListDto
+                              {
+                                  Id = ed.Id,
+                                  EventId = e.Id,
+                                  Title = e.Title,
+                                  Start = CheckDate(ed.StartDate.ToString()),
+                                  End = ed.EndDate != null ? CheckDate(ed.EndDate.ToString()) : "",
+                                  AllDay = ed.AllDay,
+                                  Color = e.Color
+                              }).ToListAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = List;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetBirthdays()
+        {
+            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date == DateTime.Now.Date && u.Active == true).Select(s => new UserForDetailedDto()
+            {
+                Id = s.Id,
+                FullName = s.FullName,
+                DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
+                Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList()
+            }).ToListAsync();
+
+            foreach (var user in users)
+            {
+                foreach (var item in user?.Photos)
+                {
+                    item.Url = _File.AppendImagePath(item.Url);
+                }
+            }
+            _serviceResponse.Data = users;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
     }
 }

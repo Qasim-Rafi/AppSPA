@@ -184,5 +184,37 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+
+
+        [HttpGet("GetUpcomingEvents")]
+        public async Task<IActionResult> GetUpcomingEvents()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetUpcomingEvents();
+
+            return Ok(_response);
+
+
+        }
+        [HttpGet("GetBirthdays")]
+        public async Task<IActionResult> GetBirthdays()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetBirthdays();
+
+            return Ok(_response);
+
+
+        }
     }
 }

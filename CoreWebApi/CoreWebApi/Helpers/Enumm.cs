@@ -9,8 +9,8 @@ namespace CoreWebApi.Helpers
     {
         public enum UserType
         {
-            Admin = 1,
-            Supervisor,
+            Supervisor = 1,
+            Admin,
             Student,
             Teacher
         }
