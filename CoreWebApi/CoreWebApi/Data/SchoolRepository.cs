@@ -463,7 +463,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetBirthdays()
         {
-            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date == DateTime.Now.Date && u.Active == true).Select(s => new UserForDetailedDto()
+            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date == DateTime.Now.Date && u.Active == true).Select(s => new
             {
                 Id = s.Id,
                 FullName = s.FullName,
@@ -480,6 +480,54 @@ namespace CoreWebApi.Data
             }
             _serviceResponse.Data = users;
             _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetNewStudents()
+        {
+            var FirstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var LastDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+            var users = await (from u in _context.Users
+                               where u.UserTypeId == (int)Enumm.UserType.Student
+                               && u.Active == true
+                               select new
+                               {
+                                   RegNo = u.Id,
+                                   FullName = u.FullName,
+                                   DateofBirth = u.DateofBirth != null ? DateFormat.ToDate(u.DateofBirth.ToString()) : "",
+                                   RegDate = u.CreatedDateTime,
+                                   Photos = _context.Photos.Where(m => m.UserId == u.Id).ToList(),
+                                   Status = (u.CreatedDateTime > FirstDayOfMonth && u.CreatedDateTime < LastDayOfMonth) ? "New" : "Processed"
+                               }).ToListAsync();
+
+            foreach (var user in users)
+            {
+                foreach (var item in user?.Photos)
+                {
+                    item.Url = _File.AppendImagePath(item.Url);
+                }
+            }
+
+
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = users;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> SaveUploadedLecture(UploadedLectureForAddDto model)
+        {
+            var lecture = new UploadedLecture
+            {
+                TeacherId = model.TeacherId,
+                ClassSectionId = model.ClassSectionId,
+                LectureUrl = model.LectureUrl,
+                CreatedDateTime = DateTime.Now,
+                CreatedById = Convert.ToInt32(model.LoggedIn_UserId)
+            };
+            await _context.UploadedLectures.AddAsync(lecture);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
         }
     }

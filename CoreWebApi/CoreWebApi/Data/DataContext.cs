@@ -54,6 +54,7 @@ namespace CoreWebApi.Data
         public DbSet<ClassLectureAssignment> ClassLectureAssignment { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<EventDayAssignment> EventDaysAssignments { get; set; }
+        public DbSet<UploadedLecture> UploadedLectures { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

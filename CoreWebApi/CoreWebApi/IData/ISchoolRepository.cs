@@ -20,6 +20,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetEvents();
         Task<ServiceResponse<object>> GetUpcomingEvents();
         Task<ServiceResponse<object>> GetBirthdays();
+        Task<ServiceResponse<object>> GetNewStudents();
+        Task<ServiceResponse<object>> SaveUploadedLecture(UploadedLectureForAddDto model);
         Task<ServiceResponse<object>> DeleteEvent(int id);
         Task<ServiceResponse<object>> DeleteEventDay(int id);
     }

@@ -128,7 +128,8 @@ namespace CoreWebApi.Data
             var objToCreate = new ClassSectionUser
             {
                 ClassSectionId = classSectionUser.ClassSectionId,
-                UserId = classSectionUser.UserId
+                UserId = classSectionUser.UserId,
+                IsIncharge = classSectionUser.IsIncharge
             };
 
             await _context.ClassSectionUsers.AddAsync(objToCreate);
@@ -147,6 +148,7 @@ namespace CoreWebApi.Data
 
             objToUpdate.ClassSectionId = model.ClassSectionId;
             objToUpdate.UserId = model.UserId;
+            objToUpdate.IsIncharge = model.IsIncharge;
 
 
             await _context.SaveChangesAsync();
@@ -186,7 +188,7 @@ namespace CoreWebApi.Data
                 listToAdd.Add(new ClassSectionUser
                 {
                     ClassSectionId = model.ClassSectionId,
-                    UserId = item
+                    UserId = item,
                 });
 
             }

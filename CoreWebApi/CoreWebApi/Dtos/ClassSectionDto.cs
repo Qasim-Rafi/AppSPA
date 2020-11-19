@@ -66,6 +66,8 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         [Required]
         public int UserId { get; set; }
+        public bool? IsIncharge { get; set; }
+
     }
     public class ClassSectionUserDtoForUpdate
     {
@@ -74,6 +76,8 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         [Required]
         public int UserId { get; set; }
+        public bool? IsIncharge { get; set; }
+
     }
     public class ClassSectionUserDtoForAddBulk
     {
@@ -95,5 +99,7 @@ namespace CoreWebApi.Dtos
         public string FullName { get; set; }
         public string ClassName { get; set; }
         public string SectionName { get; set; }
+        public bool IsIncharge { get; set; }
+
     }
 }

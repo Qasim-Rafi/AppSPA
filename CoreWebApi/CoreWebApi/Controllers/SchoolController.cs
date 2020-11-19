@@ -216,5 +216,36 @@ namespace CoreWebApi.Controllers
 
 
         }
+        [HttpGet("GetNewStudents")]
+        public async Task<IActionResult> GetNewStudents()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetNewStudents();
+
+            return Ok(_response);
+
+
+        }
+        [HttpPost("SaveUploadedLecture")]
+        public async Task<IActionResult> SaveUploadedLecture(UploadedLectureForAddDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            model.LoggedIn_UserId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+
+            _response = await _repo.SaveUploadedLecture(model);
+
+            return Ok(_response);
+
+
+        }
     }
 }

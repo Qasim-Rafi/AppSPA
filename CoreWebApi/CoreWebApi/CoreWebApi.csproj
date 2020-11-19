@@ -71,6 +71,8 @@
     <Compile Remove="Migrations\20201112090207_updateEvent-addEventAssign.Designer.cs" />
     <Compile Remove="Migrations\20201112091546_updateEvent-addEventAssign.cs" />
     <Compile Remove="Migrations\20201112091546_updateEvent-addEventAssign.Designer.cs" />
+    <Compile Remove="Migrations\20201118130947_addUploadLectures.cs" />
+    <Compile Remove="Migrations\20201118130947_addUploadLectures.Designer.cs" />
 
   </ItemGroup>
 
