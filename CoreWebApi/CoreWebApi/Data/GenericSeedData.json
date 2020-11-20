@@ -61,10 +61,16 @@
   ],
   "States": [
     {
-      "Name": "Lahore"
+      "Name": "Balochistan"
     },
     {
-      "Name": "Islamabad"
+      "Name": "Khyber Pakhtunkhwa"
+    },
+    {
+      "Name": "Punjab"
+    },
+    {
+      "Name": "Sindh"
     }
   ]
 }

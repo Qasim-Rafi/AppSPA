@@ -494,8 +494,7 @@ namespace CoreWebApi.Data
                                {
                                    RegNo = u.Id,
                                    FullName = u.FullName,
-                                   DateofBirth = u.DateofBirth != null ? DateFormat.ToDate(u.DateofBirth.ToString()) : "",
-                                   RegDate = u.CreatedDateTime,
+                                   RegDate = DateFormat.ToDate(u.CreatedDateTime.ToString()),
                                    Photos = _context.Photos.Where(m => m.UserId == u.Id).ToList(),
                                    Status = (u.CreatedDateTime > FirstDayOfMonth && u.CreatedDateTime < LastDayOfMonth) ? "New" : "Processed"
                                }).ToListAsync();

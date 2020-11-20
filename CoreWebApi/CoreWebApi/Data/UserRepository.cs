@@ -125,7 +125,7 @@ namespace CoreWebApi.Data
         {
 
 
-            var users = await _context.Users.Where(m => m.Active == true).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+            var users = await _context.Users.Where(m => m.Active == true).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
             {
                 Id = o.Id,
                 FullName = o.FullName,
@@ -155,7 +155,7 @@ namespace CoreWebApi.Data
         }
         public async Task<IEnumerable<UserForListDto>> GetInActiveUsers()
         {
-            var users = await _context.Users.Where(m => m.Active == false).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+            var users = await _context.Users.Where(m => m.Active == false).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
             {
                 Id = o.Id,
                 FullName = o.FullName,
