@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using CoreWebApi.Data;
 using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
 {
@@ -63,7 +55,7 @@ namespace CoreWebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            ServiceResponse<UserForDetailedDto> user = await _repo.GetUser(id);            
+            ServiceResponse<UserForDetailedDto> user = await _repo.GetUser(id);
             //var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
             return Ok(user);
         }

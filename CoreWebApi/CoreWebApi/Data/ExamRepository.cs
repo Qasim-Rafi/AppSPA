@@ -245,96 +245,104 @@ namespace CoreWebApi.Data
 
 
             var userDetails = _context.Users.Where(m => m.Id == Convert.ToInt32(loggedInUserId)).FirstOrDefault();
-            List<QuizForListDto> quizzes = new List<QuizForListDto>();
-            if (userDetails.UserTypeId == (int)Enumm.UserType.Student)
+            if (userDetails != null)
             {
-                var ids = _context.QuizSubmissions.Where(m => m.UserId == Convert.ToInt32(loggedInUserId)).Select(m => m.QuizId);
+                List<QuizForListDto> quizzes = new List<QuizForListDto>();
+                if (userDetails.UserTypeId == (int)Enumm.UserType.Student)
+                {
+                    var ids = _context.QuizSubmissions.Where(m => m.UserId == Convert.ToInt32(loggedInUserId)).Select(m => m.QuizId);
 
-                quizzes = await (from quiz in _context.Quizzes
-                                 join subject in _context.Subjects
-                                 on quiz.SubjectId equals subject.Id
-                                 join classSection in _context.ClassSections
-                                 on quiz.ClassSectionId equals classSection.Id
-                                 join classSectionUser in _context.ClassSectionUsers
-                                 on classSection.Id equals classSectionUser.ClassSectionId
-                                 where classSectionUser.UserId == Convert.ToInt32(loggedInUserId)
-                                 && !ids.Contains(quiz.Id)
-                                 orderby quiz.Id descending
-                                 select new QuizForListDto
-                                 {
-                                     QuizId = quiz.Id,
-                                     QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
-                                     TeacherName = quiz.TeacherName,
-                                     NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
-                                     IsPosted = quiz.IsPosted,
-                                     SubjectId = quiz.SubjectId,
-                                     SubjectName = subject.Name,
-                                     ClassSectionId = quiz.ClassSectionId,
-                                     ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
-                                     SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
-                                     QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
-                                 }).ToListAsync();
+                    quizzes = await (from quiz in _context.Quizzes
+                                     join subject in _context.Subjects
+                                     on quiz.SubjectId equals subject.Id
+                                     join classSection in _context.ClassSections
+                                     on quiz.ClassSectionId equals classSection.Id
+                                     join classSectionUser in _context.ClassSectionUsers
+                                     on classSection.Id equals classSectionUser.ClassSectionId
+                                     where classSectionUser.UserId == Convert.ToInt32(loggedInUserId)
+                                     && !ids.Contains(quiz.Id)
+                                     orderby quiz.Id descending
+                                     select new QuizForListDto
+                                     {
+                                         QuizId = quiz.Id,
+                                         QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
+                                         TeacherName = quiz.TeacherName,
+                                         NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
+                                         IsPosted = quiz.IsPosted,
+                                         SubjectId = quiz.SubjectId,
+                                         SubjectName = subject.Name,
+                                         ClassSectionId = quiz.ClassSectionId,
+                                         ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
+                                         SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
+                                         QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
+                                     }).ToListAsync();
+                }
+                else
+                {
+                    quizzes = await (from quiz in _context.Quizzes
+                                     join subject in _context.Subjects
+                                     on quiz.SubjectId equals subject.Id
+                                     join classSection in _context.ClassSections
+                                     on quiz.ClassSectionId equals classSection.Id
+                                     join classSectionUser in _context.ClassSectionUsers
+                                     on classSection.Id equals classSectionUser.ClassSectionId
+                                     where classSectionUser.UserId == Convert.ToInt32(loggedInUserId)
+                                     orderby quiz.Id descending
+                                     select new QuizForListDto
+                                     {
+                                         QuizId = quiz.Id,
+                                         QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
+                                         TeacherName = quiz.TeacherName,
+                                         NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
+                                         IsPosted = quiz.IsPosted,
+                                         SubjectId = quiz.SubjectId,
+                                         SubjectName = subject.Name,
+                                         ClassSectionId = quiz.ClassSectionId,
+                                         ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
+                                         SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
+                                         QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
+                                     }).ToListAsync();
+                }
+
+                foreach (var quiz in quizzes)
+                {
+                    List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
+                                                                join qType in _context.QuestionTypes
+                                                                on q.QuestionTypeId equals qType.Id
+                                                                where q.QuizId == quiz.QuizId
+                                                                select new QuestionForListDto
+                                                                {
+                                                                    QuestionId = q.Id,
+                                                                    Question = q.Question,
+                                                                    QuestionTypeId = q.QuestionTypeId,
+                                                                    QuestionType = qType.Type,
+                                                                    Marks = Convert.ToInt32(q.Marks),
+                                                                }).ToListAsync();
+                    quiz.Questions.AddRange(questions);
+
+                    foreach (var question in questions)
+                    {
+                        List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
+                                                                where ans.QuestionId == question.QuestionId
+                                                                select new AnswerForListDto
+                                                                {
+                                                                    AnswerId = ans.Id,
+                                                                    Answer = ans.Answer,
+                                                                    IsTrue = userDetails.UserTypeId != (int)Enumm.UserType.Student && Convert.ToBoolean(ans.IsTrue),
+                                                                }).ToListAsync();
+                        question.Answers.AddRange(answers);
+                    }
+                }
+                _serviceResponse.Success = true;
+                _serviceResponse.Data = quizzes;
+                return _serviceResponse;
             }
             else
             {
-                quizzes = await (from quiz in _context.Quizzes
-                                 join subject in _context.Subjects
-                                 on quiz.SubjectId equals subject.Id
-                                 join classSection in _context.ClassSections
-                                 on quiz.ClassSectionId equals classSection.Id
-                                 join classSectionUser in _context.ClassSectionUsers
-                                 on classSection.Id equals classSectionUser.ClassSectionId
-                                 where classSectionUser.UserId == Convert.ToInt32(loggedInUserId)
-                                 orderby quiz.Id descending
-                                 select new QuizForListDto
-                                 {
-                                     QuizId = quiz.Id,
-                                     QuizDate = DateFormat.ToDate(quiz.QuizDate.ToString()),
-                                     TeacherName = quiz.TeacherName,
-                                     NoOfQuestions = Convert.ToInt32(quiz.NoOfQuestions),
-                                     IsPosted = quiz.IsPosted,
-                                     SubjectId = quiz.SubjectId,
-                                     SubjectName = subject.Name,
-                                     ClassSectionId = quiz.ClassSectionId,
-                                     ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
-                                     SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
-                                     QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
-                                 }).ToListAsync();
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                return _serviceResponse;
             }
-
-            foreach (var quiz in quizzes)
-            {
-                List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
-                                                            join qType in _context.QuestionTypes
-                                                            on q.QuestionTypeId equals qType.Id
-                                                            where q.QuizId == quiz.QuizId
-                                                            select new QuestionForListDto
-                                                            {
-                                                                QuestionId = q.Id,
-                                                                Question = q.Question,
-                                                                QuestionTypeId = q.QuestionTypeId,
-                                                                QuestionType = qType.Type,
-                                                                Marks = Convert.ToInt32(q.Marks),
-                                                            }).ToListAsync();
-                quiz.Questions.AddRange(questions);
-
-                foreach (var question in questions)
-                {
-                    List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
-                                                            where ans.QuestionId == question.QuestionId
-                                                            select new AnswerForListDto
-                                                            {
-                                                                AnswerId = ans.Id,
-                                                                Answer = ans.Answer,
-                                                                IsTrue = userDetails.UserTypeId != (int)Enumm.UserType.Student && Convert.ToBoolean(ans.IsTrue),
-                                                            }).ToListAsync();
-                    question.Answers.AddRange(answers);
-                }
-            }
-            _serviceResponse.Success = true;
-            _serviceResponse.Data = quizzes;
-            return _serviceResponse;
-
         }
 
         public async Task<ServiceResponse<object>> SubmitQuiz(List<QuizSubmissionDto> model, string loggedInUserId)

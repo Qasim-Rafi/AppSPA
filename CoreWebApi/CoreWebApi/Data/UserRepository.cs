@@ -61,6 +61,7 @@ namespace CoreWebApi.Data
                 StateName = s.State.Name,
                 OtherState = s.OtherState,
                 Active = s.Active,
+                MemberSince = DateFormat.ToDate(s.CreatedDateTime.ToString())
             }).FirstOrDefaultAsync();
             if (user != null)
             {
@@ -389,7 +390,7 @@ namespace CoreWebApi.Data
                     Late = false,
                     Comments = "",
                     UserTypeId = o.UserTypeId,
-                    ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault().ClassSectionId,
+                    ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault()?.ClassSectionId,
                     LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
                     AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                     LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
@@ -421,7 +422,7 @@ namespace CoreWebApi.Data
                     Late = false,
                     Comments = "",
                     UserTypeId = o.UserTypeId,
-                    ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault().ClassSectionId,
+                    ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault()?.ClassSectionId,
                     LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
                     AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                     LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
@@ -589,34 +590,41 @@ namespace CoreWebApi.Data
 
 
             var group = await _context.Groups.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
-
-            group.GroupName = model.GroupName;
-            group.Active = model.Active ?? true;
-            group.SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId);
-
-            await _context.SaveChangesAsync();
-            if (model.UserIds.Count() > 0)
+            if (group != null)
             {
-                List<GroupUser> listToDelete = await _context.GroupUsers.Where(m => m.GroupId == model.Id).ToListAsync();
-                _context.GroupUsers.RemoveRange(listToDelete);
-                await _context.SaveChangesAsync();
+                group.GroupName = model.GroupName;
+                group.Active = model.Active ?? true;
+                group.SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId);
 
-                List<GroupUser> listToAdd = new List<GroupUser>();
-                foreach (var item in model.UserIds)
+                await _context.SaveChangesAsync();
+                if (model.UserIds.Count() > 0)
                 {
-                    listToAdd.Add(new GroupUser
-                    {
-                        GroupId = group.Id,
-                        UserId = item
-                    });
-                }
-                await _context.GroupUsers.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
-            }
-            _serviceResponse.Success = true;
-            _serviceResponse.Message = CustomMessage.Updated;
-            return _serviceResponse;
+                    List<GroupUser> listToDelete = await _context.GroupUsers.Where(m => m.GroupId == model.Id).ToListAsync();
+                    _context.GroupUsers.RemoveRange(listToDelete);
+                    await _context.SaveChangesAsync();
 
+                    List<GroupUser> listToAdd = new List<GroupUser>();
+                    foreach (var item in model.UserIds)
+                    {
+                        listToAdd.Add(new GroupUser
+                        {
+                            GroupId = group.Id,
+                            UserId = item
+                        });
+                    }
+                    await _context.GroupUsers.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
+                }
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
+                return _serviceResponse;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                return _serviceResponse;
+            }
         }
 
         public async Task<ServiceResponse<object>> GetGroupUsersById(int id)
@@ -704,9 +712,14 @@ namespace CoreWebApi.Data
                 _context.Groups.Remove(group);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
+                return _serviceResponse;
             }
-
-            return _serviceResponse;
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                return _serviceResponse;
+            }
         }
 
         public async Task<ServiceResponse<object>> ActiveInActiveUser(int id, bool status)
