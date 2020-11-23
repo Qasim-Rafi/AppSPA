@@ -379,7 +379,7 @@ namespace CoreWebApi.Data
                                    where u.UserTypeId == typeId
                                    && csU.ClassSectionId == classSectionId
                                    && u.Active == true
-                                   select u).ToListAsync();
+                                   select u).OrderByDescending(m => m.Id).ToListAsync();
 
                 var ToReturn = users.Select(o => new UserByTypeListDto
                 {
@@ -395,15 +395,15 @@ namespace CoreWebApi.Data
                     AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                     LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                     PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                    //Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                    Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
                 }).ToList();
-                //foreach (var user in users)
-                //{
-                //    foreach (var item in user.Photos)
-                //    {
-                //        item.Url = _File.AppendImagePath(item.Url);
-                //    }
-                //}
+                foreach (var user in ToReturn)
+                {
+                    foreach (var item in user?.Photos)
+                    {
+                        item.Url = _File.AppendImagePath(item.Url);
+                    }
+                }
 
                 return ToReturn;
             }
@@ -412,7 +412,7 @@ namespace CoreWebApi.Data
                 var users = await (from u in _context.Users
                                    where u.UserTypeId == typeId
                                    && u.Active == true
-                                   select u).Include(p => p.Photos).ToListAsync();
+                                   select u).OrderByDescending(m => m.Id).ToListAsync();
                 var ToReturn = users.Select(o => new UserByTypeListDto
                 {
                     UserId = o.Id,
@@ -427,16 +427,15 @@ namespace CoreWebApi.Data
                     AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                     LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                     PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                    //Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                    Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
                 }).ToList();
-                //var users = await _context.Users.Where(m => m.UserTypeId == typeId && m.Active == true).Include(p => p.Photos).ToListAsync();
-                //foreach (var user in users)
-                //{
-                //    foreach (var item in user.Photos)
-                //    {
-                //        item.Url = _File.AppendImagePath(item.Url);
-                //    }
-                //}
+                foreach (var user in ToReturn)
+                {
+                    foreach (var item in user?.Photos)
+                    {
+                        item.Url = _File.AppendImagePath(item.Url);
+                    }
+                }
 
                 return ToReturn;
 
