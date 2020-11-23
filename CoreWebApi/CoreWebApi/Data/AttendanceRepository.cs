@@ -15,9 +15,13 @@ namespace CoreWebApi.Data
     public class AttendanceRepository : IAttendanceRepository
     {
         private readonly DataContext _context;
+        ServiceResponse<object> _serviceResponse;
+
         public AttendanceRepository(DataContext context)
         {
             _context = context;
+            _serviceResponse = new ServiceResponse<object>();
+
         }
         public async Task<bool> AttendanceExists(int userId)
         {

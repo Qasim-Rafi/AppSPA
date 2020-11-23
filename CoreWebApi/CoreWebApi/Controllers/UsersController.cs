@@ -35,12 +35,12 @@ namespace CoreWebApi.Controllers
 
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        [HttpGet("GetUsers/{id?}")]
+        public async Task<IActionResult> GetUsers(int id = 0)
         {
-            var users = await _repo.GetUsers();
+            _response = await _repo.GetUsers(id);
 
-            return Ok(users);
+            return Ok(_response);
 
         }
         [HttpGet("GetInActiveUsers")]
@@ -144,11 +144,11 @@ namespace CoreWebApi.Controllers
         //}
 
         [HttpGet("GetUsersForAttendance"), NonAction]//not in use
-        public async Task<IActionResult> GetListForAttendance()
+        public async Task<IActionResult> GetListForAttendance(int id = 0)
         {
 
 
-            var users = await _repo.GetUsers();
+            var users = await _repo.GetUsers(id);
 
             return Ok(users);
 
@@ -183,7 +183,7 @@ namespace CoreWebApi.Controllers
 
 
             _response = await _repo.GetUnmappedStudents();
-           // _response.Data = _mapper.Map<List<UserForListDto>>(users.Data);
+            // _response.Data = _mapper.Map<List<UserForListDto>>(users.Data);
 
 
             return Ok(_response);

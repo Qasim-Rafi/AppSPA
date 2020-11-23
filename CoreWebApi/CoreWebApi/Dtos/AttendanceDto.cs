@@ -1,4 +1,5 @@
 ﻿using CoreWebApi.Helpers;
+using CoreWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,7 @@ namespace CoreWebApi.Dtos
         public int AbsentCount { get; internal set; }
         public int LeaveCount { get; internal set; }
         public int PresentCount { get; internal set; }
+        public List<Photo> Photos { get; set; }
     }
     public class AttendanceDtoForDetail
     {

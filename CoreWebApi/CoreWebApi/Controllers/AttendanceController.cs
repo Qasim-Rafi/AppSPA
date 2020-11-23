@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]
+    //[Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class AttendanceController : ControllerBase
@@ -24,12 +24,14 @@ namespace CoreWebApi.Controllers
 
         private readonly IMapper _mapper;
         private readonly DataContext _context;
+        ServiceResponse<object> _response;
         public AttendanceController(IAttendanceRepository repo, IMapper mapper, DataContext context, IUserRepository userRepository)
         {
             _mapper = mapper;
             _repo = repo;
             _userRepository = userRepository;
             _context = context;
+            _response = new ServiceResponse<object>();
         }
         [NonAction]
         [HttpGet] // not in use
@@ -61,31 +63,33 @@ namespace CoreWebApi.Controllers
         {
             var users = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
             var DTdate = Convert.ToDateTime(model.date);
-            var ToReturn = (from u in users
-                            join att in _context.Attendances
-                            on u.UserId equals att.UserId
-                            where att.CreatedDatetime.Date == DTdate.Date
-                            select att).Select(o => new AttendanceDtoForList
-                            {
-                                Id = o.Id,
-                                UserId = o.UserId,
-                                ClassSectionId = o.ClassSectionId,
-                                FullName = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
-                                CreatedDatetime = DateFormat.ToDate(o.CreatedDatetime.ToString()),
-                                Present = o.Present,
-                                Absent = o.Absent,
-                                Late = o.Late,
-                                Comments = o.Comments,
-                                LeaveCount = _context.Leaves.Where(m => m.UserId == o.UserId).Count(),
-                                AbsentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Absent == true).Count(),
-                                LateCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Late == true).Count(),
-                                PresentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Present == true).Count(),
-                                //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
-                                //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
-                                //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
-                                //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
-                            }).ToList();
-            return Ok(ToReturn);
+            _response.Data = (from user in users
+                              join attendance in _context.Attendances
+                              on user.UserId equals attendance.UserId
+                              where attendance.CreatedDatetime.Date == DTdate.Date
+                              select new { user, attendance }).Select(o => new AttendanceDtoForList
+                              {
+                                  Id = o.attendance.Id,
+                                  UserId = o.attendance.UserId,
+                                  ClassSectionId = o.attendance.ClassSectionId,
+                                  FullName = o.user.FullName,
+                                  CreatedDatetime = DateFormat.ToDate(o.attendance.CreatedDatetime.ToString()),
+                                  Present = o.attendance.Present,
+                                  Absent = o.attendance.Absent,
+                                  Late = o.attendance.Late,
+                                  Comments = o.attendance.Comments,
+                                  LeaveCount = _context.Leaves.Where(m => m.UserId == o.user.UserId).Count(),
+                                  AbsentCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Absent == true).Count(),
+                                  LateCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Late == true).Count(),
+                                  PresentCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Present == true).Count(),
+                                  Photos = o.user.Photos
+                                  //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
+                                  //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
+                                  //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
+                                  //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
+                              }).ToList();
+            _response.Success = true;
+            return Ok(_response);
 
         }
 
