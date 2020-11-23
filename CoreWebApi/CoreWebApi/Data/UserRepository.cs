@@ -365,10 +365,6 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<UserByTypeListDto>> GetUsersByType(int typeId, int? classSectionId)
         {
-
-
-
-
             var today = DateTime.Now;
             var thisMonth = new DateTime(today.Year, today.Month, 1);
             if (!string.IsNullOrEmpty(classSectionId.ToString()))
@@ -379,57 +375,70 @@ namespace CoreWebApi.Data
                                    where u.UserTypeId == typeId
                                    && csU.ClassSectionId == classSectionId
                                    && u.Active == true
-                                   select u).OrderByDescending(m => m.Id).ToListAsync();
+                                   select u).OrderByDescending(m => m.Id).Select(o => new UserByTypeListDto
+                                   {
+                                       UserId = o.Id,
+                                       FullName = o.FullName,
+                                       Present = false,
+                                       Absent = false,
+                                       Late = false,
+                                       Comments = "",
+                                       UserTypeId = o.UserTypeId,
+                                       ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault().ClassSectionId,
+                                       LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
+                                       AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                       LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                       PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                                   }).ToListAsync();
 
-                var ToReturn = users.Select(o => new UserByTypeListDto
-                {
-                    UserId = o.Id,
-                    FullName = o.FullName,
-                    Present = false,
-                    Absent = false,
-                    Late = false,
-                    Comments = "",
-                    UserTypeId = o.UserTypeId,
-                    ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault()?.ClassSectionId,
-                    LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
-                    AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                    LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                    PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                    Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
-                }).ToList();
-                foreach (var user in ToReturn)
+                //var ToReturn = users.Select(o => new UserByTypeListDto
+                //{
+                //    UserId = o.Id,
+                //    FullName = o.FullName,
+                //    Present = false,
+                //    Absent = false,
+                //    Late = false,
+                //    Comments = "",
+                //    UserTypeId = o.UserTypeId,
+                //    ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault()?.ClassSectionId,
+                //    LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
+                //    AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                //    LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                //    PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                //    //Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                //}).ToList();
+                foreach (var user in users)
                 {
                     foreach (var item in user?.Photos)
                     {
                         item.Url = _File.AppendImagePath(item.Url);
                     }
                 }
-
-                return ToReturn;
+                return users;
             }
             else
             {
                 var users = await (from u in _context.Users
                                    where u.UserTypeId == typeId
                                    && u.Active == true
-                                   select u).OrderByDescending(m => m.Id).ToListAsync();
-                var ToReturn = users.Select(o => new UserByTypeListDto
-                {
-                    UserId = o.Id,
-                    FullName = o.FullName,
-                    Present = false,
-                    Absent = false,
-                    Late = false,
-                    Comments = "",
-                    UserTypeId = o.UserTypeId,
-                    ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault()?.ClassSectionId,
-                    LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
-                    AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                    LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                    PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                    Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
-                }).ToList();
-                foreach (var user in ToReturn)
+                                   select u).OrderByDescending(m => m.Id).Select(o => new UserByTypeListDto
+                                   {
+                                       UserId = o.Id,
+                                       FullName = o.FullName,
+                                       Present = false,
+                                       Absent = false,
+                                       Late = false,
+                                       Comments = "",
+                                       UserTypeId = o.UserTypeId,
+                                       ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault().ClassSectionId,
+                                       LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
+                                       AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                       LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                       PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                                   }).ToListAsync();
+                foreach (var user in users)
                 {
                     foreach (var item in user?.Photos)
                     {
@@ -437,7 +446,7 @@ namespace CoreWebApi.Data
                     }
                 }
 
-                return ToReturn;
+                return users;
 
             }
 

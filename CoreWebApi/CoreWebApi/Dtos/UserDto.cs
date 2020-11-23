@@ -128,7 +128,7 @@ namespace CoreWebApi.Dtos
 
     public class UserByTypeListDto
     {
-        public int? ClassSectionId { get; set; }
+        public int ClassSectionId { get; set; }
         public int UserTypeId { get; set; }
         public string FullName { get; set; }
         public int UserId { get; set; }
