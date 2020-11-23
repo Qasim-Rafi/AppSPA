@@ -182,8 +182,8 @@ namespace CoreWebApi.Controllers
         {
 
 
-            var users = await _repo.GetUnmappedStudents();
-            _response.Data = _mapper.Map<List<UserForListDto>>(users.Data);
+            _response = await _repo.GetUnmappedStudents();
+           // _response.Data = _mapper.Map<List<UserForListDto>>(users.Data);
 
 
             return Ok(_response);

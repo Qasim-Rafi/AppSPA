@@ -51,7 +51,7 @@ namespace CoreWebApi.Data
                 Id = s.Id,
                 FullName = s.FullName,
                 DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList(),
+                Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).ToList(),
                 Email = s.Email,
                 Gender = s.Gender,
                 Username = s.Username,
@@ -84,7 +84,7 @@ namespace CoreWebApi.Data
         }
 
 
-        public async Task<ServiceResponse<UserForDetailedDto>> GetUserRole(int id)
+        public async Task<ServiceResponse<UserForDetailedDto>> GetUserRole(int id) // not in use
         {
             ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
 
@@ -93,7 +93,7 @@ namespace CoreWebApi.Data
                 Id = s.Id,
                 FullName = s.FullName,
                 DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList()
+                //Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).ToList()
             }).FirstOrDefaultAsync();
 
             //foreach (var item in serviceResponse.Data?.Photos)
@@ -140,7 +140,7 @@ namespace CoreWebApi.Data
                 StateName = o.State.Name,
                 OtherState = o.OtherState,
                 Active = o.Active,
-                Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
             }).ToListAsync();
 
             foreach (var user in users)
@@ -170,7 +170,7 @@ namespace CoreWebApi.Data
                 StateName = o.State.Name,
                 OtherState = o.OtherState,
                 Active = o.Active,
-                Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                //Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
             }).ToListAsync();
 
             //foreach (var user in users)
@@ -389,7 +389,7 @@ namespace CoreWebApi.Data
                                        AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
                                    }).ToListAsync();
 
                 //var ToReturn = users.Select(o => new UserByTypeListDto
@@ -436,7 +436,7 @@ namespace CoreWebApi.Data
                                        AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
                                    }).ToListAsync();
                 foreach (var user in users)
                 {
@@ -452,14 +452,14 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<IEnumerable<User>>> GetUnmappedStudents()
+        public async Task<ServiceResponse<object>> GetUnmappedStudents()
         {
-            ServiceResponse<IEnumerable<User>> serviceResponse = new ServiceResponse<IEnumerable<User>>();
             IEnumerable<int> userIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
             List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !userIds.Contains(m.Id) && m.Active == true).ToListAsync();
-            serviceResponse.Data = unmappedStudents;
-            serviceResponse.Success = true;
-            return serviceResponse;
+            
+            _serviceResponse.Data = _mapper.Map<List<UserForListDto>>(unmappedStudents);
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> GetMappedStudents(int csId)
@@ -764,7 +764,7 @@ namespace CoreWebApi.Data
                                    StateName = o.State.Name,
                                    OtherState = o.OtherState,
                                    Active = o.Active,
-                                   Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
+                                   Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
                                }).ToListAsync();
 
             foreach (var user in users)
