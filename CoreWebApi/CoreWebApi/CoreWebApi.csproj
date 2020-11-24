@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="StaticFiles\**" />
+    <Content Remove="StaticFiles\**" />
+    <EmbeddedResource Remove="StaticFiles\**" />
+    <None Remove="StaticFiles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
 
     <Compile Remove="Migrations\20200917130928_initialMigration.cs" />
     <Compile Remove="Migrations\20200917130928_initialMigration.Designer.cs" />
@@ -97,7 +104,7 @@
 
   <ItemGroup>
     <Folder Include="Error\" />
-    <Folder Include="StaticFiles\Images\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

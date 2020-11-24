@@ -31,13 +31,15 @@ namespace CoreWebApi
     public class Startup
     {
         bool isDev;
-        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        private readonly IWebHostEnvironment _HostEnvironment;
+        public Startup(IConfiguration configuration, IWebHostEnvironment env, IWebHostEnvironment HostEnvironment)
         {
             Configuration = configuration;
             isDev = env.IsDevelopment();
+            _HostEnvironment = HostEnvironment;
         }
 
-    
+
 
         public IConfiguration Configuration { get; }
 
@@ -152,7 +154,7 @@ namespace CoreWebApi
                 app.UseStaticFiles();
                 app.UseStaticFiles(new StaticFileOptions()
                 {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"StaticFiles")),
+                    FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, @"StaticFiles")),
                     RequestPath = new PathString("/StaticFiles")
                 });
 
