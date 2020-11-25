@@ -29,6 +29,10 @@ namespace CoreWebApi.Data
 
         public string AppendImagePath(string imageName)
         {
+            if (imageName == null)
+            {
+                return null;
+            }
             string virtualUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}";
 
             //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;

@@ -142,7 +142,7 @@ namespace CoreWebApi
 
                 if (env.IsDevelopment())
                 {
-                    //app.UseDeveloperExceptionPage();
+                    app.UseDeveloperExceptionPage();
                     app.UseSwagger();
                     app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v2/swagger.json", "PlaceInfo Services"));
 
