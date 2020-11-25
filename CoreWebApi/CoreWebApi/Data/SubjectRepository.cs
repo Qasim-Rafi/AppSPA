@@ -36,47 +36,33 @@ namespace CoreWebApi.Data
         }
         public async Task<Subject> AddSubject(SubjectDtoForAdd subject)
         {
-            try
+
+            var objToCreate = new Subject
             {
-                var objToCreate = new Subject
-                {
-                    Name = subject.Name,
-                    ClassId = subject.ClassId,
-                    CreatedBy = 1,
-                    CreatedDateTime = DateTime.Now
-                };
+                Name = subject.Name,
+                ClassId = subject.ClassId,
+                CreatedBy = 1,
+                CreatedDateTime = DateTime.Now
+            };
 
-                await _context.Subjects.AddAsync(objToCreate);
-                await _context.SaveChangesAsync();
+            await _context.Subjects.AddAsync(objToCreate);
+            await _context.SaveChangesAsync();
 
-                return objToCreate;
-            }
-            catch (Exception ex)
-            {
+            return objToCreate;
 
-                Log.Exception(ex);
-                throw ex;
-            }
         }
         public async Task<Subject> EditSubject(int id, SubjectDtoForEdit subject)
         {
-            try
-            {
-                Subject dbObj = _context.Subjects.FirstOrDefault(s => s.Id.Equals(id));
-                if (dbObj != null)
-                {
-                    dbObj.Name = subject.Name;
-                    dbObj.ClassId = subject.ClassId;
-                    await _context.SaveChangesAsync();
-                }
-                return dbObj;
-            }
-            catch (Exception ex)
-            {
 
-                Log.Exception(ex);
-                throw ex;
+            Subject dbObj = _context.Subjects.FirstOrDefault(s => s.Id.Equals(id));
+            if (dbObj != null)
+            {
+                dbObj.Name = subject.Name;
+                dbObj.ClassId = subject.ClassId;
+                await _context.SaveChangesAsync();
             }
+            return dbObj;
+
         }
     }
 }

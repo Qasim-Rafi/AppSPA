@@ -39,6 +39,7 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetAttendancePercentage")]
         public async Task<IActionResult> GetAttendancePercentage()
         {
+            //throw new Exception("testing...");
             var result = await _repo.GetAttendancePercentage();
 
             return Ok(result);

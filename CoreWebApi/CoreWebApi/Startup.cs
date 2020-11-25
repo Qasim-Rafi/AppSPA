@@ -128,7 +128,7 @@ namespace CoreWebApi
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
+                //Log.Exception(ex);
                 Console.WriteLine(ex);
             }
         }
@@ -154,7 +154,7 @@ namespace CoreWebApi
                 app.UseStaticFiles();
                 app.UseStaticFiles(new StaticFileOptions()
                 {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, @"StaticFiles")),
+                    FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles")),
                     RequestPath = new PathString("/StaticFiles")
                 });
 
@@ -170,7 +170,7 @@ namespace CoreWebApi
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
+                //Log.Exception(ex);
                 Console.WriteLine(ex);
             }
         }

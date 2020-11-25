@@ -36,50 +36,36 @@ namespace CoreWebApi.Data
         }
         public async Task<Leave> AddLeave(LeaveDtoForAdd leave)
         {
-            try
+
+            var objToCreate = new Leave
             {
-                var objToCreate = new Leave
-                {
-                    Details = leave.Details,
-                    FromDate = leave.FromDate,
-                    ToDate = leave.ToDate,
-                    UserId = leave.UserId,
-                    LeaveTypeId = leave.LeaveTypeId
-                };
+                Details = leave.Details,
+                FromDate = leave.FromDate,
+                ToDate = leave.ToDate,
+                UserId = leave.UserId,
+                LeaveTypeId = leave.LeaveTypeId
+            };
 
-                await _context.Leaves.AddAsync(objToCreate);
-                await _context.SaveChangesAsync();
+            await _context.Leaves.AddAsync(objToCreate);
+            await _context.SaveChangesAsync();
 
-                return objToCreate;
-            }
-            catch (Exception ex)
-            {
+            return objToCreate;
 
-                Log.Exception(ex);
-                throw ex;
-            }
         }
         public async Task<Leave> EditLeave(int id, LeaveDtoForEdit leave)
         {
-            try
-            {
-                Leave dbObj = _context.Leaves.FirstOrDefault(s => s.Id.Equals(id));
-                if (dbObj != null)
-                {
-                    dbObj.Details = leave.Details;
-                    dbObj.FromDate = leave.FromDate;
-                    dbObj.ToDate = leave.ToDate;
-                    dbObj.LeaveTypeId = leave.LeaveTypeId;
-                    await _context.SaveChangesAsync();
-                }
-                return dbObj;
-            }
-            catch (Exception ex)
-            {
 
-                Log.Exception(ex);
-                throw ex;
+            Leave dbObj = _context.Leaves.FirstOrDefault(s => s.Id.Equals(id));
+            if (dbObj != null)
+            {
+                dbObj.Details = leave.Details;
+                dbObj.FromDate = leave.FromDate;
+                dbObj.ToDate = leave.ToDate;
+                dbObj.LeaveTypeId = leave.LeaveTypeId;
+                await _context.SaveChangesAsync();
             }
+            return dbObj;
+
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,12 +11,13 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Helpers
 {
-    public class Log
+    public static class Log
     {
-        public static void Exception(Exception ex)
+
+        public static void Exception(Exception ex, string environmentPath)
         {
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles");
-            string filePath = Directory.GetCurrentDirectory() + @"/StaticFiles/Logs.txt";
+            var folderPath = Path.Combine(environmentPath, "StaticFiles");
+            string filePath = Path.Combine(folderPath, "Logs.txt");
             if (!File.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
@@ -48,4 +51,6 @@ namespace CoreWebApi.Helpers
             return methodName;
         }
     }
+
+
 }

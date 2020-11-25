@@ -340,8 +340,7 @@ namespace CoreWebApi.Data
                 if (user.files != null && user.files.Count() > 0)
                 {
 
-                    string contentRootPath = _HostEnvironment.ContentRootPath;
-                    var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+                    var pathToSave = Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles", "Images");
                     for (int i = 0; i < user.files.Count(); i++)
                     {
                         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(user.files[i].FileName);

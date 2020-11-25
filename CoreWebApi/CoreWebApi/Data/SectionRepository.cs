@@ -33,48 +33,33 @@ namespace CoreWebApi.Data
         {
             var sections = await _context.Sections.ToListAsync();
             return sections;
-        }       
+        }
         public async Task<Section> AddSection(SectionDtoForAdd section)
         {
-            try
+
+            var objToCreate = new Section
             {
-                var objToCreate = new Section
-                {
-                    SectionName = section.SectionName,
-                    CreatedById = 1,
-                    //CreatedDatetime = DateTime.Now
-                };
+                SectionName = section.SectionName,
+                CreatedById = 1,
+                //CreatedDatetime = DateTime.Now
+            };
 
-                await _context.Sections.AddAsync(objToCreate);
-                await _context.SaveChangesAsync();
+            await _context.Sections.AddAsync(objToCreate);
+            await _context.SaveChangesAsync();
 
-                return objToCreate;
-            }
-            catch (Exception ex)
-            {
+            return objToCreate;
 
-                Log.Exception(ex);
-                throw ex;
-            }
         }
         public async Task<Section> EditSection(int id, SectionDtoForEdit section)
         {
-            try
+            Section dbObj = _context.Sections.FirstOrDefault(s => s.Id.Equals(id));
+            if (dbObj != null)
             {
-                Section dbObj = _context.Sections.FirstOrDefault(s => s.Id.Equals(id));
-                if (dbObj != null)
-                {
-                    dbObj.SectionName = section.SectionName;
-                    await _context.SaveChangesAsync();
-                }
-                return dbObj;
+                dbObj.SectionName = section.SectionName;
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
+            return dbObj;
 
-                Log.Exception(ex);
-                throw ex;
-            }
-        }       
+        }
     }
 }
