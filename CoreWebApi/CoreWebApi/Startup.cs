@@ -49,7 +49,7 @@ namespace CoreWebApi
             try
             {
                 services.AddDistributedMemoryCache();
-               
+
                 services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
                 services.AddControllers().AddNewtonsoftJson();
                 services.AddCors();
@@ -123,7 +123,7 @@ namespace CoreWebApi
                         });
                     });
                 }
-               
+
 
             }
             catch (Exception ex)
@@ -152,17 +152,27 @@ namespace CoreWebApi
                 app.UseAuthentication();
 
                 app.UseStaticFiles();
+                //if (env.IsDevelopment())
+                //{
                 app.UseStaticFiles(new StaticFileOptions()
                 {
                     FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles")),
                     RequestPath = new PathString("/StaticFiles")
                 });
-
+                //}
+                //else if (env.IsProduction())
+                //{
+                //    app.UseStaticFiles(new StaticFileOptions()
+                //    {
+                //        FileProvider = new PhysicalFileProvider(Path.Combine("https://e-learningbox.com/webAPI/wwwroot", "StaticFiles")),
+                //        RequestPath = new PathString("/StaticFiles")
+                //    });
+                //}
                 app.UseRouting();
 
                 app.UseAuthorization();
 
-                app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());                
+                app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();

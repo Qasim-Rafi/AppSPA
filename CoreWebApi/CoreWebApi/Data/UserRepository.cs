@@ -246,7 +246,7 @@ namespace CoreWebApi.Data
         {
             ServiceResponse<UserForListDto> serviceResponse = new ServiceResponse<UserForListDto>();
 
-
+            var UserTypes = _context.UserTypes.ToList();
             var userToCreate = new User
             {
                 FullName = userDto.FullName,
@@ -261,7 +261,9 @@ namespace CoreWebApi.Data
                 CountryId = userDto.CountryId,
                 OtherState = userDto.OtherState,
                 Email = userDto.Email,
-                SchoolBranchId = Convert.ToInt32(userDto.LoggedIn_BranchId)
+                SchoolBranchId = Convert.ToInt32(userDto.LoggedIn_BranchId),
+                RollNumber = userDto.RollNumber,
+                Role = UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
             };
             byte[] passwordHash, passwordSalt;
             Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);

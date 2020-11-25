@@ -137,6 +137,7 @@ namespace CoreWebApi.Data
                     user.SchoolBranchId = schoolBranchId;
                     user.RollNumber = "R-00" + (index + 1);
                     user.Active = true;
+                    user.Role = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Name;
                     context.Users.Add(user);
 
 

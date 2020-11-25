@@ -74,6 +74,7 @@ namespace CoreWebApi.Data
 
 
             var branch = await _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefaultAsync();
+            //var UserTypes = _context.UserTypes.ToList();
 
             var userToCreate = new User
             {
@@ -85,6 +86,7 @@ namespace CoreWebApi.Data
                 Gender = "male",
                 Active = true,
                 CreatedDateTime = DateTime.Now,
+                //Role = UserTypes.Where(m => m.Id == model.UserTypeId).FirstOrDefault().Name
             };
             byte[] passwordHash, passwordSalt;
             Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
