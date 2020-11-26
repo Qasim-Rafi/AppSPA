@@ -50,7 +50,7 @@ namespace CoreWebApi.Data
             {
                 Id = s.Id,
                 FullName = s.FullName,
-                DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",               
+                DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
                 Email = s.Email,
                 Gender = s.Gender,
                 Username = s.Username,
@@ -66,6 +66,7 @@ namespace CoreWebApi.Data
                     Id = x.Id,
                     Name = x.Name,
                     IsPrimary = x.IsPrimary,
+                    Url = _File.AppendImagePath(x.Name)
                 }).ToList(),
             }).FirstOrDefaultAsync();
             if (user != null)
@@ -151,6 +152,7 @@ namespace CoreWebApi.Data
                         Id = x.Id,
                         Name = x.Name,
                         IsPrimary = x.IsPrimary,
+                        Url = _File.AppendImagePath(x.Name)
                     }).ToList(),
                 }).ToListAsync();
 
@@ -188,6 +190,7 @@ namespace CoreWebApi.Data
                         Id = x.Id,
                         Name = x.Name,
                         IsPrimary = x.IsPrimary,
+                        Url = _File.AppendImagePath(x.Name)
                     }).ToList(),
                 }).ToListAsync();
 
@@ -426,6 +429,7 @@ namespace CoreWebApi.Data
                                            Id = x.Id,
                                            Name = x.Name,
                                            IsPrimary = x.IsPrimary,
+                                           Url = _File.AppendImagePath(x.Name)
                                        }).ToList(),
                                    }).ToListAsync();
 
@@ -478,6 +482,7 @@ namespace CoreWebApi.Data
                                            Id = x.Id,
                                            Name = x.Name,
                                            IsPrimary = x.IsPrimary,
+                                           Url = _File.AppendImagePath(x.Name)
                                        }).ToList(),
                                    }).ToListAsync();
                 //foreach (var user in users)
@@ -810,6 +815,7 @@ namespace CoreWebApi.Data
                                        Id = x.Id,
                                        Name = x.Name,
                                        IsPrimary = x.IsPrimary,
+                                       Url = _File.AppendImagePath(x.Name)
                                    }).ToList(),
                                }).ToListAsync();
 

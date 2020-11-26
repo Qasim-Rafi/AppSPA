@@ -473,6 +473,7 @@ namespace CoreWebApi.Data
                     x.Id,
                     x.Name,
                     x.IsPrimary,
+                    Url = _File.AppendImagePath(x.Name)
                 }).ToList()
             }).ToListAsync();
 
@@ -505,6 +506,7 @@ namespace CoreWebApi.Data
                                        x.Id,
                                        x.Name,
                                        x.IsPrimary,
+                                       Url = _File.AppendImagePath(x.Name)
                                    }).ToList(),
                                    Status = (u.CreatedDateTime > FirstDayOfMonth && u.CreatedDateTime < LastDayOfMonth) ? "New" : "Processed"
                                }).ToListAsync();
