@@ -124,7 +124,7 @@ namespace CoreWebApi.Controllers
             return Ok(response);
 
         }
-        [HttpDelete("ChangeActiveStatus/{id}")]
+        [HttpDelete("ChangeActiveStatus/{id}/{status}")]
         public async Task<IActionResult> ActiveInActiveUser(int id, bool status)
         {
 
