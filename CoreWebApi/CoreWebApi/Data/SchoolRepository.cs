@@ -468,16 +468,21 @@ namespace CoreWebApi.Data
                 Id = s.Id,
                 FullName = s.FullName,
                 DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                Photos = _context.Photos.Where(m => m.UserId == s.Id).ToList()
+                Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.IsPrimary,
+                }).ToList()
             }).ToListAsync();
 
-            foreach (var user in users)
-            {
-                foreach (var item in user?.Photos)
-                {
-                    item.Url = _File.AppendImagePath(item.Url);
-                }
-            }
+            //foreach (var user in users)
+            //{
+            //    foreach (var item in user?.Photos)
+            //    {
+            //        item.Url = _File.AppendImagePath(item.Url);
+            //    }
+            //}
             _serviceResponse.Data = users;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -495,17 +500,22 @@ namespace CoreWebApi.Data
                                    RegNo = u.Id,
                                    FullName = u.FullName,
                                    RegDate = DateFormat.ToDate(u.CreatedDateTime.ToString()),
-                                   Photos = _context.Photos.Where(m => m.UserId == u.Id).ToList(),
+                                   Photos = _context.Photos.Where(m => m.UserId == u.Id).OrderByDescending(m => m.Id).Select(x => new
+                                   {
+                                       x.Id,
+                                       x.Name,
+                                       x.IsPrimary,
+                                   }).ToList(),
                                    Status = (u.CreatedDateTime > FirstDayOfMonth && u.CreatedDateTime < LastDayOfMonth) ? "New" : "Processed"
                                }).ToListAsync();
 
-            foreach (var user in users)
-            {
-                foreach (var item in user?.Photos)
-                {
-                    item.Url = _File.AppendImagePath(item.Url);
-                }
-            }
+            //foreach (var user in users)
+            //{
+            //    foreach (var item in user?.Photos)
+            //    {
+            //        item.Url = _File.AppendImagePath(item.Url);
+            //    }
+            //}
 
 
             _serviceResponse.Success = true;

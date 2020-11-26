@@ -50,8 +50,7 @@ namespace CoreWebApi.Data
             {
                 Id = s.Id,
                 FullName = s.FullName,
-                DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).ToList(),
+                DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",               
                 Email = s.Email,
                 Gender = s.Gender,
                 Username = s.Username,
@@ -61,14 +60,20 @@ namespace CoreWebApi.Data
                 StateName = s.State.Name,
                 OtherState = s.OtherState,
                 Active = s.Active,
-                MemberSince = DateFormat.ToDate(s.CreatedDateTime.ToString())
+                MemberSince = DateFormat.ToDate(s.CreatedDateTime.ToString()),
+                Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    IsPrimary = x.IsPrimary,
+                }).ToList(),
             }).FirstOrDefaultAsync();
             if (user != null)
             {
-                foreach (var item in user?.Photos)
-                {
-                    item.Url = _File.AppendImagePath(item.Url);
-                }
+                //foreach (var item in user?.Photos)
+                //{
+                //    item.Url = _File.AppendImagePath(item.Url);
+                //}
 
                 serviceResponse.Success = true;
                 serviceResponse.Data = user;
@@ -141,16 +146,21 @@ namespace CoreWebApi.Data
                     StateName = o.State.Name,
                     OtherState = o.OtherState,
                     Active = o.Active,
-                    Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
+                    Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        IsPrimary = x.IsPrimary,
+                    }).ToList(),
                 }).ToListAsync();
 
-                foreach (var user in users)
-                {
-                    foreach (var item in user?.Photos)
-                    {
-                        item.Url = _File.AppendImagePath(item.Url);
-                    }
-                }
+                //foreach (var user in users)
+                //{
+                //    foreach (var item in user?.Photos)
+                //    {
+                //        item.Url = _File.AppendImagePath(item.Url);
+                //    }
+                //}
                 _serviceResponse.Data = users;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
@@ -173,16 +183,21 @@ namespace CoreWebApi.Data
                     StateName = o.State.Name,
                     OtherState = o.OtherState,
                     Active = o.Active,
-                    Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
+                    Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        IsPrimary = x.IsPrimary,
+                    }).ToList(),
                 }).ToListAsync();
 
-                foreach (var user in users)
-                {
-                    foreach (var item in user?.Photos)
-                    {
-                        item.Url = _File.AppendImagePath(item.Url);
-                    }
-                }
+                //foreach (var user in users)
+                //{
+                //    foreach (var item in user?.Photos)
+                //    {
+                //        item.Url = _File.AppendImagePath(item.Url);
+                //    }
+                //}
 
                 _serviceResponse.Data = users;
                 _serviceResponse.Success = true;
@@ -289,8 +304,6 @@ namespace CoreWebApi.Data
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
 
-
-
             User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
             if (dbUser != null)
             {
@@ -342,21 +355,10 @@ namespace CoreWebApi.Data
                 if (user.files != null && user.files.Count() > 0)
                 {
 
-                    var pathToSave = Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles", "Images");
                     for (int i = 0; i < user.files.Count(); i++)
                     {
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(user.files[i].FileName);
-                        //var fullPath = Path.Combine(pathToSave);
-                        var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
-                        if (!Directory.Exists(pathToSave))
-                        {
-                            Directory.CreateDirectory(pathToSave);
-                        }
-                        var filePath = Path.Combine(pathToSave, fileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await user.files[i].CopyToAsync(stream);
-                        }
+                        var file = user.files[i];
+                        string Name = Guid.NewGuid() + Path.GetExtension(file.FileName);
                         if (user.IsPrimaryPhoto)
                         {
                             IQueryable<Photo> updatePhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
@@ -364,19 +366,13 @@ namespace CoreWebApi.Data
                         }
                         var photo = new Photo
                         {
+                            Name = Name,
                             Description = "description...",
                             IsPrimary = user.IsPrimaryPhoto,
                             UserId = dbUser.Id,
-                            //DateAdded = DateTime.Now
+                            Url = _File.GetBinaryFile(file),
+                            CreatedDatetime = DateTime.Now
                         };
-                        if (i == 0)
-                        {
-                            photo.Url = dbPath;
-                        }
-                        else
-                        {
-                            photo.Url = photo.Url + " || " + dbPath;
-                        }
 
                         await _context.Photos.AddAsync(photo);
                         await _context.SaveChangesAsync();
@@ -425,7 +421,12 @@ namespace CoreWebApi.Data
                                        AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
+                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                                       {
+                                           Id = x.Id,
+                                           Name = x.Name,
+                                           IsPrimary = x.IsPrimary,
+                                       }).ToList(),
                                    }).ToListAsync();
 
                 //var ToReturn = users.Select(o => new UserByTypeListDto
@@ -444,13 +445,13 @@ namespace CoreWebApi.Data
                 //    PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                 //    //Photos = _context.Photos.Where(m => m.UserId == o.Id).ToList()
                 //}).ToList();
-                foreach (var user in users)
-                {
-                    foreach (var item in user?.Photos)
-                    {
-                        item.Url = _File.AppendImagePath(item.Url);
-                    }
-                }
+                //foreach (var user in users)
+                //{
+                //    foreach (var item in user?.Photos)
+                //    {
+                //        item.Url = _File.AppendImagePath(item.Url);
+                //    }
+                //}
                 return users;
             }
             else
@@ -472,15 +473,20 @@ namespace CoreWebApi.Data
                                        AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
+                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                                       {
+                                           Id = x.Id,
+                                           Name = x.Name,
+                                           IsPrimary = x.IsPrimary,
+                                       }).ToList(),
                                    }).ToListAsync();
-                foreach (var user in users)
-                {
-                    foreach (var item in user?.Photos)
-                    {
-                        item.Url = _File.AppendImagePath(item.Url);
-                    }
-                }
+                //foreach (var user in users)
+                //{
+                //    foreach (var item in user?.Photos)
+                //    {
+                //        item.Url = _File.AppendImagePath(item.Url);
+                //    }
+                //}
 
                 return users;
 
@@ -799,16 +805,21 @@ namespace CoreWebApi.Data
                                    StateName = o.State.Name,
                                    OtherState = o.OtherState,
                                    Active = o.Active,
-                                   Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
+                                   Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                                   {
+                                       Id = x.Id,
+                                       Name = x.Name,
+                                       IsPrimary = x.IsPrimary,
+                                   }).ToList(),
                                }).ToListAsync();
 
-            foreach (var user in users)
-            {
-                foreach (var item in user?.Photos)
-                {
-                    item.Url = _File.AppendImagePath(item.Url);
-                }
-            }
+            //foreach (var user in users)
+            //{
+            //    foreach (var item in user?.Photos)
+            //    {
+            //        item.Url = _File.AppendImagePath(item.Url);
+            //    }
+            //}
 
 
             _serviceResponse.Success = true;

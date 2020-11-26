@@ -4,9 +4,13 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
@@ -20,11 +24,12 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly IFilesRepository _File;
         private readonly DataContext _context;
+        private readonly IWebHostEnvironment _HostEnvironment;
 
         ServiceResponse<object> _response;
 
         public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor, IWebHostEnvironment HostEnvironment)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
@@ -32,6 +37,7 @@ namespace CoreWebApi.Controllers
             _File = file;
             _context = context;
             _response = new ServiceResponse<object>();
+            _HostEnvironment = HostEnvironment;
 
         }
 
@@ -263,6 +269,70 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
 
+        }
+        //[HttpPost("uploadimage")]
+        //public async Task<IActionResult> uploadimage(IFormFileCollection files)
+        //{
+
+        //    if (files != null && files.Count > 0)
+        //    {
+
+        //        var pathToSave = Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles", "Images");
+        //        for (int i = 0; i < files.Count; i++)
+        //        {
+        //            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(files[i].FileName);
+        //            //var fullPath = Path.Combine(pathToSave);
+        //            var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
+        //            if (!Directory.Exists(pathToSave))
+        //            {
+        //                Directory.CreateDirectory(pathToSave);
+        //            }
+        //            var filePath = Path.Combine(pathToSave, fileName);
+        //            using (var stream = new FileStream(filePath, FileMode.Create))
+        //            {
+        //                await files[i].CopyToAsync(stream);
+        //            }
+                    
+        //        }
+        //    }
+        //    return Ok(_response);
+
+
+        //}
+
+
+        // downlaod file/image
+        [HttpGet("/api/DownloadFile/{fileName}")]
+        public IActionResult Download(string fileName)
+        {
+            var getFile = _context.Photos.Where(m => m.Name == fileName).FirstOrDefault();
+            var bytes = Convert.FromBase64String(getFile.Url);
+            return File(bytes, GetContentType(getFile.Name));
+        }
+        [NonAction]
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+        [NonAction]
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
         }
     }
 }

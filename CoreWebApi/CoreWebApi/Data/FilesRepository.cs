@@ -41,6 +41,17 @@ namespace CoreWebApi.Data
             var path = Path.Combine(virtualUrl, imageName);
             return path;
         }
+        public string GetBinaryFile(IFormFile file)
+        {
+            byte[] bytes;
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                bytes = ms.ToArray();               
+            }
+            var base64 = Convert.ToBase64String(bytes);
+            return base64;
+        }
         //public void Upload(IFormFileCollection files)
         //{
         //    try

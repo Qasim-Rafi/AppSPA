@@ -138,7 +138,8 @@ namespace CoreWebApi
         {
             try
             {
-                app.UseMiddleware<ExceptionMiddleware>();
+                //app.UseMiddleware<ExceptionMiddleware>();
+                app.UseDeveloperExceptionPage();
 
                 if (env.IsDevelopment())
                 {
