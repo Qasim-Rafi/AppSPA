@@ -781,6 +781,7 @@ namespace CoreWebApi.Data
 
             var user = _context.Users.Where(m => m.Id == id).FirstOrDefault();
             user.Active = status;
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Deleted;

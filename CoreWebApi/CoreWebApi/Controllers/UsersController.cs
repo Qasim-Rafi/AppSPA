@@ -124,30 +124,21 @@ namespace CoreWebApi.Controllers
             return Ok(response);
 
         }
-        //[HttpDelete("ChangeActiveStatus/{id}")] // not in use
-        //public async Task<IActionResult> ActiveInActiveUser(int id, bool status)
-        //{
+        [HttpDelete("ChangeActiveStatus/{id}")]
+        public async Task<IActionResult> ActiveInActiveUser(int id, bool status)
+        {
 
-        //    try
-        //    {
-
-        //        if (!ModelState.IsValid)
-        //        {
-        //            return BadRequest(ModelState);
-        //        }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
 
-        //        var response = await _repo.ActiveInActiveUser(id, status);
+            _response = await _repo.ActiveInActiveUser(id, status);
 
-        //        return Ok(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
+            return Ok(_response);
 
-        //        return BadRequest(_response);
-
-        //    }
-        //}
+        }
 
         [HttpGet("GetUsersForAttendance"), NonAction]//not in use
         public async Task<IActionResult> GetListForAttendance(int id = 0)
@@ -292,7 +283,7 @@ namespace CoreWebApi.Controllers
         //            {
         //                await files[i].CopyToAsync(stream);
         //            }
-                    
+
         //        }
         //    }
         //    return Ok(_response);
