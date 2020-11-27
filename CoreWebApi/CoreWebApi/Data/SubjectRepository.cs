@@ -99,22 +99,27 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetAssignedSubjects()
         {
-            var subjects = await (from s in _context.Subjects
-                                  join ass in _context.SubjectAssignments
-                                  on s.Id equals ass.SubjectId
-                                  join c in _context.Class
-                                  on ass.ClassId equals c.Id
-                                  join sch in _context.SchoolBranch
-                                  on ass.SchoolId equals sch.Id
-                                  select new AssignSubjectDtoForList
-                                  {
-                                      Id = s.Id,
-                                      ClassId = ass.ClassId,
-                                      ClassName = c.Name,
-                                      SchoolId = ass.SchoolId,
-                                      SchoolName = sch.BranchName,
-                                  }).ToListAsync();
+            var subjects = (from ass in _context.SubjectAssignments
+                            join c in _context.Class
+                            on ass.ClassId equals c.Id
+                            join sch in _context.SchoolBranch
+                            on ass.SchoolId equals sch.Id
+                            select new
+                            {
+                                ClassId = c.Id,
+                                ClassName = c.Name,
+                                SchoolId = sch.Id,
+                                SchoolName = sch.BranchName,
+                            }).Distinct().ToList().Select(o => new AssignSubjectDtoForList
+                            {
+                                Id = _context.SubjectAssignments.FirstOrDefault(m => m.ClassId == o.ClassId).Id,
+                                ClassId = o.ClassId,
+                                ClassName = o.ClassName,
+                                SchoolId = o.SchoolId,
+                                SchoolName = o.SchoolName
+                            }).ToList();
 
+           
             foreach (var item in subjects)
             {
                 var childrens = await (from s in _context.Subjects
