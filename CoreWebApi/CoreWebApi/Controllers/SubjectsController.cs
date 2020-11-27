@@ -88,7 +88,7 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpPut("UpdateSubject/{id}")]
-        public async Task<IActionResult> Put(int id, SubjectDtoForEdit subject)
+        public async Task<IActionResult> UpdateSubject(int id, SubjectDtoForEdit subject)
         {
 
             if (!ModelState.IsValid)
@@ -107,6 +107,47 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             _response = await _repo.EditAssignedSubject(id, subject);
+            return Ok(_response);
+        }
+
+        [HttpGet("GetSubjectContents")]
+        public async Task<IActionResult> GetSubjectContents()
+        {
+            _response = await _repo.GetSubjectContents();
+            return Ok(_response);
+
+        }
+        [HttpGet("GetSubjectContent/{id}")]
+        public async Task<IActionResult> GetSubjectContent(int id)
+        {
+            _response = await _repo.GetSubjectContent(id);
+            return Ok(_response);
+        }
+        [HttpPost("AddSubjectContents")]
+        public async Task<IActionResult> AddSubjectContents(List<SubjectContentDtoForAdd> model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
+
+            _response = await _repo.AddSubjectContents(model);
+
+            return Ok(_response);
+
+        }
+        [HttpPut("UpdateSubjectContent/{id}")]
+        public async Task<IActionResult> UpdateSubjectContent(int id, SubjectContentDtoForEdit subject)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.EditSubjectContent(id, subject);
             return Ok(_response);
         }
     }

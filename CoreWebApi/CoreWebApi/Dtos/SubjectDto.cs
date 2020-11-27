@@ -10,7 +10,7 @@ namespace CoreWebApi.Dtos
     {
 
     }
-    public class SubjectDtoForAdd : BaseDto
+    public class SubjectDtoForAdd
     {
         [Required]
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
@@ -40,27 +40,33 @@ namespace CoreWebApi.Dtos
     }
     public class AssignSubjectDtoForList
     {
-        public int Id { get; set; }
-        public int SubjectId { get; set; }
-        public string SubjectName { get; set; }
+        public AssignSubjectDtoForList()
+        {
+            Children = new List<ChipsDto>();
+        }
+        public int Id { get; set; }      
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public int SchoolId { get; set; }
         public string SchoolName { get; set; }
+        public List<ChipsDto> Children { get; set; }
 
     }
     public class AssignSubjectDtoForDetail
     {
-        public int Id { get; set; }       
-        public int SubjectId { get; set; }
-        public string SubjectName { get; set; }
+        public AssignSubjectDtoForDetail()
+        {
+            Children = new List<ChipsDto>();
+        }
+        public int Id { get; set; }             
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public int SchoolId { get; set; }
         public string SchoolName { get; set; }
-    }
+        public List<ChipsDto> Children { get; set; }
 
-    public class AssignSubjectDtoForAdd : BaseDto
+    }
+    public class AssignSubjectDtoForAdd 
     {
         [Required]
         public List<int> SubjectIds { get; set; }
@@ -74,5 +80,40 @@ namespace CoreWebApi.Dtos
         public int SubjectId { get; set; }
         [Required]
         public int ClassId { get; set; }
+    }
+    public class SubjectContentDtoForAdd
+    {
+        public int SubjectAssignmentId { get; set; }
+        [Required]
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")] 
+        public string Heading { get; set; }
+        [Required]
+        public int ContentOrder { get; set; }
+    }
+    public class SubjectContentDtoForEdit
+    {
+        public int Id { get; set; }
+        public int SubjectAssignmentId { get; set; }
+        [Required]
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")] 
+        public string Heading { get; set; }
+        [Required]
+        public int ContentOrder { get; set; }
+    }
+    public class SubjectContentDtoForList
+    {
+        public int Id { get; set; }
+        public int SubjectAssignmentId { get; set; }
+        public string SubjectName { get; set; }
+        public string Heading { get; set; }
+        public int ContentOrder { get; set; }
+    }
+    public class SubjectContentDtoForDetail
+    {
+        public int Id { get; set; }
+        public int SubjectAssignmentId { get; set; }
+        public string SubjectName { get; set; }
+        public string Heading { get; set; }
+        public int ContentOrder { get; set; }
     }
 }

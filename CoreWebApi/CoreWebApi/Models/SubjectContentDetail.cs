@@ -10,7 +10,7 @@ namespace CoreWebApi.Models
     public class SubjectContentDetail
     {
         public int Id { get; set; }
-        [StringLength(200)]
+        [StringLength(500)]
         public string Heading { get; set; }
         public int SubjectContentId { get; set; }
         public int Order { get; set; }

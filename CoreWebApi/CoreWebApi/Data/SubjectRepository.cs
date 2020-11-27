@@ -66,15 +66,25 @@ namespace CoreWebApi.Data
                                  select new AssignSubjectDtoForDetail
                                  {
                                      Id = s.Id,
-                                     SubjectId = ass.SubjectId,
-                                     SubjectName = s.Name,
                                      ClassId = ass.ClassId,
                                      ClassName = c.Name,
                                      SchoolId = ass.SchoolId,
                                      SchoolName = sch.BranchName,
                                  }).FirstOrDefaultAsync();
+
             if (subject != null)
             {
+                var childrens = await (from s in _context.Subjects
+                                       join ass in _context.SubjectAssignments
+                                       on s.Id equals ass.SubjectId
+                                       where ass.ClassId == subject.ClassId
+                                       select s).Select(x => new ChipsDto
+                                       {
+                                           Value = x.Id,
+                                           Display = x.Name,
+                                       }).ToListAsync();
+                subject.Children.AddRange(childrens);
+
                 _serviceResponse.Data = subject;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
@@ -99,14 +109,25 @@ namespace CoreWebApi.Data
                                   select new AssignSubjectDtoForList
                                   {
                                       Id = s.Id,
-                                      SubjectId = ass.SubjectId,
-                                      SubjectName = s.Name,
                                       ClassId = ass.ClassId,
                                       ClassName = c.Name,
                                       SchoolId = ass.SchoolId,
                                       SchoolName = sch.BranchName,
                                   }).ToListAsync();
 
+            foreach (var item in subjects)
+            {
+                var childrens = await (from s in _context.Subjects
+                                       join ass in _context.SubjectAssignments
+                                       on s.Id equals ass.SubjectId
+                                       where ass.ClassId == item.ClassId
+                                       select s).Select(x => new ChipsDto
+                                       {
+                                           Value = x.Id,
+                                           Display = x.Name,
+                                       }).ToListAsync();
+                item.Children.AddRange(childrens);
+            }
             _serviceResponse.Data = subjects;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -159,7 +180,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> EditSubject(int id, SubjectDtoForEdit subject)
         {
 
-            Subject ObjToUpdate = _context.Subjects.FirstOrDefault(s => s.Id.Equals(id));
+            Subject ObjToUpdate = _context.Subjects.FirstOrDefault(s => s.Id.Equals(subject.Id));
             if (ObjToUpdate != null)
             {
                 ObjToUpdate.Name = subject.Name;
@@ -175,7 +196,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit subject)
         {
-            SubjectAssignment ObjToUpdate = _context.SubjectAssignments.FirstOrDefault(s => s.Id.Equals(id));
+            SubjectAssignment ObjToUpdate = _context.SubjectAssignments.FirstOrDefault(s => s.Id.Equals(subject.Id));
             if (ObjToUpdate != null)
             {
                 ObjToUpdate.SubjectId = subject.SubjectId;
@@ -187,6 +208,44 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
 
+        }
+
+        public Task<ServiceResponse<object>> GetSubjectContents()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceResponse<object>> GetSubjectContent(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ServiceResponse<object>> AddSubjectContents(List<SubjectContentDtoForAdd> model)
+        {
+            var ListToAdd = new List<SubjectContent>();
+            foreach (var item in model)
+            {
+                ListToAdd.Add(new SubjectContent
+                {
+                    Heading = item.Heading,
+                    Active = true,
+                    ContentOrder = item.ContentOrder,
+                    CreatedDateTime = DateTime.Now,
+                    SubjectAssignmentId = item.SubjectAssignmentId
+                });
+            }
+
+            await _context.SubjectContents.AddRangeAsync(ListToAdd);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public Task<ServiceResponse<object>> EditSubjectContent(int id, SubjectContentDtoForEdit subject)
+        {
+            throw new NotImplementedException();
         }
     }
 }

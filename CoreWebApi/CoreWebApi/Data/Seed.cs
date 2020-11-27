@@ -185,21 +185,20 @@ namespace CoreWebApi.Data
                 context.SaveChanges();
             }
             //
-            //if (!context.Subjects.Any())
-            //{
-            //    var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
-            //    var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
+            if (!context.Subjects.Any())
+            {
+                var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
+                var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
 
-            //    foreach (var (item, index) in ReturnIndex(Subjects))
-            //    {
-            //        item.ClassId = context.Class.First().Id + index;
-            //        item.CreatedById = context.Users.First().Id;
-            //        item.SchoolId = context.SchoolBranch.First().Id;
-            //        context.Subjects.Add(item);
-            //    }
+                foreach (var (item, index) in ReturnIndex(Subjects))
+                {
+                    item.CreditHours = 3;
+                    item.Active = true;
+                    context.Subjects.Add(item);
+                }
 
-            //    context.SaveChanges();
-            //}
+                context.SaveChanges();
+            }
             //
             if (!context.ClassSections.Any())
             {
