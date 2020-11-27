@@ -84,6 +84,8 @@
     <Compile Remove="Migrations\20201126084414_updatePhotoCol.Designer.cs" />
     <Compile Remove="Migrations\20201126092112_updatePhotoCol.cs" />
     <Compile Remove="Migrations\20201126092112_updatePhotoCol.Designer.cs" />
+    <Compile Remove="Migrations\20201127103142_updateSubject_addSubjectAssign2.cs" />
+    <Compile Remove="Migrations\20201127103142_updateSubject_addSubjectAssign2.Designer.cs" />
 
   </ItemGroup>
 

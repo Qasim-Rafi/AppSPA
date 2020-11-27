@@ -4,14 +4,16 @@ using CoreWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20201127065706_updateSubject_addSubjectContentandDetails")]
+    partial class updateSubject_addSubjectContentandDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,14 +121,9 @@ namespace CoreWebApi.Migrations
                     b.Property<int>("SchoolBranchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SubjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("SubjectId");
 
                     b.ToTable("Class");
                 });
@@ -916,25 +913,6 @@ namespace CoreWebApi.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int>("CreditHours")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Subjects");
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.SubjectAssignment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
 
@@ -944,23 +922,26 @@ namespace CoreWebApi.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SchoolId")
+                    b.Property<int>("CreditHours")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubjectId")
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<int>("SchoolId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassId");
+                    b.HasIndex("ClassId")
+                        .IsUnique();
 
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("SchoolId");
 
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("SubjectAssignments");
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.SubjectContent", b =>
@@ -983,12 +964,12 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
-                    b.Property<int>("SubjectAssignmentId")
+                    b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubjectAssignmentId");
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("SubjectContents");
                 });
@@ -1227,11 +1208,6 @@ namespace CoreWebApi.Migrations
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.ClassLectureAssignment", b =>
@@ -1519,11 +1495,11 @@ namespace CoreWebApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.SubjectAssignment", b =>
+            modelBuilder.Entity("CoreWebApi.Models.Subject", b =>
                 {
                     b.HasOne("CoreWebApi.Models.Class", "Class")
-                        .WithMany()
-                        .HasForeignKey("ClassId")
+                        .WithOne("Subject")
+                        .HasForeignKey("CoreWebApi.Models.Subject", "ClassId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1538,19 +1514,13 @@ namespace CoreWebApi.Migrations
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.SubjectContent", b =>
                 {
-                    b.HasOne("CoreWebApi.Models.SubjectAssignment", "SubjectAssignment")
+                    b.HasOne("CoreWebApi.Models.Subject", "Subject")
                         .WithMany()
-                        .HasForeignKey("SubjectAssignmentId")
+                        .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

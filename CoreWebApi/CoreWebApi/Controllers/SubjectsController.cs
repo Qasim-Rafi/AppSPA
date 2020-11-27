@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,82 +13,101 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]
+    //[Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
-    public class SubjectsController : ControllerBase
+    public class SubjectsController : BaseController
     {
         private readonly ISubjectRepository _repo;
-        private readonly IMapper _mapper;
-        public SubjectsController(ISubjectRepository repo, IMapper mapper)
+        ServiceResponse<object> _response;
+        public SubjectsController(ISubjectRepository repo, IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
-            _mapper = mapper;
             _repo = repo;
+            _response = new ServiceResponse<object>();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetSubjectes()
+        [HttpGet("GetSubjects")]
+        public async Task<IActionResult> GetSubjects()
         {
-            var subjects = await _repo.GetSubjects();
-            var ToReturn = _mapper.Map<IEnumerable<Subject>>(subjects);
-            return Ok(ToReturn);
+            _response = await _repo.GetSubjects();
+            return Ok(_response);
 
         }
-        [HttpGet("{id}")]
+        [HttpGet("GetAssignedSubjects")]
+        public async Task<IActionResult> GetAssignedSubjects()
+        {
+            _response = await _repo.GetAssignedSubjects();
+            return Ok(_response);
+
+        }
+        [HttpGet("GetSubject/{id}")]
         public async Task<IActionResult> GetSubject(int id)
         {
-            var subject = await _repo.GetSubject(id);
-            var ToReturn = _mapper.Map<Subject>(subject);
-            return Ok(ToReturn);
+            _response = await _repo.GetSubject(id);
+            return Ok(_response);
         }
-        [HttpPost("Add")]
-        public async Task<IActionResult> Post(SubjectDtoForAdd subject)
+        [HttpGet("GetAssignedSubject/{id}")]
+        public async Task<IActionResult> GetAssignedSubject(int id)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                if (await _repo.SubjectExists(subject.Name))
-                    return BadRequest(new { message = "Subject Already Exist" });
-
-                var createdObj = await _repo.AddSubject(subject);
-
-                return StatusCode(StatusCodes.Status201Created);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            _response = await _repo.GetAssignedSubject(id);
+            return Ok(_response);
         }
-        [HttpPut("{id}")]
+        [HttpPost("AddSubjects")]
+        public async Task<IActionResult> AddSubjects(List<SubjectDtoForAdd> model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
+
+            _response = await _repo.AddSubjects(model);
+
+            return Ok(_response);
+
+        }
+        [HttpPost("AssignSubjects")]
+        public async Task<IActionResult> AssignSubjects(AssignSubjectDtoForAdd model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
+            var LoggedIn_UserId = Convert.ToInt32(GetClaim(Enumm.ClaimType.NameIdentifier.ToString()));
+            var LoggedIn_BranchId = Convert.ToInt32(GetClaim(Enumm.ClaimType.BranchIdentifier.ToString()));
+
+            _response = await _repo.AssignSubjects(LoggedIn_UserId, LoggedIn_BranchId, model);
+
+            return Ok(_response);
+
+        }
+        [HttpPut("UpdateSubject/{id}")]
         public async Task<IActionResult> Put(int id, SubjectDtoForEdit subject)
         {
 
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var updatedObj = await _repo.EditSubject(id, subject);
-
-                return StatusCode(StatusCodes.Status200OK);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
+            _response = await _repo.EditSubject(id, subject);
+            return Ok(_response);
+        }
+        [HttpPut("UpdateAssignedSubject/{id}")]
+        public async Task<IActionResult> UpdateAssignedSubject(int id, AssignSubjectDtoForEdit subject)
+        {
+
+            if (!ModelState.IsValid)
             {
-
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-
+                return BadRequest(ModelState);
             }
+            _response = await _repo.EditAssignedSubject(id, subject);
+            return Ok(_response);
         }
     }
 }

@@ -113,41 +113,42 @@ namespace CoreWebApi.Data
 
 
 
-
-            var schoolBranch = context.SchoolBranch.FirstOrDefault(m => m.Id == schoolBranchId);
-            if (schoolBranch != null)
+            if (!context.Users.Any())
             {
-
-                var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
-                var users = JsonConvert.DeserializeObject<List<User>>(fileData);
-
-
-                foreach (var (user, index) in ReturnIndex(users))
+                var schoolBranch = schoolBranchId != 0 ? context.SchoolBranch.FirstOrDefault(m => m.Id == schoolBranchId) : context.SchoolBranch.FirstOrDefault();
+                if (schoolBranch != null)
                 {
 
-                    byte[] passwordhash, passwordSalt;
-                    CreatePasswordHash("password", out passwordhash, out passwordSalt);
-                    user.PasswordHash = passwordhash;
-                    user.PasswordSalt = passwordSalt;
-                    user.Username = user.Username.ToLower();
-                    user.Email = "test@email";
-                    user.FullName = "test name 0" + (index + 1);
-                    user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
-                    user.CreatedDateTime = DateTime.Now;
-                    user.SchoolBranchId = schoolBranchId;
-                    user.RollNumber = "R-00" + (index + 1);
-                    user.Active = true;
-                    user.Role = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Name;
-                    context.Users.Add(user);
+                    var fileData = System.IO.File.ReadAllText("Data/UserSeedData.json");
+                    var users = JsonConvert.DeserializeObject<List<User>>(fileData);
+
+
+                    foreach (var (user, index) in ReturnIndex(users))
+                    {
+
+                        byte[] passwordhash, passwordSalt;
+                        CreatePasswordHash("password", out passwordhash, out passwordSalt);
+                        user.PasswordHash = passwordhash;
+                        user.PasswordSalt = passwordSalt;
+                        user.Username = user.Username.ToLower();
+                        user.Email = "test@email";
+                        user.FullName = "test name 0" + (index + 1);
+                        user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
+                        user.CreatedDateTime = DateTime.Now;
+                        user.SchoolBranchId = schoolBranch.Id;
+                        user.RollNumber = "R-00" + (index + 1);
+                        user.Active = true;
+                        user.Role = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Name;
+                        context.Users.Add(user);
+
+
+                    }
+                    context.SaveChanges();
+
 
 
                 }
-                context.SaveChanges();
-
-
-
             }
-
         }
         public static void SeedGenericData(DataContext context)
         {
@@ -184,20 +185,21 @@ namespace CoreWebApi.Data
                 context.SaveChanges();
             }
             //
-            if (!context.Subjects.Any())
-            {
-                var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
-                var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
+            //if (!context.Subjects.Any())
+            //{
+            //    var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
+            //    var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
 
-                foreach (var (item, index) in ReturnIndex(Subjects))
-                {
-                    item.ClassId = context.Class.First().Id + index;
+            //    foreach (var (item, index) in ReturnIndex(Subjects))
+            //    {
+            //        item.ClassId = context.Class.First().Id + index;
+            //        item.CreatedById = context.Users.First().Id;
+            //        item.SchoolId = context.SchoolBranch.First().Id;
+            //        context.Subjects.Add(item);
+            //    }
 
-                    context.Subjects.Add(item);
-                }
-
-                context.SaveChanges();
-            }
+            //    context.SaveChanges();
+            //}
             //
             if (!context.ClassSections.Any())
             {

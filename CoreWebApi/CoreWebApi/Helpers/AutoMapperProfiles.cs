@@ -28,6 +28,11 @@ namespace CoreWebApi.Helpers
             CreateMap<QuizQuestions, QuizQuestionDtoForAdd>();
             CreateMap<QuizAnswers, QuizAnswerDtoForAdd>();
             CreateMap<Quizzes, QuizDtoForAdd>();
+            // subject
+            CreateMap<Subject, SubjectDtoForAdd>();
+            CreateMap<Subject, SubjectDtoForEdit>();
+            CreateMap<Subject, SubjectDtoForDetail>();
+            CreateMap<Subject, SubjectDtoForList>();
            
         }
     }

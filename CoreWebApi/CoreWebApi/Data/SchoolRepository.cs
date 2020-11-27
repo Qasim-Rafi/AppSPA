@@ -445,7 +445,7 @@ namespace CoreWebApi.Data
                               join ed in _context.EventDaysAssignments
                               on e.Id equals ed.EventId
                               where e.Active == true
-                              && ed.StartDate.Value.Date >= DateTime.Now.Date
+                              //&& ed.StartDate.Value.Date >= DateTime.Now.Date
                               select new EventDaysForListDto
                               {
                                   Id = ed.Id,

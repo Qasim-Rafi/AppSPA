@@ -9,10 +9,14 @@ namespace CoreWebApi.IData
 {
     public interface ISubjectRepository
     {
-        Task<IEnumerable<Subject>> GetSubjects();
-        Task<Subject> GetSubject(int id);
+        Task<ServiceResponse<object>> GetSubjects();
+        Task<ServiceResponse<object>> GetAssignedSubjects();
+        Task<ServiceResponse<object>> GetSubject(int id);
+        Task<ServiceResponse<object>> GetAssignedSubject(int id);
         Task<bool> SubjectExists(string name);
-        Task<Subject> AddSubject(SubjectDtoForAdd subject);
-        Task<Subject> EditSubject(int id, SubjectDtoForEdit subject);
+        Task<ServiceResponse<object>> AddSubjects(List<SubjectDtoForAdd> model);
+        Task<ServiceResponse<object>> AssignSubjects(int LoggedInUserId, int LoggedIn_BranchId, AssignSubjectDtoForAdd model);
+        Task<ServiceResponse<object>> EditSubject(int id, SubjectDtoForEdit subject);
+        Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit subject);
     }
 }

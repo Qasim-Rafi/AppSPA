@@ -4,6 +4,7 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -293,7 +294,7 @@ namespace CoreWebApi.Controllers
 
 
         // downlaod file/image
-        [HttpGet("/api/DownloadFile/{fileName}")]
+        [HttpGet("/api/DownloadFile/{fileName}"), AllowAnonymous]
         public IActionResult Download(string fileName)
         {
             var getFile = _context.Photos.Where(m => m.Name == fileName).FirstOrDefault();

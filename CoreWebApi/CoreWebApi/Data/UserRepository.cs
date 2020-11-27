@@ -357,28 +357,40 @@ namespace CoreWebApi.Data
 
                 if (user.files != null && user.files.Count() > 0)
                 {
-
                     for (int i = 0; i < user.files.Count(); i++)
                     {
                         var file = user.files[i];
                         string Name = Guid.NewGuid() + Path.GetExtension(file.FileName);
                         if (user.IsPrimaryPhoto)
                         {
-                            IQueryable<Photo> updatePhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
-                            await updatePhotos.ForEachAsync(m => m.IsPrimary = false);
+                            IQueryable<Photo> updatePrimaryPhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
+                            await updatePrimaryPhotos.ForEachAsync(m => m.IsPrimary = false);
                         }
-                        var photo = new Photo
+                        Photo updatePhoto = _context.Photos.Where(m => m.UserId == dbUser.Id).FirstOrDefault();
+                        if (updatePhoto == null)
                         {
-                            Name = Name,
-                            Description = "description...",
-                            IsPrimary = user.IsPrimaryPhoto,
-                            UserId = dbUser.Id,
-                            Url = _File.GetBinaryFile(file),
-                            CreatedDatetime = DateTime.Now
-                        };
-
-                        await _context.Photos.AddAsync(photo);
-                        await _context.SaveChangesAsync();
+                            var photo = new Photo
+                            {
+                                Name = Name,
+                                Description = "description...",
+                                IsPrimary = user.IsPrimaryPhoto,
+                                UserId = dbUser.Id,
+                                Url = _File.GetBinaryFile(file),
+                                CreatedDatetime = DateTime.Now
+                            };
+                            await _context.Photos.AddAsync(photo);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            updatePhoto.Name = Name;
+                            updatePhoto.IsPrimary = user.IsPrimaryPhoto;
+                            updatePhoto.UserId = dbUser.Id;
+                            updatePhoto.Url = _File.GetBinaryFile(file);
+                            _context.Photos.Update(updatePhoto);
+                            await _context.SaveChangesAsync();
+                        }
+                       
                     }
                 }
                 serviceResponse.Message = CustomMessage.Updated;
