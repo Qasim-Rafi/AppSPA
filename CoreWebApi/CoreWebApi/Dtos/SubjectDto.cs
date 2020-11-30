@@ -42,28 +42,28 @@ namespace CoreWebApi.Dtos
     {
         public AssignSubjectDtoForList()
         {
-            Children = new List<ChipsDto>();
+            Children = new List<SubjectDtoForList>();
         }
         public int Id { get; set; }      
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public int SchoolId { get; set; }
         public string SchoolName { get; set; }
-        public List<ChipsDto> Children { get; set; }
+        public List<SubjectDtoForList> Children { get; set; }
 
     }
     public class AssignSubjectDtoForDetail
     {
         public AssignSubjectDtoForDetail()
         {
-            Children = new List<ChipsDto>();
+            Children = new List<SubjectDtoForDetail>();
         }
         public int Id { get; set; }             
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public int SchoolId { get; set; }
         public string SchoolName { get; set; }
-        public List<ChipsDto> Children { get; set; }
+        public List<SubjectDtoForDetail> Children { get; set; }
 
     }
     public class AssignSubjectDtoForAdd 

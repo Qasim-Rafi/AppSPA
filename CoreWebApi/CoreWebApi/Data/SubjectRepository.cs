@@ -78,10 +78,10 @@ namespace CoreWebApi.Data
                                        join ass in _context.SubjectAssignments
                                        on s.Id equals ass.SubjectId
                                        where ass.ClassId == subject.ClassId
-                                       select s).Select(x => new ChipsDto
+                                       select s).Select(x => new SubjectDtoForDetail
                                        {
-                                           Value = x.Id,
-                                           Display = x.Name,
+                                           Id = x.Id,
+                                           Name = x.Name,
                                        }).ToListAsync();
                 subject.Children.AddRange(childrens);
 
@@ -126,10 +126,10 @@ namespace CoreWebApi.Data
                                        join ass in _context.SubjectAssignments
                                        on s.Id equals ass.SubjectId
                                        where ass.ClassId == item.ClassId
-                                       select s).Select(x => new ChipsDto
+                                       select s).Select(x => new SubjectDtoForList
                                        {
-                                           Value = x.Id,
-                                           Display = x.Name,
+                                           Id = x.Id,
+                                           Name = x.Name,
                                        }).ToListAsync();
                 item.Children.AddRange(childrens);
             }
