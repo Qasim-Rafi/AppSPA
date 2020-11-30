@@ -77,7 +77,8 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         [Required]
-        public int SubjectId { get; set; }
+        public List<int> SubjectIds { get; set; }
+
         [Required]
         public int ClassId { get; set; }
     }

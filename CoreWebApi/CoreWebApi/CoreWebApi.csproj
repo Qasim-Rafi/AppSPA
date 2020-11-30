@@ -111,6 +111,7 @@
   <ItemGroup>
     <Folder Include="Error\" />
     <Folder Include="wwwroot\StaticFiles\" />
+    <Folder Include="wwwroot\StaticFiles\Images\" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

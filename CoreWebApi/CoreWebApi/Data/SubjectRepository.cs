@@ -204,14 +204,14 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit subject)
         {
-            SubjectAssignment ObjToUpdate = _context.SubjectAssignments.FirstOrDefault(s => s.Id.Equals(subject.Id));
-            if (ObjToUpdate != null)
-            {
-                ObjToUpdate.SubjectId = subject.SubjectId;
-                ObjToUpdate.ClassId = subject.ClassId;
-                _context.SubjectAssignments.Update(ObjToUpdate);
-                await _context.SaveChangesAsync();
-            }
+            var ObjToUpdate = _context.SubjectAssignments.Where(s => s.Id.Equals(subject.ClassId)).ToList();
+            //if (ObjToUpdate != null)
+            //{
+            //    ObjToUpdate.SubjectId = subject.SubjectId;
+            //    ObjToUpdate.ClassId = subject.ClassId;
+            //    _context.SubjectAssignments.Update(ObjToUpdate);
+            //    await _context.SaveChangesAsync();
+            //}
             _serviceResponse.Message = CustomMessage.Updated;
             _serviceResponse.Success = true;
             return _serviceResponse;

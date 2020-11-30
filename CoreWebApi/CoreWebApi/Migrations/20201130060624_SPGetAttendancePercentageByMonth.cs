@@ -25,8 +25,7 @@ namespace CoreWebApi.Migrations
                                 (SELECT Month(CreatedDatetime) Month,CONVERT(char(10), CreatedDatetime,111) Date , count(*) DateWiseCount
                                 , CEILING((cast(count(*) as float) / Cast(@TotalStudents as float)) * 100) daywiseaverage
                                 FROM Attendances
-                                WHERE DATEPART(w,CreatedDatetime) NOT IN (7,1)
-                                And Present = 1
+                                WHERE Present = 1
                                 group by Month(CreatedDatetime), CONVERT(char(10), CreatedDatetime,111)) as query1
 
                                 Group by Month
