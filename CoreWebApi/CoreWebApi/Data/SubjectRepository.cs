@@ -47,7 +47,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetSubjects()
         {
-            var subjects = await _context.Subjects.ToListAsync();
+            var subjects = await _context.Subjects.Where(m => m.Active == true).ToListAsync();
             _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -63,6 +63,7 @@ namespace CoreWebApi.Data
                                  join sch in _context.SchoolBranch
                                  on ass.SchoolId equals sch.Id
                                  where ass.Id == id
+                                 && s.Active == true
                                  select new AssignSubjectDtoForDetail
                                  {
                                      Id = s.Id,
@@ -78,6 +79,7 @@ namespace CoreWebApi.Data
                                        join ass in _context.SubjectAssignments
                                        on s.Id equals ass.SubjectId
                                        where ass.ClassId == subject.ClassId
+                                       && s.Active == true
                                        select s).Select(x => new SubjectDtoForDetail
                                        {
                                            Id = x.Id,
@@ -119,17 +121,18 @@ namespace CoreWebApi.Data
                                 SchoolName = o.SchoolName
                             }).ToList();
 
-           
+
             foreach (var item in subjects)
             {
                 var childrens = await (from s in _context.Subjects
                                        join ass in _context.SubjectAssignments
                                        on s.Id equals ass.SubjectId
                                        where ass.ClassId == item.ClassId
-                                       select s).Select(x => new SubjectDtoForList
+                                       && s.Active == true
+                                       select s).Select(x => new ChipsDto
                                        {
-                                           Id = x.Id,
-                                           Name = x.Name,
+                                           Value = x.Id,
+                                           Display = x.Name,
                                        }).ToListAsync();
                 item.Children.AddRange(childrens);
             }
@@ -215,6 +218,19 @@ namespace CoreWebApi.Data
 
         }
 
+
+        public async Task<ServiceResponse<object>> ActiveInActiveSubject(int id, bool status)
+        {
+
+            var subject = _context.Subjects.Where(m => m.Id == id).FirstOrDefault();
+            subject.Active = status;
+            _context.Subjects.Update(subject);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Deleted;
+            return _serviceResponse;
+
+        }
         public Task<ServiceResponse<object>> GetSubjectContents()
         {
             throw new NotImplementedException();

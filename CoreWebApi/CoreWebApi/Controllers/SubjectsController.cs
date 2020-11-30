@@ -110,6 +110,21 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
 
+        [HttpDelete("ChangeActiveStatus/{id}/{status}")]
+        public async Task<IActionResult> ActiveInActiveSubject(int id, bool status)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            _response = await _repo.ActiveInActiveSubject(id, status);
+
+            return Ok(_response);
+
+        }
         [HttpGet("GetSubjectContents")]
         public async Task<IActionResult> GetSubjectContents()
         {
