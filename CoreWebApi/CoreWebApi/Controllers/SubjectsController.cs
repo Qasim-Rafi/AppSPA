@@ -106,7 +106,9 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.EditAssignedSubject(id, subject);
+            var LoggedIn_UserId = Convert.ToInt32(GetClaim(Enumm.ClaimType.NameIdentifier.ToString()));
+            var LoggedIn_BranchId = Convert.ToInt32(GetClaim(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _response = await _repo.EditAssignedSubject(LoggedIn_UserId, LoggedIn_BranchId, id, subject);
             return Ok(_response);
         }
 
@@ -125,10 +127,10 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("GetSubjectContents")]
-        public async Task<IActionResult> GetSubjectContents()
+        [HttpGet("GetSubjectContents/{subjectId}")]
+        public async Task<IActionResult> GetSubjectContents(int subjectId)
         {
-            _response = await _repo.GetSubjectContents();
+            _response = await _repo.GetSubjectContents(subjectId);
             return Ok(_response);
 
         }

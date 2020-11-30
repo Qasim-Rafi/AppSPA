@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20201130060624_SPGetAttendancePercentageByMonth")]
+    [Migration("20201130111456_SPGetAttendancePercentageByMonth")]
     partial class SPGetAttendancePercentageByMonth
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

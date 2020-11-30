@@ -71,6 +71,7 @@ namespace CoreWebApi.Data
                                      ClassName = c.Name,
                                      SchoolId = ass.SchoolId,
                                      SchoolName = sch.BranchName,
+                                     TableOfContent = ass.TableOfContent,
                                  }).FirstOrDefaultAsync();
 
             if (subject != null)
@@ -112,13 +113,15 @@ namespace CoreWebApi.Data
                                 ClassName = c.Name,
                                 SchoolId = sch.Id,
                                 SchoolName = sch.BranchName,
+                                TableOfContent = ass.TableOfContent,
                             }).Distinct().ToList().Select(o => new AssignSubjectDtoForList
                             {
                                 Id = _context.SubjectAssignments.FirstOrDefault(m => m.ClassId == o.ClassId).Id,
                                 ClassId = o.ClassId,
                                 ClassName = o.ClassName,
                                 SchoolId = o.SchoolId,
-                                SchoolName = o.SchoolName
+                                SchoolName = o.SchoolName,
+                                TableOfContent = o.TableOfContent,
                             }).ToList();
 
 
@@ -172,6 +175,7 @@ namespace CoreWebApi.Data
                     SubjectId = SubjectId,
                     ClassId = model.ClassId,
                     SchoolId = LoggedIn_BranchId,
+                    TableOfContent = model.TableOfContent,
                     CreatedById = LoggedInUserId,
                     CreatedDateTime = DateTime.Now
                 });
@@ -202,19 +206,40 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit subject)
+        public async Task<ServiceResponse<object>> EditAssignedSubject(int LoggedInUserId, int LoggedIn_BranchId, int id, AssignSubjectDtoForEdit model)
         {
-            var ObjToUpdate = _context.SubjectAssignments.Where(s => s.Id.Equals(subject.ClassId)).ToList();
-            //if (ObjToUpdate != null)
-            //{
-            //    ObjToUpdate.SubjectId = subject.SubjectId;
-            //    ObjToUpdate.ClassId = subject.ClassId;
-            //    _context.SubjectAssignments.Update(ObjToUpdate);
-            //    await _context.SaveChangesAsync();
-            //}
-            _serviceResponse.Message = CustomMessage.Updated;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
+            var ToRemove = _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList();
+            if (ToRemove.Count() > 0)
+            {
+                _context.SubjectAssignments.RemoveRange(ToRemove);
+                await _context.SaveChangesAsync();
+
+                var ListToAdd = new List<SubjectAssignment>();
+                foreach (var SubjectId in model.SubjectIds)
+                {
+                    ListToAdd.Add(new SubjectAssignment
+                    {
+                        SubjectId = SubjectId,
+                        ClassId = model.ClassId,
+                        SchoolId = LoggedIn_BranchId,
+                        TableOfContent = model.TableOfContent,
+                        CreatedById = LoggedInUserId,
+                        CreatedDateTime = DateTime.Now
+                    });
+                }
+
+                await _context.SubjectAssignments.AddRangeAsync(ListToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Message = CustomMessage.Updated;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            else
+            {
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
 
         }
 
@@ -231,14 +256,20 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public Task<ServiceResponse<object>> GetSubjectContents()
+        public async Task<ServiceResponse<object>> GetSubjectContents(int AssignedSubjectId)
         {
-            throw new NotImplementedException();
+            var ToReturn = await _context.SubjectContents.Where(m => m.SubjectAssignmentId == AssignedSubjectId).ToListAsync();
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
-        public Task<ServiceResponse<object>> GetSubjectContent(int id)
+        public async Task<ServiceResponse<object>> GetSubjectContent(int id)
         {
-            throw new NotImplementedException();
+            var ToReturn = await _context.SubjectContents.Where(m => m.Id == id).FirstOrDefaultAsync();
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> AddSubjectContents(List<SubjectContentDtoForAdd> model)

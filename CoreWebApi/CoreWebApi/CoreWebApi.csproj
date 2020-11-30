@@ -86,6 +86,10 @@
     <Compile Remove="Migrations\20201126092112_updatePhotoCol.Designer.cs" />
     <Compile Remove="Migrations\20201127103142_updateSubject_addSubjectAssign2.cs" />
     <Compile Remove="Migrations\20201127103142_updateSubject_addSubjectAssign2.Designer.cs" />
+    <Compile Remove="Migrations\20201130060624_SPGetAttendancePercentageByMonth.cs" />
+    <Compile Remove="Migrations\20201130060624_SPGetAttendancePercentageByMonth.Designer.cs" />
+    <Compile Remove="Migrations\20201130111255_SPGetAttendancePercentageByMonth.cs" />
+    <Compile Remove="Migrations\20201130111255_SPGetAttendancePercentageByMonth.Designer.cs" />
 
   </ItemGroup>
 

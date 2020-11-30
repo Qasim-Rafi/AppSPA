@@ -49,6 +49,7 @@ namespace CoreWebApi.Dtos
         public string ClassName { get; set; }
         public int SchoolId { get; set; }
         public string SchoolName { get; set; }
+        public string TableOfContent { get; set; }
         public List<ChipsDto> Children { get; set; }
 
     }
@@ -63,6 +64,7 @@ namespace CoreWebApi.Dtos
         public string ClassName { get; set; }
         public int SchoolId { get; set; }
         public string SchoolName { get; set; }
+        public string TableOfContent { get; set; }
         public List<SubjectDtoForDetail> Children { get; set; }
 
     }
@@ -72,6 +74,7 @@ namespace CoreWebApi.Dtos
         public List<int> SubjectIds { get; set; }
         [Required]
         public int ClassId { get; set; }
+        public string TableOfContent { get; set; }
     }
     public class AssignSubjectDtoForEdit
     {
@@ -81,6 +84,7 @@ namespace CoreWebApi.Dtos
 
         [Required]
         public int ClassId { get; set; }
+        public string TableOfContent { get; set; }
     }
     public class SubjectContentDtoForAdd
     {
