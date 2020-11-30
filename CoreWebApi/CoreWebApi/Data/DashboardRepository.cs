@@ -1,9 +1,12 @@
 ﻿using CoreWebApi.Controllers;
+using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -67,44 +70,29 @@ namespace CoreWebApi.Data
                                              && user.UserTypeId == (int)Enumm.UserType.Teacher
                                              && user.Active == true
                                              select user).CountAsync();
-
-            string StudentPercentage = ((decimal)PresentStudentCount / StudentCount * 100).ToString("#");
-            string TeacherPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
-            List<decimal> StudentMonthWisePercentage = new List<decimal>();
-            List<decimal> TeacherMonthWisePercentage = new List<decimal>();           
+            string StudentPercentage = "0";
+            string TeacherPercentage = "0";
+            if (PresentStudentCount > 0)
+                StudentPercentage = ((decimal)PresentStudentCount / StudentCount * 100).ToString("#");
+            if (PresentTeacherCount > 0)
+                TeacherPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
+            //if (StudentCount > 0) { }
             string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
-            foreach (string m in Months)
-            {
 
-                var PresentStudentsByMonth = await (from user in _context.Users
-                                                    join attendance in _context.Attendances
-                                                    on user.Id equals attendance.UserId
-                                                    where attendance.CreatedDatetime.Date.Month == (Array.IndexOf(Months, m) + 1)
-                                                    where attendance.Present == true
-                                                    && user.UserTypeId == (int)Enumm.UserType.Student
-                                                    && user.Active == true
-                                                    select new { user, attendance }).CountAsync();
+            var param1 = new SqlParameter("@SchoolBranchID", 1);
+            var param2 = new SqlParameter("@UserTypeId", (int)Enumm.UserType.Student);
+            var StudentMonthWisePercentage = StudentCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
+            StudentMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
+            param2.Value = (int)Enumm.UserType.Teacher;
+            var TeacherMonthWisePercentage = TeacherCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
+            TeacherMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
 
-                decimal StudentPercentageByMonth = CalculatePercentage(PresentStudentsByMonth, StudentCount);
-                StudentMonthWisePercentage.Add(StudentPercentageByMonth);
 
-                var PresentTeachersByMonth = await (from user in _context.Users
-                                                    join attendance in _context.Attendances
-                                                    on user.Id equals attendance.UserId
-                                                    where attendance.CreatedDatetime.Date.Month == (Array.IndexOf(Months, m) + 1)
-                                                    where attendance.Present == true
-                                                    && user.UserTypeId == (int)Enumm.UserType.Teacher
-                                                    && user.Active == true
-                                                    select new { user, attendance }).CountAsync();
-
-                decimal TeacherPercentageByMonth = CalculatePercentage(PresentTeachersByMonth, TeacherCount);
-                TeacherMonthWisePercentage.Add(TeacherPercentageByMonth);
-            }
             _serviceResponse.Data = new { StudentPercentage, TeacherPercentage, StudentMonthWisePercentage, TeacherMonthWisePercentage };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-        public static decimal CalculatePercentage(int count,int total)
+        public static decimal CalculatePercentage(int count, int total)
         {
             return decimal.Round((decimal)count / total * 100);
         }

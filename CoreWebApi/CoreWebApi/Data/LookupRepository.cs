@@ -27,7 +27,7 @@ namespace CoreWebApi.Data
         }
         public async Task<List<Class>> GetClasses()
         {
-            List<Class> list = await _context.Class.ToListAsync();
+            List<Class> list = await _context.Class.Where(m => m.Active == true).ToListAsync();
 
             return list;
         }
@@ -69,13 +69,14 @@ namespace CoreWebApi.Data
 
         public async Task<List<Subject>> GetSubjects()
         {
-            return await _context.Subjects.ToListAsync();
+            return await _context.Subjects.Where(m => m.Active == true).ToListAsync();
         }
 
         public async Task<List<UserForListDto>> GetTeachers()
         {
             var users = await (from u in _context.Users
                                where u.UserTypeId == (int)Enumm.UserType.Teacher
+                               && u.Active == true
                                select u).ToListAsync();
             return _mapper.Map<List<UserForListDto>>(users);
 
@@ -88,6 +89,7 @@ namespace CoreWebApi.Data
                                on u.Id equals csU.UserId
                                where csU.ClassSectionId == csId
                                && u.UserTypeId == (int)Enumm.UserType.Student
+                               && u.Active == true
                                select u).ToListAsync();
             return _mapper.Map<List<UserForListDto>>(users);
 

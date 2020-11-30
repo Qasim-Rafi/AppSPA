@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Models;
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
@@ -58,6 +59,7 @@ namespace CoreWebApi.Data
         public DbSet<SubjectAssignment> SubjectAssignments { get; set; }
         public DbSet<SubjectContent> SubjectContents { get; set; }
         public DbSet<SubjectContentDetail> SubjectContentDetails { get; set; }
+        public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
