@@ -14,10 +14,12 @@ namespace CoreWebApi.Data
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext _context;
+        ServiceResponse<object> _serviceResponse;
 
         public AuthRepository(DataContext context)
         {
             _context = context;
+            _serviceResponse = new ServiceResponse<object>();
         }
 
         public async Task<User> Login(string username, string password)
@@ -69,13 +71,52 @@ namespace CoreWebApi.Data
         //    }
         //}
 
-        public async Task<User> Register(UserForRegisterDto model, string regNo)
+        public async Task<ServiceResponse<object>> Register(UserForRegisterDto model, string regNo)
         {
+            SchoolBranch branch = null;
+            if (model.UserType.ToLower() == "school")
+            {
+                var schools = _context.SchoolAcademy.OrderByDescending(m => m.Id).ToList();
+                var schoolAcademy = new SchoolAcademy
+                {
+                    Name = "School-" + (schools.Count() + 1),
+                    PrimaryContactPerson = "---",
+                    SecondaryContactPerson = "---",
+                    PrimaryphoneNumber = "0000-0000000",
+                    SecondaryphoneNumber = "0000-0000000",
+                    Email = "Email@NewSchool.com",
+                    PrimaryAddress = "---",
+                    SecondaryAddress = "---",
+                    Active = true
+                };
 
+                _context.SchoolAcademy.Add(schoolAcademy);
+                _context.SaveChanges();
+                int schoolAcademyId = schoolAcademy.Id;
 
-            var branch = await _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefaultAsync();
+                if (schoolAcademyId > 0)
+                {
+                    var branches = _context.SchoolBranch.OrderByDescending(m => m.Id).ToList();
+                    var schoolBranhes = new SchoolBranch
+                    {
+                        BranchName = "Branch-" + (branches.Count() + 1),
+                        SchoolAcademyID = schoolAcademyId,
+                        CreatedDateTime = DateTime.Now,
+                        Active = true,
+                        RegistrationNumber = (Convert.ToInt32(branches.FirstOrDefault().RegistrationNumber) + 1).ToString()
+                    };
+
+                    _context.AddRange(schoolBranhes);
+                    _context.SaveChanges();
+                    branch = await _context.SchoolBranch.LastOrDefaultAsync();
+
+                }
+            }
+            else
+            {
+                branch = await _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefaultAsync();
+            }
             //var UserTypes = _context.UserTypes.ToList();
-
             var userToCreate = new User
             {
                 Username = model.Username,
@@ -86,7 +127,7 @@ namespace CoreWebApi.Data
                 Gender = "male",
                 Active = true,
                 CreatedDateTime = DateTime.Now,
-                //Role = UserTypes.Where(m => m.Id == model.UserTypeId).FirstOrDefault().Name
+                Role = _context.UserTypes.Where(m => m.Id == model.UserTypeId).FirstOrDefault()?.Name
             };
             byte[] passwordHash, passwordSalt;
             Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
@@ -96,8 +137,10 @@ namespace CoreWebApi.Data
 
             await _context.Users.AddAsync(userToCreate);
             await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
 
-            return userToCreate;
 
         }
 

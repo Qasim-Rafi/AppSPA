@@ -262,6 +262,17 @@ namespace CoreWebApi.Controllers
 
 
         }
+
+        [HttpPost("SearchTutor")]
+        public async Task<IActionResult> SearchTutor(SearchTutorDto searchModel)
+        {
+
+            _response = await _repo.SearchTutor(searchModel);
+
+            return Ok(_response);
+
+        }
+
         //[HttpPost("uploadimage")]
         //public async Task<IActionResult> uploadimage(IFormFileCollection files)
         //{

@@ -390,7 +390,7 @@ namespace CoreWebApi.Data
                             _context.Photos.Update(updatePhoto);
                             await _context.SaveChangesAsync();
                         }
-                       
+
                     }
                 }
                 serviceResponse.Message = CustomMessage.Updated;
@@ -843,6 +843,45 @@ namespace CoreWebApi.Data
 
             _serviceResponse.Success = true;
             _serviceResponse.Data = users;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> SearchTutor(SearchTutorDto model)
+        {
+            var users = await (from u in _context.Users
+                               join csU in _context.ClassSectionUsers
+                               on u.Id equals csU.UserId
+                               where csU.ClassSection.ClassId == model.GradeId
+                               && u.Gender.ToLower() == model.Gender.ToLower()
+                               && u.StateId == model.StateId
+                               && u.Active == true
+                               && u.UserTypeId == (int)Enumm.UserType.Teacher
+                               select u).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                               {
+                                   Id = o.Id,
+                                   FullName = o.FullName,
+                                   DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                                   Email = o.Email,
+                                   Gender = o.Gender,
+                                   Username = o.Username,
+                                   CountryId = o.CountryId,
+                                   StateId = o.StateId,
+                                   CountryName = o.Country.Name,
+                                   StateName = o.State.Name,
+                                   OtherState = o.OtherState,
+                                   Active = o.Active,
+                                   Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                                   {
+                                       Id = x.Id,
+                                       Name = x.Name,
+                                       IsPrimary = x.IsPrimary,
+                                       Url = _File.AppendImagePath(x.Name)
+                                   }).ToList(),
+                               }).ToListAsync();
+
+
+            _serviceResponse.Data = users;
+            _serviceResponse.Success = true;
             return _serviceResponse;
         }
     }

@@ -9,7 +9,7 @@ namespace CoreWebApi.IData
 {
    public interface IAuthRepository
     {
-        Task<User> Register(UserForRegisterDto user, string regNo);
+        Task<ServiceResponse<object>> Register(UserForRegisterDto user, string regNo);
 
         Task<User> Login(string username, string password);
         Task<object> GetSchoolDetails(string regNo);

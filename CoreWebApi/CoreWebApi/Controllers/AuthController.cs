@@ -27,6 +27,7 @@ namespace CoreWebApi.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
+        ServiceResponse<object> _response;
 
 
         public AuthController(IAuthRepository repo, IConfiguration config, IHttpContextAccessor httpContextAccessor)
@@ -34,6 +35,7 @@ namespace CoreWebApi.Controllers
         {
             _config = config;
             _repo = repo;
+            _response = new ServiceResponse<object>();
         }
 
         [HttpPost("register")]
@@ -53,10 +55,10 @@ namespace CoreWebApi.Controllers
 
 
             var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
+            
+            _response = await _repo.Register(userForRegisterDto, regNo);
 
-            var createdUser = await _repo.Register(userForRegisterDto, regNo);
-
-            return StatusCode(201);
+            return Ok(_response);
 
         }
 

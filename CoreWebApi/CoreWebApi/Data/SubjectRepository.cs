@@ -175,7 +175,7 @@ namespace CoreWebApi.Data
                     SubjectId = SubjectId,
                     ClassId = model.ClassId,
                     SchoolId = LoggedIn_BranchId,
-                    TableOfContent = model.TableOfContent,
+                    //TableOfContent = model.TableOfContent,
                     CreatedById = LoggedInUserId,
                     CreatedDateTime = DateTime.Now
                 });
@@ -222,7 +222,7 @@ namespace CoreWebApi.Data
                         SubjectId = SubjectId,
                         ClassId = model.ClassId,
                         SchoolId = LoggedIn_BranchId,
-                        TableOfContent = model.TableOfContent,
+                        //TableOfContent = model.TableOfContent,
                         CreatedById = LoggedInUserId,
                         CreatedDateTime = DateTime.Now
                     });

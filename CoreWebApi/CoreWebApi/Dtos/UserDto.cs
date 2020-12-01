@@ -161,6 +161,7 @@ namespace CoreWebApi.Dtos
         [EmailAddress]
         public string Email { get; set; }
         public int UserTypeId { get; set; } = 2;
+        public string UserType { get; set; }
     }
 
     public class UserForAddInGroupDto : BaseDto
@@ -206,5 +207,11 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public List<GroupUserListForEditDto> Students { get; set; }
     }
+    public class SearchTutorDto
+    {
+        public int StateId { get; set; }
+        public int GradeId { get; set; }
+        public string Gender { get; set; }
 
+    }
 }

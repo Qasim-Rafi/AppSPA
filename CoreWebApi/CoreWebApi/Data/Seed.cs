@@ -67,17 +67,18 @@ namespace CoreWebApi.Data
 
                 if (schoolAcademies == null)
                 {
-                    var schoolAcademy = new SchoolAcademy();
-
-                    schoolAcademy.Name = "LGS";
-                    schoolAcademy.PrimaryContactPerson = "Qasim Rafi";
-                    schoolAcademy.SecondaryContactPerson = "Ahsan Meraj";
-                    schoolAcademy.PrimaryphoneNumber = "03217575840";
-                    schoolAcademy.SecondaryphoneNumber = "03003207433";
-                    schoolAcademy.Email = "Qasim@FabIntel.com";
-                    schoolAcademy.PrimaryAddress = "Allama Iqbal Town";
-                    schoolAcademy.SecondaryAddress = "Garden Tonw";
-                    schoolAcademy.Active = true;
+                    var schoolAcademy = new SchoolAcademy
+                    {
+                        Name = "School-01",//"LGS";
+                        PrimaryContactPerson = "FabIntel",// "Qasim Rafi";
+                        SecondaryContactPerson = "FabIntel2",// "Ahsan Meraj";
+                        PrimaryphoneNumber = "0000-0000000",//"03217575840";
+                        SecondaryphoneNumber = "0000-0000000",// "03003207433";
+                        Email = "Email@OnlineAcademy.com",// "Qasim@FabIntel.com";
+                        PrimaryAddress = "Garden Town",// "Allama Iqbal Town";
+                        SecondaryAddress = "Lahore",// "Garden Tonw";
+                        Active = true
+                    };
 
                     context.SchoolAcademy.Add(schoolAcademy);
                     context.SaveChanges();
@@ -88,8 +89,9 @@ namespace CoreWebApi.Data
 
                         var schoolBranhes = new List<SchoolBranch>
                            {
-                              new SchoolBranch { BranchName ="Dolphin",SchoolAcademyID = schoolAcademyId,CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "10420001"},
-                              new SchoolBranch { BranchName ="Jasmine",SchoolAcademyID = schoolAcademyId,CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "10420002"}
+                              new SchoolBranch { BranchName ="Online Academy",SchoolAcademyID = schoolAcademyId, CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "20201210001"},
+                              //new SchoolBranch { BranchName ="Dolphin",SchoolAcademyID = schoolAcademyId,CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "10420001"},
+                              //new SchoolBranch { BranchName ="Jasmine",SchoolAcademyID = schoolAcademyId,CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "10420002"}
                           };
                         context.AddRange(schoolBranhes);
                         context.SaveChanges();
