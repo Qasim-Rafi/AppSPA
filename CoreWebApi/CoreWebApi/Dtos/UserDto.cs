@@ -214,4 +214,21 @@ namespace CoreWebApi.Dtos
         public string Gender { get; set; }
 
     }
+    public class TutorForListDto
+    {
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string FullName { get; set; }
+        public string Gender { get; set; }
+        public string DateofBirth { get; set; }
+        public int? StateId { get; set; }
+        public int? CountryId { get; set; }
+        public string StateName { get; set; }
+        public string CountryName { get; set; }
+        public string OtherState { get; set; }
+        public int? GradeId { get; set; }
+        public string GradeName { get; set; }
+        public List<Photo> Photos { get; set; }
+    }
 }

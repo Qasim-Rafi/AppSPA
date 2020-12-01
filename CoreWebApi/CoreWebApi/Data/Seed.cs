@@ -135,12 +135,12 @@ namespace CoreWebApi.Data
                         user.Username = user.Username.ToLower();
                         user.Email = "test@email";
                         user.FullName = "test name 0" + (index + 1);
-                        user.UserTypeId = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
+                        user.UserTypeId = index == 0 ? context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Id : context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
                         user.CreatedDateTime = DateTime.Now;
                         user.SchoolBranchId = schoolBranch.Id;
                         user.RollNumber = "R-00" + (index + 1);
                         user.Active = true;
-                        user.Role = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Name;
+                        user.Role = index == 0 ? context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Name : context.UserTypes.FirstOrDefault(m => m.Name == "Student").Name;
                         context.Users.Add(user);
 
 
@@ -206,6 +206,8 @@ namespace CoreWebApi.Data
             {
                 var GetClasses = context.Class.Where(m => m.Active == true).ToList();
                 var GetSections = context.Sections.ToList();
+                var schoolAcademy = context.SchoolAcademy.FirstOrDefault();
+
                 foreach (var obj in GetClasses)
                 {
                     foreach (var item in GetSections)
@@ -214,6 +216,7 @@ namespace CoreWebApi.Data
                         {
                             ClassId = obj.Id,
                             SectionId = item.Id,
+                            SchoolAcademyId = schoolAcademy != null ? schoolAcademy.Id : 0,
                             Active = true
                         };
                         context.ClassSections.Add(newobj);

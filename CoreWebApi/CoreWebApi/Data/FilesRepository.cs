@@ -38,7 +38,9 @@ namespace CoreWebApi.Data
             //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
             //string contentRootPath = _HostEnvironment.WebRootPath;
             //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
-            var path = Path.Combine(virtualUrl, "api/DownloadFile", imageName);
+
+            string path = $"{ virtualUrl }/webAPI/DownloadFile/{ imageName }";
+
             return path;
         }
         public string GetBinaryFile(IFormFile file)
@@ -47,7 +49,7 @@ namespace CoreWebApi.Data
             using (var ms = new MemoryStream())
             {
                 file.CopyTo(ms);
-                bytes = ms.ToArray();               
+                bytes = ms.ToArray();
             }
             var base64 = Convert.ToBase64String(bytes);
             return base64;

@@ -305,7 +305,7 @@ namespace CoreWebApi.Controllers
 
 
         // downlaod file/image
-        [HttpGet("/api/DownloadFile/{fileName}"), AllowAnonymous]
+        [HttpGet("/webAPI/DownloadFile/{fileName}"), AllowAnonymous]
         public IActionResult Download(string fileName)
         {
             var getFile = _context.Photos.Where(m => m.Name == fileName).FirstOrDefault();

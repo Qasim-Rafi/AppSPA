@@ -265,6 +265,8 @@ namespace CoreWebApi.Data
             ServiceResponse<UserForListDto> serviceResponse = new ServiceResponse<UserForListDto>();
 
             var UserTypes = _context.UserTypes.ToList();
+            DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
+
             var userToCreate = new User
             {
                 FullName = userDto.FullName,
@@ -273,7 +275,7 @@ namespace CoreWebApi.Data
                 CreatedDateTime = DateTime.Now,
                 Gender = userDto.Gender,
                 Active = true,
-                DateofBirth = Convert.ToDateTime(userDto.DateofBirth),
+                DateofBirth = DateOfBirth,
                 LastActive = DateTime.Now,
                 StateId = userDto.StateId,
                 CountryId = userDto.CountryId,
@@ -310,13 +312,15 @@ namespace CoreWebApi.Data
             User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
             if (dbUser != null)
             {
+                DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
+
                 dbUser.FullName = user.FullName;
                 dbUser.Email = user.Email;
                 dbUser.Username = user.Username.ToLower();
                 dbUser.StateId = user.StateId;
                 dbUser.CountryId = user.CountryId;
                 dbUser.OtherState = user.OtherState;
-                dbUser.DateofBirth = Convert.ToDateTime(user.DateofBirth);
+                dbUser.DateofBirth = DateOfBirth;
                 dbUser.Gender = user.Gender;
                 dbUser.Active = user.Active;
                 //dbUser.UserTypeId = user.UserTypeId;
@@ -848,29 +852,30 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> SearchTutor(SearchTutorDto model)
         {
-            var users = await (from u in _context.Users
-                               join csU in _context.ClassSectionUsers
-                               on u.Id equals csU.UserId
-                               where csU.ClassSection.ClassId == model.GradeId
-                               && u.Gender.ToLower() == model.Gender.ToLower()
-                               && u.StateId == model.StateId
-                               && u.Active == true
-                               && u.UserTypeId == (int)Enumm.UserType.Teacher
-                               select u).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+            var users = await (from user in _context.Users                                   
+                               join csUser in _context.ClassSectionUsers
+                               on user.Id equals csUser.UserId
+                               where csUser.ClassSection.ClassId == model.GradeId
+                               && user.Gender.ToLower() == model.Gender.ToLower()
+                               && user.StateId == model.StateId
+                               && user.Active == true
+                               && user.UserTypeId == (int)Enumm.UserType.Teacher
+                               select new { user, csUser }).Select(o => new TutorForListDto
                                {
-                                   Id = o.Id,
-                                   FullName = o.FullName,
-                                   DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
-                                   Email = o.Email,
-                                   Gender = o.Gender,
-                                   Username = o.Username,
-                                   CountryId = o.CountryId,
-                                   StateId = o.StateId,
-                                   CountryName = o.Country.Name,
-                                   StateName = o.State.Name,
-                                   OtherState = o.OtherState,
-                                   Active = o.Active,
-                                   Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                                   Id = o.user.Id,
+                                   FullName = o.user.FullName,
+                                   DateofBirth = o.user.DateofBirth != null ? DateFormat.ToDate(o.user.DateofBirth.ToString()) : "",
+                                   Email = o.user.Email,
+                                   Gender = o.user.Gender,
+                                   Username = o.user.Username,
+                                   CountryId = o.user.CountryId,
+                                   StateId = o.user.StateId,
+                                   CountryName = o.user.Country.Name,
+                                   StateName = o.user.State.Name,
+                                   OtherState = o.user.OtherState,
+                                   GradeId = o.csUser.ClassSection.ClassId,
+                                   GradeName = _context.Class.FirstOrDefault(m => m.Id == o.csUser.ClassSection.ClassId).Name,
+                                   Photos = _context.Photos.Where(m => m.UserId == o.user.Id).OrderByDescending(m => m.Id).Select(x => new Photo
                                    {
                                        Id = x.Id,
                                        Name = x.Name,

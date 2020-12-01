@@ -86,10 +86,11 @@ namespace CoreWebApi.Data
         public async Task<int> AddQuiz(QuizDtoForAdd model)
         {
 
+            DateTime QuizDate = DateTime.ParseExact(model.QuizDate, "MM/dd/yyyy", null);
 
             var quiz = new Quizzes
             {
-                QuizDate = Convert.ToDateTime(model.QuizDate),
+                QuizDate = QuizDate,
                 NoOfQuestions = model.NoOfQuestions,
                 SubjectId = model.SubjectId,
                 ClassSectionId = model.ClassSectionId,
@@ -410,9 +411,11 @@ namespace CoreWebApi.Data
         public async Task<int> UpdateQuiz(int id, QuizDtoForAdd model)
         {
             var quiz = _context.Quizzes.Where(m => m.Id == id).FirstOrDefault();
+            DateTime QuizDate = DateTime.ParseExact(model.QuizDate, "MM/dd/yyyy", null);
+
             if (quiz != null)
             {
-                quiz.QuizDate = Convert.ToDateTime(model.QuizDate);
+                quiz.QuizDate = QuizDate;
                 quiz.NoOfQuestions = model.NoOfQuestions;
                 quiz.SubjectId = model.SubjectId;
                 quiz.ClassSectionId = model.ClassSectionId;

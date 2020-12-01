@@ -168,10 +168,13 @@ namespace CoreWebApi.Data
             List<LectureTiming> listToAdd = new List<LectureTiming>();
             foreach (var item in model)
             {
+                DateTime StartTime = DateTime.ParseExact(item.StartTime, "MM/dd/yyyy", null);
+                DateTime EndTime = DateTime.ParseExact(item.EndTime, "MM/dd/yyyy", null);
+
                 listToAdd.Add(new LectureTiming
                 {
-                    StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay,
-                    EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
+                    StartTime = StartTime.TimeOfDay,
+                    EndTime = EndTime.TimeOfDay,
                     IsBreak = item.IsBreak,
                     Day = item.Day,
                     SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
@@ -374,12 +377,15 @@ namespace CoreWebApi.Data
             List<EventDayAssignment> listToAdd = new List<EventDayAssignment>();
             foreach (var item in model)
             {
+                DateTime Start = DateTime.ParseExact(item.Start, "MM/dd/yyyy", null);
+                DateTime End = DateTime.ParseExact(item.End, "MM/dd/yyyy", null);
+
                 if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
                 {
                     var dayAssignment = new EventDayAssignment();
-                    dayAssignment.StartDate = Convert.ToDateTime(item.Start);
+                    dayAssignment.StartDate = Start;
                     if (!string.IsNullOrEmpty(item.End))
-                        dayAssignment.EndDate = Convert.ToDateTime(item.End);
+                        dayAssignment.EndDate = End;
                     else
                         dayAssignment.EndDate = null;
                     dayAssignment.EventId = item.EventId;
@@ -391,9 +397,9 @@ namespace CoreWebApi.Data
                 {
                     var ToUpdate = await _context.EventDaysAssignments.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
 
-                    ToUpdate.StartDate = Convert.ToDateTime(item.Start);
+                    ToUpdate.StartDate = Start;
                     if (!string.IsNullOrEmpty(item.End))
-                        ToUpdate.EndDate = Convert.ToDateTime(item.End);
+                        ToUpdate.EndDate = End;
                     else
                         ToUpdate.EndDate = null;
                     ToUpdate.AllDay = item.AllDay;
