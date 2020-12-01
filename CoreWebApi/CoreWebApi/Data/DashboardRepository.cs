@@ -83,15 +83,38 @@ namespace CoreWebApi.Data
             var param2 = new SqlParameter("@UserTypeId", (int)Enumm.UserType.Student);
             var StudentMonthWisePercentage = StudentCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
             StudentMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
-            foreach (var month in Months)
-            {
-                
-            }
-            
+
             param2.Value = (int)Enumm.UserType.Teacher;
             var TeacherMonthWisePercentage = TeacherCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
             TeacherMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
-
+            
+            var onlyStudentNames = StudentMonthWisePercentage.Select(m => m.MonthName);
+            var onlyTeacherNames = TeacherMonthWisePercentage.Select(m => m.MonthName);
+            foreach (var month in Months)
+            {
+                if (!onlyStudentNames.Contains(month))
+                {
+                    StudentMonthWisePercentage.Add(new GetAttendancePercentageByMonthDto
+                    {
+                        MonthName = month,
+                        Month = (Array.IndexOf(Months, month) + 1),
+                        MonthNumber = 1,
+                        Percentage = 0
+                    });
+                }
+                if (!onlyTeacherNames.Contains(month))
+                {
+                    TeacherMonthWisePercentage.Add(new GetAttendancePercentageByMonthDto
+                    {
+                        MonthName = month,
+                        Month = (Array.IndexOf(Months, month) + 1),
+                        MonthNumber = 1,
+                        Percentage = 0
+                    });
+                }
+            }
+            StudentMonthWisePercentage = StudentMonthWisePercentage.OrderBy(m => m.Month).ToList();
+            TeacherMonthWisePercentage = TeacherMonthWisePercentage.OrderBy(m => m.Month).ToList();
 
             _serviceResponse.Data = new { StudentPercentage, TeacherPercentage, StudentMonthWisePercentage, TeacherMonthWisePercentage };
             _serviceResponse.Success = true;

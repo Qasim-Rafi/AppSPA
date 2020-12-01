@@ -133,6 +133,7 @@ namespace CoreWebApi.Data
                         user.PasswordHash = passwordhash;
                         user.PasswordSalt = passwordSalt;
                         user.Username = user.Username.ToLower();
+                        user.DateofBirth = DateTime.Now;
                         user.Email = "test@email";
                         user.FullName = "test name 0" + (index + 1);
                         user.UserTypeId = index == 0 ? context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Id : context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
