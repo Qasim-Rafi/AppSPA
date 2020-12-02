@@ -132,7 +132,7 @@ namespace CoreWebApi.Data
                 await _context.Users.AddAsync(userToCreate);
                 await _context.SaveChangesAsync();
             }
-            else if (model.UserType.ToLower() == "teacher")
+            else if (model.UserType.ToLower() == "tutor")
             {
                 branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
                 var userToCreate = new User
