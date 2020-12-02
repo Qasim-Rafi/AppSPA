@@ -87,16 +87,12 @@ namespace CoreWebApi.Data
                     if (schoolAcademyId > 0)
                     {
 
-                        var schoolBranhes = new List<SchoolBranch>
-                           {
-                              new SchoolBranch { BranchName ="Online Academy",SchoolAcademyID = schoolAcademyId, CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "20201210001"},
-                              //new SchoolBranch { BranchName ="Dolphin",SchoolAcademyID = schoolAcademyId,CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "10420001"},
-                              //new SchoolBranch { BranchName ="Jasmine",SchoolAcademyID = schoolAcademyId,CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "10420002"}
-                          };
-                        context.AddRange(schoolBranhes);
+                        var schoolBranch = new SchoolBranch { BranchName = "Online Academy", SchoolAcademyID = schoolAcademyId, CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "20000001" };
+
+                        context.SchoolBranch.Add(schoolBranch);
                         context.SaveChanges();
 
-                        schoolBranchId = schoolBranhes[0].Id;
+                        schoolBranchId = schoolBranch.Id;
 
                     }
 
@@ -139,7 +135,7 @@ namespace CoreWebApi.Data
                         user.UserTypeId = index == 0 ? context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Id : context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
                         user.CreatedDateTime = DateTime.Now;
                         user.SchoolBranchId = schoolBranch.Id;
-                        user.RollNumber = "R-00" + (index + 1);
+                        user.RollNumber = index == 0 ? null : "R-00" + (index + 1);
                         user.Active = true;
                         user.Role = index == 0 ? context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Name : context.UserTypes.FirstOrDefault(m => m.Name == "Student").Name;
                         context.Users.Add(user);

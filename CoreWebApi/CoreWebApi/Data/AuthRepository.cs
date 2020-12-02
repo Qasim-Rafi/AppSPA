@@ -103,40 +103,87 @@ namespace CoreWebApi.Data
                         SchoolAcademyID = schoolAcademyId,
                         CreatedDateTime = DateTime.Now,
                         Active = true,
-                        RegistrationNumber = (Convert.ToInt32(branches.FirstOrDefault().RegistrationNumber) + 1).ToString()
+                        RegistrationNumber = branches.Count() == 1 ? "10000000" : (Convert.ToInt32(branches.FirstOrDefault().RegistrationNumber) + 1).ToString()
                     };
 
                     _context.AddRange(schoolBranhes);
                     _context.SaveChanges();
-                    branch = await _context.SchoolBranch.LastOrDefaultAsync();
+                    branch = await _context.SchoolBranch.OrderByDescending(m => m.Id).FirstOrDefaultAsync();
 
                 }
+                var userToCreate = new User
+                {
+                    Username = model.Username,
+                    FullName = model.Username,
+                    UserTypeId = (int)Enumm.UserType.Admin,
+                    Email = model.Email,
+                    SchoolBranchId = branch.Id,
+                    Gender = "male",
+                    Active = true,
+                    CreatedDateTime = DateTime.Now,
+                    Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Admin).FirstOrDefault()?.Name
+                };
+                byte[] passwordHash, passwordSalt;
+                Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
+
+                userToCreate.PasswordHash = passwordHash;
+                userToCreate.PasswordSalt = passwordSalt;
+
+                await _context.Users.AddAsync(userToCreate);
+                await _context.SaveChangesAsync();
             }
-            else
+            else if (model.UserType.ToLower() == "teacher")
             {
-                branch = await _context.SchoolBranch.Where(m => m.RegistrationNumber == regNo).FirstOrDefaultAsync();
+                branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
+                var userToCreate = new User
+                {
+                    Username = model.Username,
+                    FullName = model.Username,
+                    UserTypeId = (int)Enumm.UserType.Teacher,
+                    Email = model.Email,
+                    SchoolBranchId = branch.Id,
+                    Gender = "male",
+                    Active = true,
+                    CreatedDateTime = DateTime.Now,
+                    Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Teacher).FirstOrDefault()?.Name
+                };
+                byte[] passwordHash, passwordSalt;
+                Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
+
+                userToCreate.PasswordHash = passwordHash;
+                userToCreate.PasswordSalt = passwordSalt;
+
+                await _context.Users.AddAsync(userToCreate);
+                await _context.SaveChangesAsync();
+
+            }
+            else if (model.UserType.ToLower() == "student")
+            {
+                branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
+                var userToCreate = new User
+                {
+                    Username = model.Username,
+                    FullName = model.Username,
+                    UserTypeId = (int)Enumm.UserType.Student,
+                    Email = model.Email,
+                    SchoolBranchId = branch.Id,
+                    Gender = "male",
+                    Active = true,
+                    CreatedDateTime = DateTime.Now,
+                    Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Student).FirstOrDefault()?.Name
+                };
+                byte[] passwordHash, passwordSalt;
+                Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
+
+                userToCreate.PasswordHash = passwordHash;
+                userToCreate.PasswordSalt = passwordSalt;
+
+                await _context.Users.AddAsync(userToCreate);
+                await _context.SaveChangesAsync();
+
             }
             //var UserTypes = _context.UserTypes.ToList();
-            var userToCreate = new User
-            {
-                Username = model.Username,
-                FullName = model.Username,
-                UserTypeId = model.UserTypeId,
-                Email = model.Email,
-                SchoolBranchId = branch.Id,
-                Gender = "male",
-                Active = true,
-                CreatedDateTime = DateTime.Now,
-                Role = _context.UserTypes.Where(m => m.Id == model.UserTypeId).FirstOrDefault()?.Name
-            };
-            byte[] passwordHash, passwordSalt;
-            Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
 
-            userToCreate.PasswordHash = passwordHash;
-            userToCreate.PasswordSalt = passwordSalt;
-
-            await _context.Users.AddAsync(userToCreate);
-            await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;

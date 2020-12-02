@@ -26,7 +26,7 @@ namespace CoreWebApi
                 var context = services.GetRequiredService<DataContext>();
                 context.Database.Migrate();
 
-                Seed.SeedSchoolAcademy(context);
+                //Seed.SeedSchoolAcademy(context);
                 Seed.SeedUserTypes(context);
                 Seed.SeedUsers(context);
                 Seed.SeedLeaveTypes(context);
