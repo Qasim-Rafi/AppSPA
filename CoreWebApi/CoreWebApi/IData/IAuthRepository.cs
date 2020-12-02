@@ -12,7 +12,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> Register(UserForRegisterDto user, string regNo);
 
         Task<User> Login(string username, string password);
-        Task<object> GetSchoolDetails(string regNo);
+        Task<object> GetSchoolDetails(string regNo, int branchId);
         Task<bool> UserExists(string  username);
 
     }

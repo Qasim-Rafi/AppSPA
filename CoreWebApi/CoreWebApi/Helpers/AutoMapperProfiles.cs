@@ -32,7 +32,22 @@ namespace CoreWebApi.Helpers
             CreateMap<Subject, SubjectDtoForAdd>();
             CreateMap<Subject, SubjectDtoForEdit>();
             CreateMap<Subject, SubjectDtoForDetail>();
-            CreateMap<Subject, SubjectDtoForList>();
+            CreateMap<Subject, SubjectDtoForList>();           
+            // assginment
+            CreateMap<Assignment, AssignmentDtoForAdd>();
+            CreateMap<Assignment, AssignmentDtoForEdit>();
+            CreateMap<Assignment, AssignmentDtoForDetail>();
+            CreateMap<Assignment, AssignmentDtoForList>();        
+            // attendance
+            CreateMap<Attendance, AttendanceDtoForAdd>();
+            CreateMap<Attendance, AttendanceDtoForEdit>();
+            CreateMap<Attendance, AttendanceDtoForDetail>();
+            CreateMap<Attendance, AttendanceDtoForList>();   
+            // leave
+            CreateMap<Leave, LeaveDtoForAdd>();
+            CreateMap<Leave, LeaveDtoForEdit>();
+            CreateMap<Leave, LeaveDtoForDetail>();
+            CreateMap<Leave, LeaveDtoForList>();
            
         }
     }

@@ -55,7 +55,7 @@ namespace CoreWebApi.Controllers
 
 
             var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
-            
+
             _response = await _repo.Register(userForRegisterDto, regNo);
 
             return Ok(_response);
@@ -75,11 +75,13 @@ namespace CoreWebApi.Controllers
 
             if (userFromRepo == null)
             {
-                return Unauthorized();
+                _response.Success = false;
+                _response.Message = CustomMessage.UnAuthorized;
+                return Ok(_response);
             }
 
             var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
-            dynamic schoolBranchDetails = await _repo.GetSchoolDetails(regNo);
+            dynamic schoolBranchDetails = await _repo.GetSchoolDetails(regNo, userFromRepo.SchoolBranchId);
 
 
             Claim[] claims = new[]
@@ -105,14 +107,16 @@ namespace CoreWebApi.Controllers
 
             //var session = HttpContext.Session;
             //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
-            return base.Ok(new
+            _response.Data = new
             {
                 loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value,
                 loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.Name.ToString())).Value,
                 role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
                 schoolName = schoolBranchDetails.school.Name,
                 token = tokenHandler.WriteToken(token)
-            });
+            };
+            _response.Success = true;
+            return base.Ok(_response);
 
 
         }

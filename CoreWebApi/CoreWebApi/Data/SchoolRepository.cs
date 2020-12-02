@@ -533,7 +533,8 @@ namespace CoreWebApi.Data
                 ClassSectionId = model.ClassSectionId,
                 LectureUrl = model.LectureUrl,
                 CreatedDateTime = DateTime.Now,
-                CreatedById = Convert.ToInt32(model.LoggedIn_UserId)
+                CreatedById = Convert.ToInt32(model.LoggedIn_UserId),
+                SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId),
             };
             await _context.UploadedLectures.AddAsync(lecture);
             await _context.SaveChangesAsync();

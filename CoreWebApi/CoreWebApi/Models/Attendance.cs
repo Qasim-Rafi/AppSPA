@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,11 +17,12 @@ namespace CoreWebApi.Models
         public bool Late { get; set; }
         public string Comments { get; set; }
         public DateTime CreatedDatetime { get; set; }
+        public int SchoolBranchId { get; set; }
 
         //public virtual User User { get; set; }
 
         public virtual ClassSection ClassSection { get; set; }
-        //public virtual ICollection<ClassSectionUserAssignment> ClassSectionUserAssignments { get; set; }
-
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranch { get; set; }
     }
 }

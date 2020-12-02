@@ -10,7 +10,7 @@ namespace CoreWebApi.Dtos
     public class ExamDto
     {
     }
-    public class QuizDtoForAdd
+    public class QuizDtoForAdd : BaseDto
     {
         [Required]
         [DateValidation(ErrorMessage = "QuizDate is not in correct format")]

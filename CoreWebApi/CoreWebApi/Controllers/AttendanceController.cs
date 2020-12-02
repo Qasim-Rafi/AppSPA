@@ -11,13 +11,14 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Data;
 using CoreWebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CoreWebApi.Controllers
 {
     //[Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
-    public class AttendanceController : ControllerBase
+    public class AttendanceController : BaseController
     {
         private readonly IAttendanceRepository _repo;
         private readonly IUserRepository _userRepository;
@@ -25,7 +26,9 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         ServiceResponse<object> _response;
-        public AttendanceController(IAttendanceRepository repo, IMapper mapper, DataContext context, IUserRepository userRepository)
+        public AttendanceController(IAttendanceRepository repo, IMapper mapper, DataContext context, IUserRepository userRepository,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
@@ -62,7 +65,8 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetAttendanceToDisplay(AttendanceDtoForDisplay model)
         {
             var users = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
-            var DTdate = Convert.ToDateTime(model.date);
+            DateTime DTdate = DateTime.ParseExact(model.date, "MM/dd/yyyy", null);
+            //var DTdate = Convert.ToDateTime(model.date);
             _response.Data = (from user in users
                               join attendance in _context.Attendances
                               on user.UserId equals attendance.UserId
@@ -97,7 +101,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetAttendance(int id)
         {
             var attendance = await _repo.GetAttendance(id);
-            var ToReturn = _mapper.Map<Attendance>(attendance);
+            var ToReturn = _mapper.Map<AttendanceDtoForDetail>(attendance);
             return Ok(ToReturn);
         }
         [HttpPost("Add")]
@@ -107,8 +111,8 @@ namespace CoreWebApi.Controllers
 
             //if (await _repo.AttendanceExists(attendance.UserId))
             //    return BadRequest(new { message = "Attendance Already Exist" });
-
-            var createdObj = await _repo.AddAttendance(list);
+            var LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            var createdObj = await _repo.AddAttendance(LoggedIn_BranchId, list);
 
             return StatusCode(StatusCodes.Status201Created);
 

@@ -67,6 +67,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(new { message = "Class Already Exist" });
 
             @class.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            @class.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
             var createdObj = await _repo.AddClass(@class);
 
             return StatusCode(StatusCodes.Status201Created);

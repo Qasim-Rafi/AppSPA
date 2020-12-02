@@ -21,10 +21,14 @@ namespace CoreWebApi.Models
         public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }
         public string TeacherName { get; set; }
+        public int SchoolBranchId { get; set; }
+
         [ForeignKey("ClassSectionId")]
         public virtual ClassSection ClassSection { get; set; }
         [ForeignKey("CreatedById")]
         public virtual User User { get; set; }
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranch { get; set; }
 
     }
 }

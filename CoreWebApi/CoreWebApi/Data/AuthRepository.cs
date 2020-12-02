@@ -36,22 +36,43 @@ namespace CoreWebApi.Data
 
 
         }
-        public async Task<object> GetSchoolDetails(string regNo)
+        public async Task<object> GetSchoolDetails(string regNo, int branchId)
         {
-            var schoolDetails = await (from school in _context.SchoolAcademy
-                                       join branch in _context.SchoolBranch
-                                       on school.Id equals branch.SchoolAcademyID
-                                       where branch.RegistrationNumber == regNo
-                                       select new
-                                       {
-                                           school,
-                                           branch
-                                       }
-                                ).FirstOrDefaultAsync();
-            if (schoolDetails == null)
-                return null;
+            if (!string.IsNullOrEmpty(regNo))
+            {
+                var schoolDetails = await (from school in _context.SchoolAcademy
+                                           join branch in _context.SchoolBranch
+                                           on school.Id equals branch.SchoolAcademyID
+                                           where branch.RegistrationNumber == regNo
+                                           select new
+                                           {
+                                               school,
+                                               branch
+                                           }
+                               ).FirstOrDefaultAsync();
+                if (schoolDetails == null)
+                    return null;
 
-            return schoolDetails;
+                return schoolDetails;
+                //regNo = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault().RegistrationNumber;
+            }
+            else
+            {
+                var schoolDetails = await (from school in _context.SchoolAcademy
+                                           join branch in _context.SchoolBranch
+                                           on school.Id equals branch.SchoolAcademyID
+                                           where branch.Id == branchId
+                                           select new
+                                           {
+                                               school,
+                                               branch
+                                           }
+                              ).FirstOrDefaultAsync();
+                if (schoolDetails == null)
+                    return null;
+
+                return schoolDetails;
+            }
 
         }
 
@@ -79,7 +100,7 @@ namespace CoreWebApi.Data
                 var schools = _context.SchoolAcademy.OrderByDescending(m => m.Id).ToList();
                 var schoolAcademy = new SchoolAcademy
                 {
-                    Name = "School-" + (schools.Count() + 1),
+                    Name = string.IsNullOrEmpty(model.SchoolName) ? "School-" + (schools.Count() + 1) : model.SchoolName,
                     PrimaryContactPerson = "---",
                     SecondaryContactPerson = "---",
                     PrimaryphoneNumber = "0000-0000000",
@@ -99,7 +120,7 @@ namespace CoreWebApi.Data
                     var branches = _context.SchoolBranch.OrderByDescending(m => m.Id).ToList();
                     var schoolBranhes = new SchoolBranch
                     {
-                        BranchName = "Branch-" + (branches.Count() + 1),
+                        BranchName = string.IsNullOrEmpty(model.SchoolName) ? "Branch-" + (branches.Count() + 1) : model.SchoolName,
                         SchoolAcademyID = schoolAcademyId,
                         CreatedDateTime = DateTime.Now,
                         Active = true,

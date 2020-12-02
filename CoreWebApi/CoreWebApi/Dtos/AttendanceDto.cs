@@ -59,6 +59,24 @@ namespace CoreWebApi.Dtos
     }
     public class AttendanceDtoForDetail
     {
+        public int Id { get; set; }
+        public int ClassSectionId { get; set; }
+        public string FullName { get; set; }
+        public int UserId { get; set; }
+        public bool Present { get; set; }
+        public bool Absent { get; set; }
+        public bool Late { get; set; }
+        public string Comments { get; set; }
+        //public string LeavePurpose { get; set; }
+        //public string LeaveType { get; set; }
+        public string CreatedDatetime { get; set; }
+        //public DateTime? LeaveFrom { get; set; }
+        //public DateTime? LeaveTo { get; set; }
+        public int LateCount { get; internal set; }
+        public int AbsentCount { get; internal set; }
+        public int LeaveCount { get; internal set; }
+        public int PresentCount { get; internal set; }
+       // public List<Photo> Photos { get; set; }
     }
     public class AttendanceDtoForDisplay
     {

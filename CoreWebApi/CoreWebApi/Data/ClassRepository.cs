@@ -44,7 +44,8 @@ namespace CoreWebApi.Data
                 Name = @class.Name,
                 CreatedById = Convert.ToInt32(@class.LoggedIn_UserId),
                 CreatedDateTime = DateTime.Now,
-                Active = true
+                Active = true,
+                SchoolBranchId = Convert.ToInt32(@class.LoggedIn_BranchId),
             };
 
             await _context.Class.AddAsync(objToCreate);

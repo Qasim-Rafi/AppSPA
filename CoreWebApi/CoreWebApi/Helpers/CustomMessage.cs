@@ -15,5 +15,6 @@ namespace CoreWebApi.Helpers
         public const string UnableToAdd = "Unable to add data";
         public const string UserAlreadyExist = "User already exist";
         public const string ChildRecordExist = "Record can't be deleted, because it's child records exist in another table";
+        public const string UnAuthorized = "Can't Login";
     }
 }

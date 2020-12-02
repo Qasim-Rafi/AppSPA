@@ -151,6 +151,7 @@ namespace CoreWebApi.Dtos
     }
     public class UserForRegisterDto
     {
+        public string SchoolName { get; set; }
         [Required]
         public string Username { get; set; }
         [Required]

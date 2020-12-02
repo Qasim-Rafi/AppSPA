@@ -97,7 +97,8 @@ namespace CoreWebApi.Data
                 TeacherName = model.TeacherName,
                 IsPosted = model.IsPosted,
                 CreatedDate = DateTime.Now,
-                CreatedById = _context.Users.First().Id
+                CreatedById = _context.Users.First().Id,
+                SchoolBranchId = Convert.ToInt32(model.LoggedIn_UserId),
             };
 
             await _context.Quizzes.AddAsync(quiz);

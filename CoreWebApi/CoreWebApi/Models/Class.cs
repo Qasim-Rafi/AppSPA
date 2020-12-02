@@ -21,10 +21,8 @@ namespace CoreWebApi.Models
 
         public int SchoolBranchId { get; set; }
 
-        //[ForeignKey("SchoolBranchId")]
-        //public virtual SchoolBranch SchoolBranches { get; set; }
-
-        public Subject Subject { get; set; }
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranch { get; set; }
 
         [ForeignKey("CreatedById")]
         public virtual User User { get; set; }

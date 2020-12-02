@@ -108,12 +108,9 @@ namespace CoreWebApi.Data
         public static void SeedUsers(DataContext context)
         {
 
-
-
-
             if (!context.Users.Any())
             {
-                var schoolBranch = schoolBranchId != 0 ? context.SchoolBranch.FirstOrDefault(m => m.Id == schoolBranchId) : context.SchoolBranch.FirstOrDefault();
+                var schoolBranch =  context.SchoolBranch.FirstOrDefault();
                 if (schoolBranch != null)
                 {
 
@@ -154,174 +151,178 @@ namespace CoreWebApi.Data
 
             var fileData = System.IO.File.ReadAllText("Data/GenericSeedData.json");
             DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
-            //
-            if (!context.Class.Any())
+            var schoolBranch =  context.SchoolBranch.FirstOrDefault();
+            if (schoolBranch != null)
             {
-                var ClassesJson = JsonConvert.SerializeObject(dataSet.Tables["Classes"]);
-                var Classes = JsonConvert.DeserializeObject<List<Class>>(ClassesJson);
-                foreach (var obj in Classes)
+                //
+                if (!context.Class.Any())
                 {
-                    obj.Active = true;
-                    obj.SchoolBranchId = context.SchoolBranch.First().Id;
-                    obj.CreatedById = context.Users.FirstOrDefault().Id;
-                    context.Class.Add(obj);
-                }
-                context.SaveChanges();
-            }
-            //
-            if (!context.Sections.Any())
-            {
-                var SectionsJson = JsonConvert.SerializeObject(dataSet.Tables["Sections"]);
-                var Sections = JsonConvert.DeserializeObject<List<Section>>(SectionsJson);
-
-                foreach (var item in Sections)
-                {
-                    item.CreatedById = context.Users.First().Id;
-                    item.SchoolBranchId = context.SchoolBranch.First().Id;
-                    context.Sections.Add(item);
-                }
-
-                context.SaveChanges();
-            }
-            //
-            if (!context.Subjects.Any())
-            {
-                var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
-                var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
-
-                foreach (var (item, index) in ReturnIndex(Subjects))
-                {
-                    item.CreditHours = 3;
-                    item.Active = true;
-                    context.Subjects.Add(item);
-                }
-
-                context.SaveChanges();
-            }
-            //
-            if (!context.ClassSections.Any())
-            {
-                var GetClasses = context.Class.Where(m => m.Active == true).ToList();
-                var GetSections = context.Sections.ToList();
-                var schoolAcademy = context.SchoolAcademy.FirstOrDefault();
-
-                foreach (var obj in GetClasses)
-                {
-                    foreach (var item in GetSections)
+                    var ClassesJson = JsonConvert.SerializeObject(dataSet.Tables["Classes"]);
+                    var Classes = JsonConvert.DeserializeObject<List<Class>>(ClassesJson);
+                    foreach (var obj in Classes)
                     {
-                        var newobj = new ClassSection
-                        {
-                            ClassId = obj.Id,
-                            SectionId = item.Id,
-                            SchoolAcademyId = schoolAcademy != null ? schoolAcademy.Id : 0,
-                            Active = true
-                        };
-                        context.ClassSections.Add(newobj);
+                        obj.Active = true;
+                        obj.SchoolBranchId = context.SchoolBranch.First().Id;
+                        obj.CreatedById = context.Users.FirstOrDefault().Id;
+                        context.Class.Add(obj);
+                    }
+                    context.SaveChanges();
+                }
+                //
+                if (!context.Sections.Any())
+                {
+                    var SectionsJson = JsonConvert.SerializeObject(dataSet.Tables["Sections"]);
+                    var Sections = JsonConvert.DeserializeObject<List<Section>>(SectionsJson);
+
+                    foreach (var item in Sections)
+                    {
+                        item.CreatedById = context.Users.First().Id;
+                        item.SchoolBranchId = context.SchoolBranch.First().Id;
+                        context.Sections.Add(item);
                     }
 
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
-            }
-            //
-            if (!context.ClassSectionUsers.Any())
-            {
-                var GetClassSections = context.ClassSections.AsEnumerable();
-                var StudentID = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
-                var TeacherID = context.UserTypes.FirstOrDefault(m => m.Name == "Teacher").Id;
-                var GetStudentUsers = context.Users.Where(m => m.UserTypeId == StudentID).ToList();
-                var GetTeacherUsers = context.Users.Where(m => m.UserTypeId == TeacherID).ToList();
-                int half = GetClassSections.Count() / 2;
-                foreach (var (obj, index) in ReturnIndex(GetClassSections))
+                //
+                if (!context.Subjects.Any())
                 {
-                    if (index < half)
+                    var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
+                    var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
+
+                    foreach (var (item, index) in ReturnIndex(Subjects))
                     {
-                        foreach (var item in GetStudentUsers)
+                        item.CreditHours = 3;
+                        item.Active = true;
+                        item.SchoolBranchId = schoolBranch.Id;
+                        context.Subjects.Add(item);
+                    }
+
+                    context.SaveChanges();
+                }
+                //
+                if (!context.ClassSections.Any())
+                {
+                    var GetClasses = context.Class.Where(m => m.Active == true).ToList();
+                    var GetSections = context.Sections.ToList();
+                    var schoolAcademy = context.SchoolAcademy.FirstOrDefault();
+
+                    foreach (var obj in GetClasses)
+                    {
+                        foreach (var item in GetSections)
                         {
-                            var newobj = new ClassSectionUser
+                            var newobj = new ClassSection
                             {
-                                ClassSectionId = obj.Id,
-                                UserId = item.Id
+                                ClassId = obj.Id,
+                                SectionId = item.Id,
+                                SchoolAcademyId = schoolAcademy != null ? schoolAcademy.Id : 0,
+                                Active = true
                             };
-                            context.ClassSectionUsers.Add(newobj);
+                            context.ClassSections.Add(newobj);
+                        }
+
+                    }
+                    context.SaveChanges();
+                }
+                //
+                if (!context.ClassSectionUsers.Any())
+                {
+                    var GetClassSections = context.ClassSections.AsEnumerable();
+                    var StudentID = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
+                    var TeacherID = context.UserTypes.FirstOrDefault(m => m.Name == "Teacher").Id;
+                    var GetStudentUsers = context.Users.Where(m => m.UserTypeId == StudentID).ToList();
+                    var GetTeacherUsers = context.Users.Where(m => m.UserTypeId == TeacherID).ToList();
+                    int half = GetClassSections.Count() / 2;
+                    foreach (var (obj, index) in ReturnIndex(GetClassSections))
+                    {
+                        if (index < half)
+                        {
+                            foreach (var item in GetStudentUsers)
+                            {
+                                var newobj = new ClassSectionUser
+                                {
+                                    ClassSectionId = obj.Id,
+                                    UserId = item.Id
+                                };
+                                context.ClassSectionUsers.Add(newobj);
+                            }
+                        }
+                        else
+                        {
+                            foreach (var item in GetTeacherUsers)
+                            {
+                                var newobj = new ClassSectionUser
+                                {
+                                    ClassSectionId = obj.Id,
+                                    UserId = item.Id
+                                };
+                                context.ClassSectionUsers.Add(newobj);
+                            }
                         }
                     }
-                    else
+                    context.SaveChanges();
+                }
+                //
+                if (!context.Countries.Any())
+                {
+                    var CountriesJson = JsonConvert.SerializeObject(dataSet.Tables["Countries"]);
+                    var Countries = JsonConvert.DeserializeObject<List<Country>>(CountriesJson);
+                    foreach (var obj in Countries)
                     {
-                        foreach (var item in GetTeacherUsers)
+                        context.Countries.Add(obj);
+                    }
+                    context.SaveChanges();
+                }
+                //
+                if (!context.States.Any())
+                {
+                    var StatesJson = JsonConvert.SerializeObject(dataSet.Tables["States"]);
+                    var States = JsonConvert.DeserializeObject<List<State>>(StatesJson);
+                    foreach (var (obj, index) in ReturnIndex(States))
+                    {
+                        obj.CountryId = context.Countries.First().Id;
+
+                        context.States.Add(obj);
+                        if (index == (States.Count - 1))
                         {
-                            var newobj = new ClassSectionUser
+                            var other = new State
                             {
-                                ClassSectionId = obj.Id,
-                                UserId = item.Id
+                                Name = "Other",
+                                CountryId = obj.CountryId,
                             };
-                            context.ClassSectionUsers.Add(newobj);
+                            context.States.Add(other);
                         }
-                    }
-                }
-                context.SaveChanges();
-            }
-            //
-            if (!context.Countries.Any())
-            {
-                var CountriesJson = JsonConvert.SerializeObject(dataSet.Tables["Countries"]);
-                var Countries = JsonConvert.DeserializeObject<List<Country>>(CountriesJson);
-                foreach (var obj in Countries)
-                {
-                    context.Countries.Add(obj);
-                }
-                context.SaveChanges();
-            }
-            //
-            if (!context.States.Any())
-            {
-                var StatesJson = JsonConvert.SerializeObject(dataSet.Tables["States"]);
-                var States = JsonConvert.DeserializeObject<List<State>>(StatesJson);
-                foreach (var (obj, index) in ReturnIndex(States))
-                {
-                    obj.CountryId = context.Countries.First().Id;
 
-                    context.States.Add(obj);
-                    if (index == (States.Count - 1))
+                    }
+                    context.SaveChanges();
+                }
+
+                //
+                //if (!context.SchoolAcademy.Any())
+                //{
+                //    var SchoolAcademiesJson = JsonConvert.SerializeObject(dataSet.Tables["SchoolAcademies"]);
+                //    var SchoolAcademies = JsonConvert.DeserializeObject<List<SchoolAcademy>>(SchoolAcademiesJson);
+                //    foreach (var obj in SchoolAcademies)
+                //    {
+                //        obj.Email = "test@test.com";
+                //        context.SchoolAcademy.Add(obj);
+                //    }
+                //    context.SaveChanges();
+                //}
+                //
+                if (!context.QuestionTypes.Any())
+                {
+                    var QuestionTypesJson = JsonConvert.SerializeObject(dataSet.Tables["QuestionTypes"]);
+                    var QuestionTypes = JsonConvert.DeserializeObject<List<QuestionTypes>>(QuestionTypesJson);
+                    foreach (var obj in QuestionTypes)
                     {
-                        var other = new State
-                        {
-                            Name = "Other",
-                            CountryId = obj.CountryId,
-                        };
-                        context.States.Add(other);
+                        obj.schoolBranchId = context.SchoolBranch.First().Id;
+
+                        context.QuestionTypes.Add(obj);
                     }
-
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
+
             }
-
-            //
-            //if (!context.SchoolAcademy.Any())
-            //{
-            //    var SchoolAcademiesJson = JsonConvert.SerializeObject(dataSet.Tables["SchoolAcademies"]);
-            //    var SchoolAcademies = JsonConvert.DeserializeObject<List<SchoolAcademy>>(SchoolAcademiesJson);
-            //    foreach (var obj in SchoolAcademies)
-            //    {
-            //        obj.Email = "test@test.com";
-            //        context.SchoolAcademy.Add(obj);
-            //    }
-            //    context.SaveChanges();
-            //}
-            //
-            if (!context.QuestionTypes.Any())
-            {
-                var QuestionTypesJson = JsonConvert.SerializeObject(dataSet.Tables["QuestionTypes"]);
-                var QuestionTypes = JsonConvert.DeserializeObject<List<QuestionTypes>>(QuestionTypesJson);
-                foreach (var obj in QuestionTypes)
-                {
-                    obj.schoolBranchId = context.SchoolBranch.First().Id;
-
-                    context.QuestionTypes.Add(obj);
-                }
-                context.SaveChanges();
-            }
-
-
         }
         public static IEnumerable<(T item, int index)> ReturnIndex<T>(this IEnumerable<T> self)
         {

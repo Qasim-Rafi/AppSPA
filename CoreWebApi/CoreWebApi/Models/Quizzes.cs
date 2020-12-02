@@ -14,6 +14,7 @@ namespace CoreWebApi.Models
         public int SubjectId { get; set; }
         public int ClassSectionId { get; set; }   
         public bool IsPosted { get; set; }   
+        public int SchoolBranchId { get; set; }
 
         public DateTime? CreatedDate { get; set; }
         public int? CreatedById { get; set; }
@@ -22,6 +23,7 @@ namespace CoreWebApi.Models
         public User user { get; set; }
         [ForeignKey("ClassSectionId")]
         public ClassSection ClassSection { get; set; }
-
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranch { get; set; }
     }
 }

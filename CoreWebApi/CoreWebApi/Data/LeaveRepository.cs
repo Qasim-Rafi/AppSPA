@@ -43,7 +43,8 @@ namespace CoreWebApi.Data
                 FromDate = leave.FromDate,
                 ToDate = leave.ToDate,
                 UserId = leave.UserId,
-                LeaveTypeId = leave.LeaveTypeId
+                LeaveTypeId = leave.LeaveTypeId,                
+                SchoolBranchId = Convert.ToInt32(leave.LoggedIn_UserId),
             };
 
             await _context.Leaves.AddAsync(objToCreate);

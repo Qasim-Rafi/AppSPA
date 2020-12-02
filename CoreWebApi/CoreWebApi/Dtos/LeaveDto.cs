@@ -10,7 +10,7 @@ namespace CoreWebApi.Dtos
     public class LeaveDto
     {
     }
-    public class LeaveDtoForAdd
+    public class LeaveDtoForAdd : BaseDto
     {
         public int LeaveTypeId { get; set; }
         public int UserId { get; set; }

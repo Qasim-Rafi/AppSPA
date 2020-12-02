@@ -239,7 +239,8 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            model.LoggedIn_UserId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            model.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
 
             _response = await _repo.SaveUploadedLecture(model);
 

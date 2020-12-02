@@ -38,13 +38,13 @@ namespace CoreWebApi.Data
         public async Task<object> GetAssignments()
         {
             var assignments = await _context.Assignments.Include(m => m.ClassSection).ToListAsync();
-            var ToReturn = assignments.Select(o => new
+            var ToReturn = assignments.Select(o => new AssignmentDtoForList
             {
-                o.Id,
-                o.AssignmentName,
-                ClassSectionName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
-                o.RelatedMaterial,
-                o.Details,
+                Id = o.Id,
+                AssignmentName = o.AssignmentName,
+                ClassSection = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
+                RelatedMaterial = o.RelatedMaterial,
+                Details = o.Details,
 
             }).ToList();
             return ToReturn;
@@ -59,7 +59,8 @@ namespace CoreWebApi.Data
                 CreatedDateTime = DateTime.Now,
                 Details = assignment.Details,
                 TeacherName = assignment.TeacherName,
-                ClassSectionId = assignment.ClassSectionId
+                ClassSectionId = assignment.ClassSectionId,
+                SchoolBranchId = Convert.ToInt32(assignment.LoggedIn_BranchId)
             };
 
 
@@ -132,7 +133,7 @@ namespace CoreWebApi.Data
                             dbObj.RelatedMaterial = dbObj.RelatedMaterial + " || " + dbPath;
                     }
                 }
-
+                _context.Assignments.Update(dbObj);
                 await _context.SaveChangesAsync();
             }
             return dbObj;

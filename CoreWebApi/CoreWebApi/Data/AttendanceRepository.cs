@@ -42,7 +42,7 @@ namespace CoreWebApi.Data
 
             return attendances;
         }
-        public async Task<string> AddAttendance(List<AttendanceDtoForAdd> list)
+        public async Task<string> AddAttendance(string LoggedIn_BranchId, List<AttendanceDtoForAdd> list)
         {
 
             foreach (var attendance in list)
@@ -69,7 +69,8 @@ namespace CoreWebApi.Data
                         Comments = attendance.Comments,
                         UserId = attendance.UserId,
                         ClassSectionId = attendance.ClassSectionId,
-                        CreatedDatetime = DateTime.Now
+                        CreatedDatetime = DateTime.Now,
+                        SchoolBranchId = Convert.ToInt32(LoggedIn_BranchId)
                     };
 
                     await _context.Attendances.AddAsync(objToCreate);

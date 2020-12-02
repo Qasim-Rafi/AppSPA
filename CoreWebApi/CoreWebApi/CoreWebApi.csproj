@@ -90,6 +90,10 @@
     <Compile Remove="Migrations\20201130060624_SPGetAttendancePercentageByMonth.Designer.cs" />
     <Compile Remove="Migrations\20201130111255_SPGetAttendancePercentageByMonth.cs" />
     <Compile Remove="Migrations\20201130111255_SPGetAttendancePercentageByMonth.Designer.cs" />
+    <Compile Remove="Migrations\20201202102803_addSchoolBranchIdOnAllApp.cs" />
+    <Compile Remove="Migrations\20201202102803_addSchoolBranchIdOnAllApp.Designer.cs" />
+    <Compile Remove="Migrations\20201202103036_addSchoolBranchIdOnAllApp.cs" />
+    <Compile Remove="Migrations\20201202103036_addSchoolBranchIdOnAllApp.Designer.cs" />
 
   </ItemGroup>
 

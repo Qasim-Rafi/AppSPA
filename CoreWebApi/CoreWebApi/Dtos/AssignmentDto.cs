@@ -24,7 +24,7 @@ namespace CoreWebApi.Dtos
         public IFormFileCollection files { get; set; }
 
     }
-    public class AssignmentDtoForEdit
+    public class AssignmentDtoForEdit : BaseDto
     {
         [Required]
         [StringLength(30, ErrorMessage = "Assignment Name cannot be longer than 30 characters")]
@@ -39,8 +39,26 @@ namespace CoreWebApi.Dtos
     }
     public class AssignmentDtoForList
     {
+        public int Id { get; set; }
+        public string AssignmentName { get; set; }
+        public string Details { get; set; }
+        public string RelatedMaterial { get; set; }
+        public int ClassSectionId { get; set; }
+        public string ClassSection { get; set; }
+        public string TeacherName { get; set; }
+        public int SchoolBranchId { get; set; }
+        public string SchoolName { get; set; }
     }
     public class AssignmentDtoForDetail
     {
+        public int Id { get; set; }
+        public string AssignmentName { get; set; }
+        public string Details { get; set; }
+        public string RelatedMaterial { get; set; }
+        public int ClassSectionId { get; set; }
+        public string ClassSection { get; set; }
+        public string TeacherName { get; set; }
+        public int SchoolBranchId { get; set; }
+        public string SchoolName { get; set; }
     }
 }

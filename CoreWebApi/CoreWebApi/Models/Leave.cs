@@ -23,6 +23,7 @@ namespace CoreWebApi.Models
         public DateTime ToDate { get; set; }
 
         public int LeaveApprovalTypeId { get; set; }
+        public int SchoolBranchId { get; set; }
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
@@ -31,5 +32,7 @@ namespace CoreWebApi.Models
 
         [ForeignKey("LeaveApprovalTypeId")]
         public virtual  LeaveApprovalType LeaveApprovalType { get; set; }
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranch { get; set; }
     }
 }

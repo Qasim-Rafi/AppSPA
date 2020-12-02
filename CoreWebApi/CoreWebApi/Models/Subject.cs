@@ -12,8 +12,15 @@ namespace CoreWebApi.Models
     {
         public int Id { get; set; }
         [StringLength(200)]
-        public string Name { get; set; }       
+        public string Name { get; set; }
         public int CreditHours { get; set; }
         public bool Active { get; set; }
+        public int SchoolBranchId { get; set; }
+        public DateTime CreatedDateTime { get; set; }
+        public int CreatedBy { get; set; }
+
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranch { get; set; }
+
     }
 }

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +17,13 @@ namespace CoreWebApi.Controllers
     [Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
-    public class LeavesController : ControllerBase
+    public class LeavesController : BaseController
     {
         private readonly ILeaveRepository _repo;
         private readonly IMapper _mapper;
-        public LeavesController(ILeaveRepository repo, IMapper mapper)
+        public LeavesController(ILeaveRepository repo, IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
@@ -51,6 +55,7 @@ namespace CoreWebApi.Controllers
                 }
                 if (await _repo.LeaveExists(leave.UserId))
                     return BadRequest(new { message = "Leave Already Exist" });
+                leave.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
 
                 var createdObj = await _repo.AddLeave(leave);
 

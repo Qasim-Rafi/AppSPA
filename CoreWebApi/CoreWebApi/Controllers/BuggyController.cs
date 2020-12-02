@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    //[Route("api/[controller]")]
+    [NonController]
 
     public class BuggyController : ControllerBase
     {

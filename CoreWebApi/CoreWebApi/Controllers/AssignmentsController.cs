@@ -32,7 +32,6 @@ namespace CoreWebApi.Controllers
         {
             var ToReturn = await _repo.GetAssignments();
 
-            //var ToReturn = _mapper.Map<IEnumerable<Assignment>>(assignments);
             return Ok(ToReturn);
 
         }
@@ -40,7 +39,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetAssignment(int id)
         {
             var assignment = await _repo.GetAssignment(id);
-            var ToReturn = _mapper.Map<Assignment>(assignment);
+            var ToReturn = _mapper.Map<AssignmentDtoForDetail>(assignment);
             return Ok(ToReturn);
         }
         [HttpPost("Add")]
@@ -55,6 +54,7 @@ namespace CoreWebApi.Controllers
             //    return BadRequest(new { message = "Assignment Already Exist" });
 
             assignment.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            assignment.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
             var createdObj = await _repo.AddAssignment(assignment);
 
             return StatusCode(StatusCodes.Status201Created);
@@ -69,6 +69,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+           
             var updatedObj = await _repo.EditAssignment(id, assignment);
 
             return StatusCode(StatusCodes.Status200OK);

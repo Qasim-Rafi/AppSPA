@@ -69,6 +69,8 @@ namespace CoreWebApi.Data
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
             //
+            modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
+            //
             modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>
             {
                 b.HasOne("CoreWebApi.Models.Group", "Group")
