@@ -26,9 +26,9 @@ namespace CoreWebApi.Data
             _mapper = mapper;
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue("NameIdentifier"));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue("BranchIdentifier"));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue("Name").ToString();
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
         }
 
 

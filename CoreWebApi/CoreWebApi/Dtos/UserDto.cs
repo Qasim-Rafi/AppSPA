@@ -162,7 +162,7 @@ namespace CoreWebApi.Dtos
         [EmailAddress]
         public string Email { get; set; }
         public int UserTypeId { get; set; } = 2;
-        public string UserType { get; set; }
+        public string UserTypeSignUp { get; set; }
     }
 
     public class UserForAddInGroupDto : BaseDto
