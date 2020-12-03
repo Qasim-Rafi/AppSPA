@@ -14,7 +14,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetSubject(int id);
         Task<ServiceResponse<object>> GetAssignedSubject(int id);
         Task<bool> SubjectExists(string name);
-        Task<ServiceResponse<object>> AddSubjects(List<SubjectDtoForAdd> model);
+        Task<ServiceResponse<object>> AddSubjects(int LoggedInUserId, int LoggedIn_BranchId, List<SubjectDtoForAdd> model);
         Task<ServiceResponse<object>> AssignSubjects(int LoggedInUserId, int LoggedIn_BranchId, AssignSubjectDtoForAdd model);
         Task<ServiceResponse<object>> EditSubject(int id, SubjectDtoForEdit subject);
         Task<ServiceResponse<object>> EditAssignedSubject(int LoggedInUserId, int LoggedIn_BranchId, int id, AssignSubjectDtoForEdit subject);

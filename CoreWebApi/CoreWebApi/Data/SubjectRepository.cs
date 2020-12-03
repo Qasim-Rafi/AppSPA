@@ -144,7 +144,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> AddSubjects(List<SubjectDtoForAdd> model)
+        public async Task<ServiceResponse<object>> AddSubjects(int LoggedInUserId, int LoggedIn_BranchId, List<SubjectDtoForAdd> model)
         {
             var ListToAdd = new List<Subject>();
             foreach (var item in model)
@@ -154,6 +154,9 @@ namespace CoreWebApi.Data
                     Name = item.Name,
                     Active = true,
                     CreditHours = item.CreditHours,
+                    CreatedBy = LoggedInUserId,
+                    CreatedDateTime = DateTime.Now,
+                    SchoolBranchId = LoggedIn_BranchId,
                 });
             }
 

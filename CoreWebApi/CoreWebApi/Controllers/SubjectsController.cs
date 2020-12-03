@@ -64,7 +64,7 @@ namespace CoreWebApi.Controllers
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
 
-            _response = await _repo.AddSubjects(model);
+            _response = await _repo.AddSubjects(GetUSER_IDClaim(), GetBRANCH_IDClaim(), model);
 
             return Ok(_response);
 
@@ -79,10 +79,8 @@ namespace CoreWebApi.Controllers
             }
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
-            var LoggedIn_UserId = Convert.ToInt32(GetClaim(Enumm.ClaimType.NameIdentifier.ToString()));
-            var LoggedIn_BranchId = Convert.ToInt32(GetClaim(Enumm.ClaimType.BranchIdentifier.ToString()));
 
-            _response = await _repo.AssignSubjects(LoggedIn_UserId, LoggedIn_BranchId, model);
+            _response = await _repo.AssignSubjects(GetUSER_IDClaim(), GetBRANCH_IDClaim(), model);
 
             return Ok(_response);
 

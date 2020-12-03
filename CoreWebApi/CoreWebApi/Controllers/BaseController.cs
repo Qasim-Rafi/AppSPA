@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
+using CoreWebApi.Helpers;
 
 namespace CoreWebApi.Controllers
 {
@@ -71,6 +72,46 @@ namespace CoreWebApi.Controllers
                     return property.Value;
             }
             return null;
+        }
+
+        [NonAction]
+        public int GetBRANCH_IDClaim()
+        {
+            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                //IEnumerable<Claim> claims = identity.Claims;
+                var property = identity.FindFirst(Enumm.ClaimType.BranchIdentifier.ToString());
+                if (property != null)
+                    return Convert.ToInt32(property.Value);
+            }
+            return 0;
+        }
+        [NonAction]
+        public string GetUSER_NAMEClaim()
+        {
+            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                //IEnumerable<Claim> claims = identity.Claims;
+                var property = identity.FindFirst(Enumm.ClaimType.Name.ToString());
+                if (property != null)
+                    return property.Value;
+            }
+            return null;
+        }
+        [NonAction]
+        public int GetUSER_IDClaim()
+        {
+            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                //IEnumerable<Claim> claims = identity.Claims;
+                var property = identity.FindFirst(Enumm.ClaimType.NameIdentifier.ToString());
+                if (property != null)
+                    return Convert.ToInt32(property.Value);
+            }
+            return 0;
         }
     }
 }
