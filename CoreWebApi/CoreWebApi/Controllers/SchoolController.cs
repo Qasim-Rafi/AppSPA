@@ -19,12 +19,14 @@ namespace CoreWebApi.Controllers
         private readonly ISchoolRepository _repo;
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
+        public BaseDto LoggedInDetails;
         public SchoolController(ISchoolRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _response = new ServiceResponse<object>();
+            LoggedInDetails = new BaseDto() { LoggedIn_UserId = _LoggedIn_UserID, LoggedIn_BranchId = _LoggedIn_BranchID };
         }
 
         [HttpGet("GetTimeSlots")]
@@ -36,7 +38,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetTimeSlots();
+            _response = await _repo.GetTimeSlots(LoggedInDetails);
 
             return Ok(_response);
 
@@ -50,7 +52,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetTimeTable();
+            _response = await _repo.GetTimeTable(LoggedInDetails);
 
             return Ok(_response);
 
@@ -123,7 +125,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetEvents();
+            _response = await _repo.GetEvents(LoggedInDetails);
 
             return Ok(_response);
 

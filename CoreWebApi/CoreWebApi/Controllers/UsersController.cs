@@ -28,7 +28,7 @@ namespace CoreWebApi.Controllers
         private readonly IWebHostEnvironment _HostEnvironment;
 
         ServiceResponse<object> _response;
-
+        public BaseDto LoggedInDetails;
         public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context,
             IHttpContextAccessor httpContextAccessor, IWebHostEnvironment HostEnvironment)
             : base(httpContextAccessor)
@@ -39,13 +39,13 @@ namespace CoreWebApi.Controllers
             _context = context;
             _response = new ServiceResponse<object>();
             _HostEnvironment = HostEnvironment;
-
+            LoggedInDetails = new BaseDto() { LoggedIn_UserId = _LoggedIn_UserID, LoggedIn_BranchId = _LoggedIn_BranchID };
         }
 
         [HttpGet("GetUsers/{id?}")]
         public async Task<IActionResult> GetUsers(int id = 0)
         {
-            _response = await _repo.GetUsers(id);
+            _response = await _repo.GetUsers(id, LoggedInDetails);
 
             return Ok(_response);
 
@@ -83,7 +83,7 @@ namespace CoreWebApi.Controllers
             if (await _repo.UserExists(userForAddDto.Username))
                 return BadRequest(new { message = CustomMessage.UserAlreadyExist });
 
-            userForAddDto.LoggedIn_BranchId = GetBRANCH_IDClaim();
+            userForAddDto.LoggedIn_BranchId = _LoggedIn_BranchID;
             var response = await _repo.AddUser(userForAddDto);
 
             return Ok(response);
@@ -115,7 +115,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            userForUpdateDto.LoggedIn_BranchId = GetBRANCH_IDClaim();
+            userForUpdateDto.LoggedIn_BranchId = _LoggedIn_BranchID;
 
             var response = await _repo.EditUser(id, userForUpdateDto);
 
@@ -146,7 +146,7 @@ namespace CoreWebApi.Controllers
         {
 
 
-            var users = await _repo.GetUsers(id);
+            var users = await _repo.GetUsers(id, LoggedInDetails);
 
             return Ok(users);
 
@@ -205,7 +205,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> AddUsersInGroup(UserForAddInGroupDto model)
         {
 
-            model.LoggedIn_BranchId = GetBRANCH_IDClaim();
+            model.LoggedIn_BranchId = _LoggedIn_BranchID;
 
             _response = await _repo.AddUsersInGroup(model);
 
@@ -219,7 +219,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> UpdateGroupUsers(UserForAddInGroupDto model)
         {
 
-            model.LoggedIn_BranchId = GetBRANCH_IDClaim();
+            model.LoggedIn_BranchId = _LoggedIn_BranchID;
 
             _response = await _repo.UpdateUsersInGroup(model);
 

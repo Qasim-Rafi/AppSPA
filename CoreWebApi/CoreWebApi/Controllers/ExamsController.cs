@@ -73,7 +73,7 @@ namespace CoreWebApi.Controllers
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
             model.LoggedIn_UserId = _LoggedIn_UserID;
-
+            model.LoggedIn_BranchId = _LoggedIn_BranchID;
             var createdObjId = await _repo.AddQuiz(model);
 
             return Ok(new { createdQuizId = createdObjId });

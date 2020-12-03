@@ -12,6 +12,7 @@ namespace CoreWebApi.Dtos
         [IgnoreMap]
         internal int LoggedIn_BranchId { get; set; }
     }
+   
     public class ChipsDto
     {
         public int Value { get; set; }

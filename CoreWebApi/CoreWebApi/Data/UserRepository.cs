@@ -128,12 +128,11 @@ namespace CoreWebApi.Data
 
         //}
 
-        public async Task<ServiceResponse<object>> GetUsers(int id)
+        public async Task<ServiceResponse<object>> GetUsers(int id, BaseDto LoggedInDetails)
         {
-
             if (id > 0)
             {
-                var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == id).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == id && m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
                 {
                     Id = o.Id,
                     FullName = o.FullName,
@@ -171,7 +170,7 @@ namespace CoreWebApi.Data
             {
 
 
-                var users = await _context.Users.Where(m => m.Active == true).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                var users = await _context.Users.Where(m => m.Active == true && m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
                 {
                     Id = o.Id,
                     FullName = o.FullName,
@@ -851,7 +850,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> SearchTutor(SearchTutorDto model)
         {
-            var users = await (from user in _context.Users                                   
+            var users = await (from user in _context.Users
                                join csUser in _context.ClassSectionUsers
                                on user.Id equals csUser.UserId
                                where csUser.ClassSection.ClassId == model.GradeId

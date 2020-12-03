@@ -31,9 +31,9 @@ namespace CoreWebApi.Data
             return @class;
         }
 
-        public async Task<IEnumerable<Class>> GetClasses()
+        public async Task<IEnumerable<Class>> GetClasses(BaseDto LoggedInDetails)
         {
-            var @classes = await _context.Class.ToListAsync();
+            var @classes = await _context.Class.Where(m=> m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).ToListAsync();
             return @classes;
         }
         public async Task<Class> AddClass(ClassDtoForAdd @class)

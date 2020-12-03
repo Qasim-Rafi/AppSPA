@@ -9,7 +9,7 @@ namespace CoreWebApi.IData
 {
     public interface ISubjectRepository
     {
-        Task<ServiceResponse<object>> GetSubjects(int LoggedIn_BranchId);
+        Task<ServiceResponse<object>> GetSubjects(BaseDto LoggedInDetails);
         Task<ServiceResponse<object>> GetAssignedSubjects();
         Task<ServiceResponse<object>> GetSubject(int id);
         Task<ServiceResponse<object>> GetAssignedSubject(int id);

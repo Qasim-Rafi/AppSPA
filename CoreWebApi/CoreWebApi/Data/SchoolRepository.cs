@@ -32,13 +32,13 @@ namespace CoreWebApi.Data
 
 
 
-        public async Task<ServiceResponse<object>> GetTimeSlots()
+        public async Task<ServiceResponse<object>> GetTimeSlots(BaseDto LoggedInDetails)
         {
             var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
 
             var Days = await _context.LectureTiming.Select(o => o.Day).Distinct().ToListAsync();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList(); //.Substring(0,1).ToUpper()
-            var Timings = await _context.LectureTiming.ToListAsync();
+            var Timings = await _context.LectureTiming.Where(m=> m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
             var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
             var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
@@ -57,7 +57,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetTimeTable()
+        public async Task<ServiceResponse<object>> GetTimeTable(BaseDto LoggedInDetails)
         {
 
             var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
@@ -72,6 +72,7 @@ namespace CoreWebApi.Data
                                    join cs in _context.ClassSections
                                    on main.ClassSectionId equals cs.Id
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                   && l.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId
                                    select new TimeTableForListDto
                                    {
                                        Id = main.Id,
@@ -314,11 +315,12 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> GetEvents()
+        public async Task<ServiceResponse<object>> GetEvents(BaseDto LoggedInDetails)
         {
 
             var EventsForList = await (from e in _context.Events
                                        where e.Active == true
+                                       && e.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId
                                        select new EventsForListDto
                                        {
                                            Id = e.Id,

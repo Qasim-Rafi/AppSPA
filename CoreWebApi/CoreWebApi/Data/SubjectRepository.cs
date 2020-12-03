@@ -45,10 +45,10 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ServiceResponse<object>> GetSubjects(int LoggedIn_BranchId)
+        public async Task<ServiceResponse<object>> GetSubjects(BaseDto LoggedInDetails)
         {
 
-            var subjects = await _context.Subjects.Where(m => m.Active == true && m.SchoolBranchId == LoggedIn_BranchId).ToListAsync();
+            var subjects = await _context.Subjects.Where(m => m.Active == true && m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).ToListAsync();
             _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
             _serviceResponse.Success = true;
             return _serviceResponse;

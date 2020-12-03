@@ -20,17 +20,19 @@ namespace CoreWebApi.Controllers
     {
         private readonly ISubjectRepository _repo;
         ServiceResponse<object> _response;
+        public BaseDto LoggedInDetails;
         public SubjectsController(ISubjectRepository repo, IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
             _repo = repo;
             _response = new ServiceResponse<object>();
+            LoggedInDetails = new BaseDto() { LoggedIn_UserId = _LoggedIn_UserID, LoggedIn_BranchId = _LoggedIn_BranchID };
         }
 
         [HttpGet("GetSubjects")]
         public async Task<IActionResult> GetSubjects()
         {
-            _response = await _repo.GetSubjects(GetBRANCH_IDClaim());
+            _response = await _repo.GetSubjects(LoggedInDetails);
             return Ok(_response);
 
         }
@@ -64,7 +66,7 @@ namespace CoreWebApi.Controllers
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
 
-            _response = await _repo.AddSubjects(GetUSER_IDClaim(), GetBRANCH_IDClaim(), model);
+            _response = await _repo.AddSubjects(_LoggedIn_UserID, _LoggedIn_BranchID, model);
 
             return Ok(_response);
 
@@ -80,7 +82,7 @@ namespace CoreWebApi.Controllers
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
 
-            _response = await _repo.AssignSubjects(GetUSER_IDClaim(), GetBRANCH_IDClaim(), model);
+            _response = await _repo.AssignSubjects(_LoggedIn_UserID, _LoggedIn_BranchID, model);
 
             return Ok(_response);
 

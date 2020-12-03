@@ -13,25 +13,28 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using CoreWebApi.Helpers;
 using CoreWebApi.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoreWebApi.Controllers
 {
     //[Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class BaseController : ControllerBase
     {
-        protected string _LoggedIn_UserRole;
-        public int _LoggedIn_UserID = 0;
-        public int _LoggedIn_BranchID = 0;
-        public string _LoggedIn_UserName = "";
-       
+        protected string _LoggedIn_UserRole = "";
+        protected int _LoggedIn_UserID = 0;
+        protected int _LoggedIn_BranchID = 0;
+        protected string _LoggedIn_UserName = "";
+        protected readonly IHttpContextAccessor _httpContextAccessor;
         public BaseController(IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
             _LoggedIn_UserID = GetUSER_IDClaim();
             _LoggedIn_BranchID = GetBRANCH_IDClaim();
             _LoggedIn_UserName = GetUSER_NAMEClaim();
-           
+
         }
 
         //[NonAction]
@@ -84,7 +87,8 @@ namespace CoreWebApi.Controllers
         [NonAction]
         public int GetBRANCH_IDClaim()
         {
-            ClaimsIdentity identity = HttpContext != null ? HttpContext.User.Identity as ClaimsIdentity : null;
+            var a = HttpContext;
+            ClaimsIdentity identity = _httpContextAccessor.HttpContext != null ? _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity : null;
             if (identity != null)
             {
                 //IEnumerable<Claim> claims = identity.Claims;
@@ -97,7 +101,7 @@ namespace CoreWebApi.Controllers
         [NonAction]
         public string GetUSER_NAMEClaim()
         {
-            ClaimsIdentity identity = HttpContext != null ? HttpContext.User.Identity as ClaimsIdentity : null;
+            ClaimsIdentity identity = _httpContextAccessor.HttpContext != null ? _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity : null;
             if (identity != null)
             {
                 //IEnumerable<Claim> claims = identity.Claims;
@@ -110,7 +114,7 @@ namespace CoreWebApi.Controllers
         [NonAction]
         public int GetUSER_IDClaim()
         {
-            ClaimsIdentity identity = HttpContext != null ? HttpContext.User.Identity as ClaimsIdentity : null;
+            ClaimsIdentity identity = _httpContextAccessor.HttpContext != null ? _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity : null;
             if (identity != null)
             {
                 //IEnumerable<Claim> claims = identity.Claims;

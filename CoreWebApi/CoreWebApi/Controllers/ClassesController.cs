@@ -27,6 +27,7 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         ServiceResponse<object> _response;
+        public BaseDto LoggedInDetails;
 
 
         public ClassesController(IClassRepository repo, IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
@@ -37,6 +38,8 @@ namespace CoreWebApi.Controllers
             _context = context;
             _response = new ServiceResponse<object>();
             //_role = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            LoggedInDetails = new BaseDto() { LoggedIn_UserId = _LoggedIn_UserID, LoggedIn_BranchId = _LoggedIn_BranchID };
+
         }
 
         [HttpGet("testing")]
@@ -55,7 +58,7 @@ namespace CoreWebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetClasses()
         {
-            var classes = await _repo.GetClasses();
+            var classes = await _repo.GetClasses(LoggedInDetails);
             var ToReturn = _LoggedIn_UserRole.Equals(Enumm.UserType.Student.ToString()) ? _mapper.Map<IEnumerable<ClassDtoForList>>(classes) :
                 _mapper.Map<IEnumerable<ClassDtoForList>>(classes);
             return Ok(ToReturn);
