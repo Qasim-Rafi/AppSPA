@@ -12,7 +12,9 @@ namespace CoreWebApi.Helpers
             Admin = 1,
             Parent,
             Student,
-            Teacher
+            Teacher,
+            Tutor,
+            OnlineStudent
         }
         public enum ClaimType
         {

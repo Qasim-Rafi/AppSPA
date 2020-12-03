@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -22,15 +23,20 @@ namespace CoreWebApi.Data
         private readonly IWebHostEnvironment _HostEnvironment;
         private readonly IFilesRepository _File;
         ServiceResponse<object> _serviceResponse;
-
-        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file)
+        public int _LoggedIn_UserID = 0;
+        public int _LoggedIn_BranchID = 0;
+        public string _LoggedIn_UserName = "";
+       
+        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
             _HostEnvironment = HostEnvironment;
             _File = file;
             _serviceResponse = new ServiceResponse<object>();
-
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
         }
 
         public void Add<T>(T entity) where T : class
@@ -128,11 +134,11 @@ namespace CoreWebApi.Data
 
         //}
 
-        public async Task<ServiceResponse<object>> GetUsers(int id, BaseDto LoggedInDetails)
+        public async Task<ServiceResponse<object>> GetUsers(int id)
         {
             if (id > 0)
             {
-                var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == id && m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == id && m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
                 {
                     Id = o.Id,
                     FullName = o.FullName,
@@ -170,7 +176,7 @@ namespace CoreWebApi.Data
             {
 
 
-                var users = await _context.Users.Where(m => m.Active == true && m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                var users = await _context.Users.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
                 {
                     Id = o.Id,
                     FullName = o.FullName,
@@ -280,7 +286,7 @@ namespace CoreWebApi.Data
                 CountryId = userDto.CountryId,
                 OtherState = userDto.OtherState,
                 Email = userDto.Email,
-                SchoolBranchId = Convert.ToInt32(userDto.LoggedIn_BranchId),
+                SchoolBranchId = _LoggedIn_BranchID,
                 RollNumber = userDto.RollNumber,
                 Role = UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
             };
@@ -541,7 +547,7 @@ namespace CoreWebApi.Data
                 GroupName = model.GroupName,
                 ClassSectionId = model.ClassSectionId,
                 Active = true,
-                SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId)
+                SchoolBranchId = _LoggedIn_BranchID
             };
             await _context.Groups.AddAsync(group);
             await _context.SaveChangesAsync();
@@ -662,7 +668,7 @@ namespace CoreWebApi.Data
             {
                 group.GroupName = model.GroupName;
                 group.Active = model.Active ?? true;
-                group.SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId);
+                group.SchoolBranchId = _LoggedIn_BranchID;
 
                 await _context.SaveChangesAsync();
                 if (model.UserIds.Count() > 0)

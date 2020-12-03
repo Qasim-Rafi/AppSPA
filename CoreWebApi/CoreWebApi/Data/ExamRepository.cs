@@ -3,10 +3,12 @@ using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -15,11 +17,16 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         ServiceResponse<object> _serviceResponse;
-
-        public ExamRepository(DataContext context)
+        private int _LoggedIn_UserID = 0;
+        private int _LoggedIn_BranchID = 0;
+        private string _LoggedIn_UserName = "";
+        public ExamRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
         }
 
         public async Task<ServiceResponse<object>> AddQuestion(QuizQuestionDtoForAdd model)
@@ -98,7 +105,7 @@ namespace CoreWebApi.Data
                 IsPosted = model.IsPosted,
                 CreatedDate = DateTime.Now,
                 CreatedById = _context.Users.First().Id,
-                SchoolBranchId = Convert.ToInt32(model.LoggedIn_UserId),
+                SchoolBranchId = _LoggedIn_UserID,
             };
 
             await _context.Quizzes.AddAsync(quiz);
@@ -107,10 +114,10 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> GetQuizById(int id, int loggedInUserId)
+        public async Task<ServiceResponse<object>> GetQuizById(int id)
         {
 
-            var userDetails = _context.Users.Where(m => m.Id == Convert.ToInt32(loggedInUserId)).FirstOrDefault();
+            var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
 
             QuizForListDto quizz = await (from quiz in _context.Quizzes
                                           join subject in _context.Subjects
@@ -182,11 +189,11 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetQuizzes(int loggedInUserId)
+        public async Task<ServiceResponse<object>> GetQuizzes()
         {
 
 
-            var userDetails = _context.Users.Where(m => m.Id == Convert.ToInt32(loggedInUserId)).FirstOrDefault();
+            var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             List<QuizForListDto> quizzes = await (from quiz in _context.Quizzes
                                                   join subject in _context.Subjects
                                                   on quiz.SubjectId equals subject.Id
@@ -242,17 +249,17 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> GetAssignedQuiz(int loggedInUserId)
+        public async Task<ServiceResponse<object>> GetAssignedQuiz()
         {
 
 
-            var userDetails = _context.Users.Where(m => m.Id == Convert.ToInt32(loggedInUserId)).FirstOrDefault();
+            var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             if (userDetails != null)
             {
                 List<QuizForListDto> quizzes = new List<QuizForListDto>();
                 if (userDetails.UserTypeId == (int)Enumm.UserType.Student)
                 {
-                    var ids = _context.QuizSubmissions.Where(m => m.UserId == Convert.ToInt32(loggedInUserId)).Select(m => m.QuizId);
+                    var ids = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.QuizId);
 
                     quizzes = await (from quiz in _context.Quizzes
                                      join subject in _context.Subjects
@@ -261,7 +268,7 @@ namespace CoreWebApi.Data
                                      on quiz.ClassSectionId equals classSection.Id
                                      join classSectionUser in _context.ClassSectionUsers
                                      on classSection.Id equals classSectionUser.ClassSectionId
-                                     where classSectionUser.UserId == Convert.ToInt32(loggedInUserId)
+                                     where classSectionUser.UserId == _LoggedIn_UserID
                                      && !ids.Contains(quiz.Id)
                                      orderby quiz.Id descending
                                      select new QuizForListDto
@@ -288,7 +295,7 @@ namespace CoreWebApi.Data
                                      on quiz.ClassSectionId equals classSection.Id
                                      join classSectionUser in _context.ClassSectionUsers
                                      on classSection.Id equals classSectionUser.ClassSectionId
-                                     where classSectionUser.UserId == Convert.ToInt32(loggedInUserId)
+                                     where classSectionUser.UserId == _LoggedIn_UserID
                                      orderby quiz.Id descending
                                      select new QuizForListDto
                                      {
@@ -347,7 +354,7 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ServiceResponse<object>> SubmitQuiz(List<QuizSubmissionDto> model, int loggedInUserId)
+        public async Task<ServiceResponse<object>> SubmitQuiz(List<QuizSubmissionDto> model)
         {
 
             List<QuizSubmission> submissions = new List<QuizSubmission>();
@@ -360,7 +367,7 @@ namespace CoreWebApi.Data
                     AnswerId = item.AnswerId,
                     Description = item.Description,
                     CreatedDateTime = DateTime.Now,
-                    UserId = Convert.ToInt32(loggedInUserId)
+                    UserId = _LoggedIn_UserID
                 });
             }
 

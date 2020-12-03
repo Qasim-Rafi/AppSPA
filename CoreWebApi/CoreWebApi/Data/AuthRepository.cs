@@ -101,11 +101,11 @@ namespace CoreWebApi.Data
                 var schoolAcademy = new SchoolAcademy
                 {
                     Name = string.IsNullOrEmpty(model.SchoolName) ? "School-" + (schools.Count() + 1) : model.SchoolName,
-                    PrimaryContactPerson = "---",
-                    SecondaryContactPerson = "---",
+                    PrimaryContactPerson = model.Username,
+                    SecondaryContactPerson = model.Username,
                     PrimaryphoneNumber = "0000-0000000",
                     SecondaryphoneNumber = "0000-0000000",
-                    Email = "Email@NewSchool.com",
+                    Email = model.Email,
                     PrimaryAddress = "---",
                     SecondaryAddress = "---",
                     Active = true
@@ -160,13 +160,13 @@ namespace CoreWebApi.Data
                 {
                     Username = model.Username,
                     FullName = model.Username,
-                    UserTypeId = (int)Enumm.UserType.Teacher,
+                    UserTypeId = (int)Enumm.UserType.Tutor,
                     Email = model.Email,
                     SchoolBranchId = branch.Id,
                     Gender = "male",
                     Active = true,
                     CreatedDateTime = DateTime.Now,
-                    Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Teacher).FirstOrDefault()?.Name
+                    Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Tutor).FirstOrDefault()?.Name
                 };
                 byte[] passwordHash, passwordSalt;
                 Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
@@ -185,13 +185,13 @@ namespace CoreWebApi.Data
                 {
                     Username = model.Username,
                     FullName = model.Username,
-                    UserTypeId = (int)Enumm.UserType.Student,
+                    UserTypeId = (int)Enumm.UserType.OnlineStudent,
                     Email = model.Email,
                     SchoolBranchId = branch.Id,
                     Gender = "male",
                     Active = true,
                     CreatedDateTime = DateTime.Now,
-                    Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Student).FirstOrDefault()?.Name
+                    Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.OnlineStudent).FirstOrDefault()?.Name
                 };
                 byte[] passwordHash, passwordSalt;
                 Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
@@ -226,9 +226,15 @@ namespace CoreWebApi.Data
 
         //}
 
-        public async Task<bool> UserExists(string username)
+        public async Task<bool> UserExists(string userName, string schoolName)
         {
-            if (await _context.Users.AnyAsync(x => x.Username.ToLower() == username.ToLower()))
+            if (!string.IsNullOrEmpty(schoolName))
+            {
+                var schoolNames = _context.SchoolAcademy.Select(m => m.Name.ToLower()).ToList();
+                if (await _context.Users.AnyAsync(x => x.Username.ToLower() == userName.ToLower() && schoolNames.Contains(schoolName.ToLower())))
+                    return true;
+            }
+            else if (await _context.Users.AnyAsync(x => x.Username.ToLower() == userName.ToLower()))
                 return true;
             return false;
         }

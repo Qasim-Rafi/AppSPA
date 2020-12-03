@@ -3,10 +3,12 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -16,12 +18,20 @@ namespace CoreWebApi.Data
         private readonly DataContext _context;
         ServiceResponse<object> _serviceResponse;
         private readonly IMapper _mapper;
-        public SubjectRepository(DataContext context, IMapper mapper)
+        public int _LoggedIn_UserID = 0;
+        public int _LoggedIn_BranchID = 0;
+        public string _LoggedIn_UserName = "";
+        public SubjectRepository(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue("NameIdentifier"));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue("BranchIdentifier"));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue("Name").ToString();
         }
+
+
         public async Task<bool> SubjectExists(string name)
         {
             if (await _context.Subjects.AnyAsync(x => x.Name == name))
@@ -45,10 +55,10 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ServiceResponse<object>> GetSubjects(BaseDto LoggedInDetails)
+        public async Task<ServiceResponse<object>> GetSubjects()
         {
 
-            var subjects = await _context.Subjects.Where(m => m.Active == true && m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).ToListAsync();
+            var subjects = await _context.Subjects.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -145,7 +155,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> AddSubjects(int LoggedInUserId, int LoggedIn_BranchId, List<SubjectDtoForAdd> model)
+        public async Task<ServiceResponse<object>> AddSubjects(List<SubjectDtoForAdd> model)
         {
             var ListToAdd = new List<Subject>();
             foreach (var item in model)
@@ -155,9 +165,9 @@ namespace CoreWebApi.Data
                     Name = item.Name,
                     Active = true,
                     CreditHours = item.CreditHours,
-                    CreatedBy = LoggedInUserId,
+                    CreatedBy = _LoggedIn_UserID,
                     CreatedDateTime = DateTime.Now,
-                    SchoolBranchId = LoggedIn_BranchId,
+                    SchoolBranchId = _LoggedIn_BranchID,
                 });
             }
 
@@ -169,7 +179,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> AssignSubjects(int LoggedInUserId, int LoggedIn_BranchId, AssignSubjectDtoForAdd model)
+        public async Task<ServiceResponse<object>> AssignSubjects(AssignSubjectDtoForAdd model)
         {
             var ListToAdd = new List<SubjectAssignment>();
             foreach (var SubjectId in model.SubjectIds)
@@ -178,9 +188,9 @@ namespace CoreWebApi.Data
                 {
                     SubjectId = SubjectId,
                     ClassId = model.ClassId,
-                    SchoolId = LoggedIn_BranchId,
+                    SchoolId = _LoggedIn_BranchID,
                     //TableOfContent = model.TableOfContent,
-                    CreatedById = LoggedInUserId,
+                    CreatedById = _LoggedIn_UserID,
                     CreatedDateTime = DateTime.Now
                 });
             }
@@ -210,7 +220,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> EditAssignedSubject(int LoggedInUserId, int LoggedIn_BranchId, int id, AssignSubjectDtoForEdit model)
+        public async Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit model)
         {
             var ToRemove = _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList();
             if (ToRemove.Count() > 0)
@@ -225,9 +235,9 @@ namespace CoreWebApi.Data
                     {
                         SubjectId = SubjectId,
                         ClassId = model.ClassId,
-                        SchoolId = LoggedIn_BranchId,
+                        SchoolId = _LoggedIn_BranchID,
                         //TableOfContent = model.TableOfContent,
-                        CreatedById = LoggedInUserId,
+                        CreatedById = _LoggedIn_UserID,
                         CreatedDateTime = DateTime.Now
                     });
                 }

@@ -3,6 +3,7 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -21,24 +23,29 @@ namespace CoreWebApi.Data
         private readonly IMapper _mapper;
         private readonly IFilesRepository _File;
         ServiceResponse<object> _serviceResponse;
-        public SchoolRepository(DataContext context, IMapper mapper, IFilesRepository file)
+        private int _LoggedIn_UserID = 0;
+        private int _LoggedIn_BranchID = 0;
+        private string _LoggedIn_UserName = ""; 
+        public SchoolRepository(DataContext context, IMapper mapper, IFilesRepository file, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
             _File = file;
             _serviceResponse = new ServiceResponse<object>();
-
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
         }
 
 
 
-        public async Task<ServiceResponse<object>> GetTimeSlots(BaseDto LoggedInDetails)
+        public async Task<ServiceResponse<object>> GetTimeSlots()
         {
             var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
 
             var Days = await _context.LectureTiming.Select(o => o.Day).Distinct().ToListAsync();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList(); //.Substring(0,1).ToUpper()
-            var Timings = await _context.LectureTiming.Where(m=> m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).ToListAsync();
+            var Timings = await _context.LectureTiming.Where(m=> m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
             var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
             var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
@@ -57,7 +64,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetTimeTable(BaseDto LoggedInDetails)
+        public async Task<ServiceResponse<object>> GetTimeTable()
         {
 
             var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
@@ -72,7 +79,7 @@ namespace CoreWebApi.Data
                                    join cs in _context.ClassSections
                                    on main.ClassSectionId equals cs.Id
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                   && l.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId
+                                   && l.SchoolBranchId == _LoggedIn_BranchID
                                    select new TimeTableForListDto
                                    {
                                        Id = main.Id,
@@ -163,7 +170,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> SaveTimeSlots(int loggedInBranchId, List<TimeSlotsForAddDto> model)
+        public async Task<ServiceResponse<object>> SaveTimeSlots(List<TimeSlotsForAddDto> model)
         {
 
             List<LectureTiming> listToAdd = new List<LectureTiming>();
@@ -175,7 +182,7 @@ namespace CoreWebApi.Data
                     EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
                     IsBreak = item.IsBreak,
                     Day = item.Day,
-                    SchoolBranchId = loggedInBranchId != 0 ? Convert.ToInt32(loggedInBranchId) : 1
+                    SchoolBranchId = _LoggedIn_BranchID != 0 ? _LoggedIn_BranchID : 1
                 });
             }
 
@@ -262,7 +269,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> AddEvents(int loggedInBranchId, List<EventForAddDto> model)
+        public async Task<ServiceResponse<object>> AddEvents(List<EventForAddDto> model)
         {
 
 
@@ -274,7 +281,7 @@ namespace CoreWebApi.Data
                     Title = item.Title,
                     Color = item.Color,
                     Active = true,
-                    SchoolBranchId = loggedInBranchId != 0 ? Convert.ToInt32(loggedInBranchId) : 1
+                    SchoolBranchId = _LoggedIn_BranchID != 0 ? _LoggedIn_BranchID : 1
                 });
 
             }
@@ -315,12 +322,12 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> GetEvents(BaseDto LoggedInDetails)
+        public async Task<ServiceResponse<object>> GetEvents()
         {
 
             var EventsForList = await (from e in _context.Events
                                        where e.Active == true
-                                       && e.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId
+                                       && e.SchoolBranchId == _LoggedIn_BranchID
                                        select new EventsForListDto
                                        {
                                            Id = e.Id,
@@ -369,7 +376,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> UpdateEvents(int loggedInBranchId, List<EventDayAssignmentForAddDto> model)
+        public async Task<ServiceResponse<object>> UpdateEvents(List<EventDayAssignmentForAddDto> model)
         {
 
 
@@ -535,8 +542,8 @@ namespace CoreWebApi.Data
                 ClassSectionId = model.ClassSectionId,
                 LectureUrl = model.LectureUrl,
                 CreatedDateTime = DateTime.Now,
-                CreatedById = Convert.ToInt32(model.LoggedIn_UserId),
-                SchoolBranchId = Convert.ToInt32(model.LoggedIn_BranchId),
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
             };
             await _context.UploadedLectures.AddAsync(lecture);
             await _context.SaveChangesAsync();

@@ -7,10 +7,10 @@ namespace CoreWebApi.Dtos
     {
         [JsonIgnore]
         [IgnoreMap]
-        internal int LoggedIn_UserId { get; set; }
+        internal int LoggedIn_UserId1 { get; set; }
         [JsonIgnore]
         [IgnoreMap]
-        internal int LoggedIn_BranchId { get; set; }
+        internal int LoggedIn_BranchId1 { get; set; }
     }
    
     public class ChipsDto

@@ -20,19 +20,17 @@ namespace CoreWebApi.Controllers
     {
         private readonly ISubjectRepository _repo;
         ServiceResponse<object> _response;
-        public BaseDto LoggedInDetails;
         public SubjectsController(ISubjectRepository repo, IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
             _repo = repo;
             _response = new ServiceResponse<object>();
-            LoggedInDetails = new BaseDto() { LoggedIn_UserId = _LoggedIn_UserID, LoggedIn_BranchId = _LoggedIn_BranchID };
         }
 
         [HttpGet("GetSubjects")]
         public async Task<IActionResult> GetSubjects()
         {
-            _response = await _repo.GetSubjects(LoggedInDetails);
+            _response = await _repo.GetSubjects();
             return Ok(_response);
 
         }
@@ -66,7 +64,7 @@ namespace CoreWebApi.Controllers
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
 
-            _response = await _repo.AddSubjects(_LoggedIn_UserID, _LoggedIn_BranchID, model);
+            _response = await _repo.AddSubjects(model);
 
             return Ok(_response);
 
@@ -82,7 +80,7 @@ namespace CoreWebApi.Controllers
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
 
-            _response = await _repo.AssignSubjects(_LoggedIn_UserID, _LoggedIn_BranchID, model);
+            _response = await _repo.AssignSubjects(model);
 
             return Ok(_response);
 
@@ -106,8 +104,8 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
-            _response = await _repo.EditAssignedSubject(_LoggedIn_UserID, _LoggedIn_BranchID, id, subject);
+
+            _response = await _repo.EditAssignedSubject(id, subject);
             return Ok(_response);
         }
 
@@ -167,6 +165,6 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
 
-        
+
     }
 }

@@ -9,7 +9,7 @@ namespace CoreWebApi.IData
 {
     public interface IClassRepository
     {
-        Task<IEnumerable<Class>> GetClasses(BaseDto LoggedInDetails);
+        Task<IEnumerable<Class>> GetClasses();
         Task<Class> GetClass(int id);
         Task<bool> ClassExists(string name);
         Task<Class> AddClass(ClassDtoForAdd @class);

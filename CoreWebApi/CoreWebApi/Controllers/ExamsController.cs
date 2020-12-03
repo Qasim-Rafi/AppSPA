@@ -33,7 +33,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetQuizzes()
         {
 
-            _response = await _repo.GetQuizzes(_LoggedIn_UserID);
+            _response = await _repo.GetQuizzes();
             return Ok(_response);
 
         }
@@ -41,7 +41,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetAssignedQuiz()
         {
 
-            _response = await _repo.GetAssignedQuiz(_LoggedIn_UserID);
+            _response = await _repo.GetAssignedQuiz();
             return Ok(_response);
 
 
@@ -50,7 +50,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetQuizById(int id)
         {
 
-            _response = await _repo.GetQuizById(id, _LoggedIn_UserID);
+            _response = await _repo.GetQuizById(id);
             return Ok(_response);
 
         }
@@ -72,8 +72,7 @@ namespace CoreWebApi.Controllers
             }
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
-            model.LoggedIn_UserId = _LoggedIn_UserID;
-            model.LoggedIn_BranchId = _LoggedIn_BranchID;
+          
             var createdObjId = await _repo.AddQuiz(model);
 
             return Ok(new { createdQuizId = createdObjId });
@@ -122,7 +121,7 @@ namespace CoreWebApi.Controllers
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
 
-            _response = await _repo.SubmitQuiz(model, _LoggedIn_UserID);
+            _response = await _repo.SubmitQuiz(model);
 
             return Ok(_response);
 

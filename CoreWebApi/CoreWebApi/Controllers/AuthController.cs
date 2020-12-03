@@ -49,7 +49,7 @@ namespace CoreWebApi.Controllers
             // validate request;
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
-            if (await _repo.UserExists(userForRegisterDto.Username))
+            if (await _repo.UserExists(userForRegisterDto.Username, userForRegisterDto.SchoolName))
                 return BadRequest(new { message = CustomMessage.UserAlreadyExist });
 
 
@@ -89,7 +89,7 @@ namespace CoreWebApi.Controllers
                 new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
                 new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
                 new Claim(Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString()),
-                new Claim(ClaimTypes.Role,userFromRepo.Role)
+                new Claim(ClaimTypes.Role, userFromRepo.Role)
             };
 
 

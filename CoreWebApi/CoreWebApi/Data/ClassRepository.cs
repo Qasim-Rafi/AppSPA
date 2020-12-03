@@ -2,10 +2,12 @@
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -14,10 +16,16 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         ServiceResponse<object> _serviceResponse;
-        public ClassRepository(DataContext context)
+        private int _LoggedIn_UserID = 0;
+        private int _LoggedIn_BranchID = 0;
+        private string _LoggedIn_UserName = ""; 
+        public ClassRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
         }
         public async Task<bool> ClassExists(string name)
         {
@@ -31,9 +39,9 @@ namespace CoreWebApi.Data
             return @class;
         }
 
-        public async Task<IEnumerable<Class>> GetClasses(BaseDto LoggedInDetails)
+        public async Task<IEnumerable<Class>> GetClasses()
         {
-            var @classes = await _context.Class.Where(m=> m.SchoolBranchId == LoggedInDetails.LoggedIn_BranchId).ToListAsync();
+            var @classes = await _context.Class.Where(m=> m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             return @classes;
         }
         public async Task<Class> AddClass(ClassDtoForAdd @class)
@@ -42,10 +50,10 @@ namespace CoreWebApi.Data
             var objToCreate = new Class
             {
                 Name = @class.Name,
-                CreatedById = Convert.ToInt32(@class.LoggedIn_UserId),
+                CreatedById = _LoggedIn_UserID,
                 CreatedDateTime = DateTime.Now,
                 Active = true,
-                SchoolBranchId = Convert.ToInt32(@class.LoggedIn_BranchId),
+                SchoolBranchId = _LoggedIn_BranchID,
             };
 
             await _context.Class.AddAsync(objToCreate);
@@ -81,7 +89,7 @@ namespace CoreWebApi.Data
                 SchoolAcademyId = classSection.SchoolAcademyId,
                 NumberOfStudents = classSection.NumberOfStudents,
                 Active = true,
-                CreatedById = classSection.LoggedIn_UserId,
+                CreatedById = _LoggedIn_UserID,
                 CreatedDatetime = DateTime.Now
             };
 

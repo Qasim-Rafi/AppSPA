@@ -19,14 +19,12 @@ namespace CoreWebApi.Controllers
         private readonly ISchoolRepository _repo;
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
-        public BaseDto LoggedInDetails;
         public SchoolController(ISchoolRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _response = new ServiceResponse<object>();
-            LoggedInDetails = new BaseDto() { LoggedIn_UserId = _LoggedIn_UserID, LoggedIn_BranchId = _LoggedIn_BranchID };
         }
 
         [HttpGet("GetTimeSlots")]
@@ -38,7 +36,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetTimeSlots(LoggedInDetails);
+            _response = await _repo.GetTimeSlots();
 
             return Ok(_response);
 
@@ -52,7 +50,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetTimeTable(LoggedInDetails);
+            _response = await _repo.GetTimeTable();
 
             return Ok(_response);
 
@@ -79,7 +77,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.SaveTimeSlots(_LoggedIn_BranchID, model);
+            _response = await _repo.SaveTimeSlots(model);
 
             return Ok(_response);
 
@@ -125,7 +123,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetEvents(LoggedInDetails);
+            _response = await _repo.GetEvents();
 
             return Ok(_response);
 
@@ -139,7 +137,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.AddEvents(_LoggedIn_BranchID, model);
+            _response = await _repo.AddEvents(model);
 
             return Ok(_response);
 
@@ -152,7 +150,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.UpdateEvents(_LoggedIn_BranchID, model);
+            _response = await _repo.UpdateEvents(model);
 
             return Ok(_response);
 
@@ -238,9 +236,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            model.LoggedIn_UserId = _LoggedIn_UserID;
-            model.LoggedIn_BranchId = _LoggedIn_BranchID;
-
+           
             _response = await _repo.SaveUploadedLecture(model);
 
             return Ok(_response);

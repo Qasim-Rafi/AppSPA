@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -17,11 +18,16 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         private readonly IWebHostEnvironment _HostEnvironment;
-        public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment)
+        private int _LoggedIn_UserID = 0;
+        private int _LoggedIn_BranchID = 0;
+        private string _LoggedIn_UserName = "";
+        public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _HostEnvironment = HostEnvironment;
-
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
         }
         public async Task<bool> AssignmentExists(string name)
         {
@@ -55,12 +61,12 @@ namespace CoreWebApi.Data
             var objToCreate = new Assignment
             {
                 AssignmentName = assignment.AssignmentName,
-                CreatedById = assignment.LoggedIn_UserId,
+                CreatedById = _LoggedIn_UserID,
                 CreatedDateTime = DateTime.Now,
                 Details = assignment.Details,
                 TeacherName = assignment.TeacherName,
                 ClassSectionId = assignment.ClassSectionId,
-                SchoolBranchId = assignment.LoggedIn_BranchId
+                SchoolBranchId = _LoggedIn_BranchID
             };
 
 

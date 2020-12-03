@@ -13,7 +13,7 @@ namespace CoreWebApi.IData
 
         Task<User> Login(string username, string password);
         Task<object> GetSchoolDetails(string regNo, int branchId);
-        Task<bool> UserExists(string  username);
+        Task<bool> UserExists(string  userName, string  schoolName);
 
     }
 }

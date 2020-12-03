@@ -44,11 +44,12 @@ namespace CoreWebApi.Data
 
         public object GetSchoolAcademies()
         {
-            var regNo = _configuration.GetSection("AppSettings:SchoolRegistrationNo").Value;
+            //var regNo = _configuration.GetSection("AppSettings:SchoolRegistrationNo").Value;
+
             var school = _context.SchoolBranch.
             Join(_context.SchoolAcademy, sb => sb.SchoolAcademyID, sa => sa.Id,
             (sb, sa) => new { sb, sa }).
-            Where(z => z.sb.RegistrationNumber == regNo)
+            Where(z => z.sb.RegistrationNumber != "20000000")
             .Select(m => new
             {
                 Id = m.sa.Id,

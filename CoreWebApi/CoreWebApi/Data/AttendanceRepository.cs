@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -16,12 +17,16 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         ServiceResponse<object> _serviceResponse;
-
-        public AttendanceRepository(DataContext context)
+        private int _LoggedIn_UserID = 0;
+        private int _LoggedIn_BranchID = 0;
+        private string _LoggedIn_UserName = "";
+        public AttendanceRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
-
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
         }
         public async Task<bool> AttendanceExists(int userId)
         {
@@ -42,7 +47,7 @@ namespace CoreWebApi.Data
 
             return attendances;
         }
-        public async Task<string> AddAttendance(int LoggedIn_BranchId, List<AttendanceDtoForAdd> list)
+        public async Task<string> AddAttendance(List<AttendanceDtoForAdd> list)
         {
 
             foreach (var attendance in list)
@@ -70,7 +75,7 @@ namespace CoreWebApi.Data
                         UserId = attendance.UserId,
                         ClassSectionId = attendance.ClassSectionId,
                         CreatedDatetime = DateTime.Now,
-                        SchoolBranchId = Convert.ToInt32(LoggedIn_BranchId)
+                        SchoolBranchId = _LoggedIn_BranchID
                     };
 
                     await _context.Attendances.AddAsync(objToCreate);

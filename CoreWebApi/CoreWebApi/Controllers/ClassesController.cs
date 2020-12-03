@@ -27,7 +27,6 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         ServiceResponse<object> _response;
-        public BaseDto LoggedInDetails;
 
 
         public ClassesController(IClassRepository repo, IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
@@ -37,28 +36,14 @@ namespace CoreWebApi.Controllers
             _repo = repo;
             _context = context;
             _response = new ServiceResponse<object>();
-            //_role = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-            LoggedInDetails = new BaseDto() { LoggedIn_UserId = _LoggedIn_UserID, LoggedIn_BranchId = _LoggedIn_BranchID };
 
         }
 
-        [HttpGet("testing")]
-        public async Task<IActionResult> testing()
-        {
-
-            return Ok(new
-            {
-                _LoggedIn_BranchID,
-                _LoggedIn_UserID,
-                _LoggedIn_UserRole,
-                
-            });
-
-        }
+        
         [HttpGet]
         public async Task<IActionResult> GetClasses()
         {
-            var classes = await _repo.GetClasses(LoggedInDetails);
+            var classes = await _repo.GetClasses();
             var ToReturn = _LoggedIn_UserRole.Equals(Enumm.UserType.Student.ToString()) ? _mapper.Map<IEnumerable<ClassDtoForList>>(classes) :
                 _mapper.Map<IEnumerable<ClassDtoForList>>(classes);
             return Ok(ToReturn);
@@ -82,8 +67,7 @@ namespace CoreWebApi.Controllers
             if (await _repo.ClassExists(@class.Name))
                 return BadRequest(new { message = "Class Already Exist" });
 
-            @class.LoggedIn_UserId = _LoggedIn_UserID;
-            @class.LoggedIn_BranchId = _LoggedIn_BranchID;
+           
             var createdObj = await _repo.AddClass(@class);
 
             return StatusCode(StatusCodes.Status201Created);
@@ -156,7 +140,6 @@ namespace CoreWebApi.Controllers
             }
             if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
                 return BadRequest(new { message = "Class Section Already Exist" });
-            classSection.LoggedIn_UserId = _LoggedIn_UserID;
             var createdObj = await _repo.AddClassSectionMapping(classSection);
 
             return StatusCode(StatusCodes.Status201Created);
