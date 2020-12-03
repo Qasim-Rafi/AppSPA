@@ -33,8 +33,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetQuizzes()
         {
 
-            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-            _response = await _repo.GetQuizzes(loggedInUserId);
+            _response = await _repo.GetQuizzes(_LoggedIn_UserID);
             return Ok(_response);
 
         }
@@ -42,8 +41,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetAssignedQuiz()
         {
 
-            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-            _response = await _repo.GetAssignedQuiz(loggedInUserId);
+            _response = await _repo.GetAssignedQuiz(_LoggedIn_UserID);
             return Ok(_response);
 
 
@@ -52,8 +50,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetQuizById(int id)
         {
 
-            var loggedInUserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-            _response = await _repo.GetQuizById(id, loggedInUserId);
+            _response = await _repo.GetQuizById(id, _LoggedIn_UserID);
             return Ok(_response);
 
         }
@@ -75,7 +72,7 @@ namespace CoreWebApi.Controllers
             }
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
-            model.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+            model.LoggedIn_UserId = _LoggedIn_UserID;
 
             var createdObjId = await _repo.AddQuiz(model);
 
@@ -124,9 +121,8 @@ namespace CoreWebApi.Controllers
             }
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
-            var LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
 
-            _response = await _repo.SubmitQuiz(model, LoggedIn_UserId);
+            _response = await _repo.SubmitQuiz(model, _LoggedIn_UserID);
 
             return Ok(_response);
 

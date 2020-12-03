@@ -30,7 +30,7 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetSubjects")]
         public async Task<IActionResult> GetSubjects()
         {
-            _response = await _repo.GetSubjects();
+            _response = await _repo.GetSubjects(GetBRANCH_IDClaim());
             return Ok(_response);
 
         }
@@ -104,9 +104,8 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var LoggedIn_UserId = Convert.ToInt32(GetClaim(Enumm.ClaimType.NameIdentifier.ToString()));
-            var LoggedIn_BranchId = Convert.ToInt32(GetClaim(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _response = await _repo.EditAssignedSubject(LoggedIn_UserId, LoggedIn_BranchId, id, subject);
+            
+            _response = await _repo.EditAssignedSubject(_LoggedIn_UserID, _LoggedIn_BranchID, id, subject);
             return Ok(_response);
         }
 
@@ -165,5 +164,7 @@ namespace CoreWebApi.Controllers
             _response = await _repo.EditSubjectContent(id, subject);
             return Ok(_response);
         }
+
+        
     }
 }

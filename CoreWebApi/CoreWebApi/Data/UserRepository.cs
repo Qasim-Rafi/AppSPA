@@ -308,7 +308,6 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<string>> EditUser(int id, UserForUpdateDto user)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-
             User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
             if (dbUser != null)
             {

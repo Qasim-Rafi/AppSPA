@@ -111,8 +111,7 @@ namespace CoreWebApi.Controllers
 
             //if (await _repo.AttendanceExists(attendance.UserId))
             //    return BadRequest(new { message = "Attendance Already Exist" });
-            var LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-            var createdObj = await _repo.AddAttendance(LoggedIn_BranchId, list);
+            var createdObj = await _repo.AddAttendance(_LoggedIn_BranchID, list);
 
             return StatusCode(StatusCodes.Status201Created);
 

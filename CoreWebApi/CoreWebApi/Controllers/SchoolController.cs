@@ -77,8 +77,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-            _response = await _repo.SaveTimeSlots(loggedInBranchId, model);
+            _response = await _repo.SaveTimeSlots(_LoggedIn_BranchID, model);
 
             return Ok(_response);
 
@@ -138,8 +137,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-            _response = await _repo.AddEvents(loggedInBranchId, model);
+            _response = await _repo.AddEvents(_LoggedIn_BranchID, model);
 
             return Ok(_response);
 
@@ -152,8 +150,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            string loggedInBranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
-            _response = await _repo.UpdateEvents(loggedInBranchId, model);
+            _response = await _repo.UpdateEvents(_LoggedIn_BranchID, model);
 
             return Ok(_response);
 
@@ -239,8 +236,8 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            model.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-            model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            model.LoggedIn_UserId = _LoggedIn_UserID;
+            model.LoggedIn_BranchId = _LoggedIn_BranchID;
 
             _response = await _repo.SaveUploadedLecture(model);
 

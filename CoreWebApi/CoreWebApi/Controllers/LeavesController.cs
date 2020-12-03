@@ -55,7 +55,7 @@ namespace CoreWebApi.Controllers
                 }
                 if (await _repo.LeaveExists(leave.UserId))
                     return BadRequest(new { message = "Leave Already Exist" });
-                leave.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
+                leave.LoggedIn_UserId = _LoggedIn_UserID;
 
                 var createdObj = await _repo.AddLeave(leave);
 

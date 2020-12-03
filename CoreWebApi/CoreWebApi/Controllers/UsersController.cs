@@ -83,7 +83,7 @@ namespace CoreWebApi.Controllers
             if (await _repo.UserExists(userForAddDto.Username))
                 return BadRequest(new { message = CustomMessage.UserAlreadyExist });
 
-            userForAddDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            userForAddDto.LoggedIn_BranchId = GetBRANCH_IDClaim();
             var response = await _repo.AddUser(userForAddDto);
 
             return Ok(response);
@@ -115,7 +115,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            userForUpdateDto.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            userForUpdateDto.LoggedIn_BranchId = GetBRANCH_IDClaim();
 
             var response = await _repo.EditUser(id, userForUpdateDto);
 
@@ -205,7 +205,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> AddUsersInGroup(UserForAddInGroupDto model)
         {
 
-            model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            model.LoggedIn_BranchId = GetBRANCH_IDClaim();
 
             _response = await _repo.AddUsersInGroup(model);
 
@@ -219,7 +219,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> UpdateGroupUsers(UserForAddInGroupDto model)
         {
 
-            model.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            model.LoggedIn_BranchId = GetBRANCH_IDClaim();
 
             _response = await _repo.UpdateUsersInGroup(model);
 

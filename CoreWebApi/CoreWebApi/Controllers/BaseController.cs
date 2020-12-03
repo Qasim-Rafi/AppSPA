@@ -12,19 +12,26 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using CoreWebApi.Helpers;
+using CoreWebApi.Dtos;
 
 namespace CoreWebApi.Controllers
 {
     //[Route("api/[controller]")]
-    [ApiController]    
+    [ApiController]
     public class BaseController : ControllerBase
     {
-        protected string _userRole;
-
+        protected string _LoggedIn_UserRole;
+        public int _LoggedIn_UserID = 0;
+        public int _LoggedIn_BranchID = 0;
+        public string _LoggedIn_UserName = "";
+       
         public BaseController(IHttpContextAccessor httpContextAccessor)
         {
-            _userRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-
+            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            _LoggedIn_UserID = GetUSER_IDClaim();
+            _LoggedIn_BranchID = GetBRANCH_IDClaim();
+            _LoggedIn_UserName = GetUSER_NAMEClaim();
+           
         }
 
         //[NonAction]
@@ -60,24 +67,24 @@ namespace CoreWebApi.Controllers
 
 
 
-        [NonAction]
-        public string GetClaim(string name)
-        {
-            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
-            {
-                //IEnumerable<Claim> claims = identity.Claims;
-                var property = identity.FindFirst(name);
-                if (property != null)
-                    return property.Value;
-            }
-            return null;
-        }
+        //[NonAction]
+        //public string GetClaim(string name)
+        //{
+        //    ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+        //    if (identity != null)
+        //    {
+        //        //IEnumerable<Claim> claims = identity.Claims;
+        //        var property = identity.FindFirst(name);
+        //        if (property != null)
+        //            return property.Value;
+        //    }
+        //    return null;
+        //}
 
         [NonAction]
         public int GetBRANCH_IDClaim()
         {
-            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+            ClaimsIdentity identity = HttpContext != null ? HttpContext.User.Identity as ClaimsIdentity : null;
             if (identity != null)
             {
                 //IEnumerable<Claim> claims = identity.Claims;
@@ -90,7 +97,7 @@ namespace CoreWebApi.Controllers
         [NonAction]
         public string GetUSER_NAMEClaim()
         {
-            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+            ClaimsIdentity identity = HttpContext != null ? HttpContext.User.Identity as ClaimsIdentity : null;
             if (identity != null)
             {
                 //IEnumerable<Claim> claims = identity.Claims;
@@ -103,7 +110,7 @@ namespace CoreWebApi.Controllers
         [NonAction]
         public int GetUSER_IDClaim()
         {
-            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+            ClaimsIdentity identity = HttpContext != null ? HttpContext.User.Identity as ClaimsIdentity : null;
             if (identity != null)
             {
                 //IEnumerable<Claim> claims = identity.Claims;

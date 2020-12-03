@@ -42,7 +42,7 @@ namespace CoreWebApi.Data
 
             return attendances;
         }
-        public async Task<string> AddAttendance(string LoggedIn_BranchId, List<AttendanceDtoForAdd> list)
+        public async Task<string> AddAttendance(int LoggedIn_BranchId, List<AttendanceDtoForAdd> list)
         {
 
             foreach (var attendance in list)

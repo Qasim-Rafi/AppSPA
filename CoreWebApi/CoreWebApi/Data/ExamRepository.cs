@@ -107,7 +107,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> GetQuizById(int id, string loggedInUserId)
+        public async Task<ServiceResponse<object>> GetQuizById(int id, int loggedInUserId)
         {
 
             var userDetails = _context.Users.Where(m => m.Id == Convert.ToInt32(loggedInUserId)).FirstOrDefault();
@@ -182,7 +182,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetQuizzes(string loggedInUserId)
+        public async Task<ServiceResponse<object>> GetQuizzes(int loggedInUserId)
         {
 
 
@@ -242,7 +242,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> GetAssignedQuiz(string loggedInUserId)
+        public async Task<ServiceResponse<object>> GetAssignedQuiz(int loggedInUserId)
         {
 
 
@@ -347,7 +347,7 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ServiceResponse<object>> SubmitQuiz(List<QuizSubmissionDto> model, string loggedInUserId)
+        public async Task<ServiceResponse<object>> SubmitQuiz(List<QuizSubmissionDto> model, int loggedInUserId)
         {
 
             List<QuizSubmission> submissions = new List<QuizSubmission>();

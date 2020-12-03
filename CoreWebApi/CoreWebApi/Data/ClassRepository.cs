@@ -81,7 +81,7 @@ namespace CoreWebApi.Data
                 SchoolAcademyId = classSection.SchoolAcademyId,
                 NumberOfStudents = classSection.NumberOfStudents,
                 Active = true,
-                CreatedById = Convert.ToInt32(classSection.LoggedIn_UserId),
+                CreatedById = classSection.LoggedIn_UserId,
                 CreatedDatetime = DateTime.Now
             };
 

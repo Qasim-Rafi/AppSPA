@@ -162,7 +162,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> SaveTimeSlots(string loggedInBranchId, List<TimeSlotsForAddDto> model)
+        public async Task<ServiceResponse<object>> SaveTimeSlots(int loggedInBranchId, List<TimeSlotsForAddDto> model)
         {
 
             List<LectureTiming> listToAdd = new List<LectureTiming>();
@@ -174,7 +174,7 @@ namespace CoreWebApi.Data
                     EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
                     IsBreak = item.IsBreak,
                     Day = item.Day,
-                    SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
+                    SchoolBranchId = loggedInBranchId != 0 ? Convert.ToInt32(loggedInBranchId) : 1
                 });
             }
 
@@ -261,7 +261,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> AddEvents(string loggedInBranchId, List<EventForAddDto> model)
+        public async Task<ServiceResponse<object>> AddEvents(int loggedInBranchId, List<EventForAddDto> model)
         {
 
 
@@ -273,7 +273,7 @@ namespace CoreWebApi.Data
                     Title = item.Title,
                     Color = item.Color,
                     Active = true,
-                    SchoolBranchId = !string.IsNullOrEmpty(loggedInBranchId) ? Convert.ToInt32(loggedInBranchId) : 1
+                    SchoolBranchId = loggedInBranchId != 0 ? Convert.ToInt32(loggedInBranchId) : 1
                 });
 
             }
@@ -367,7 +367,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> UpdateEvents(string loggedInBranchId, List<EventDayAssignmentForAddDto> model)
+        public async Task<ServiceResponse<object>> UpdateEvents(int loggedInBranchId, List<EventDayAssignmentForAddDto> model)
         {
 
 

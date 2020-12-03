@@ -55,12 +55,12 @@ namespace CoreWebApi.Data
             var objToCreate = new Assignment
             {
                 AssignmentName = assignment.AssignmentName,
-                CreatedById = Convert.ToInt32(assignment.LoggedIn_UserId),
+                CreatedById = assignment.LoggedIn_UserId,
                 CreatedDateTime = DateTime.Now,
                 Details = assignment.Details,
                 TeacherName = assignment.TeacherName,
                 ClassSectionId = assignment.ClassSectionId,
-                SchoolBranchId = Convert.ToInt32(assignment.LoggedIn_BranchId)
+                SchoolBranchId = assignment.LoggedIn_BranchId
             };
 
 

@@ -53,8 +53,8 @@ namespace CoreWebApi.Controllers
             //if (await _repo.AssignmentExists(assignment.AssignmentName))
             //    return BadRequest(new { message = "Assignment Already Exist" });
 
-            assignment.LoggedIn_UserId = GetClaim(Enumm.ClaimType.NameIdentifier.ToString());
-            assignment.LoggedIn_BranchId = GetClaim(Enumm.ClaimType.BranchIdentifier.ToString());
+            assignment.LoggedIn_UserId = _LoggedIn_UserID;
+            assignment.LoggedIn_BranchId = _LoggedIn_BranchID;
             var createdObj = await _repo.AddAssignment(assignment);
 
             return StatusCode(StatusCodes.Status201Created);
