@@ -204,7 +204,7 @@ namespace CoreWebApi.Data
                 {
                     var GetClasses = context.Class.Where(m => m.Active == true).ToList();
                     var GetSections = context.Sections.ToList();
-                    var schoolAcademy = context.SchoolAcademy.FirstOrDefault();
+                    //var schoolBranch = context.SchoolBranch.FirstOrDefault();
 
                     foreach (var obj in GetClasses)
                     {
@@ -214,7 +214,7 @@ namespace CoreWebApi.Data
                             {
                                 ClassId = obj.Id,
                                 SectionId = item.Id,
-                                SchoolAcademyId = schoolAcademy != null ? schoolAcademy.Id : 0,
+                                SchoolBranchId = schoolBranch != null ? schoolBranch.Id : 0,
                                 Active = true
                             };
                             context.ClassSections.Add(newobj);

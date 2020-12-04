@@ -96,8 +96,8 @@ namespace CoreWebApi.Controllers
             var ToReturn = list.Select(o => new ClassSectionForListDto
             {
                 ClassSectionId = o.Id,
-                SchoolAcademyId = o.SchoolAcademyId,
-                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolAcademyId)?.Name,
+                SchoolAcademyId = o.SchoolBranchId,
+                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId)?.Name,
                 ClassId = o.ClassId,
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
                 SectionId = o.SectionId,
@@ -118,8 +118,8 @@ namespace CoreWebApi.Controllers
             _response.Data = result.Data.Select(o => new ClassSectionForDetailsDto
             {
                 ClassSectionId = o.Id,
-                SchoolAcademyId = o.SchoolAcademyId,
-                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolAcademyId)?.Name,
+                SchoolAcademyId = o.SchoolBranchId,
+                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId)?.Name,
                 ClassId = o.ClassId,
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
                 SectionId = o.SectionId,

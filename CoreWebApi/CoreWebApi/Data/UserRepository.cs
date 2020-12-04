@@ -26,7 +26,7 @@ namespace CoreWebApi.Data
         public int _LoggedIn_UserID = 0;
         public int _LoggedIn_BranchID = 0;
         public string _LoggedIn_UserName = "";
-       
+
         public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -430,6 +430,7 @@ namespace CoreWebApi.Data
                                    where u.UserTypeId == typeId
                                    && csU.ClassSectionId == classSectionId
                                    && u.Active == true
+                                   && u.SchoolBranchId == _LoggedIn_BranchID
                                    select u).OrderByDescending(m => m.Id).Select(o => new UserByTypeListDto
                                    {
                                        UserId = o.Id,
@@ -483,6 +484,7 @@ namespace CoreWebApi.Data
                 var users = await (from u in _context.Users
                                    where u.UserTypeId == typeId
                                    && u.Active == true
+                                   && u.SchoolBranchId == _LoggedIn_BranchID
                                    select u).OrderByDescending(m => m.Id).Select(o => new UserByTypeListDto
                                    {
                                        UserId = o.Id,
@@ -522,7 +524,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetUnmappedStudents()
         {
             IEnumerable<int> userIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
-            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !userIds.Contains(m.Id) && m.Active == true).ToListAsync();
+            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !userIds.Contains(m.Id) && m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
 
             _serviceResponse.Data = _mapper.Map<List<UserForListDto>>(unmappedStudents);
             _serviceResponse.Success = true;
@@ -532,7 +534,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetMappedStudents(int csId)
         {
             IEnumerable<int> userIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == csId).Select(m => m.UserId).Distinct();
-            List<User> mappedStudents = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student && m.Active == true).ToListAsync();
+            List<User> mappedStudents = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student && m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             User mappedTeacher = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Teacher && m.Active == true).FirstOrDefaultAsync();
             _serviceResponse.Data = new { mappedStudents, mappedTeacher };
             _serviceResponse.Success = true;
@@ -595,9 +597,9 @@ namespace CoreWebApi.Data
                , (o, od) => new
                {
                    o.Id,
-                   od.Group.GroupName
+                   od.Group
                })
-                .Select(s => s).Distinct().ToListAsync();
+                .Where(m => m.Group.SchoolBranchId == _LoggedIn_BranchID).Select(s => s).Distinct().ToListAsync();
 
 
             var users = string.Empty;
@@ -608,7 +610,7 @@ namespace CoreWebApi.Data
                 groupList.Add(new GroupListDto
                 {
                     Id = item.Id,
-                    GroupName = item.GroupName,
+                    GroupName = item.Group.GroupName,
                 });
 
             }
@@ -627,7 +629,7 @@ namespace CoreWebApi.Data
                          GroupUser = GroupUser,
                          User = User
                      })
-                                      .Select(p => p).ToListAsync();
+                       .Where(m => m.GroupUser.Group.SchoolBranchId == _LoggedIn_BranchID).Select(p => p).ToListAsync();
 
                 foreach (var item_u in user)
                 {

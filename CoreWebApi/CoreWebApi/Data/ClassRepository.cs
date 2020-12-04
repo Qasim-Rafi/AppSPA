@@ -25,7 +25,7 @@ namespace CoreWebApi.Data
             _serviceResponse = new ServiceResponse<object>();
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
         }
         public async Task<bool> ClassExists(string name)
         {
@@ -86,7 +86,7 @@ namespace CoreWebApi.Data
             {
                 ClassId = classSection.ClassId,
                 SectionId = classSection.SectionId,
-                SchoolAcademyId = classSection.SchoolAcademyId,
+                SchoolBranchId = _LoggedIn_BranchID,
                 NumberOfStudents = classSection.NumberOfStudents,
                 Active = true,
                 CreatedById = _LoggedIn_UserID,
@@ -103,7 +103,7 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<ClassSection>> GetClassSectionMapping()
         {
-            return await _context.ClassSections.OrderByDescending(m => m.Id).ToListAsync();
+            return await _context.ClassSections.Where(m=> m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).ToListAsync();
 
         }
 
@@ -116,7 +116,7 @@ namespace CoreWebApi.Data
                 objToUpdate.ClassId = model.ClassId;
                 objToUpdate.SectionId = model.SectionId;
                 objToUpdate.Active = model.Active;
-                objToUpdate.SchoolAcademyId = model.SchoolAcademyId;
+                objToUpdate.SchoolBranchId =_LoggedIn_BranchID;
                 objToUpdate.NumberOfStudents = model.NumberOfStudents;
 
                 await _context.SaveChangesAsync();
@@ -212,7 +212,7 @@ namespace CoreWebApi.Data
         {
             ServiceResponse<IEnumerable<ClassSection>> serviceResponse = new ServiceResponse<IEnumerable<ClassSection>>();
             serviceResponse.Success = true;
-            serviceResponse.Data = await _context.ClassSections.Where(m => m.Id == id).ToListAsync();
+            serviceResponse.Data = await _context.ClassSections.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             return serviceResponse;
         }
 

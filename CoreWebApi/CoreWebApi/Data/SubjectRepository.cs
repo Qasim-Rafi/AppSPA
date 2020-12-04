@@ -118,6 +118,7 @@ namespace CoreWebApi.Data
                             on ass.ClassId equals c.Id
                             join sch in _context.SchoolBranch
                             on ass.SchoolId equals sch.Id
+                            where ass.SchoolId == _LoggedIn_BranchID
                             select new
                             {
                                 ClassId = c.Id,

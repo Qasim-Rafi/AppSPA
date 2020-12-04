@@ -25,7 +25,7 @@ namespace CoreWebApi.Data
         ServiceResponse<object> _serviceResponse;
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = ""; 
+        private string _LoggedIn_UserName = "";
         public SchoolRepository(DataContext context, IMapper mapper, IFilesRepository file, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -45,7 +45,7 @@ namespace CoreWebApi.Data
 
             var Days = await _context.LectureTiming.Select(o => o.Day).Distinct().ToListAsync();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList(); //.Substring(0,1).ToUpper()
-            var Timings = await _context.LectureTiming.Where(m=> m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var Timings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
             var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
             var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
@@ -99,7 +99,7 @@ namespace CoreWebApi.Data
 
             var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
-            var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day)).ToListAsync();
+            var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
             var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
@@ -139,6 +139,7 @@ namespace CoreWebApi.Data
                                    on main.ClassSectionId equals cs.Id
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && main.Id == id
+                                   && l.SchoolBranchId == _LoggedIn_BranchID
                                    select new TimeTableForListDto
                                    {
                                        Id = main.Id,
@@ -182,7 +183,7 @@ namespace CoreWebApi.Data
                     EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
                     IsBreak = item.IsBreak,
                     Day = item.Day,
-                    SchoolBranchId = _LoggedIn_BranchID != 0 ? _LoggedIn_BranchID : 1
+                    SchoolBranchId = _LoggedIn_BranchID
                 });
             }
 
@@ -281,7 +282,7 @@ namespace CoreWebApi.Data
                     Title = item.Title,
                     Color = item.Color,
                     Active = true,
-                    SchoolBranchId = _LoggedIn_BranchID != 0 ? _LoggedIn_BranchID : 1
+                    SchoolBranchId = _LoggedIn_BranchID
                 });
 
             }
@@ -296,7 +297,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> DeleteEvent(int id)
         {
 
-            var ToRemove = await _context.Events.Where(m => m.Id == id).FirstOrDefaultAsync();
+            var ToRemove = await _context.Events.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
             if (ToRemove != null)
             {
                 var Count = await _context.EventDaysAssignments.Where(m => m.EventId == ToRemove.Id).CountAsync();
@@ -339,6 +340,7 @@ namespace CoreWebApi.Data
                                            join ed in _context.EventDaysAssignments
                                            on e.Id equals ed.EventId
                                            where e.Active == true
+                                           && e.SchoolBranchId == _LoggedIn_BranchID
                                            select new EventDaysForListDto
                                            {
                                                Id = ed.Id,
@@ -505,6 +507,7 @@ namespace CoreWebApi.Data
             var users = await (from u in _context.Users
                                where u.UserTypeId == (int)Enumm.UserType.Student
                                && u.Active == true
+                               && u.SchoolBranchId == _LoggedIn_BranchID
                                select new
                                {
                                    RegNo = u.Id,
