@@ -18,7 +18,7 @@ namespace CoreWebApi.Data
         ServiceResponse<object> _serviceResponse;
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = ""; 
+        private string _LoggedIn_UserName = "";
         public ClassRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -41,7 +41,7 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<Class>> GetClasses()
         {
-            var @classes = await _context.Class.Where(m=> m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var @classes = await _context.Class.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             return @classes;
         }
         public async Task<Class> AddClass(ClassDtoForAdd @class)
@@ -103,7 +103,7 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<ClassSection>> GetClassSectionMapping()
         {
-            return await _context.ClassSections.Where(m=> m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).ToListAsync();
+            return await _context.ClassSections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).ToListAsync();
 
         }
 
@@ -116,7 +116,7 @@ namespace CoreWebApi.Data
                 objToUpdate.ClassId = model.ClassId;
                 objToUpdate.SectionId = model.SectionId;
                 objToUpdate.Active = model.Active;
-                objToUpdate.SchoolBranchId =_LoggedIn_BranchID;
+                objToUpdate.SchoolBranchId = _LoggedIn_BranchID;
                 objToUpdate.NumberOfStudents = model.NumberOfStudents;
 
                 await _context.SaveChangesAsync();
@@ -231,7 +231,7 @@ namespace CoreWebApi.Data
 
         public async Task<bool> ClassSectionExists(int classId, int sectionId)
         {
-            if (await _context.ClassSections.AnyAsync(x => x.ClassId == classId && x.SectionId == sectionId))
+            if (await _context.ClassSections.AnyAsync(x => x.ClassId == classId && x.SectionId == sectionId && x.SchoolBranchId == _LoggedIn_BranchID))
                 return true;
             return false;
         }
@@ -243,11 +243,20 @@ namespace CoreWebApi.Data
             return false;
         }
 
-        public async Task<ServiceResponse<IEnumerable<ClassSectionUser>>> GetClassSectionUserMapping()
+        public async Task<ServiceResponse<IEnumerable<ClassSectionUserForListDto>>> GetClassSectionUserMapping()
         {
-            ServiceResponse<IEnumerable<ClassSectionUser>> serviceResponse = new ServiceResponse<IEnumerable<ClassSectionUser>>();
+            ServiceResponse<IEnumerable<ClassSectionUserForListDto>> serviceResponse = new ServiceResponse<IEnumerable<ClassSectionUserForListDto>>();
+            var list = await _context.ClassSectionUsers.Where(m => m.User.SchoolBranchId == _LoggedIn_BranchID).Include(m => m.ClassSection).Include(m => m.User).Select(o => new ClassSectionUserForListDto
+            {
+                Id = o.Id,
+                ClassSectionId = o.ClassSectionId,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId) != null ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId).Name : "",
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId) != null ? _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId).SectionName : "",
+                UserId = o.UserId,
+                FullName = o.User.FullName,
 
-            serviceResponse.Data = await _context.ClassSectionUsers.Include(m => m.ClassSection).Include(m => m.User).OrderByDescending(m => m.Id).ToListAsync();
+            }).OrderByDescending(m => m.Id).ToListAsync();
+            serviceResponse.Data = list;
             serviceResponse.Success = true;
 
             return serviceResponse;

@@ -28,7 +28,9 @@ namespace CoreWebApi.Controllers
         private readonly DataContext _context;
         ServiceResponse<object> _response;
 
-
+        private int _LoggedIn_UserID = 0;
+        private int _LoggedIn_BranchID = 0;
+        private string _LoggedIn_UserName = "";
         public ClassesController(IClassRepository repo, IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
@@ -36,10 +38,12 @@ namespace CoreWebApi.Controllers
             _repo = repo;
             _context = context;
             _response = new ServiceResponse<object>();
-
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
         }
 
-        
+
         [HttpGet]
         public async Task<IActionResult> GetClasses()
         {
@@ -67,7 +71,7 @@ namespace CoreWebApi.Controllers
             if (await _repo.ClassExists(@class.Name))
                 return BadRequest(new { message = "Class Already Exist" });
 
-           
+
             var createdObj = await _repo.AddClass(@class);
 
             return StatusCode(StatusCodes.Status201Created);
@@ -196,19 +200,9 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetClassSectionUserMapping")] // for teacher
         public async Task<IActionResult> GetClassSectionUserMappings()
         {
-            var result = await _repo.GetClassSectionUserMapping();
-            _response.Data = result.Data.Select(o => new ClassSectionUserForListDto
-            {
-                Id = o.Id,
-                ClassSectionId = o.ClassSectionId,
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
-                UserId = o.UserId,
-                FullName = o.User.FullName,
+            var response = await _repo.GetClassSectionUserMapping();
 
-            });
-
-            return Ok(_response);
+            return Ok(response);
 
         }
         [HttpPost("AddClassSectionUserMapping")]  // for teacher
