@@ -22,18 +22,30 @@ namespace CoreWebApi.Data
             _serviceResponse = new ServiceResponse<object>();
         }
 
-        public async Task<User> Login(string username, string password)
+        public async Task<User> Login(string username, string password, int schoolBranchId)
         {
+            if (schoolBranchId > 0)
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower() && x.SchoolBranchId == schoolBranchId);
+                if (user == null)
+                    return null;
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
-            if (user == null)
-                return null;
+                if (!Seed.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                    return null;
 
-            if (!Seed.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                return null;
+                return user;
+            }
+            else
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
+                if (user == null)
+                    return null;
 
-            return user;
+                if (!Seed.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                    return null;
 
+                return user;
+            }
 
         }
         public async Task<object> GetSchoolDetails(string regNo, int branchId)

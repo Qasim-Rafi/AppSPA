@@ -71,7 +71,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.password);
+            var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password, userForLoginDto.SchoolName1);
 
             if (userFromRepo == null)
             {
@@ -88,7 +88,7 @@ namespace CoreWebApi.Controllers
             {
                 new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
                 new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
-                new Claim(Enumm.ClaimType.BranchIdentifier.ToString(), schoolBranchDetails.branch.Id.ToString()),
+                new Claim(Enumm.ClaimType.BranchIdentifier.ToString(),userForLoginDto.SchoolName1 > 0 ? userForLoginDto.SchoolName1.ToString() : schoolBranchDetails.branch.Id.ToString()),
                 new Claim(ClaimTypes.Role, userFromRepo.Role)
             };
 
