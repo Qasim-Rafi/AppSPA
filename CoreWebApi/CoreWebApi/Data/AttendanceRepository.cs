@@ -52,7 +52,7 @@ namespace CoreWebApi.Data
 
             foreach (var attendance in list)
             {
-                var attendanceExist = _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.UserId == attendance.UserId).FirstOrDefault();
+                var attendanceExist = _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.UserId == attendance.UserId && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
                 if (attendanceExist != null)
                 {
                     attendanceExist.Present = attendance.Present;
@@ -90,7 +90,7 @@ namespace CoreWebApi.Data
         public async Task<Attendance> EditAttendance(int id, AttendanceDtoForEdit attendance)
         {
 
-            Attendance dbObj = _context.Attendances.FirstOrDefault(s => s.Id.Equals(id));
+            Attendance dbObj = _context.Attendances.FirstOrDefault(s => s.Id.Equals(id) && s.SchoolBranchId == _LoggedIn_BranchID);
             if (dbObj != null)
             {
                 dbObj.Comments = attendance.Comments;

@@ -107,12 +107,17 @@ namespace CoreWebApi.Data
             //
             modelBuilder.Entity<User>()
                 .Property(user => user.Role).HasDefaultValue("Student");
-            // primary key
+            // primary key // composite primary key
             modelBuilder.Entity<ClassLectureAssignment>()
-                .HasKey(c => new { c.Id });
-            // composite primary key
+                .HasKey(c => new { c.Id });            
             modelBuilder.Entity<ClassLectureAssignment>()
                 .HasIndex(p => new { p.LectureId, p.TeacherId })
+                .IsUnique(true);
+            // primary key // composite primary key
+            modelBuilder.Entity<ClassSectionUser>()
+                .HasKey(c => new { c.Id });
+            modelBuilder.Entity<ClassSectionUser>()
+                .HasIndex(p => new { p.ClassSectionId, p.UserId })
                 .IsUnique(true);
 
             // modelBuilder.Entity<ClassLectureAssignment>()

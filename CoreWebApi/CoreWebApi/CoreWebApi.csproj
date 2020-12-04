@@ -94,6 +94,10 @@
     <Compile Remove="Migrations\20201202102803_addSchoolBranchIdOnAllApp.Designer.cs" />
     <Compile Remove="Migrations\20201202103036_addSchoolBranchIdOnAllApp.cs" />
     <Compile Remove="Migrations\20201202103036_addSchoolBranchIdOnAllApp.Designer.cs" />
+    <Compile Remove="Migrations\20201204110909_addCSUserCompositeKey.cs" />
+    <Compile Remove="Migrations\20201204110909_addCSUserCompositeKey.Designer.cs" />
+    <Compile Remove="Migrations\20201204111655_updateCLAssignmentCompositeKey.cs" />
+    <Compile Remove="Migrations\20201204111655_updateCLAssignmentCompositeKey.Designer.cs" />
 
   </ItemGroup>
 

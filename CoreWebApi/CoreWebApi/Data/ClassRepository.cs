@@ -29,7 +29,7 @@ namespace CoreWebApi.Data
         }
         public async Task<bool> ClassExists(string name)
         {
-            if (await _context.Class.AnyAsync(x => x.Name == name))
+            if (await _context.Class.AnyAsync(x => x.Name == name && x.SchoolBranchId == _LoggedIn_BranchID))
                 return true;
             return false;
         }
@@ -243,10 +243,11 @@ namespace CoreWebApi.Data
             return false;
         }
 
-        public async Task<ServiceResponse<IEnumerable<ClassSectionUserForListDto>>> GetClassSectionUserMapping()
+        public async Task<ServiceResponse<IEnumerable<ClassSectionUserForListDto>>> GetClassSectionUserMapping() // for teacher
         {
             ServiceResponse<IEnumerable<ClassSectionUserForListDto>> serviceResponse = new ServiceResponse<IEnumerable<ClassSectionUserForListDto>>();
-            var list = await _context.ClassSectionUsers.Where(m => m.User.SchoolBranchId == _LoggedIn_BranchID).Include(m => m.ClassSection).Include(m => m.User).Select(o => new ClassSectionUserForListDto
+            var list = await _context.ClassSectionUsers.Where(m => m.User.SchoolBranchId == _LoggedIn_BranchID && m.User.UserTypeId == (int)Enumm.UserType.Teacher)
+                .Include(m => m.ClassSection).Include(m => m.User).Select(o => new ClassSectionUserForListDto
             {
                 Id = o.Id,
                 ClassSectionId = o.ClassSectionId,

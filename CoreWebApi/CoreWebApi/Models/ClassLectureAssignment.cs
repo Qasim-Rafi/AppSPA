@@ -10,12 +10,9 @@ namespace CoreWebApi.Models
 {
     public class ClassLectureAssignment
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
-        public int Id { get; set; }
-        [Key, Column(Order = 0)]
+        
+        public int Id { get; set; }       
         public int LectureId { get; set; }
-        [Key, Column(Order = 1)] 
         public int TeacherId { get; set; }
         public int ClassSectionId { get; set; }
         public int SubjectId { get; set; }       

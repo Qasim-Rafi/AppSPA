@@ -256,7 +256,7 @@ namespace CoreWebApi.Data
         {
             ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
             bool isExist = false;
-            if (await _context.Users.AnyAsync(x => x.Username == username))
+            if (await _context.Users.AnyAsync(x => x.Username == username && x.SchoolBranchId == _LoggedIn_BranchID))
             {
                 isExist = true;
             }
@@ -301,7 +301,6 @@ namespace CoreWebApi.Data
 
             var createdUser = _mapper.Map<UserForListDto>(userToCreate);
 
-            //serviceResponse.Data = createdUser;
             serviceResponse.Success = true;
             serviceResponse.Message = CustomMessage.Added;
             return serviceResponse;
@@ -523,8 +522,22 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetUnmappedStudents()
         {
-            IEnumerable<int> userIds = _context.ClassSectionUsers.Select(m => m.UserId).Distinct();
-            List<User> unmappedStudents = await _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !userIds.Contains(m.Id) && m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var userIds = (from u in _context.Users
+                           join csU in _context.ClassSectionUsers
+                           on u.Id equals csU.UserId
+                           into Details
+                           from m in Details.DefaultIfEmpty()
+                           where u.UserTypeId == (int)Enumm.UserType.Student
+                           && u.SchoolBranchId == _LoggedIn_BranchID
+                           && u.Active == true
+                           select new
+                           {
+                               id = u.Id,
+                               userId = m.UserId
+
+                           }).Where(x => x.userId == null).ToList();
+         
+            List<User> unmappedStudents = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id)).ToListAsync();
 
             _serviceResponse.Data = _mapper.Map<List<UserForListDto>>(unmappedStudents);
             _serviceResponse.Success = true;
@@ -533,9 +546,22 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetMappedStudents(int csId)
         {
-            IEnumerable<int> userIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == csId).Select(m => m.UserId).Distinct();
-            List<User> mappedStudents = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student && m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            User mappedTeacher = await _context.Users.Where(m => userIds.Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Teacher && m.Active == true).FirstOrDefaultAsync();
+            var userIds = (from u in _context.Users
+                           join csU in _context.ClassSectionUsers
+                           on u.Id equals csU.UserId
+                           into Details
+                           from m in Details.DefaultIfEmpty()
+                           where u.UserTypeId == (int)Enumm.UserType.Student
+                           && u.SchoolBranchId == _LoggedIn_BranchID
+                           && u.Active == true
+                           select new
+                           {
+                               id = u.Id,
+                               userId = m.UserId
+
+                           }).Where(x => x.userId != null).ToList();
+            List<User> mappedStudents = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id)).ToListAsync();
+            User mappedTeacher = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Teacher && m.Active == true).FirstOrDefaultAsync();
             _serviceResponse.Data = new { mappedStudents, mappedTeacher };
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -665,7 +691,7 @@ namespace CoreWebApi.Data
         {
 
 
-            var group = await _context.Groups.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+            var group = await _context.Groups.Where(m => m.Id == model.Id && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
             if (group != null)
             {
                 group.GroupName = model.GroupName;
@@ -675,7 +701,7 @@ namespace CoreWebApi.Data
                 await _context.SaveChangesAsync();
                 if (model.UserIds.Count() > 0)
                 {
-                    List<GroupUser> listToDelete = await _context.GroupUsers.Where(m => m.GroupId == model.Id).ToListAsync();
+                    List<GroupUser> listToDelete = await _context.GroupUsers.Where(m => m.GroupId == model.Id && m.Group.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
                     _context.GroupUsers.RemoveRange(listToDelete);
                     await _context.SaveChangesAsync();
 
