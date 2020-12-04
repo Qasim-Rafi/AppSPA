@@ -75,6 +75,7 @@ namespace CoreWebApi.Data
                                  on ass.SchoolId equals sch.Id
                                  where ass.Id == id
                                  && s.Active == true
+                                 && s.SchoolBranchId == _LoggedIn_BranchID
                                  select new AssignSubjectDtoForDetail
                                  {
                                      Id = s.Id,
@@ -92,6 +93,7 @@ namespace CoreWebApi.Data
                                        on s.Id equals ass.SubjectId
                                        where ass.ClassId == subject.ClassId
                                        && s.Active == true
+                                       && s.SchoolBranchId == _LoggedIn_BranchID
                                        select s).Select(x => new SubjectDtoForDetail
                                        {
                                            Id = x.Id,
@@ -144,6 +146,7 @@ namespace CoreWebApi.Data
                                        on s.Id equals ass.SubjectId
                                        where ass.ClassId == item.ClassId
                                        && s.Active == true
+                                       && s.SchoolBranchId == _LoggedIn_BranchID
                                        select s).Select(x => new ChipsDto
                                        {
                                            Value = x.Id,

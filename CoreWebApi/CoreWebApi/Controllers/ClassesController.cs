@@ -196,17 +196,8 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetClassSectionUserMapping")] // for teacher
         public async Task<IActionResult> GetClassSectionUserMappings()
         {
-            var result = await _repo.GetClassSectionUserMapping();
-            _response.Data = result.Data.Select(o => new ClassSectionUserForListDto
-            {
-                Id = o.Id,
-                ClassSectionId = o.ClassSectionId,
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
-                UserId = o.UserId,
-                FullName = o.User.FullName,
-
-            });
+            _response = await _repo.GetClassSectionUserMapping();
+            //_response.Data = result.Data
 
             return Ok(_response);
 

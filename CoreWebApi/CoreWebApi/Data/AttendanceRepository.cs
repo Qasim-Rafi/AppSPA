@@ -36,14 +36,14 @@ namespace CoreWebApi.Data
         }
         public async Task<Attendance> GetAttendance(int id)
         {
-            var attendance = await _context.Attendances.FirstOrDefaultAsync(u => u.Id == id);
+            var attendance = await _context.Attendances.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync(u => u.Id == id);
 
             return attendance;
         }
 
         public async Task<IEnumerable<Attendance>> GetAttendances()
         {
-            var attendances = await _context.Attendances.ToListAsync();
+            var attendances = await _context.Attendances.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
 
             return attendances;
         }
@@ -61,7 +61,7 @@ namespace CoreWebApi.Data
                     attendanceExist.Comments = attendance.Comments;
                     attendanceExist.UserId = attendance.UserId;
                     attendanceExist.ClassSectionId = attendance.ClassSectionId;
-
+                    
                     await _context.SaveChangesAsync();
                 }
                 else

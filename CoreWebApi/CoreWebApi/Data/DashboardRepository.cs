@@ -52,10 +52,12 @@ namespace CoreWebApi.Data
             int StudentCount = await (from u in _context.Users
                                       where u.UserTypeId == (int)Enumm.UserType.Student
                                       && u.Active == true
+                                      && u.SchoolBranchId == _LoggedIn_BranchID
                                       select u).CountAsync();
             int TeacherCount = await (from u in _context.Users
                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
                                       && u.Active == true
+                                      && u.SchoolBranchId == _LoggedIn_BranchID
                                       select u).CountAsync();
 
             int PresentStudentCount = await (from user in _context.Users
@@ -65,6 +67,7 @@ namespace CoreWebApi.Data
                                              where attendance.Present == true
                                              && user.UserTypeId == (int)Enumm.UserType.Student
                                              && user.Active == true
+                                             && user.SchoolBranchId == _LoggedIn_BranchID
                                              select user).CountAsync();
 
 
@@ -76,6 +79,7 @@ namespace CoreWebApi.Data
                                              where attendance.Present == true
                                              && user.UserTypeId == (int)Enumm.UserType.Teacher
                                              && user.Active == true
+                                             && user.SchoolBranchId == _LoggedIn_BranchID
                                              select user).CountAsync();
             string StudentPercentage = "0";
             string TeacherPercentage = "0";

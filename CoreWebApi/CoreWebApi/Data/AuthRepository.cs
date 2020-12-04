@@ -2,10 +2,12 @@
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -15,11 +17,17 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         ServiceResponse<object> _serviceResponse;
+        private int _LoggedIn_UserID = 0;
+        private int _LoggedIn_BranchID = 0;
+        private string _LoggedIn_UserName = "";
 
-        public AuthRepository(DataContext context)
+        public AuthRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
         }
 
         public async Task<User> Login(string username, string password, int schoolBranchId)

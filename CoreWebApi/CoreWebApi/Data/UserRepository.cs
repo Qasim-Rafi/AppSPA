@@ -712,6 +712,7 @@ namespace CoreWebApi.Data
                                 join gu in _context.GroupUsers
                                 on g.Id equals gu.GroupId
                                 where g.Id == id
+                                && g.SchoolBranchId == _LoggedIn_BranchID
                                 select new
                                 {
                                     g.Id,
@@ -741,6 +742,7 @@ namespace CoreWebApi.Data
                                   on u.Id equals gu.UserId
                                   join g in _context.Groups
                                   on gu.GroupId equals g.Id
+                                  where g.SchoolBranchId == _LoggedIn_BranchID
                                   select new
                                   {
                                       GroupUser = gu,
@@ -782,7 +784,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> DeleteGroup(int id)
         {
 
-            var group = _context.Groups.Where(m => m.Id == id).FirstOrDefault();
+            var group = _context.Groups.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
             if (group != null)
             {
                 _context.Groups.Remove(group);
@@ -801,7 +803,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> ActiveInActiveUser(int id, bool status)
         {
 
-            var user = _context.Users.Where(m => m.Id == id).FirstOrDefault();
+            var user = _context.Users.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
             user.Active = status;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
@@ -819,6 +821,7 @@ namespace CoreWebApi.Data
                                where u.UserTypeId == (int)Enumm.UserType.Student
                                && csU.ClassSectionId == classSectionId
                                && u.Active == true
+                               && u.SchoolBranchId == _LoggedIn_BranchID
                                select u).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
                                {
                                    Id = o.Id,
