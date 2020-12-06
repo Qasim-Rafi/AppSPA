@@ -27,7 +27,7 @@ namespace CoreWebApi.Data
         }
         public async Task<bool> SectionExists(string name)
         {
-            if (await _context.Sections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).AnyAsync(x => x.SectionName == name))
+            if (await _context.Sections.Where(m => m.SectionName.ToLower() == name.ToLower() && m.SchoolBranchId == _LoggedIn_BranchID).AnyAsync())
                 return true;
             return false;
         }

@@ -43,12 +43,12 @@ namespace CoreWebApi.Data
         {
             var weekDayList = new List<string> { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
 
-            var Days = await _context.LectureTiming.Select(o => o.Day).Distinct().ToListAsync();
+            var Days = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => o.Day).Distinct().ToListAsync();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList(); //.Substring(0,1).ToUpper()
             var Timings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
-            var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
-            var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
+            var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
+            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
             for (int i = 0; i < StartTimings.Count; i++)
             {
@@ -100,8 +100,8 @@ namespace CoreWebApi.Data
             var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
             var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            var StartTimings = await _context.LectureTiming.Select(m => m.StartTime).Distinct().ToListAsync();
-            var EndTimings = await _context.LectureTiming.Select(m => m.EndTime).Distinct().ToListAsync();
+            var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
+            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
             for (int i = 0; i < StartTimings.Count; i++)
             {
@@ -475,7 +475,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetBirthdays()
         {
-            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date == DateTime.Now.Date && u.Active == true).Select(s => new
+            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date == DateTime.Now.Date && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID).Select(s => new
             {
                 Id = s.Id,
                 FullName = s.FullName,

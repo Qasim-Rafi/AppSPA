@@ -29,7 +29,7 @@ namespace CoreWebApi.Data
         }
         public async Task<bool> ClassExists(string name)
         {
-            if (await _context.Class.AnyAsync(x => x.Name == name && x.SchoolBranchId == _LoggedIn_BranchID))
+            if (await _context.Class.AnyAsync(x => x.Name.ToLower() == name.ToLower() && x.SchoolBranchId == _LoggedIn_BranchID))
                 return true;
             return false;
         }
@@ -182,9 +182,16 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<bool> AddClassSectionUserMappingBulk(ClassSectionUserDtoForAddBulk model)
+        public async Task<ServiceResponse<object>> AddClassSectionUserMappingBulk(ClassSectionUserDtoForAddBulk model)
         {
-
+            var CanHaveStudents = _context.ClassSections.Where(m => m.Id == model.ClassSectionId).FirstOrDefault()?.NumberOfStudents;
+            var ToAddStudents = model.UserIds.Count();
+            if (CanHaveStudents < ToAddStudents)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.CantExceedLimit;
+                return _serviceResponse;
+            }
             var existedIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId).ToList();
             if (existedIds.Count > 0 && model.UserIds.Count() > 0)
             {
@@ -204,7 +211,9 @@ namespace CoreWebApi.Data
             await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
             await _context.SaveChangesAsync();
 
-            return true;
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
 
         }
 
