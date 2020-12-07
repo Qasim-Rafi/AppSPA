@@ -117,7 +117,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> Register(UserForRegisterDto model, string regNo)
         {
             SchoolBranch branch = null;
-            if (model.UserTypeSignUp.ToLower() == "school")
+            if (model.UserTypeSignUp != null && model.UserTypeSignUp.ToLower() == "school")
             {
                 var schools = _context.SchoolAcademy.OrderByDescending(m => m.Id).ToList();
                 var schoolAcademy = new SchoolAcademy
@@ -175,7 +175,7 @@ namespace CoreWebApi.Data
                 await _context.Users.AddAsync(userToCreate);
                 await _context.SaveChangesAsync();
             }
-            else if (model.UserTypeSignUp.ToLower() == "tutor")
+            else if (model.UserTypeSignUp != null && model.UserTypeSignUp.ToLower() == "tutor")
             {
                 branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
                 var userToCreate = new User
@@ -200,7 +200,7 @@ namespace CoreWebApi.Data
                 await _context.SaveChangesAsync();
 
             }
-            else if (model.UserTypeSignUp.ToLower() == "student")
+            else if (model.UserTypeSignUp != null && model.UserTypeSignUp.ToLower() == "student")
             {
                 branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
                 var userToCreate = new User

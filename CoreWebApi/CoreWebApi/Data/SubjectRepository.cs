@@ -57,9 +57,17 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetSubjects()
         {
-
-            var subjects = await _context.Subjects.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
+            var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
+            if (branch.Id == _LoggedIn_BranchID)
+            {
+                var subjects = await _context.Subjects.Where(m => m.Active == true && m.CreatedBy == _LoggedIn_UserID && m.SchoolBranchId == branch.Id).ToListAsync();
+                _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
+            }
+            else
+            {
+                var subjects = await _context.Subjects.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+                _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
+            }
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
