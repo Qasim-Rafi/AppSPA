@@ -36,7 +36,7 @@ namespace CoreWebApi.Data
             _serviceResponse = new ServiceResponse<object>();
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
         }
 
         public void Add<T>(T entity) where T : class
@@ -870,6 +870,8 @@ namespace CoreWebApi.Data
                                    StateName = o.State.Name,
                                    OtherState = o.OtherState,
                                    Active = o.Active,
+                                   UserTypeId = o.UserTypeId,
+                                   UserType = o.Usertypes.Name,
                                    Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
                                    {
                                        Id = x.Id,
