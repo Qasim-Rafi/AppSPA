@@ -104,6 +104,8 @@ namespace CoreWebApi.Dtos
         public string StateName { get; set; }
         public string CountryName { get; set; }
         public string OtherState { get; set; }
+        public int UserTypeId { get; set; }
+        public string UserType { get; set; }
         public bool Active { get; set; }
         public string MemberSince { get; set; }
         public List<Photo> Photos { get; set; }
@@ -122,6 +124,8 @@ namespace CoreWebApi.Dtos
         public string StateName { get; set; }
         public string CountryName { get; set; }
         public string OtherState { get; set; }
+        public int UserTypeId { get; set; }
+        public string UserType { get; set; }
         public bool Active { get; set; }
         public List<Photo> Photos { get; set; }
     }

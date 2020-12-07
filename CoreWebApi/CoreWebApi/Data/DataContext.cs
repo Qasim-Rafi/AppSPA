@@ -68,8 +68,10 @@ namespace CoreWebApi.Data
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
-            //
-            modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
+
+            // while adding new migration uncomment below line and then comment it again after...
+            //modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
+           
             //
             modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>
             {

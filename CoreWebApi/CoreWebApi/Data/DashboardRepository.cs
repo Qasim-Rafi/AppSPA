@@ -17,10 +17,10 @@ namespace CoreWebApi.Data
     public class DashboardRepository : IDashboardRepository
     {
         private readonly DataContext _context;
-        ServiceResponse<object> _serviceResponse;
+        private readonly ServiceResponse<object> _serviceResponse;
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = ""; 
+        private string _LoggedIn_UserName = "";
         public DashboardRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -34,10 +34,19 @@ namespace CoreWebApi.Data
             var studentTypeId = _context.UserTypes.Where(n => n.Name == Enumm.UserType.Student.ToString()).FirstOrDefault()?.Id;
             var teacherTypeId = _context.UserTypes.Where(n => n.Name == Enumm.UserType.Teacher.ToString()).FirstOrDefault()?.Id;
             var otherTypeId = _context.UserTypes.Where(n => n.Name != Enumm.UserType.Teacher.ToString() && n.Name != Enumm.UserType.Student.ToString()).FirstOrDefault()?.Id;
-            var StudentCount = _context.Users.Where(m => m.UserTypeId == studentTypeId).ToList().Count();
-            var TeacherCount = _context.Users.Where(m => m.UserTypeId == teacherTypeId).ToList().Count();
-            var EmployeeCount = _context.Users.Where(m => m.UserTypeId == otherTypeId).ToList().Count();
-            var SubjectCount = _context.Subjects.ToList().Count();
+            var StudentCount = _context.Users.Where(m => m.Active == true && m.UserTypeId == studentTypeId && m.SchoolBranchId == _LoggedIn_BranchID).ToList().Count();
+            var TeacherCount = _context.Users.Where(m => m.Active == true && m.UserTypeId == teacherTypeId && m.SchoolBranchId == _LoggedIn_BranchID).ToList().Count();
+            var EmployeeCount = _context.Users.Where(m => m.Active == true && m.UserTypeId == otherTypeId && m.SchoolBranchId == _LoggedIn_BranchID).ToList().Count();
+            var SubjectCount = 0;
+            var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
+            if (branch.Id == _LoggedIn_BranchID)
+            {
+                SubjectCount = _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.CreatedBy == _LoggedIn_UserID).ToList().Count();
+            }
+            else
+            {
+                SubjectCount = _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToList().Count();
+            }
             return new
             {
                 StudentCount,
@@ -98,7 +107,7 @@ namespace CoreWebApi.Data
             param2.Value = (int)Enumm.UserType.Teacher;
             var TeacherMonthWisePercentage = TeacherCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
             TeacherMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
-            
+
             var onlyStudentNames = StudentMonthWisePercentage.Select(m => m.MonthName);
             var onlyTeacherNames = TeacherMonthWisePercentage.Select(m => m.MonthName);
             foreach (var month in Months)

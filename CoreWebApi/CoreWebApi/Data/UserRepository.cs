@@ -138,28 +138,31 @@ namespace CoreWebApi.Data
         {
             if (id > 0)
             {
-                var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == id && m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
-                {
-                    Id = o.Id,
-                    FullName = o.FullName,
-                    DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
-                    Email = o.Email,
-                    Gender = o.Gender,
-                    Username = o.Username,
-                    CountryId = o.CountryId,
-                    StateId = o.StateId,
-                    CountryName = o.Country.Name,
-                    StateName = o.State.Name,
-                    OtherState = o.OtherState,
-                    Active = o.Active,
-                    Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == id && m.SchoolBranchId == _LoggedIn_BranchID)
+                    .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
                     {
-                        Id = x.Id,
-                        Name = x.Name,
-                        IsPrimary = x.IsPrimary,
-                        Url = _File.AppendImagePath(x.Name)
-                    }).ToList(),
-                }).ToListAsync();
+                        Id = o.Id,
+                        FullName = o.FullName,
+                        DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                        Email = o.Email,
+                        Gender = o.Gender,
+                        Username = o.Username,
+                        CountryId = o.CountryId,
+                        StateId = o.StateId,
+                        CountryName = o.Country.Name,
+                        StateName = o.State.Name,
+                        OtherState = o.OtherState,
+                        Active = o.Active,
+                        UserTypeId = o.UserTypeId,
+                        UserType = o.Usertypes.Name,
+                        Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            IsPrimary = x.IsPrimary,
+                            Url = _File.AppendImagePath(x.Name)
+                        }).ToList(),
+                    }).ToListAsync();
 
                 //foreach (var user in users)
                 //{
@@ -176,28 +179,31 @@ namespace CoreWebApi.Data
             {
 
 
-                var users = await _context.Users.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
-                {
-                    Id = o.Id,
-                    FullName = o.FullName,
-                    DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
-                    Email = o.Email,
-                    Gender = o.Gender,
-                    Username = o.Username,
-                    CountryId = o.CountryId,
-                    StateId = o.StateId,
-                    CountryName = o.Country.Name,
-                    StateName = o.State.Name,
-                    OtherState = o.OtherState,
-                    Active = o.Active,
-                    Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                var users = await _context.Users.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID)
+                    .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
                     {
-                        Id = x.Id,
-                        Name = x.Name,
-                        IsPrimary = x.IsPrimary,
-                        Url = _File.AppendImagePath(x.Name)
-                    }).ToList(),
-                }).ToListAsync();
+                        Id = o.Id,
+                        FullName = o.FullName,
+                        DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                        Email = o.Email,
+                        Gender = o.Gender,
+                        Username = o.Username,
+                        CountryId = o.CountryId,
+                        StateId = o.StateId,
+                        CountryName = o.Country.Name,
+                        StateName = o.State.Name,
+                        OtherState = o.OtherState,
+                        Active = o.Active,
+                        UserTypeId = o.UserTypeId,
+                        UserType = o.Usertypes.Name,
+                        Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new Photo
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            IsPrimary = x.IsPrimary,
+                            Url = _File.AppendImagePath(x.Name)
+                        }).ToList(),
+                    }).ToListAsync();
 
                 //foreach (var user in users)
                 //{
@@ -214,22 +220,25 @@ namespace CoreWebApi.Data
         }
         public async Task<IEnumerable<UserForListDto>> GetInActiveUsers()
         {
-            var users = await _context.Users.Where(m => m.Active == false).OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
-            {
-                Id = o.Id,
-                FullName = o.FullName,
-                DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
-                Email = o.Email,
-                Gender = o.Gender,
-                Username = o.Username,
-                CountryId = o.CountryId,
-                StateId = o.StateId,
-                CountryName = o.Country.Name,
-                StateName = o.State.Name,
-                OtherState = o.OtherState,
-                Active = o.Active,
-                //Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
-            }).ToListAsync();
+            var users = await _context.Users.Where(m => m.Active == false && m.SchoolBranchId == _LoggedIn_BranchID)
+                .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                {
+                    Id = o.Id,
+                    FullName = o.FullName,
+                    DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                    Email = o.Email,
+                    Gender = o.Gender,
+                    Username = o.Username,
+                    CountryId = o.CountryId,
+                    StateId = o.StateId,
+                    CountryName = o.Country.Name,
+                    StateName = o.State.Name,
+                    OtherState = o.OtherState,
+                    Active = o.Active,
+                    UserTypeId = o.UserTypeId,
+                    UserType = o.Usertypes.Name,
+                    //Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
+                }).ToListAsync();
 
             //foreach (var user in users)
             //{
@@ -535,7 +544,7 @@ namespace CoreWebApi.Data
                                userId = m.UserId
 
                            }).Where(x => x.userId == null).ToList();
-         
+
             List<User> unmappedStudents = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student).ToListAsync();
 
             _serviceResponse.Data = _mapper.Map<List<UserForListDto>>(unmappedStudents);
