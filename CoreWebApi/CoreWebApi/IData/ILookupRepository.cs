@@ -19,5 +19,6 @@ namespace CoreWebApi.IData
         Task<List<UserForListDto>> GetUsersByClassSection(int csId);
         Task<List<UserForListDto>> GetTeachers();
         object GetSchoolAcademies();
+        object SchoolBranches();
     }
 }

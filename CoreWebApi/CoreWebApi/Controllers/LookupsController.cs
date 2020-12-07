@@ -129,6 +129,18 @@ namespace CoreWebApi.Controllers
 
 
         }
+        [HttpGet("SchoolBranches")]
+        public IActionResult SchoolBranches()
+        {
+
+
+            var school = _repo.SchoolBranches();
+
+
+            return Ok(school);
+
+
+        }
 
     }
 }

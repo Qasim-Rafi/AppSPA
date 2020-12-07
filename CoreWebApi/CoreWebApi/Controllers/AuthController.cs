@@ -71,6 +71,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
             var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password, userForLoginDto.SchoolName1);
 
             if (userFromRepo == null)

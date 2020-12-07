@@ -108,5 +108,14 @@ namespace CoreWebApi.Data
         {
             return await _context.UserTypes.ToListAsync();
         }
+
+        public object SchoolBranches()
+        {
+            return (from b in _context.SchoolBranch
+                    where b.Active == true
+                    && b.RegistrationNumber != "20000000"
+                    select b).ToList();
+
+        }
     }
 }

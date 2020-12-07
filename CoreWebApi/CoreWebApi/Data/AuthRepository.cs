@@ -32,7 +32,7 @@ namespace CoreWebApi.Data
 
         public async Task<User> Login(string username, string password, int schoolBranchId)
         {
-            if (schoolBranchId > 0)
+            if (schoolBranchId > 0 && !string.IsNullOrEmpty(schoolBranchId.ToString()))
             {
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower() && x.SchoolBranchId == schoolBranchId);
                 if (user == null)
@@ -45,7 +45,9 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
+                var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
+
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower() && x.SchoolBranchId == branch.Id);
                 if (user == null)
                     return null;
 
