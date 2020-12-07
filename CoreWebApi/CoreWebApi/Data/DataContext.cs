@@ -59,6 +59,7 @@ namespace CoreWebApi.Data
         public DbSet<SubjectAssignment> SubjectAssignments { get; set; }
         public DbSet<SubjectContent> SubjectContents { get; set; }
         public DbSet<SubjectContentDetail> SubjectContentDetails { get; set; }
+        public DbSet<ClassSectionTransaction> ClassSectionTransactions { get; set; }
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
 
 
@@ -70,7 +71,7 @@ namespace CoreWebApi.Data
             }
 
             // while adding new migration uncomment below line and then comment it again after...
-            //modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
+            // modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
            
             //
             modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>
@@ -121,11 +122,10 @@ namespace CoreWebApi.Data
             modelBuilder.Entity<ClassSectionUser>()
                 .HasIndex(p => new { p.ClassSectionId, p.UserId })
                 .IsUnique(true);
-
-            // modelBuilder.Entity<ClassLectureAssignment>()
-            // .Property(p => p.TeacherId).ValueGeneratedNever();
-            // modelBuilder.Entity<ClassLectureAssignment>()
-            // .Property(p => p.LectureId).ValueGeneratedNever();
+            // primary key // composite primary key
+            modelBuilder.Entity<Subject>()
+               .HasIndex(s => new { s.Name, s.SchoolBranchId })
+               .IsUnique(true);
         }
 
 

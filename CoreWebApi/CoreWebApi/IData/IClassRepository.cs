@@ -23,6 +23,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> UpdateClassSectionMapping(ClassSectionDtoForUpdate classSection);
         Task<ServiceResponse<object>> DeleteClassSectionMapping(int id);
         Task<ServiceResponse<object>> DeleteClassSectionUserMapping(int id);
+        Task<ServiceResponse<object>> InActiveClassSectionUserMapping(int csId);
         Task<ServiceResponse<object>> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser);
         Task<ServiceResponse<object>> AddClassSectionUserMappingBulk(ClassSectionUserDtoForAddBulk classSectionUser);
         Task<ServiceResponse<object>> UpdateClassSectionUserMapping(ClassSectionUserDtoForUpdate classSectionUser);

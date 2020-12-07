@@ -4,38 +4,22 @@ using CoreWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20201207102101_addSubjectCompositePK")]
+    partial class addSubjectCompositePK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("CoreWebApi.Dtos.GetAttendancePercentageByMonthDto", b =>
-                {
-                    b.Property<int>("Month")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("MonthNumber")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Percentage")
-                        .HasColumnType("float");
-
-                    b.HasKey("Month");
-
-                    b.ToTable("SPGetAttendancePercentageByMonth");
-                });
 
             modelBuilder.Entity("CoreWebApi.Models.Assignment", b =>
                 {
@@ -304,32 +288,6 @@ namespace CoreWebApi.Migrations
                     b.ToTable("ClassSectionAssignment");
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.ClassSectionTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ClassSectionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DeletedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DeletionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedById");
-
-                    b.ToTable("ClassSectionTransactions");
-                });
-
             modelBuilder.Entity("CoreWebApi.Models.ClassSectionUser", b =>
                 {
                     b.Property<int>("Id")
@@ -340,21 +298,13 @@ namespace CoreWebApi.Migrations
                     b.Property<int>("ClassSectionId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool?>("IsIncharge")
                         .HasColumnType("bit");
-
-                    b.Property<int>("SchoolBranchId")
-                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SchoolBranchId");
 
                     b.HasIndex("UserId");
 
@@ -1413,27 +1363,12 @@ namespace CoreWebApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.ClassSectionTransaction", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CoreWebApi.Models.ClassSectionUser", b =>
                 {
                     b.HasOne("CoreWebApi.Models.ClassSection", "ClassSection")
                         .WithMany()
                         .HasForeignKey("ClassSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
-                        .WithMany()
-                        .HasForeignKey("SchoolBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CoreWebApi.Models.User", "User")

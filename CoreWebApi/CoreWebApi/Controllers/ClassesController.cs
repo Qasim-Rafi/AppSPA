@@ -269,5 +269,19 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpDelete("InActiveClassSectionUserMapping/{csId}")] // for tblCSTransaction
+        public async Task<IActionResult> InActiveClassSectionUserMapping(int csId)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.InActiveClassSectionUserMapping(csId);
+
+            return Ok(_response);
+
+        }
     }
 }

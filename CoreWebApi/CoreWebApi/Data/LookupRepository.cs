@@ -106,7 +106,8 @@ namespace CoreWebApi.Data
 
         public async Task<List<UserType>> GetUserTypes()
         {
-            return await _context.UserTypes.ToListAsync();
+            string[] values = new string[] { "Tutor", "OnlineStudent" };
+            return await _context.UserTypes.Where(m => !values.Contains(m.Name)).ToListAsync();
         }
 
         public object SchoolBranches()

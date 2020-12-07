@@ -99,7 +99,7 @@ namespace CoreWebApi.Data
             //if (StudentCount > 0) { }
             string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 
-            var param1 = new SqlParameter("@SchoolBranchID", 1);
+            var param1 = new SqlParameter("@SchoolBranchID", _LoggedIn_BranchID);
             var param2 = new SqlParameter("@UserTypeId", (int)Enumm.UserType.Student);
             var StudentMonthWisePercentage = StudentCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
             StudentMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);

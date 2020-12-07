@@ -110,7 +110,7 @@ namespace CoreWebApi.Data
 
             if (!context.Users.Any())
             {
-                var schoolBranch =  context.SchoolBranch.FirstOrDefault();
+                var schoolBranch = context.SchoolBranch.FirstOrDefault();
                 if (schoolBranch != null)
                 {
 
@@ -151,7 +151,7 @@ namespace CoreWebApi.Data
 
             var fileData = System.IO.File.ReadAllText("Data/GenericSeedData.json");
             DataSet dataSet = JsonConvert.DeserializeObject<DataSet>(fileData);
-            var schoolBranch =  context.SchoolBranch.FirstOrDefault();
+            var schoolBranch = context.SchoolBranch.FirstOrDefault();
             if (schoolBranch != null)
             {
                 //
@@ -241,7 +241,8 @@ namespace CoreWebApi.Data
                                 var newobj = new ClassSectionUser
                                 {
                                     ClassSectionId = obj.Id,
-                                    UserId = item.Id
+                                    UserId = item.Id,
+                                    SchoolBranchId = schoolBranch.Id
                                 };
                                 context.ClassSectionUsers.Add(newobj);
                             }
@@ -253,7 +254,8 @@ namespace CoreWebApi.Data
                                 var newobj = new ClassSectionUser
                                 {
                                     ClassSectionId = obj.Id,
-                                    UserId = item.Id
+                                    UserId = item.Id,
+                                    SchoolBranchId = schoolBranch.Id
                                 };
                                 context.ClassSectionUsers.Add(newobj);
                             }

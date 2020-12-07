@@ -14,8 +14,9 @@ namespace CoreWebApi.Helpers
         public const string PasswordNotMatched = "Given password does not match";
         public const string UnableToAdd = "Unable to add data";
         public const string UserAlreadyExist = "User already exist";
+        public const string RecordAlreadyExist = "Record already exist";
         public const string ChildRecordExist = "Record can't be deleted, because it's child record(s) exist in another table";
         public const string UnAuthorized = "Un-Authorized. Username or Password does not match";
-        public const string CantExceedLimit= "Can't add records more then specified";
+        public const string CantExceedLimit = "Can't add records more then specified";
     }
 }

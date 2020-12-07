@@ -138,7 +138,9 @@ namespace CoreWebApi.Data
             {
                 ClassSectionId = classSectionUser.ClassSectionId,
                 UserId = classSectionUser.UserId,
-                IsIncharge = classSectionUser.IsIncharge
+                IsIncharge = classSectionUser.IsIncharge,
+                CreatedDate = DateTime.Now,
+                SchoolBranchId = _LoggedIn_BranchID
             };
 
             await _context.ClassSectionUsers.AddAsync(objToCreate);
@@ -205,6 +207,8 @@ namespace CoreWebApi.Data
                 {
                     ClassSectionId = model.ClassSectionId,
                     UserId = item,
+                    CreatedDate = DateTime.Now,
+                    SchoolBranchId = _LoggedIn_BranchID
                 });
 
             }
@@ -257,15 +261,15 @@ namespace CoreWebApi.Data
             ServiceResponse<IEnumerable<ClassSectionUserForListDto>> serviceResponse = new ServiceResponse<IEnumerable<ClassSectionUserForListDto>>();
             var list = await _context.ClassSectionUsers.Where(m => m.User.SchoolBranchId == _LoggedIn_BranchID && m.User.UserTypeId == (int)Enumm.UserType.Teacher)
                 .Include(m => m.ClassSection).Include(m => m.User).Select(o => new ClassSectionUserForListDto
-            {
-                Id = o.Id,
-                ClassSectionId = o.ClassSectionId,
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId) != null ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId).Name : "",
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId) != null ? _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId).SectionName : "",
-                UserId = o.UserId,
-                FullName = o.User.FullName,
+                {
+                    Id = o.Id,
+                    ClassSectionId = o.ClassSectionId,
+                    ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId) != null ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId).Name : "",
+                    SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId) != null ? _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId).SectionName : "",
+                    UserId = o.UserId,
+                    FullName = o.User.FullName,
 
-            }).OrderByDescending(m => m.Id).ToListAsync();
+                }).OrderByDescending(m => m.Id).ToListAsync();
             serviceResponse.Data = list;
             serviceResponse.Success = true;
 
@@ -286,6 +290,34 @@ namespace CoreWebApi.Data
 
             return _serviceResponse;
 
+        }
+
+        public async Task<ServiceResponse<object>> InActiveClassSectionUserMapping(int csId)
+        {
+            var ToRemove = _context.ClassSectionUsers.Where(m => m.ClassSectionId == csId).ToList();
+            if (ToRemove.Count > 0)
+            {
+                _context.ClassSectionUsers.RemoveRange(ToRemove);
+                await _context.SaveChangesAsync();
+                List<ClassSectionTransaction> ToAdd = new List<ClassSectionTransaction>();
+                foreach (var item in ToRemove)
+                {
+                    ToAdd.Add(new ClassSectionTransaction
+                    {
+                        ClassSectionId = item.ClassSectionId,
+                        UserId = item.UserId,
+                        DeletionDate = DateTime.Now,
+                        DeletedById = _LoggedIn_UserID
+                    });
+                }
+                await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
+                await _context.SaveChangesAsync();
+            }
+
+            _serviceResponse.Message = CustomMessage.Deleted;
+            _serviceResponse.Success = true;
+
+            return _serviceResponse;
         }
     }
 }
