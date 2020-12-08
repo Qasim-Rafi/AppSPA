@@ -34,7 +34,7 @@ namespace CoreWebApi.Data
         {
             if (schoolBranchId > 0 && !string.IsNullOrEmpty(schoolBranchId.ToString()))
             {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower() && x.SchoolBranchId == schoolBranchId);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower() && x.Active == true && x.SchoolBranchId == schoolBranchId);
                 if (user == null)
                     return null;
 
@@ -47,7 +47,7 @@ namespace CoreWebApi.Data
             {
                 var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
 
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower() && x.SchoolBranchId == branch.Id);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower() && x.Active == true && x.SchoolBranchId == branch.Id);
                 if (user == null)
                     return null;
 
@@ -118,7 +118,7 @@ namespace CoreWebApi.Data
         {
             SchoolBranch branch = null;
             var SchoolExist = _context.SchoolAcademy.Where(m => m.Name.ToLower() == model.SchoolName.ToLower()).Any();
-            if(SchoolExist)
+            if (SchoolExist)
             {
                 _serviceResponse.Success = false;
                 _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
