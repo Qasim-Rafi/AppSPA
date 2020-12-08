@@ -331,5 +331,19 @@ namespace CoreWebApi.Controllers
                 {".csv", "text/csv"}
             };
         }
+
+        [HttpPost("UnMapUser")]
+        public async Task<IActionResult> UnMapUser(UnMapUserForAddDto model)
+        {
+
+
+            _response = await _repo.UnMapUser(model);
+            // _response.Data = _mapper.Map<List<UserForListDto>>(users.Data);
+
+
+            return Ok(_response);
+
+
+        }
     }
 }

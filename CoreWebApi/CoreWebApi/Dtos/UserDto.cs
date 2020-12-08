@@ -237,4 +237,11 @@ namespace CoreWebApi.Dtos
         public string GradeName { get; set; }
         public List<Photo> Photos { get; set; }
     }
+    public class UnMapUserForAddDto
+    {
+        public int Id { get; set; }
+        public int ClassSectionId { get; set; }
+        public int UserId { get; set; }
+
+    }
 }

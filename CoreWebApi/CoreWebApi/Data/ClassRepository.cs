@@ -298,9 +298,13 @@ namespace CoreWebApi.Data
                 await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Message = CustomMessage.Deleted;
+                _serviceResponse.Success = true;
             }
-            _serviceResponse.Success = true;
-
+            else
+            {
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Success = false;
+            }
             return _serviceResponse;
 
         }

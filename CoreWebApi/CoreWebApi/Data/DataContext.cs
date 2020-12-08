@@ -60,6 +60,7 @@ namespace CoreWebApi.Data
         public DbSet<SubjectContent> SubjectContents { get; set; }
         public DbSet<SubjectContentDetail> SubjectContentDetails { get; set; }
         public DbSet<ClassSectionTransaction> ClassSectionTransactions { get; set; }
+        public DbSet<UnMapUserTransaction> UnMapUserTransactions { get; set; }
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
 
 
@@ -120,7 +121,7 @@ namespace CoreWebApi.Data
             modelBuilder.Entity<ClassSectionUser>()
                 .HasKey(c => new { c.Id });
             modelBuilder.Entity<ClassSectionUser>()
-                .HasIndex(p => new { p.ClassSectionId, p.UserId })
+                .HasIndex(p => new { p.SchoolBranchId, p.UserId })
                 .IsUnique(true);
             // primary key // composite primary key
             modelBuilder.Entity<Subject>()

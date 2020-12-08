@@ -934,6 +934,37 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> UnMapUser(UnMapUserForAddDto model)
+        {
+            var ToRemove = await _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserId == model.UserId).FirstOrDefaultAsync();
+            if (ToRemove != null)
+            {
+                _context.ClassSectionUsers.Remove(ToRemove);
+                await _context.SaveChangesAsync();
+
+                List<UnMapUserTransaction> ToAdd = new List<UnMapUserTransaction>();
+
+                ToAdd.Add(new UnMapUserTransaction
+                {
+                    ClassSectionId = ToRemove.ClassSectionId,
+                    UserId = ToRemove.UserId,
+                    UnMappedDate = DateTime.Now,
+                    UnMappedById = _LoggedIn_UserID
+                });
+
+                await _context.UnMapUserTransactions.AddRangeAsync(ToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Message = CustomMessage.Deleted;
+                _serviceResponse.Success = true;
+            }
+            else
+            {
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Success = false;
+            }
+            return _serviceResponse;
+        }
     }
 }
 
