@@ -937,23 +937,25 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> UnMapUser(UnMapUserForAddDto model)
         {
-            var ToRemove = await _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserId == model.UserId).FirstOrDefaultAsync();
+            var ToRemove = await _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserId == model.UserId && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
             if (ToRemove != null)
             {
                 _context.ClassSectionUsers.Remove(ToRemove);
                 await _context.SaveChangesAsync();
 
-                List<UnMapUserTransaction> ToAdd = new List<UnMapUserTransaction>();
+                List<ClassSectionTransaction> ToAdd = new List<ClassSectionTransaction>();
 
-                ToAdd.Add(new UnMapUserTransaction
+                ToAdd.Add(new ClassSectionTransaction
                 {
                     ClassSectionId = ToRemove.ClassSectionId,
                     UserId = ToRemove.UserId,
-                    UnMappedDate = DateTime.Now,
-                    UnMappedById = _LoggedIn_UserID
+                    MappedCreationDate = ToRemove.CreatedDate,
+                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == ToRemove.UserId).UserTypeId,
+                    DeletionDate = DateTime.Now,
+                    DeletedById = _LoggedIn_UserID
                 });
 
-                await _context.UnMapUserTransactions.AddRangeAsync(ToAdd);
+                await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Message = CustomMessage.Deleted;
                 _serviceResponse.Success = true;

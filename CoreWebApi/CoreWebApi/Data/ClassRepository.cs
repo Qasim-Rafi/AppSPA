@@ -291,6 +291,8 @@ namespace CoreWebApi.Data
                 {
                     ClassSectionId = classSectionUser.ClassSectionId,
                     UserId = classSectionUser.UserId,
+                    MappedCreationDate = classSectionUser.CreatedDate,
+                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == classSectionUser.UserId).UserTypeId,
                     DeletionDate = DateTime.Now,
                     DeletedById = _LoggedIn_UserID
                 });
