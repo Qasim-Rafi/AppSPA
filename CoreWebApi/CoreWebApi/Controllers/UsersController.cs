@@ -299,38 +299,7 @@ namespace CoreWebApi.Controllers
 
 
         // downlaod file/image
-        [HttpGet("/webAPI/DownloadFile/{fileName}")]
-        public IActionResult Download(string fileName)
-        {
-            var getFile = _context.Photos.Where(m => m.Name == fileName).FirstOrDefault();
-            var bytes = Convert.FromBase64String(getFile.Url);
-            return File(bytes, GetContentType(getFile.Name));
-        }
-        [NonAction]
-        private string GetContentType(string path)
-        {
-            var types = GetMimeTypes();
-            var ext = Path.GetExtension(path).ToLowerInvariant();
-            return types[ext];
-        }
-        [NonAction]
-        private Dictionary<string, string> GetMimeTypes()
-        {
-            return new Dictionary<string, string>
-            {
-                {".txt", "text/plain"},
-                {".pdf", "application/pdf"},
-                {".doc", "application/vnd.ms-word"},
-                {".docx", "application/vnd.ms-word"},
-                {".xls", "application/vnd.ms-excel"},
-                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
-                {".png", "image/png"},
-                {".jpg", "image/jpeg"},
-                {".jpeg", "image/jpeg"},
-                {".gif", "image/gif"},
-                {".csv", "text/csv"}
-            };
-        }
+        
 
         [HttpPost("UnMapUser")]
         public async Task<IActionResult> UnMapUser(UnMapUserForAddDto model)

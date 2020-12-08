@@ -169,26 +169,36 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> AddSubjects(List<SubjectDtoForAdd> model)
         {
-            var ListToAdd = new List<Subject>();
-            foreach (var item in model)
+
+            try
             {
-                ListToAdd.Add(new Subject
+                var ListToAdd = new List<Subject>();
+                foreach (var item in model)
                 {
-                    Name = item.Name,
-                    Active = true,
-                    CreditHours = item.CreditHours,
-                    CreatedBy = _LoggedIn_UserID,
-                    CreatedDateTime = DateTime.Now,
-                    SchoolBranchId = _LoggedIn_BranchID,
-                });
+                    ListToAdd.Add(new Subject
+                    {
+                        Name = item.Name,
+                        Active = true,
+                        CreditHours = item.CreditHours,
+                        CreatedBy = _LoggedIn_UserID,
+                        CreatedDateTime = DateTime.Now,
+                        SchoolBranchId = _LoggedIn_BranchID,
+                    });
+                }
+
+                await _context.Subjects.AddRangeAsync(ListToAdd);
+                await _context.SaveChangesAsync();
+
+                _serviceResponse.Message = CustomMessage.Added;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
             }
-
-            await _context.Subjects.AddRangeAsync(ListToAdd);
-            await _context.SaveChangesAsync();
-
-            _serviceResponse.Message = CustomMessage.Added;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
+            catch (Exception ex)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                return _serviceResponse;
+            }
 
         }
         public async Task<ServiceResponse<object>> AssignSubjects(AssignSubjectDtoForAdd model)

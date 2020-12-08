@@ -58,87 +58,96 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetAttendancePercentage()
         {
-            int StudentCount = await (from u in _context.Users
-                                      where u.UserTypeId == (int)Enumm.UserType.Student
-                                      && u.Active == true
-                                      && u.SchoolBranchId == _LoggedIn_BranchID
-                                      select u).CountAsync();
-            int TeacherCount = await (from u in _context.Users
-                                      where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                      && u.Active == true
-                                      && u.SchoolBranchId == _LoggedIn_BranchID
-                                      select u).CountAsync();
-
-            int PresentStudentCount = await (from user in _context.Users
-                                             join attendance in _context.Attendances
-                                             on user.Id equals attendance.UserId
-                                             where attendance.CreatedDatetime.Date == DateTime.Now.Date
-                                             where attendance.Present == true
-                                             && user.UserTypeId == (int)Enumm.UserType.Student
-                                             && user.Active == true
-                                             && user.SchoolBranchId == _LoggedIn_BranchID
-                                             select user).CountAsync();
-
-
-
-            int PresentTeacherCount = await (from user in _context.Users
-                                             join attendance in _context.Attendances
-                                             on user.Id equals attendance.UserId
-                                             where attendance.CreatedDatetime.Date == DateTime.Now.Date
-                                             where attendance.Present == true
-                                             && user.UserTypeId == (int)Enumm.UserType.Teacher
-                                             && user.Active == true
-                                             && user.SchoolBranchId == _LoggedIn_BranchID
-                                             select user).CountAsync();
-            string StudentPercentage = "0";
-            string TeacherPercentage = "0";
-            if (PresentStudentCount > 0)
-                StudentPercentage = ((decimal)PresentStudentCount / StudentCount * 100).ToString("#");
-            if (PresentTeacherCount > 0)
-                TeacherPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
-            //if (StudentCount > 0) { }
-            string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
-
-            var param1 = new SqlParameter("@SchoolBranchID", _LoggedIn_BranchID);
-            var param2 = new SqlParameter("@UserTypeId", (int)Enumm.UserType.Student);
-            var StudentMonthWisePercentage = StudentCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
-            StudentMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
-
-            param2.Value = (int)Enumm.UserType.Teacher;
-            var TeacherMonthWisePercentage = TeacherCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
-            TeacherMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
-
-            var onlyStudentNames = StudentMonthWisePercentage.Select(m => m.MonthName);
-            var onlyTeacherNames = TeacherMonthWisePercentage.Select(m => m.MonthName);
-            foreach (var month in Months)
+            try
             {
-                if (!onlyStudentNames.Contains(month))
-                {
-                    StudentMonthWisePercentage.Add(new GetAttendancePercentageByMonthDto
-                    {
-                        MonthName = month,
-                        Month = (Array.IndexOf(Months, month) + 1),
-                        MonthNumber = 1,
-                        Percentage = 0
-                    });
-                }
-                if (!onlyTeacherNames.Contains(month))
-                {
-                    TeacherMonthWisePercentage.Add(new GetAttendancePercentageByMonthDto
-                    {
-                        MonthName = month,
-                        Month = (Array.IndexOf(Months, month) + 1),
-                        MonthNumber = 1,
-                        Percentage = 0
-                    });
-                }
-            }
-            StudentMonthWisePercentage = StudentMonthWisePercentage.OrderBy(m => m.Month).ToList();
-            TeacherMonthWisePercentage = TeacherMonthWisePercentage.OrderBy(m => m.Month).ToList();
+                int StudentCount = await (from u in _context.Users
+                                          where u.UserTypeId == (int)Enumm.UserType.Student
+                                          && u.Active == true
+                                          && u.SchoolBranchId == _LoggedIn_BranchID
+                                          select u).CountAsync();
+                int TeacherCount = await (from u in _context.Users
+                                          where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                          && u.Active == true
+                                          && u.SchoolBranchId == _LoggedIn_BranchID
+                                          select u).CountAsync();
 
-            _serviceResponse.Data = new { StudentPercentage, TeacherPercentage, StudentMonthWisePercentage, TeacherMonthWisePercentage };
-            _serviceResponse.Success = true;
-            return _serviceResponse;
+                int PresentStudentCount = await (from user in _context.Users
+                                                 join attendance in _context.Attendances
+                                                 on user.Id equals attendance.UserId
+                                                 where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                 where attendance.Present == true
+                                                 && user.UserTypeId == (int)Enumm.UserType.Student
+                                                 && user.Active == true
+                                                 && user.SchoolBranchId == _LoggedIn_BranchID
+                                                 select user).CountAsync();
+
+
+
+                int PresentTeacherCount = await (from user in _context.Users
+                                                 join attendance in _context.Attendances
+                                                 on user.Id equals attendance.UserId
+                                                 where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                 where attendance.Present == true
+                                                 && user.UserTypeId == (int)Enumm.UserType.Teacher
+                                                 && user.Active == true
+                                                 && user.SchoolBranchId == _LoggedIn_BranchID
+                                                 select user).CountAsync();
+                string StudentPercentage = "0";
+                string TeacherPercentage = "0";
+                if (PresentStudentCount > 0)
+                    StudentPercentage = ((decimal)PresentStudentCount / StudentCount * 100).ToString("#");
+                if (PresentTeacherCount > 0)
+                    TeacherPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
+                //if (StudentCount > 0) { }
+                string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+
+                var param1 = new SqlParameter("@SchoolBranchID", _LoggedIn_BranchID);
+                var param2 = new SqlParameter("@UserTypeId", (int)Enumm.UserType.Student);
+                var StudentMonthWisePercentage = StudentCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
+                StudentMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
+
+                param2.Value = (int)Enumm.UserType.Teacher;
+                var TeacherMonthWisePercentage = TeacherCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
+                TeacherMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
+
+                var onlyStudentNames = StudentMonthWisePercentage.Select(m => m.MonthName);
+                var onlyTeacherNames = TeacherMonthWisePercentage.Select(m => m.MonthName);
+                foreach (var month in Months)
+                {
+                    if (!onlyStudentNames.Contains(month))
+                    {
+                        StudentMonthWisePercentage.Add(new GetAttendancePercentageByMonthDto
+                        {
+                            MonthName = month,
+                            Month = (Array.IndexOf(Months, month) + 1),
+                            MonthNumber = 1,
+                            Percentage = 0
+                        });
+                    }
+                    if (!onlyTeacherNames.Contains(month))
+                    {
+                        TeacherMonthWisePercentage.Add(new GetAttendancePercentageByMonthDto
+                        {
+                            MonthName = month,
+                            Month = (Array.IndexOf(Months, month) + 1),
+                            MonthNumber = 1,
+                            Percentage = 0
+                        });
+                    }
+                }
+                StudentMonthWisePercentage = StudentMonthWisePercentage.OrderBy(m => m.Month).ToList();
+                TeacherMonthWisePercentage = TeacherMonthWisePercentage.OrderBy(m => m.Month).ToList();
+
+                _serviceResponse.Data = new { StudentPercentage, TeacherPercentage, StudentMonthWisePercentage, TeacherMonthWisePercentage };
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                return _serviceResponse;
+            }
         }
         public static decimal CalculatePercentage(int count, int total)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -28,14 +29,16 @@ namespace CoreWebApi.Controllers
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
         ServiceResponse<object> _response;
+        private readonly DataContext _context;
 
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IHttpContextAccessor httpContextAccessor)
+        public AuthController(IAuthRepository repo, IConfiguration config, IHttpContextAccessor httpContextAccessor, DataContext context)
             : base(httpContextAccessor)
         {
             _config = config;
             _repo = repo;
             _response = new ServiceResponse<object>();
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -121,6 +124,37 @@ namespace CoreWebApi.Controllers
 
 
         }
-
+        [HttpGet("DownloadFile/{fileName}")]
+        public IActionResult Download(string fileName)
+        {
+            var getFile = _context.Photos.Where(m => m.Name == fileName).FirstOrDefault();
+            var bytes = Convert.FromBase64String(getFile.Url);
+            return File(bytes, GetContentType(getFile.Name));
+        }
+        [NonAction]
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+        [NonAction]
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+        }
     }
 }

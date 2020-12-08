@@ -39,7 +39,7 @@ namespace CoreWebApi.Data
             //string contentRootPath = _HostEnvironment.WebRootPath;
             //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
 
-            string path = $"{ virtualUrl }/webAPI/DownloadFile/{ imageName }";
+            string path = $"{ virtualUrl }/webAPI/api/Auth/DownloadFile/{ imageName }";
 
             return path;
         }

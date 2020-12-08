@@ -198,25 +198,34 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> SaveTimeTable(List<TimeTableForAddDto> model)
         {
 
-            List<ClassLectureAssignment> listToAdd = new List<ClassLectureAssignment>();
-            foreach (var item in model)
+            try
             {
-                listToAdd.Add(new ClassLectureAssignment
+                List<ClassLectureAssignment> listToAdd = new List<ClassLectureAssignment>();
+                foreach (var item in model)
                 {
-                    LectureId = item.LectureId,
-                    TeacherId = item.TeacherId,
-                    SubjectId = item.SubjectId,
-                    ClassSectionId = item.ClassSectionId,
-                    Date = DateTime.Now
-                });
+                    listToAdd.Add(new ClassLectureAssignment
+                    {
+                        LectureId = item.LectureId,
+                        TeacherId = item.TeacherId,
+                        SubjectId = item.SubjectId,
+                        ClassSectionId = item.ClassSectionId,
+                        Date = DateTime.Now
+                    });
+                }
+
+                await _context.ClassLectureAssignment.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
+                return _serviceResponse;
+
             }
-
-            await _context.ClassLectureAssignment.AddRangeAsync(listToAdd);
-            await _context.SaveChangesAsync();
-            _serviceResponse.Success = true;
-            _serviceResponse.Message = CustomMessage.Added;
-            return _serviceResponse;
-
+            catch (Exception ex)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                return _serviceResponse;
+            }
         }
 
         public async Task<ServiceResponse<object>> UpdateTimeTable(int id, TimeTableForAddDto model)
