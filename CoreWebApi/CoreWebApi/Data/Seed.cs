@@ -224,45 +224,45 @@ namespace CoreWebApi.Data
                     context.SaveChanges();
                 }
                 //
-                if (!context.ClassSectionUsers.Any())
-                {
-                    var GetClassSections = context.ClassSections.AsEnumerable();
-                    var StudentID = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
-                    var TeacherID = context.UserTypes.FirstOrDefault(m => m.Name == "Teacher").Id;
-                    var GetStudentUsers = context.Users.Where(m => m.UserTypeId == StudentID).ToList();
-                    var GetTeacherUsers = context.Users.Where(m => m.UserTypeId == TeacherID).ToList();
-                    int half = GetClassSections.Count() / 2;
-                    foreach (var (obj, index) in ReturnIndex(GetClassSections))
-                    {
-                        if (index < half)
-                        {
-                            foreach (var item in GetStudentUsers)
-                            {
-                                var newobj = new ClassSectionUser
-                                {
-                                    ClassSectionId = obj.Id,
-                                    UserId = item.Id,
-                                    SchoolBranchId = schoolBranch.Id
-                                };
-                                context.ClassSectionUsers.Add(newobj);
-                            }
-                        }
-                        else
-                        {
-                            foreach (var item in GetTeacherUsers)
-                            {
-                                var newobj = new ClassSectionUser
-                                {
-                                    ClassSectionId = obj.Id,
-                                    UserId = item.Id,
-                                    SchoolBranchId = schoolBranch.Id
-                                };
-                                context.ClassSectionUsers.Add(newobj);
-                            }
-                        }
-                    }
-                    context.SaveChanges();
-                }
+                //if (!context.ClassSectionUsers.Any())
+                //{
+                //    var GetClassSections = context.ClassSections.AsEnumerable();
+                //    var StudentID = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
+                //    var TeacherID = context.UserTypes.FirstOrDefault(m => m.Name == "Teacher").Id;
+                //    var GetStudentUsers = context.Users.Where(m => m.UserTypeId == StudentID).ToList();
+                //    var GetTeacherUsers = context.Users.Where(m => m.UserTypeId == TeacherID).ToList();
+                //    int half = GetClassSections.Count() / 2;
+                //    foreach (var (obj, index) in ReturnIndex(GetClassSections))
+                //    {
+                //        if (index < half)
+                //        {
+                //            foreach (var item in GetStudentUsers)
+                //            {
+                //                var newobj = new ClassSectionUser
+                //                {
+                //                    ClassSectionId = obj.Id,
+                //                    UserId = item.Id,
+                //                    SchoolBranchId = schoolBranch.Id
+                //                };
+                //                context.ClassSectionUsers.Add(newobj);
+                //            }
+                //        }
+                //        else
+                //        {
+                //            foreach (var item in GetTeacherUsers)
+                //            {
+                //                var newobj = new ClassSectionUser
+                //                {
+                //                    ClassSectionId = obj.Id,
+                //                    UserId = item.Id,
+                //                    SchoolBranchId = schoolBranch.Id
+                //                };
+                //                context.ClassSectionUsers.Add(newobj);
+                //            }
+                //        }
+                //    }
+                //    context.SaveChanges();
+                //}
                 //
                 if (!context.Countries.Any())
                 {

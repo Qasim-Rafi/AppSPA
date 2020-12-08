@@ -285,8 +285,21 @@ namespace CoreWebApi.Data
             {
                 _context.ClassSectionUsers.Remove(classSectionUser);
                 await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
+                List<ClassSectionTransaction> ToAdd = new List<ClassSectionTransaction>();
+
+                ToAdd.Add(new ClassSectionTransaction
+                {
+                    ClassSectionId = classSectionUser.ClassSectionId,
+                    UserId = classSectionUser.UserId,
+                    DeletionDate = DateTime.Now,
+                    DeletedById = _LoggedIn_UserID
+                });
+
+                await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Message = CustomMessage.Deleted;
             }
+            _serviceResponse.Success = true;
 
             return _serviceResponse;
 
