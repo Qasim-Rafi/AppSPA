@@ -255,7 +255,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpDelete("DeleteClassSectionUserMapping/{id}")] // for teacher
+        [HttpDelete("DeleteClassSectionUserMapping/{id}"), NonAction] // for teacher // not in use
         public async Task<IActionResult> DeleteClassSectionUserMapping(int id)
         {
 

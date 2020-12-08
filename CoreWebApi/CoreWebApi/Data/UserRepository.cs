@@ -546,7 +546,6 @@ namespace CoreWebApi.Data
                            }).Where(x => x.userId == null).ToList();
 
             List<User> unmappedStudents = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student).ToListAsync();
-
             _serviceResponse.Data = _mapper.Map<List<UserForListDto>>(unmappedStudents);
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -568,8 +567,11 @@ namespace CoreWebApi.Data
                                userId = m.UserId
 
                            }).Where(x => x.userId != null).ToList();
-            List<User> mappedStudents = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student).ToListAsync();
-            User mappedTeacher = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Teacher).FirstOrDefaultAsync();
+            List<User> StudentList = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student).ToListAsync();
+            var mappedStudents = _mapper.Map<List<UserForListDto>>(StudentList);
+
+            User Teacher = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Teacher).FirstOrDefaultAsync();
+            var mappedTeacher = _mapper.Map<UserForListDto>(Teacher);
             _serviceResponse.Data = new { mappedStudents, mappedTeacher };
             _serviceResponse.Success = true;
             return _serviceResponse;

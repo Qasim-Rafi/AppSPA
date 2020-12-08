@@ -134,21 +134,31 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
         {
 
-            var objToCreate = new ClassSectionUser
+            try
             {
-                ClassSectionId = classSectionUser.ClassSectionId,
-                UserId = classSectionUser.UserId,
-                IsIncharge = classSectionUser.IsIncharge,
-                CreatedDate = DateTime.Now,
-                SchoolBranchId = _LoggedIn_BranchID
-            };
+                var objToCreate = new ClassSectionUser
+                {
+                    ClassSectionId = classSectionUser.ClassSectionId,
+                    UserId = classSectionUser.UserId,
+                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == classSectionUser.UserId).UserTypeId,
+                    IsIncharge = classSectionUser.IsIncharge,
+                    CreatedDate = DateTime.Now,
+                    SchoolBranchId = _LoggedIn_BranchID
+                };
 
-            await _context.ClassSectionUsers.AddAsync(objToCreate);
-            await _context.SaveChangesAsync();
-            _serviceResponse.Success = true;
-            _serviceResponse.Message = CustomMessage.Added;
+                await _context.ClassSectionUsers.AddAsync(objToCreate);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
 
-            return _serviceResponse;
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                return _serviceResponse;
+            }
 
         }
 
@@ -156,12 +166,28 @@ namespace CoreWebApi.Data
         {
 
             var objToUpdate = _context.ClassSectionUsers.FirstOrDefault(m => m.Id == model.Id);
+            var oldUserId = objToUpdate.UserId;
+            var oldClassSectionId = objToUpdate.ClassSectionId;
 
             objToUpdate.ClassSectionId = model.ClassSectionId;
             objToUpdate.UserId = model.UserId;
             objToUpdate.IsIncharge = model.IsIncharge;
+            _context.ClassSectionUsers.Update(objToUpdate);
+            await _context.SaveChangesAsync();
 
+            List<ClassSectionTransaction> ToAdd = new List<ClassSectionTransaction>();
 
+            ToAdd.Add(new ClassSectionTransaction
+            {
+                ClassSectionId = oldClassSectionId,
+                UserId = oldUserId,
+                MappedCreationDate = objToUpdate.CreatedDate,
+                UserTypeId = _context.Users.FirstOrDefault(m => m.Id == objToUpdate.UserId).UserTypeId,
+                DeletionDate = DateTime.Now,
+                DeletedById = _LoggedIn_UserID
+            });
+
+            await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
             await _context.SaveChangesAsync();
 
             _serviceResponse.Success = true;
@@ -194,10 +220,24 @@ namespace CoreWebApi.Data
                 _serviceResponse.Message = CustomMessage.CantExceedLimit;
                 return _serviceResponse;
             }
-            var existedIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId).ToList();
+            var existedIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserTypeId == (int)Enumm.UserType.Student).ToList();
             if (existedIds.Count > 0 && model.UserIds.Count() > 0)
             {
                 _context.ClassSectionUsers.RemoveRange(existedIds);
+                await _context.SaveChangesAsync();
+                List<ClassSectionTransaction> ToAdd = new List<ClassSectionTransaction>();
+                foreach (var item in existedIds)
+                {
+                    ToAdd.Add(new ClassSectionTransaction
+                    {
+                        ClassSectionId = item.ClassSectionId,
+                        UserId = item.UserId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId).UserTypeId,
+                        DeletionDate = DateTime.Now,
+                        DeletedById = _LoggedIn_UserID
+                    });
+                }
+                await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
                 await _context.SaveChangesAsync();
             }
             List<ClassSectionUser> listToAdd = new List<ClassSectionUser>();
@@ -207,6 +247,7 @@ namespace CoreWebApi.Data
                 {
                     ClassSectionId = model.ClassSectionId,
                     UserId = item,
+                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item).UserTypeId,
                     CreatedDate = DateTime.Now,
                     SchoolBranchId = _LoggedIn_BranchID
                 });
@@ -277,7 +318,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> DeleteClassSectionUserMapping(int id)
+        public async Task<ServiceResponse<object>> DeleteClassSectionUserMapping(int id) // not in use
         {
 
             var classSectionUser = _context.ClassSectionUsers.Where(m => m.Id == id).FirstOrDefault();
@@ -325,6 +366,7 @@ namespace CoreWebApi.Data
                     {
                         ClassSectionId = item.ClassSectionId,
                         UserId = item.UserId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId).UserTypeId,
                         DeletionDate = DateTime.Now,
                         DeletedById = _LoggedIn_UserID
                     });

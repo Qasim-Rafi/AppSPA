@@ -11,6 +11,7 @@ namespace CoreWebApi.Models
         public int Id { get; set; }
         public int ClassSectionId { get; set; }
         public int UserId { get; set; }
+        public int UserTypeId { get; set; }
         public bool? IsIncharge { get; set; }
         public int SchoolBranchId { get; set; }
         public DateTime? CreatedDate { get; set; }
