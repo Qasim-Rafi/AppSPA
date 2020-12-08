@@ -26,12 +26,16 @@ namespace CoreWebApi
                 var context = services.GetRequiredService<DataContext>();
                 context.Database.Migrate();
 
-                //Seed.SeedSchoolAcademy(context);
-                Seed.SeedUserTypes(context);
-                Seed.SeedUsers(context);
-                Seed.SeedLeaveTypes(context);
-                Seed.SeedGenericData(context);
-
+                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                var isDevelopment = environment == Environments.Development;
+                if (isDevelopment)
+                {
+                    //Seed.SeedSchoolAcademy(context);
+                    Seed.SeedUserTypes(context);
+                    Seed.SeedUsers(context);
+                    Seed.SeedLeaveTypes(context);
+                    Seed.SeedGenericData(context);
+                }
             }
 
             host.Run();
