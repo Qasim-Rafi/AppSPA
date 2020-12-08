@@ -220,13 +220,37 @@ namespace CoreWebApi.Data
                 _serviceResponse.Message = CustomMessage.CantExceedLimit;
                 return _serviceResponse;
             }
-            var existedIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserTypeId == (int)Enumm.UserType.Student).ToList();
-            if (existedIds.Count > 0 && model.UserIds.Count() > 0)
+           
+            var existingIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserTypeId == (int)Enumm.UserType.Student).ToList();
+            var existingUserIds = existingIds.Select(m => m.UserId);
+
+            if (existingIds.Count() <= model.UserIds.Count())
             {
-                _context.ClassSectionUsers.RemoveRange(existedIds);
+                var IdsToAdd = model.UserIds.Except(existingUserIds);
+                List<ClassSectionUser> listToAdd = new List<ClassSectionUser>();
+                foreach (var userId in IdsToAdd)
+                {
+                    listToAdd.Add(new ClassSectionUser
+                    {
+                        ClassSectionId = model.ClassSectionId,
+                        UserId = userId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId).UserTypeId,
+                        CreatedDate = DateTime.Now,
+                        SchoolBranchId = _LoggedIn_BranchID
+                    });
+                    await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else if (existingIds.Count() > model.UserIds.Count())
+            {
+                var IdsToRemove = existingUserIds.Except(model.UserIds);
+                existingIds = existingIds.Where(m => IdsToRemove.Contains(m.UserId)).ToList();
+                _context.ClassSectionUsers.RemoveRange(existingIds);
                 await _context.SaveChangesAsync();
+
                 List<ClassSectionTransaction> ToAdd = new List<ClassSectionTransaction>();
-                foreach (var item in existedIds)
+                foreach (var item in existingIds)
                 {
                     ToAdd.Add(new ClassSectionTransaction
                     {
@@ -240,22 +264,7 @@ namespace CoreWebApi.Data
                 await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
                 await _context.SaveChangesAsync();
             }
-            List<ClassSectionUser> listToAdd = new List<ClassSectionUser>();
-            foreach (var item in model.UserIds)
-            {
-                listToAdd.Add(new ClassSectionUser
-                {
-                    ClassSectionId = model.ClassSectionId,
-                    UserId = item,
-                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item).UserTypeId,
-                    CreatedDate = DateTime.Now,
-                    SchoolBranchId = _LoggedIn_BranchID
-                });
-
-            }
-            await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
-            await _context.SaveChangesAsync();
-
+          
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
