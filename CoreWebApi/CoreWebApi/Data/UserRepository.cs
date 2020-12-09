@@ -324,6 +324,7 @@ namespace CoreWebApi.Data
             User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
             if (dbUser != null)
             {
+                var oldStatus = dbUser.Active;
                 DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
 
                 dbUser.FullName = user.FullName;
@@ -352,13 +353,6 @@ namespace CoreWebApi.Data
                         {
                             throw new Exception("You didn't provide New Password");
                         }
-                        //_mapper.Map(dbUser, userForAddDto);
-                        //dbUser = _mapper.Map<User>(userForAddDto);
-                        //dbUser = user;
-                        //if (Seed.VerifyPasswordHash(userForAddDto.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
-                        //_context.Users.Add(dbUser);
-                        //_context.Entry(dbUser).State = EntityState.Modified;
-
 
                     }
                     else
@@ -409,18 +403,24 @@ namespace CoreWebApi.Data
 
                     }
                 }
-                serviceResponse.Message = CustomMessage.Updated;
-                serviceResponse.Success = true;
-                return serviceResponse;
+                if (oldStatus == true && user.Active == false)
+                {
+                    serviceResponse.Message = CustomMessage.UserDeActivated;
+                    serviceResponse.Success = true;
+                }
+                else
+                {
+                    serviceResponse.Message = CustomMessage.Updated;
+                    serviceResponse.Success = true;
+                }
             }
             else
             {
                 serviceResponse.Message = CustomMessage.RecordNotFound;
                 serviceResponse.Success = false;
-                return serviceResponse;
-                //throw new Exception("Record Not Found");
             }
 
+            return serviceResponse;
 
         }
 

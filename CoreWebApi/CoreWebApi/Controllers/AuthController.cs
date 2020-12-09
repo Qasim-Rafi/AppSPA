@@ -80,7 +80,7 @@ namespace CoreWebApi.Controllers
             if (userFromRepo == null)
             {
                 _response.Success = false;
-                _response.Message = CustomMessage.UnAuthorized;
+                _response.Message = CustomMessage.UserUnAuthorized;
                 return Ok(_response);
             }
 
