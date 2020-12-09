@@ -76,9 +76,17 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> EditClass(int id, ClassDtoForEdit @class)
         {
 
+            Class checkExist = _context.Class.FirstOrDefault(s => s.Name.ToLower() == @class.Name.ToLower() && s.SchoolBranchId == _LoggedIn_BranchID);
+            if (checkExist != null && checkExist.Id != @class.Id)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                return _serviceResponse;
+            }
             Class dbObj = _context.Class.FirstOrDefault(s => s.Id.Equals(@class.Id));
             if (dbObj != null)
             {
+
                 dbObj.Name = @class.Name;
                 dbObj.Active = @class.Active;
                 _context.Class.Update(dbObj);

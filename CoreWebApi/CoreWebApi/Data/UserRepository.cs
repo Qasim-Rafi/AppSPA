@@ -266,7 +266,7 @@ namespace CoreWebApi.Data
         {
             ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
             bool isExist = false;
-            if (await _context.Users.AnyAsync(x => x.Username == username && x.SchoolBranchId == _LoggedIn_BranchID))
+            if (await _context.Users.AnyAsync(x => x.Username.ToLower() == username.ToLower() && x.SchoolBranchId == _LoggedIn_BranchID))
             {
                 isExist = true;
             }
@@ -322,6 +322,13 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<string>> EditUser(int id, UserForUpdateDto user)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            User checkExist = _context.Users.FirstOrDefault(m => m.Username.ToLower() == user.Username.ToLower() && m.SchoolBranchId == _LoggedIn_BranchID);
+            if (checkExist != null && checkExist.Id != id)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                return serviceResponse;
+            }
             User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
             if (dbUser != null)
             {

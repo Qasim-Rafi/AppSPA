@@ -74,6 +74,13 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> EditSection(int id, SectionDtoForEdit section)
         {
+            Section checkExist = _context.Sections.FirstOrDefault(s => s.SectionName.ToLower() == section.SectionName.ToLower() && s.SchoolBranchId == _LoggedIn_BranchID);
+            if (checkExist != null && checkExist.Id != section.Id)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                return _serviceResponse;
+            }
             Section dbObj = _context.Sections.FirstOrDefault(s => s.Id.Equals(section.Id));
             if (dbObj != null)
             {

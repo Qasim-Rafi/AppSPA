@@ -62,7 +62,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             //if (await _repo.SubjectExists(subject.Name))
-            //    return BadRequest(new { message = "Subject Already Exist" });
+            //    return BadRequest(new { message = CustomMessage.RecordAlreadyExist });
 
             _response = await _repo.AddSubjects(model);
 

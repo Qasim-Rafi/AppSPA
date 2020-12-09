@@ -175,15 +175,18 @@ namespace CoreWebApi.Data
                 var ListToAdd = new List<Subject>();
                 foreach (var item in model)
                 {
-                    ListToAdd.Add(new Subject
+                    if (!await SubjectExists(item.Name))
                     {
-                        Name = item.Name,
-                        Active = true,
-                        CreditHours = item.CreditHours,
-                        CreatedBy = _LoggedIn_UserID,
-                        CreatedDateTime = DateTime.Now,
-                        SchoolBranchId = _LoggedIn_BranchID,
-                    });
+                        ListToAdd.Add(new Subject
+                        {
+                            Name = item.Name,
+                            Active = true,
+                            CreditHours = item.CreditHours,
+                            CreatedBy = _LoggedIn_UserID,
+                            CreatedDateTime = DateTime.Now,
+                            SchoolBranchId = _LoggedIn_BranchID,
+                        });
+                    }
                 }
 
                 await _context.Subjects.AddRangeAsync(ListToAdd);
@@ -227,7 +230,13 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> EditSubject(int id, SubjectDtoForEdit subject)
         {
-
+            Subject checkExist = _context.Subjects.FirstOrDefault(s => s.Name.ToLower() == subject.Name.ToLower() && s.SchoolBranchId == _LoggedIn_BranchID);
+            if (checkExist != null && checkExist.Id != subject.Id)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                return _serviceResponse;
+            }
             Subject ObjToUpdate = _context.Subjects.FirstOrDefault(s => s.Id.Equals(subject.Id));
             if (ObjToUpdate != null)
             {
