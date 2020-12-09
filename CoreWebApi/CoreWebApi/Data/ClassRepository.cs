@@ -336,8 +336,8 @@ namespace CoreWebApi.Data
                 {
                     Id = o.Id,
                     ClassSectionId = o.ClassSectionId,
-                    ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId) != null ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId).Name : "",
-                    SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId) != null ? _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId).SectionName : "",
+                    ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name : "",
+                    SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
                     UserId = o.UserId,
                     FullName = o.User.FullName,
 

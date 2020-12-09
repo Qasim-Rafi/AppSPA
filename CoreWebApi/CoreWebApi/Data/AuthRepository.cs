@@ -117,15 +117,19 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> Register(UserForRegisterDto model, string regNo)
         {
             SchoolBranch branch = null;
-            var SchoolExist = _context.SchoolAcademy.Where(m => m.Name.ToLower() == model.SchoolName.ToLower()).Any();
-            if (SchoolExist)
-            {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
-                return _serviceResponse;
-            }
+
             if (model.UserTypeSignUp != null && model.UserTypeSignUp.ToLower() == "school")
             {
+                if (!string.IsNullOrEmpty(model.SchoolName))
+                {
+                    var SchoolExist = _context.SchoolAcademy.Where(m => m.Name.ToLower() == model.SchoolName.ToLower()).FirstOrDefault();
+                    if (SchoolExist != null)
+                    {
+                        _serviceResponse.Success = false;
+                        _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                        return _serviceResponse;
+                    }
+                }
                 var schools = _context.SchoolAcademy.OrderByDescending(m => m.Id).ToList();
                 var schoolAcademy = new SchoolAcademy
                 {
