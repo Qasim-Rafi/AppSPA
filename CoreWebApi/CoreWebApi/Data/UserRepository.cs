@@ -75,13 +75,14 @@ namespace CoreWebApi.Data
                     Url = _File.AppendImagePath(x.Name)
                 }).ToList(),
             }).FirstOrDefaultAsync();
-            if (user != null)
+            if (user != null && user.Active == false)
             {
-                //foreach (var item in user?.Photos)
-                //{
-                //    item.Url = _File.AppendImagePath(item.Url);
-                //}
-
+                serviceResponse.Success = false;
+                serviceResponse.Message = CustomMessage.URDeactivated;
+                return serviceResponse;
+            }
+            else if (user != null)
+            {
                 serviceResponse.Success = true;
                 serviceResponse.Data = user;
                 return serviceResponse;
