@@ -98,6 +98,16 @@
     <Compile Remove="Migrations\20201204110909_addCSUserCompositeKey.Designer.cs" />
     <Compile Remove="Migrations\20201204111655_updateCLAssignmentCompositeKey.cs" />
     <Compile Remove="Migrations\20201204111655_updateCLAssignmentCompositeKey.Designer.cs" />
+    <Compile Remove="Migrations\20201209071949_updatePhoto.cs" />
+    <Compile Remove="Migrations\20201209071949_updatePhoto.Designer.cs" />
+    <Compile Remove="Migrations\20201209074114_updatePhoto.cs" />
+    <Compile Remove="Migrations\20201209074114_updatePhoto.Designer.cs" />
+    <Compile Remove="Migrations\20201209074413_updatePhoto.cs" />
+    <Compile Remove="Migrations\20201209074413_updatePhoto.Designer.cs" />
+    <Compile Remove="Migrations\20201209075235_updatePhoto.cs" />
+    <Compile Remove="Migrations\20201209075235_updatePhoto.Designer.cs" />
+    <Compile Remove="Migrations\20201209080925_addPhoto.cs" />
+    <Compile Remove="Migrations\20201209080925_addPhoto.Designer.cs" />
 
   </ItemGroup>
 

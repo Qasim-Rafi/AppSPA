@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,8 +39,13 @@ namespace CoreWebApi.Data
             //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
             //string contentRootPath = _HostEnvironment.WebRootPath;
             //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
-
-            string path = $"{ virtualUrl }/webAPI/api/Auth/DownloadFile/{ imageName }";
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var isDevelopment = environment == Environments.Development;
+            string path;
+            if (isDevelopment)
+                path = $"{ virtualUrl }/api/Auth/DownloadFile/{ imageName }";
+            else
+                path = $"{ virtualUrl }/webAPI/api/Auth/DownloadFile/{ imageName }";
 
             return path;
         }
@@ -51,6 +57,7 @@ namespace CoreWebApi.Data
                 file.CopyTo(ms);
                 bytes = ms.ToArray();
             }
+
             var base64 = Convert.ToBase64String(bytes);
             return base64;
         }

@@ -55,7 +55,7 @@ namespace CoreWebApi.Dtos
         public int AbsentCount { get; internal set; }
         public int LeaveCount { get; internal set; }
         public int PresentCount { get; internal set; }
-        public List<Photo> Photos { get; set; }
+        public List<PhotoDto> Photos { get; set; }
     }
     public class AttendanceDtoForDetail
     {

@@ -9,11 +9,11 @@ namespace CoreWebApi.IData
 {
     public interface IClassRepository
     {
-        Task<IEnumerable<Class>> GetClasses();
-        Task<Class> GetClass(int id);
+        Task<ServiceResponse<List<ClassDtoForList>>> GetClasses();
+        Task<ServiceResponse<object>> GetClass(int id);
         Task<bool> ClassExists(string name);
-        Task<Class> AddClass(ClassDtoForAdd @class);
-        Task<Class> EditClass(int id, ClassDtoForEdit @class);
+        Task<ServiceResponse<object>> AddClass(ClassDtoForAdd @class);
+        Task<ServiceResponse<object>> EditClass(int id, ClassDtoForEdit @class);
 
         //Task<IEnumerable<ClassSection>> GetClassSections();
         Task<bool> ClassSectionExists(int classId, int sectionId);

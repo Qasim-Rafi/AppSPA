@@ -17,6 +17,7 @@ namespace CoreWebApi.Models
         public DateTime CreationDatetime { get; set; }
         public int CreatedById { get; set; }
         public int SchoolBranchId { get; set; }
+        public bool Active { get; set; }
 
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }

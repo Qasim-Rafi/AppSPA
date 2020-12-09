@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Dtos;
+﻿using AutoMapper;
+using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
@@ -18,12 +19,16 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
-        public SectionRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
+        ServiceResponse<object> _serviceResponse;
+        private readonly IMapper _mapper;
+        public SectionRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _context = context;
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _serviceResponse = new ServiceResponse<object>();
+            _mapper = mapper;
         }
         public async Task<bool> SectionExists(string name)
         {
@@ -31,18 +36,23 @@ namespace CoreWebApi.Data
                 return true;
             return false;
         }
-        public async Task<Section> GetSection(int id)
+        public async Task<ServiceResponse<object>> GetSection(int id)
         {
             var section = await _context.Sections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync(u => u.Id == id);
-            return section;
+            _serviceResponse.Data = _mapper.Map<SectionDtoForDetail>(section);
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
-        public async Task<IEnumerable<Section>> GetSections()
+        public async Task<ServiceResponse<List<SectionDtoForList>>> GetSections()
         {
-            var sections = await _context.Sections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            return sections;
+            ServiceResponse<List<SectionDtoForList>> serviceResponse = new ServiceResponse<List<SectionDtoForList>>();
+            var sections = await _context.Sections.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            serviceResponse.Data = _mapper.Map<List<SectionDtoForList>>(sections);
+            serviceResponse.Success = true;
+            return serviceResponse;
         }
-        public async Task<Section> AddSection(SectionDtoForAdd section)
+        public async Task<ServiceResponse<object>> AddSection(SectionDtoForAdd section)
         {
 
             var objToCreate = new Section
@@ -50,24 +60,31 @@ namespace CoreWebApi.Data
                 SectionName = section.SectionName,
                 CreatedById = _LoggedIn_UserID,
                 CreationDatetime = DateTime.Now,
+                Active = true,
                 SchoolBranchId = _LoggedIn_BranchID
             };
 
             await _context.Sections.AddAsync(objToCreate);
             await _context.SaveChangesAsync();
 
-            return objToCreate;
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
 
         }
-        public async Task<Section> EditSection(int id, SectionDtoForEdit section)
+        public async Task<ServiceResponse<object>> EditSection(int id, SectionDtoForEdit section)
         {
-            Section dbObj = _context.Sections.FirstOrDefault(s => s.Id.Equals(id));
+            Section dbObj = _context.Sections.FirstOrDefault(s => s.Id.Equals(section.Id));
             if (dbObj != null)
             {
                 dbObj.SectionName = section.SectionName;
+                dbObj.Active = section.Active;
+                _context.Sections.Update(dbObj);
                 await _context.SaveChangesAsync();
             }
-            return dbObj;
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Updated;
+            return _serviceResponse;
 
         }
     }

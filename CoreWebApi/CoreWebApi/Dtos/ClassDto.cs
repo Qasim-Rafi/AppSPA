@@ -19,6 +19,7 @@ namespace CoreWebApi.Dtos
     }
     public class ClassDtoForEdit : BaseDto
     {
+        public int Id { get; set; }
         [Required]
         [StringLength(30, ErrorMessage = "Class Name cannot be longer than 30 characters.")]
         public string Name { get; set; }

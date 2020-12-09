@@ -122,7 +122,7 @@ namespace CoreWebApi.Data
             modelBuilder.Entity<ClassSectionUser>()
                 .HasIndex(p => new { p.SchoolBranchId, p.UserId })
                 .IsUnique(true);
-            // primary key // composite primary key
+            // composite primary key
             modelBuilder.Entity<Subject>()
                .HasIndex(s => new { s.Name, s.SchoolBranchId })
                .IsUnique(true);

@@ -108,7 +108,7 @@ namespace CoreWebApi.Dtos
         public string UserType { get; set; }
         public bool Active { get; set; } = true;
         public string MemberSince { get; set; }
-        public List<Photo> Photos { get; set; }
+        public List<PhotoDto> Photos { get; set; }
     }
     public class UserForListDto
     {
@@ -127,7 +127,7 @@ namespace CoreWebApi.Dtos
         public int UserTypeId { get; set; }
         public string UserType { get; set; }
         public bool Active { get; set; } = true;
-        public List<Photo> Photos { get; set; }
+        public List<PhotoDto> Photos { get; set; }
     }
 
     public class UserByTypeListDto
@@ -145,7 +145,7 @@ namespace CoreWebApi.Dtos
         public int AbsentCount { get; set; }
         public int LeaveCount { get; set; }
         public int PresentCount { get; set; }
-        public List<Photo> Photos { get; set; }
+        public List<PhotoDto> Photos { get; set; }
     }
     public class UserForLoginDto
     {
@@ -235,13 +235,25 @@ namespace CoreWebApi.Dtos
         public string OtherState { get; set; }
         public int? GradeId { get; set; }
         public string GradeName { get; set; }
-        public List<Photo> Photos { get; set; }
+        public List<PhotoDto> Photos { get; set; }
     }
     public class UnMapUserForAddDto
     {
         public int Id { get; set; }
         public int ClassSectionId { get; set; }
         public int UserId { get; set; }
+
+    }
+    public class PhotoDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Url { get; set; }
+        public string Description { get; set; }
+        public DateTime CreatedDatetime { get; set; }
+        public bool IsPrimary { get; set; }
+        public int UserId { get; set; }
+        public string UserName { get; set; }
 
     }
 }

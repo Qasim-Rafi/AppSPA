@@ -19,75 +19,57 @@ namespace CoreWebApi.Controllers
     {
         private readonly ISectionRepository _repo;
         private readonly IMapper _mapper;
+        ServiceResponse<object> _response;
         public SectionsController(ISectionRepository repo, IMapper mapper)
         {
             _mapper = mapper;
             _repo = repo;
+            _response = new ServiceResponse<object>();
         }
 
         [HttpGet]
         public async Task<IActionResult> GetSectiones()
         {
-            var sections = await _repo.GetSections();
-            var ToReturn = _mapper.Map<IEnumerable<Section>>(sections);
-            return Ok(ToReturn);
+            ServiceResponse<List<SectionDtoForList>> response = new ServiceResponse<List<SectionDtoForList>>();
+            response = await _repo.GetSections();
+            return Ok(response);
 
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSection(int id)
         {
-            var section = await _repo.GetSection(id);
-            var ToReturn = _mapper.Map<Section>(section);
-            return Ok(ToReturn);
+            _response = await _repo.GetSection(id);
+            return Ok(_response);
         }
         [HttpPost("Add")]
         public async Task<IActionResult> Post(SectionDtoForAdd section)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                if (await _repo.SectionExists(section.SectionName))
-                    return BadRequest(new { message = "Section Already Exist" });
-
-                var createdObj = await _repo.AddSection(section);
-
-                return StatusCode(StatusCodes.Status201Created);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            if (await _repo.SectionExists(section.SectionName))
+                return BadRequest(new { message = "Section Already Exist" });
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            var createdObj = await _repo.AddSection(section);
+
+            return Ok(_response);
+
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, SectionDtoForEdit section)
         {
 
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var updatedObj = await _repo.EditSection(id, section);
-
-                return StatusCode(StatusCodes.Status200OK);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            _response = await _repo.EditSection(id, section);
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+            return Ok(_response);
 
-            }
         }
     }
 }

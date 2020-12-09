@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Dtos;
+﻿using AutoMapper;
+using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
@@ -19,13 +20,15 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
-        public ClassRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly IMapper _mapper;
+        public ClassRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _mapper = mapper;
         }
         public async Task<bool> ClassExists(string name)
         {
@@ -33,18 +36,24 @@ namespace CoreWebApi.Data
                 return true;
             return false;
         }
-        public async Task<Class> GetClass(int id)
+        public async Task<ServiceResponse<object>> GetClass(int id)
         {
             var @class = await _context.Class.FirstOrDefaultAsync(u => u.Id == id);
-            return @class;
+            _serviceResponse.Data = _mapper.Map<ClassDtoForDetail>(@class);
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
-        public async Task<IEnumerable<Class>> GetClasses()
+        public async Task<ServiceResponse<List<ClassDtoForList>>> GetClasses()
         {
-            var @classes = await _context.Class.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            return @classes;
+            ServiceResponse<List<ClassDtoForList>> serviceResponse = new ServiceResponse<List<ClassDtoForList>>();
+
+            List<Class> @classes = await _context.Class.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            serviceResponse.Data = _mapper.Map<List<ClassDtoForList>>(@classes);
+            serviceResponse.Success = true;
+            return serviceResponse;
         }
-        public async Task<Class> AddClass(ClassDtoForAdd @class)
+        public async Task<ServiceResponse<object>> AddClass(ClassDtoForAdd @class)
         {
 
             var objToCreate = new Class
@@ -59,20 +68,25 @@ namespace CoreWebApi.Data
             await _context.Class.AddAsync(objToCreate);
             await _context.SaveChangesAsync();
 
-            return objToCreate;
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
 
         }
-        public async Task<Class> EditClass(int id, ClassDtoForEdit @class)
+        public async Task<ServiceResponse<object>> EditClass(int id, ClassDtoForEdit @class)
         {
 
-            Class dbObj = _context.Class.FirstOrDefault(s => s.Id.Equals(id));
+            Class dbObj = _context.Class.FirstOrDefault(s => s.Id.Equals(@class.Id));
             if (dbObj != null)
             {
                 dbObj.Name = @class.Name;
                 dbObj.Active = @class.Active;
+                _context.Class.Update(dbObj);
                 await _context.SaveChangesAsync();
             }
-            return dbObj;
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Updated;
+            return _serviceResponse;
 
         }
 
@@ -220,7 +234,7 @@ namespace CoreWebApi.Data
                 _serviceResponse.Message = CustomMessage.CantExceedLimit;
                 return _serviceResponse;
             }
-           
+
             var existingIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserTypeId == (int)Enumm.UserType.Student).ToList();
             var existingUserIds = existingIds.Select(m => m.UserId);
 
@@ -264,7 +278,7 @@ namespace CoreWebApi.Data
                 await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
                 await _context.SaveChangesAsync();
             }
-          
+
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;

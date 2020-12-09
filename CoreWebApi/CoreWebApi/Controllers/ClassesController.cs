@@ -48,17 +48,16 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetClasses()
         {
             var classes = await _repo.GetClasses();
-            var ToReturn = _LoggedIn_UserRole.Equals(Enumm.UserType.Student.ToString()) ? _mapper.Map<IEnumerable<ClassDtoForList>>(classes) :
-                _mapper.Map<IEnumerable<ClassDtoForList>>(classes);
-            return Ok(ToReturn);
+            _response.Data = _LoggedIn_UserRole.Equals(Enumm.UserType.Student.ToString()) ? _mapper.Map<List<ClassDtoForList>>(classes) :
+                _mapper.Map<List<ClassDtoForList>>(classes);
+            return Ok(_response);
 
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetClass(int id)
         {
-            var @class = await _repo.GetClass(id);
-            var ToReturn = _mapper.Map<ClassDtoForDetail>(@class);
-            return Ok(ToReturn);
+            _response = await _repo.GetClass(id);
+            return Ok(_response);
         }
         [HttpPost("Add")]
         public async Task<IActionResult> Post(ClassDtoForAdd @class)
@@ -72,9 +71,9 @@ namespace CoreWebApi.Controllers
                 return BadRequest(new { message = "Class Already Exist" });
 
 
-            var createdObj = await _repo.AddClass(@class);
+            _response = await _repo.AddClass(@class);
 
-            return StatusCode(StatusCodes.Status201Created);
+            return Ok(_response);
 
         }
         [HttpPut("{id}")]
@@ -86,9 +85,9 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var updatedObj = await _repo.EditClass(id, @class);
+            _response = await _repo.EditClass(id, @class);
 
-            return StatusCode(StatusCodes.Status200OK);
+            return Ok(_response);
 
         }
 

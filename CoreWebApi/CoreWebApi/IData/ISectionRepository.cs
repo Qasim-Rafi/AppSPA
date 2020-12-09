@@ -9,10 +9,10 @@ namespace CoreWebApi.IData
 {
     public interface ISectionRepository
     {
-        Task<IEnumerable<Section>> GetSections();
-        Task<Section> GetSection(int id);
+        Task<ServiceResponse<List<SectionDtoForList>>> GetSections();
+        Task<ServiceResponse<object>> GetSection(int id);
         Task<bool> SectionExists(string name);
-        Task<Section> AddSection(SectionDtoForAdd Section);
-        Task<Section> EditSection(int id, SectionDtoForEdit Section);
+        Task<ServiceResponse<object>> AddSection(SectionDtoForAdd Section);
+        Task<ServiceResponse<object>> EditSection(int id, SectionDtoForEdit Section);
     }
 }
