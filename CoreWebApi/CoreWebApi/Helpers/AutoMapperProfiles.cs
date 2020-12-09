@@ -23,6 +23,11 @@ namespace CoreWebApi.Helpers
             CreateMap<Class, ClassDtoForEdit>();
             CreateMap<Class, ClassDtoForDetail>();
             CreateMap<Class, ClassDtoForList>();
+            // section
+            CreateMap<Section, SectionDtoForAdd>();
+            CreateMap<Section, SectionDtoForEdit>();
+            CreateMap<Section, SectionDtoForDetail>();
+            CreateMap<Section, SectionDtoForList>();
             // quiz
             CreateMap<Quizzes, QuizDtoForAdd>();
             CreateMap<QuizQuestions, QuizQuestionDtoForAdd>();

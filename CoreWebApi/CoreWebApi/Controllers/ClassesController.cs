@@ -47,10 +47,12 @@ namespace CoreWebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetClasses()
         {
-            var classes = await _repo.GetClasses();
-            _response.Data = _LoggedIn_UserRole.Equals(Enumm.UserType.Student.ToString()) ? _mapper.Map<List<ClassDtoForList>>(classes) :
-                _mapper.Map<List<ClassDtoForList>>(classes);
-            return Ok(_response);
+            ServiceResponse<List<ClassDtoForList>> response = new ServiceResponse<List<ClassDtoForList>>();
+
+            response = await _repo.GetClasses();
+            //_response.Data = _LoggedIn_UserRole.Equals(Enumm.UserType.Student.ToString()) ? _mapper.Map<List<ClassDtoForList>>(classes) :
+            //    _mapper.Map<List<ClassDtoForList>>(classes);
+            return Ok(response);
 
         }
         [HttpGet("{id}")]

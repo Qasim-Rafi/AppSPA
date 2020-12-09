@@ -30,7 +30,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string CreatedDateTime { get; set; }
+        //public string CreatedDateTime { get; set; }
         public bool Active { get; set; } = true;
         public int SchoolBranchId { get; set; }
     }
@@ -38,7 +38,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string CreatedDateTime { get; set; }
+       // public string CreatedDateTime { get; set; }
         public bool Active { get; set; } = true;
         public int SchoolBranchId { get; set; }
     }
