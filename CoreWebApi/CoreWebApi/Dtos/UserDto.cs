@@ -85,7 +85,7 @@ namespace CoreWebApi.Dtos
 
         public bool IsPrimaryPhoto { get; set; }
         //public int UserTypeId { get; set; }
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true;
         public string RollNumber { get; set; }
 
         public IFormFileCollection files { get; set; }
@@ -106,7 +106,7 @@ namespace CoreWebApi.Dtos
         public string OtherState { get; set; }
         public int UserTypeId { get; set; }
         public string UserType { get; set; }
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true;
         public string MemberSince { get; set; }
         public List<Photo> Photos { get; set; }
     }
@@ -126,7 +126,7 @@ namespace CoreWebApi.Dtos
         public string OtherState { get; set; }
         public int UserTypeId { get; set; }
         public string UserType { get; set; }
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true;
         public List<Photo> Photos { get; set; }
     }
 
@@ -180,7 +180,7 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public string GroupName { get; set; }
         public List<int> UserIds { get; set; }
-        public bool? Active { get; set; }
+        public bool? Active { get; set; } = true;
     }
     public class GroupUserListDto
     {
