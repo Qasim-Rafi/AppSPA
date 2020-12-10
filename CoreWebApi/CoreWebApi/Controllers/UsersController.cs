@@ -57,10 +57,10 @@ namespace CoreWebApi.Controllers
 
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(int id)
+        [HttpPost("GetUser")]
+        public async Task<IActionResult> GetUser(GetByIdFlagDto model)
         {
-            ServiceResponse<UserForDetailedDto> user = await _repo.GetUser(id);
+            ServiceResponse<UserForDetailedDto> user = await _repo.GetUser(model);
             //var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
             return Ok(user);
         }

@@ -24,95 +24,90 @@ namespace CoreWebApi.Controllers
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly ILookupRepository _repo;
+        ServiceResponse<object> _response;
         public LookupsController(DataContext context, IMapper mapper, ILookupRepository lookupRepository)
         {
             _context = context;
             _mapper = mapper;
             _repo = lookupRepository;
+            _response = new ServiceResponse<object>();
         }
         [HttpGet("UserTypes")]
         public async Task<IActionResult> GetUserTypes()
         {
-            List<UserType> list = await _repo.GetUserTypes();
+            _response = await _repo.GetUserTypes();
 
-            return Ok(list);
+            return Ok(_response);
 
         }
         [HttpGet("ClassSections")]
         public async Task<IActionResult> GetClassSections()
         {
-            List<ClassSection> list = await _repo.GetClassSections();
+            _response = await _repo.GetClassSections();
 
-            var ToReturn = list.Select(o => new
-            {
-                ClassSectionId = o.Id,
-                ClassId = o.ClassId,
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
-                SectionId = o.SectionId,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
-            });
-            return Ok(ToReturn);
+           
+            return Ok(_response);
 
         }
         [HttpGet("Classes")]
         public async Task<IActionResult> GetClasses()
         {
-            List<Class> list = await _repo.GetClasses();
+            _response = await _repo.GetClasses();
 
 
-            return Ok(list);
+            return Ok(_response);
 
         }
         [HttpGet("Sections")]
         public async Task<IActionResult> GetSections()
         {
-            List<Section> list = await _repo.GetSections();
+            _response = await _repo.GetSections();
 
 
-            return Ok(list);
+            return Ok(_response);
 
         }
         [HttpGet("Subjects")]
         public async Task<IActionResult> GetSubjects()
         {
-            List<Subject> list = await _repo.GetSubjects();
+            _response = await _repo.GetSubjects();
 
 
-            return Ok(list);
+            return Ok(_response);
 
         }
         [HttpGet("States")]
         public async Task<IActionResult> GetStates()
         {
-            List<State> list = await _repo.GetStates();
+            _response = await _repo.GetStates();
 
 
-            return Ok(list);
+            return Ok(_response);
 
         }
         [HttpGet("Countries")]
         public async Task<IActionResult> GetCountries()
         {
-            List<Country> list = await _repo.GetCountries();
+            _response = await _repo.GetCountries();
 
 
-            return Ok(list);
+            return Ok(_response);
 
         }
         [HttpGet("Users/{csId}")] // for students
         public async Task<IActionResult> GetUsersByClassSection(int csId)
         {
-            var users = await _repo.GetUsersByClassSection(csId);
+            _response = await _repo.GetUsersByClassSection(csId);
 
-            return Ok(users);
+            return Ok(_response);
 
         }
         [HttpGet("Teachers")]
         public async Task<IActionResult> GetTeachers()
         {
-            var users = await _repo.GetTeachers();
+            _response = await _repo.GetTeachers();
 
-            return Ok(users);
+            return Ok(_response);
 
         }
 
@@ -122,10 +117,10 @@ namespace CoreWebApi.Controllers
         {
 
 
-            var school = _repo.GetSchoolAcademies();
+            _response = _repo.GetSchoolAcademies();
 
 
-            return Ok(school);
+            return Ok(_response);
 
 
         }
@@ -134,10 +129,10 @@ namespace CoreWebApi.Controllers
         {
 
 
-            var school = _repo.SchoolBranches();
+            _response = _repo.SchoolBranches();
 
 
-            return Ok(school);
+            return Ok(_response);
 
 
         }

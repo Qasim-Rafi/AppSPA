@@ -49,10 +49,10 @@ namespace CoreWebApi.Data
             _context.Remove(entity);
         }
 
-        public async Task<ServiceResponse<UserForDetailedDto>> GetUser(int id)
+        public async Task<ServiceResponse<UserForDetailedDto>> GetUser(GetByIdFlagDto model)
         {
             ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
-            var user = await _context.Users.Where(u => u.Id == id).Select(s => new UserForDetailedDto()
+            var user = await _context.Users.Where(u => u.Id == model.Id).Select(s => new UserForDetailedDto()
             {
                 Id = s.Id,
                 FullName = s.FullName,
@@ -75,7 +75,7 @@ namespace CoreWebApi.Data
                     Url = _File.AppendImagePath(x.Name)
                 }).ToList(),
             }).FirstOrDefaultAsync();
-            if (user != null && user.Active == false)
+            if (user != null && user.Active == false && model.IsEditable == false)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = CustomMessage.URDeactivated;

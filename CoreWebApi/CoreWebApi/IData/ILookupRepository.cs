@@ -9,16 +9,16 @@ namespace CoreWebApi.IData
 {
     public interface ILookupRepository
     {
-        Task<List<UserType>> GetUserTypes();
-        Task<List<ClassSection>> GetClassSections();
-        Task<List<Class>> GetClasses();
-        Task<List<Section>> GetSections();
-        Task<List<Subject>> GetSubjects();
-        Task<List<State>> GetStates();
-        Task<List<Country>> GetCountries();
-        Task<List<UserForListDto>> GetUsersByClassSection(int csId);
-        Task<List<UserForListDto>> GetTeachers();
-        object GetSchoolAcademies();
-        object SchoolBranches();
+        Task<ServiceResponse<object>> GetUserTypes();
+        Task<ServiceResponse<object>> GetClassSections();
+        Task<ServiceResponse<object>> GetClasses();
+        Task<ServiceResponse<object>> GetSections();
+        Task<ServiceResponse<object>> GetSubjects();
+        Task<ServiceResponse<object>> GetStates();
+        Task<ServiceResponse<object>> GetCountries();
+        Task<ServiceResponse<object>> GetUsersByClassSection(int csId);
+        Task<ServiceResponse<object>> GetTeachers();
+        ServiceResponse<object> GetSchoolAcademies();
+        ServiceResponse<object> SchoolBranches();
     }
 }

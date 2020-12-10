@@ -256,4 +256,9 @@ namespace CoreWebApi.Dtos
         public string UserName { get; set; }
 
     }
+    public class GetByIdFlagDto
+    {
+        public int Id { get; set; }
+        public bool IsEditable { get; set; }
+    }
 }
