@@ -72,7 +72,7 @@ namespace CoreWebApi.Data
 
             // while adding new migration uncomment below line and then comment it again after...
             // modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
-           
+
             //
             modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>
             {
@@ -112,7 +112,7 @@ namespace CoreWebApi.Data
                 .Property(user => user.Role).HasDefaultValue("Student");
             // primary key // composite primary key
             modelBuilder.Entity<ClassLectureAssignment>()
-                .HasKey(c => new { c.Id });            
+                .HasKey(c => new { c.Id });
             modelBuilder.Entity<ClassLectureAssignment>()
                 .HasIndex(p => new { p.LectureId, p.TeacherId })
                 .IsUnique(true);
@@ -125,6 +125,10 @@ namespace CoreWebApi.Data
             // composite primary key
             modelBuilder.Entity<Subject>()
                .HasIndex(s => new { s.Name, s.SchoolBranchId })
+               .IsUnique(true);
+            // composite primary key
+            modelBuilder.Entity<SubjectAssignment>()
+               .HasIndex(s => new { s.ClassId, s.SubjectId, s.SchoolId })
                .IsUnique(true);
         }
 

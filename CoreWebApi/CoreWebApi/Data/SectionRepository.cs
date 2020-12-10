@@ -94,5 +94,15 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
+        public async Task<ServiceResponse<object>> ActiveInActive(int id, bool active)
+        {
+            var obj = await _context.Sections.Where(m => m.Id == id).FirstOrDefaultAsync();
+            obj.Active = active;
+            _context.Sections.Update(obj);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Deleted;
+            return _serviceResponse;
+        }
     }
 }

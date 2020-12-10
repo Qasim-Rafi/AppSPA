@@ -413,7 +413,7 @@ namespace CoreWebApi.Data
                 }
                 if (oldStatus == true && user.Active == false)
                 {
-                    serviceResponse.Message = CustomMessage.UserDeActivated;
+                    serviceResponse.Message = CustomMessage.RecordDeActivated;
                     serviceResponse.Success = true;
                 }
                 else
@@ -968,6 +968,22 @@ namespace CoreWebApi.Data
                 await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Message = CustomMessage.Deleted;
+                _serviceResponse.Success = true;
+            }
+            else
+            {
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Success = false;
+            }
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> CheckUserActiveStatus()
+        {
+            var check = await _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefaultAsync();
+            if (check != null)
+            {
+                _serviceResponse.Message = check.Active.ToString();
                 _serviceResponse.Success = true;
             }
             else

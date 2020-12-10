@@ -169,31 +169,32 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> AddSubjects(List<SubjectDtoForAdd> model)
         {
-
             try
             {
                 var ListToAdd = new List<Subject>();
-                foreach (var item in model)
+                var subject = model.First();
+                if (!await SubjectExists(subject.Name))
                 {
-                    if (!await SubjectExists(item.Name))
+                    ListToAdd.Add(new Subject
                     {
-                        ListToAdd.Add(new Subject
-                        {
-                            Name = item.Name,
-                            Active = true,
-                            CreditHours = item.CreditHours,
-                            CreatedBy = _LoggedIn_UserID,
-                            CreatedDateTime = DateTime.Now,
-                            SchoolBranchId = _LoggedIn_BranchID,
-                        });
-                    }
+                        Name = subject.Name,
+                        Active = true,
+                        CreditHours = subject.CreditHours,
+                        CreatedBy = _LoggedIn_UserID,
+                        CreatedDateTime = DateTime.Now,
+                        SchoolBranchId = _LoggedIn_BranchID,
+                    });
+                    await _context.Subjects.AddRangeAsync(ListToAdd);
+                    await _context.SaveChangesAsync();
+
+                    _serviceResponse.Message = CustomMessage.Added;
+                    _serviceResponse.Success = true;
                 }
-
-                await _context.Subjects.AddRangeAsync(ListToAdd);
-                await _context.SaveChangesAsync();
-
-                _serviceResponse.Message = CustomMessage.Added;
-                _serviceResponse.Success = true;
+                else
+                {
+                    _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                    _serviceResponse.Success = false;
+                }
                 return _serviceResponse;
             }
             catch (Exception ex)
@@ -206,27 +207,35 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> AssignSubjects(AssignSubjectDtoForAdd model)
         {
-            var ListToAdd = new List<SubjectAssignment>();
-            foreach (var SubjectId in model.SubjectIds)
+            try
             {
-                ListToAdd.Add(new SubjectAssignment
+                var ListToAdd = new List<SubjectAssignment>();
+                foreach (var SubjectId in model.SubjectIds)
                 {
-                    SubjectId = SubjectId,
-                    ClassId = model.ClassId,
-                    SchoolId = _LoggedIn_BranchID,
-                    //TableOfContent = model.TableOfContent,
-                    CreatedById = _LoggedIn_UserID,
-                    CreatedDateTime = DateTime.Now
-                });
+                    ListToAdd.Add(new SubjectAssignment
+                    {
+                        SubjectId = SubjectId,
+                        ClassId = model.ClassId,
+                        SchoolId = _LoggedIn_BranchID,
+                        //TableOfContent = model.TableOfContent,
+                        CreatedById = _LoggedIn_UserID,
+                        CreatedDateTime = DateTime.Now
+                    });
+                }
+
+                await _context.SubjectAssignments.AddRangeAsync(ListToAdd);
+                await _context.SaveChangesAsync();
+
+                _serviceResponse.Message = CustomMessage.Added;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
             }
-
-            await _context.SubjectAssignments.AddRangeAsync(ListToAdd);
-            await _context.SaveChangesAsync();
-
-            _serviceResponse.Message = CustomMessage.Added;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
-
+            catch (Exception ex)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                return _serviceResponse;
+            }
         }
         public async Task<ServiceResponse<object>> EditSubject(int id, SubjectDtoForEdit subject)
         {

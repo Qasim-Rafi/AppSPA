@@ -14,6 +14,7 @@ namespace CoreWebApi.IData
         Task<bool> ClassExists(string name);
         Task<ServiceResponse<object>> AddClass(ClassDtoForAdd @class);
         Task<ServiceResponse<object>> EditClass(int id, ClassDtoForEdit @class);
+        Task<ServiceResponse<object>> ActiveInActive(int id, bool active);
 
         //Task<IEnumerable<ClassSection>> GetClassSections();
         Task<bool> ClassSectionExists(int classId, int sectionId);

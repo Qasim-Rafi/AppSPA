@@ -92,6 +92,20 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpDelete("ActiveInActive/{id}/{active}")]
+        public async Task<IActionResult> ActiveInActive(int id, bool active)
+        {
+
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.ActiveInActive(id, active);
+
+            return Ok(_response);
+
+        }
 
         [HttpGet("GetClassSectionMapping")]
         public async Task<IActionResult> GetClassSectionMapping()

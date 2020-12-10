@@ -314,5 +314,13 @@ namespace CoreWebApi.Controllers
 
 
         }
+
+        [HttpGet("CheckUserActiveStatus")]
+        public async Task<IActionResult> CheckUserActiveStatus()
+        {
+            _response = await _repo.CheckUserActiveStatus();
+            return Ok(_response);
+
+        }
     }
 }

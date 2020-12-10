@@ -14,5 +14,6 @@ namespace CoreWebApi.IData
         Task<bool> SectionExists(string name);
         Task<ServiceResponse<object>> AddSection(SectionDtoForAdd Section);
         Task<ServiceResponse<object>> EditSection(int id, SectionDtoForEdit Section);
+        Task<ServiceResponse<object>> ActiveInActive(int id, bool active);
     }
 }

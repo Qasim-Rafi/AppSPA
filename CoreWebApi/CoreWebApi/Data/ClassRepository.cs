@@ -98,6 +98,26 @@ namespace CoreWebApi.Data
 
         }
 
+        public async Task<ServiceResponse<object>> ActiveInActive(int id, bool active)
+        {
+            var obj = await _context.Class.Where(m => m.Id == id).FirstOrDefaultAsync();
+            var Sections = _context.ClassSections.Where(m => m.ClassId == obj.Id).ToList().Count();
+            if (Sections > 0)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.ChildRecordExist;
+                return _serviceResponse;
+            }
+            else
+            {
+                obj.Active = active;
+                _context.Class.Update(obj);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Deleted;
+                return _serviceResponse;
+            }
+        }
 
 
 
@@ -411,5 +431,6 @@ namespace CoreWebApi.Data
 
             return _serviceResponse;
         }
+
     }
 }
