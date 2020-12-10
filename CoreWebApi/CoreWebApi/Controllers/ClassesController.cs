@@ -116,11 +116,11 @@ namespace CoreWebApi.Controllers
             {
                 ClassSectionId = o.Id,
                 SchoolAcademyId = o.SchoolBranchId,
-                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId)?.Name,
+                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId && m.Active == true)?.Name,
                 ClassId = o.ClassId,
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId && m.Active == true)?.Name,
                 SectionId = o.SectionId,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true)?.SectionName,
                 NumberOfStudents = o.NumberOfStudents
             });
             return Ok(ToReturn);
@@ -244,8 +244,8 @@ namespace CoreWebApi.Controllers
             {
                 Id = result.Data.Id,
                 ClassSectionId = result.Data.ClassSectionId,
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == result.Data.ClassSection.ClassId)?.Name,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == result.Data.ClassSection.SectionId)?.SectionName,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == result.Data.ClassSection.ClassId && m.Active == true)?.Name,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == result.Data.ClassSection.SectionId && m.Active == true)?.SectionName,
                 UserId = result.Data.UserId,
                 FullName = result.Data.User.FullName,
 

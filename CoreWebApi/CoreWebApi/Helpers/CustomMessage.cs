@@ -20,5 +20,6 @@ namespace CoreWebApi.Helpers
         public const string UserUnAuthorized = "Un-Authorized. Username or Password does not match. Contact your administrator";
         public const string CantExceedLimit = "Can't add records more then specified";
         public const string URDeactivated = "You are de-activated. Contact your administrator";
+        public const string DataNotProvided = "Data not provided. Please fill all the required fields";
     }
 }

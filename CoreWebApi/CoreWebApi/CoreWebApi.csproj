@@ -108,6 +108,8 @@
     <Compile Remove="Migrations\20201209075235_updatePhoto.Designer.cs" />
     <Compile Remove="Migrations\20201209080925_addPhoto.cs" />
     <Compile Remove="Migrations\20201209080925_addPhoto.Designer.cs" />
+    <Compile Remove="Migrations\20201210113450_addCSCompPK.cs" />
+    <Compile Remove="Migrations\20201210113450_addCSCompPK.Designer.cs" />
 
   </ItemGroup>
 

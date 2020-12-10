@@ -35,7 +35,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetClasses()
         {
-            List<Class> list = await _context.Class.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            List<Class> list = await _context.Class.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
 
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
@@ -44,7 +44,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetClassSections()
         {
-            var list = await _context.ClassSections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new
+            var list = await _context.ClassSections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).Select(o => new
             {
                 ClassSectionId = o.Id,
                 ClassId = o.ClassId,
@@ -72,7 +72,7 @@ namespace CoreWebApi.Data
             var school = _context.SchoolBranch.
             Join(_context.SchoolAcademy, sb => sb.SchoolAcademyID, sa => sa.Id,
             (sb, sa) => new { sb, sa }).
-            Where(z => z.sb.RegistrationNumber != "20000000")
+            Where(z => z.sb.RegistrationNumber != "20000000" && z.sb.Active == true)
             .Select(m => new
             {
                 Id = m.sa.Id,
@@ -85,7 +85,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetSections()
         {
-            var list = await _context.Sections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var list = await _context.Sections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -101,7 +101,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetSubjects()
         {
-            var list = await _context.Subjects.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -152,6 +152,7 @@ namespace CoreWebApi.Data
             var list = (from b in _context.SchoolBranch
                         where b.Active == true
                         && b.RegistrationNumber != "20000000"
+                        && b.Active == true
                         select b).ToList();
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;

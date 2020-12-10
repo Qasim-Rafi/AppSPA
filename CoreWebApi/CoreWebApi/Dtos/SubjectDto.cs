@@ -24,12 +24,14 @@ namespace CoreWebApi.Dtos
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Name { get; set; }
         public int CreditHours { get; set; }
+        public bool Active { get; set; } = true;
     }
     public class SubjectDtoForList
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public int CreditHours { get; set; }
+        public bool Active { get; set; }
     }
     public class SubjectDtoForDetail
     {
@@ -37,6 +39,7 @@ namespace CoreWebApi.Dtos
         public string Name { get; set; }
         public int CreditHours { get; set; }
 
+        public bool Active { get; set; }
     }
     public class AssignSubjectDtoForList
     {
@@ -44,7 +47,7 @@ namespace CoreWebApi.Dtos
         {
             Children = new List<ChipsDto>();
         }
-        public int Id { get; set; }      
+        public int Id { get; set; }
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public int SchoolId { get; set; }
@@ -59,7 +62,7 @@ namespace CoreWebApi.Dtos
         {
             Children = new List<SubjectDtoForDetail>();
         }
-        public int Id { get; set; }             
+        public int Id { get; set; }
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public int SchoolId { get; set; }
@@ -68,7 +71,7 @@ namespace CoreWebApi.Dtos
         public List<SubjectDtoForDetail> Children { get; set; }
 
     }
-    public class AssignSubjectDtoForAdd 
+    public class AssignSubjectDtoForAdd
     {
         [Required]
         public List<int> SubjectIds { get; set; }
@@ -90,7 +93,7 @@ namespace CoreWebApi.Dtos
     {
         public int SubjectAssignmentId { get; set; }
         [Required]
-        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")] 
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Heading { get; set; }
         [Required]
         public int ContentOrder { get; set; }
@@ -100,7 +103,7 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public int SubjectAssignmentId { get; set; }
         [Required]
-        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")] 
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Heading { get; set; }
         [Required]
         public int ContentOrder { get; set; }

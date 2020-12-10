@@ -80,6 +80,9 @@ namespace CoreWebApi.Data
                                    on main.ClassSectionId equals cs.Id
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && l.SchoolBranchId == _LoggedIn_BranchID
+                                   && s.Active == true
+                                   && cs.Active == true
+                                   && u.Active == true
                                    select new TimeTableForListDto
                                    {
                                        Id = main.Id,
@@ -92,8 +95,8 @@ namespace CoreWebApi.Data
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
                                        ClassSectionId = main.ClassSectionId,
-                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
-                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
+                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                        IsBreak = l.IsBreak
                                    }).ToListAsync();
 
@@ -140,6 +143,9 @@ namespace CoreWebApi.Data
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && main.Id == id
                                    && l.SchoolBranchId == _LoggedIn_BranchID
+                                   && s.Active == true
+                                   && cs.Active == true
+                                   && u.Active == true
                                    select new TimeTableForListDto
                                    {
                                        Id = main.Id,
@@ -152,8 +158,8 @@ namespace CoreWebApi.Data
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
                                        ClassSectionId = main.ClassSectionId,
-                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId).Name,
-                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId).SectionName,
+                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                        //IsBreak = l.IsBreak
                                    }).FirstOrDefaultAsync();
             if (TimeTable != null)
@@ -223,7 +229,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Message = ex.InnerException.ToString() ?? ex.Message;
                 return _serviceResponse;
             }
         }
@@ -306,7 +312,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> DeleteEvent(int id)
         {
 
-            var ToRemove = await _context.Events.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+            var ToRemove = await _context.Events.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).FirstOrDefaultAsync();
             if (ToRemove != null)
             {
                 var Count = await _context.EventDaysAssignments.Where(m => m.EventId == ToRemove.Id).CountAsync();

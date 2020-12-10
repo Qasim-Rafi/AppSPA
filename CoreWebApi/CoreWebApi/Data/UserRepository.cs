@@ -643,7 +643,7 @@ namespace CoreWebApi.Data
                    o.Id,
                    od.Group
                })
-                .Where(m => m.Group.SchoolBranchId == _LoggedIn_BranchID).Select(s => s).Distinct().ToListAsync();
+                .Where(m => m.Group.SchoolBranchId == _LoggedIn_BranchID && m.Group.Active == true).Select(s => s).Distinct().ToListAsync();
 
 
             var users = string.Empty;
@@ -673,7 +673,7 @@ namespace CoreWebApi.Data
                          GroupUser = GroupUser,
                          User = User
                      })
-                       .Where(m => m.GroupUser.Group.SchoolBranchId == _LoggedIn_BranchID).Select(p => p).ToListAsync();
+                       .Where(m => m.GroupUser.Group.SchoolBranchId == _LoggedIn_BranchID && m.User.Active == true).Select(p => p).ToListAsync();
 
                 foreach (var item_u in user)
                 {
@@ -709,7 +709,7 @@ namespace CoreWebApi.Data
         {
 
 
-            var group = await _context.Groups.Where(m => m.Id == model.Id && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+            var group = await _context.Groups.Where(m => m.Id == model.Id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).FirstOrDefaultAsync();
             if (group != null)
             {
                 group.GroupName = model.GroupName;
@@ -757,6 +757,7 @@ namespace CoreWebApi.Data
                                 on g.Id equals gu.GroupId
                                 where g.Id == id
                                 && g.SchoolBranchId == _LoggedIn_BranchID
+                                && g.Active == true
                                 select new
                                 {
                                     g.Id,
@@ -787,6 +788,8 @@ namespace CoreWebApi.Data
                                   join g in _context.Groups
                                   on gu.GroupId equals g.Id
                                   where g.SchoolBranchId == _LoggedIn_BranchID
+                                  && u.Active == true
+                                  && g.Active == true
                                   select new
                                   {
                                       GroupUser = gu,
@@ -828,7 +831,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> DeleteGroup(int id)
         {
 
-            var group = _context.Groups.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
+            var group = _context.Groups.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).FirstOrDefault();
             if (group != null)
             {
                 _context.Groups.Remove(group);
@@ -847,7 +850,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> ActiveInActiveUser(int id, bool status)
         {
 
-            var user = _context.Users.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
+            var user = _context.Users.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).FirstOrDefault();
             user.Active = status;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
@@ -960,7 +963,7 @@ namespace CoreWebApi.Data
                     ClassSectionId = ToRemove.ClassSectionId,
                     UserId = ToRemove.UserId,
                     MappedCreationDate = ToRemove.CreatedDate,
-                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == ToRemove.UserId).UserTypeId,
+                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == ToRemove.UserId && m.Active == true).UserTypeId,
                     DeletionDate = DateTime.Now,
                     DeletedById = _LoggedIn_UserID
                 });
@@ -980,7 +983,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> CheckUserActiveStatus()
         {
-            var check = await _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefaultAsync();
+            var check = await _context.Users.Where(m => m.Id == _LoggedIn_UserID && m.Active == true).FirstOrDefaultAsync();
             if (check != null)
             {
                 _serviceResponse.Message = check.Active.ToString();

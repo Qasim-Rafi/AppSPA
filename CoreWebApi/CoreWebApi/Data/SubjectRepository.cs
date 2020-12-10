@@ -60,12 +60,12 @@ namespace CoreWebApi.Data
             var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
             if (branch.Id == _LoggedIn_BranchID)
             {
-                var subjects = await _context.Subjects.Where(m => m.Active == true && m.CreatedBy == _LoggedIn_UserID && m.SchoolBranchId == branch.Id).ToListAsync();
+                var subjects = await _context.Subjects.Where(m => m.CreatedBy == _LoggedIn_UserID && m.SchoolBranchId == branch.Id).ToListAsync();// m.Active == true &&
                 _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
             }
             else
             {
-                var subjects = await _context.Subjects.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+                var subjects = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();// m.Active == true &&
                 _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
             }
             _serviceResponse.Success = true;
@@ -129,6 +129,8 @@ namespace CoreWebApi.Data
                             join sch in _context.SchoolBranch
                             on ass.SchoolId equals sch.Id
                             where ass.SchoolId == _LoggedIn_BranchID
+                            && c.Active == true
+                            && sch.Active == true
                             select new
                             {
                                 ClassId = c.Id,
@@ -200,7 +202,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 return _serviceResponse;
             }
 
@@ -233,11 +235,11 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 return _serviceResponse;
             }
         }
-        public async Task<ServiceResponse<object>> EditSubject(int id, SubjectDtoForEdit subject)
+        public async Task<ServiceResponse<object>> EditSubject(SubjectDtoForEdit subject)
         {
             Subject checkExist = _context.Subjects.FirstOrDefault(s => s.Name.ToLower() == subject.Name.ToLower() && s.SchoolBranchId == _LoggedIn_BranchID);
             if (checkExist != null && checkExist.Id != subject.Id)
@@ -251,6 +253,7 @@ namespace CoreWebApi.Data
             {
                 ObjToUpdate.Name = subject.Name;
                 ObjToUpdate.CreditHours = subject.CreditHours;
+                ObjToUpdate.Active = subject.Active;
                 _context.Subjects.Update(ObjToUpdate);
                 await _context.SaveChangesAsync();
             }
@@ -262,35 +265,43 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit model)
         {
-            var ToRemove = _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList();
-            if (ToRemove.Count() > 0)
+            if (model.SubjectIds.Count() > 0)
             {
-                _context.SubjectAssignments.RemoveRange(ToRemove);
-                await _context.SaveChangesAsync();
-
-                var ListToAdd = new List<SubjectAssignment>();
-                foreach (var SubjectId in model.SubjectIds)
+                var ToRemove = _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList();
+                if (ToRemove.Count() > 0)
                 {
-                    ListToAdd.Add(new SubjectAssignment
-                    {
-                        SubjectId = SubjectId,
-                        ClassId = model.ClassId,
-                        SchoolId = _LoggedIn_BranchID,
-                        //TableOfContent = model.TableOfContent,
-                        CreatedById = _LoggedIn_UserID,
-                        CreatedDateTime = DateTime.Now
-                    });
-                }
+                    _context.SubjectAssignments.RemoveRange(ToRemove);
+                    await _context.SaveChangesAsync();
 
-                await _context.SubjectAssignments.AddRangeAsync(ListToAdd);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Message = CustomMessage.Updated;
-                _serviceResponse.Success = true;
+                    var ListToAdd = new List<SubjectAssignment>();
+                    foreach (var SubjectId in model.SubjectIds)
+                    {
+                        ListToAdd.Add(new SubjectAssignment
+                        {
+                            SubjectId = SubjectId,
+                            ClassId = model.ClassId,
+                            SchoolId = _LoggedIn_BranchID,
+                            //TableOfContent = model.TableOfContent,
+                            CreatedById = _LoggedIn_UserID,
+                            CreatedDateTime = DateTime.Now
+                        });
+                    }
+
+                    await _context.SubjectAssignments.AddRangeAsync(ListToAdd);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Message = CustomMessage.Updated;
+                    _serviceResponse.Success = true;
+                }
+                else
+                {
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                    _serviceResponse.Success = false;
+                }
                 return _serviceResponse;
             }
             else
             {
-                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Message = CustomMessage.DataNotProvided;
                 _serviceResponse.Success = false;
                 return _serviceResponse;
             }

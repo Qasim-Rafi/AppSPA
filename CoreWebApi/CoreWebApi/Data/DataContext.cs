@@ -116,12 +116,17 @@ namespace CoreWebApi.Data
             modelBuilder.Entity<ClassLectureAssignment>()
                 .HasIndex(p => new { p.LectureId, p.TeacherId })
                 .IsUnique(true);
+            // composite primary key
+            modelBuilder.Entity<ClassSection>()
+              .HasIndex(p => new { p.ClassId, p.SectionId, p.SchoolBranchId })
+              .IsUnique(true);
             // primary key // composite primary key
             modelBuilder.Entity<ClassSectionUser>()
                 .HasKey(c => new { c.Id });
             modelBuilder.Entity<ClassSectionUser>()
                 .HasIndex(p => new { p.SchoolBranchId, p.UserId })
                 .IsUnique(true);
+
             // composite primary key
             modelBuilder.Entity<Subject>()
                .HasIndex(s => new { s.Name, s.SchoolBranchId })

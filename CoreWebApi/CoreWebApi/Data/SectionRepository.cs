@@ -47,7 +47,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<List<SectionDtoForList>>> GetSections()
         {
             ServiceResponse<List<SectionDtoForList>> serviceResponse = new ServiceResponse<List<SectionDtoForList>>();
-            var sections = await _context.Sections.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var sections = await _context.Sections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();// m.Active == true &&
             serviceResponse.Data = _mapper.Map<List<SectionDtoForList>>(sections);
             serviceResponse.Success = true;
             return serviceResponse;

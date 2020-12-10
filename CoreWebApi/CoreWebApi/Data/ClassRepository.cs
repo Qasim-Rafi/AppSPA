@@ -48,7 +48,7 @@ namespace CoreWebApi.Data
         {
             ServiceResponse<List<ClassDtoForList>> serviceResponse = new ServiceResponse<List<ClassDtoForList>>();
 
-            List<Class> @classes = await _context.Class.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            List<Class> @classes = await _context.Class.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();// m.Active == true &&
             serviceResponse.Data = _mapper.Map<List<ClassDtoForList>>(@classes);
             serviceResponse.Success = true;
             return serviceResponse;
@@ -145,32 +145,41 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<ClassSection>> GetClassSectionMapping()
         {
-            return await _context.ClassSections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).ToListAsync();
+            return await _context.ClassSections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
 
         }
 
         public async Task<ServiceResponse<object>> UpdateClassSectionMapping(ClassSectionDtoForUpdate model)
         {
 
-            var objToUpdate = _context.ClassSections.Where(m => m.Id == model.Id).FirstOrDefault();
-            if (objToUpdate != null)
+            try
             {
-                objToUpdate.ClassId = model.ClassId;
-                objToUpdate.SectionId = model.SectionId;
-                objToUpdate.Active = model.Active;
-                objToUpdate.SchoolBranchId = _LoggedIn_BranchID;
-                objToUpdate.NumberOfStudents = model.NumberOfStudents;
+                var objToUpdate = _context.ClassSections.Where(m => m.Id == model.Id && m.Active == true).FirstOrDefault();
+                if (objToUpdate != null)
+                {
+                    objToUpdate.ClassId = model.ClassId;
+                    objToUpdate.SectionId = model.SectionId;
+                    objToUpdate.Active = model.Active;
+                    objToUpdate.SchoolBranchId = _LoggedIn_BranchID;
+                    objToUpdate.NumberOfStudents = model.NumberOfStudents;
 
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Updated;
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
+                }
+                else
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                }
+                return _serviceResponse;
             }
-            else
+            catch (Exception ex)
             {
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return _serviceResponse;
             }
-            return _serviceResponse;
 
         }
         public async Task<ServiceResponse<object>> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
@@ -182,7 +191,7 @@ namespace CoreWebApi.Data
                 {
                     ClassSectionId = classSectionUser.ClassSectionId,
                     UserId = classSectionUser.UserId,
-                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == classSectionUser.UserId).UserTypeId,
+                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == classSectionUser.UserId && m.Active == true).UserTypeId,
                     IsIncharge = classSectionUser.IsIncharge,
                     CreatedDate = DateTime.Now,
                     SchoolBranchId = _LoggedIn_BranchID
@@ -198,7 +207,7 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.Message ?? ex.InnerException.ToString();
+                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 return _serviceResponse;
             }
 
@@ -224,7 +233,7 @@ namespace CoreWebApi.Data
                 ClassSectionId = oldClassSectionId,
                 UserId = oldUserId,
                 MappedCreationDate = objToUpdate.CreatedDate,
-                UserTypeId = _context.Users.FirstOrDefault(m => m.Id == objToUpdate.UserId).UserTypeId,
+                UserTypeId = _context.Users.FirstOrDefault(m => m.Id == objToUpdate.UserId && m.Active == true).UserTypeId,
                 DeletionDate = DateTime.Now,
                 DeletedById = _LoggedIn_UserID
             });
@@ -254,7 +263,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddClassSectionUserMappingBulk(ClassSectionUserDtoForAddBulk model)
         {
-            var CanHaveStudents = _context.ClassSections.Where(m => m.Id == model.ClassSectionId).FirstOrDefault()?.NumberOfStudents;
+            var CanHaveStudents = _context.ClassSections.Where(m => m.Id == model.ClassSectionId && m.Active == true).FirstOrDefault()?.NumberOfStudents;
             var ToAddStudents = model.UserIds.Count();
             if (CanHaveStudents < ToAddStudents)
             {
@@ -276,7 +285,7 @@ namespace CoreWebApi.Data
                     {
                         ClassSectionId = model.ClassSectionId,
                         UserId = userId,
-                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId).UserTypeId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true).UserTypeId,
                         CreatedDate = DateTime.Now,
                         SchoolBranchId = _LoggedIn_BranchID
                     });
@@ -298,7 +307,7 @@ namespace CoreWebApi.Data
                     {
                         ClassSectionId = item.ClassSectionId,
                         UserId = item.UserId,
-                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId).UserTypeId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId,
                         DeletionDate = DateTime.Now,
                         DeletedById = _LoggedIn_UserID
                     });
@@ -317,13 +326,13 @@ namespace CoreWebApi.Data
         {
             ServiceResponse<IEnumerable<ClassSection>> serviceResponse = new ServiceResponse<IEnumerable<ClassSection>>();
             serviceResponse.Success = true;
-            serviceResponse.Data = await _context.ClassSections.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            serviceResponse.Data = await _context.ClassSections.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> DeleteClassSectionMapping(int id)
         {
-            var classSection = _context.ClassSections.Where(m => m.Id == id).FirstOrDefault();
+            var classSection = _context.ClassSections.Where(m => m.Id == id && m.Active == true).FirstOrDefault();
             if (classSection != null)
             {
                 _context.ClassSections.Remove(classSection);
@@ -384,7 +393,7 @@ namespace CoreWebApi.Data
                     ClassSectionId = classSectionUser.ClassSectionId,
                     UserId = classSectionUser.UserId,
                     MappedCreationDate = classSectionUser.CreatedDate,
-                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == classSectionUser.UserId).UserTypeId,
+                    UserTypeId = _context.Users.FirstOrDefault(m => m.Id == classSectionUser.UserId && m.Active == true).UserTypeId,
                     DeletionDate = DateTime.Now,
                     DeletedById = _LoggedIn_UserID
                 });
@@ -417,7 +426,7 @@ namespace CoreWebApi.Data
                     {
                         ClassSectionId = item.ClassSectionId,
                         UserId = item.UserId,
-                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId).UserTypeId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId,
                         DeletionDate = DateTime.Now,
                         DeletedById = _LoggedIn_UserID
                     });

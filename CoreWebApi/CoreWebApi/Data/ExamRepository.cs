@@ -125,6 +125,8 @@ namespace CoreWebApi.Data
                                           join classSection in _context.ClassSections
                                           on quiz.ClassSectionId equals classSection.Id
                                           where quiz.Id == id
+                                          && subject.Active == true
+                                          && classSection.Active == true
                                           select new QuizForListDto
                                           {
                                               QuizId = quiz.Id,
@@ -270,6 +272,8 @@ namespace CoreWebApi.Data
                                      on classSection.Id equals classSectionUser.ClassSectionId
                                      where classSectionUser.UserId == _LoggedIn_UserID
                                      && !ids.Contains(quiz.Id)
+                                     && subject.Active == true
+                                     && classSection.Active == true
                                      orderby quiz.Id descending
                                      select new QuizForListDto
                                      {
@@ -296,6 +300,8 @@ namespace CoreWebApi.Data
                                      join classSectionUser in _context.ClassSectionUsers
                                      on classSection.Id equals classSectionUser.ClassSectionId
                                      where classSectionUser.UserId == _LoggedIn_UserID
+                                     && subject.Active == true
+                                     && classSection.Active == true
                                      orderby quiz.Id descending
                                      select new QuizForListDto
                                      {

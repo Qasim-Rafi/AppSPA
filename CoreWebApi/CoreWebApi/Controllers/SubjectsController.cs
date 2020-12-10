@@ -85,15 +85,15 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPut("UpdateSubject/{id}")]
-        public async Task<IActionResult> UpdateSubject(int id, SubjectDtoForEdit subject)
+        [HttpPut("UpdateSubject")]
+        public async Task<IActionResult> UpdateSubject(SubjectDtoForEdit subject)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.EditSubject(id, subject);
+            _response = await _repo.EditSubject(subject);
             return Ok(_response);
         }
         [HttpPut("UpdateAssignedSubject/{id}")]
