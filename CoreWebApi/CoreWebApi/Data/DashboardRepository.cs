@@ -153,5 +153,52 @@ namespace CoreWebApi.Data
         {
             return decimal.Round((decimal)count / total * 100);
         }
+        public async Task<ServiceResponse<object>> GetStudentAttendancePercentage()
+        {
+            var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
+            if (userDetails != null)
+            {
+                var StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var LastDate = DateTime.Today.Date;
+                var DaysCount = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
+                var UserPresentCount = (from u in _context.Users
+                                        join att in _context.Attendances
+                                        on u.Id equals att.UserId
+                                        where u.UserTypeId == userDetails.UserTypeId
+                                        && u.Id == _LoggedIn_UserID
+                                        && att.Present == true
+                                        && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
+                                        select att).ToList().Count();
+                var CurrentMonthLoggedUserPercentage = CalculatePercentage(UserPresentCount, DaysCount);
+                
+                var LoggedUserAttendanceByMonth = new List<ThisMonthAttendancePercentageDto>();
+                string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+                foreach (var month in Months)
+                {
+
+                    var StartDateByMonth = new DateTime(DateTime.Now.Year, (Array.IndexOf(Months, month) + 1), 1);
+                    var LastDateByMonth = StartDate.AddMonths(1).AddDays(-1);
+                    var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
+                    var UserPresentCountByMonth = (from u in _context.Users
+                                                   join att in _context.Attendances
+                                                   on u.Id equals att.UserId
+                                                   where u.UserTypeId == userDetails.UserTypeId
+                                                   && u.Id == _LoggedIn_UserID
+                                                   && att.Present == true
+                                                   && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
+                                                   select att).ToList().Count();
+                    LoggedUserAttendanceByMonth.Add(new ThisMonthAttendancePercentageDto
+                    {
+                        MonthName = month,
+                        Month = (Array.IndexOf(Months, month) + 1),
+                        Percentage = CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth)
+                    });
+                }
+                _serviceResponse.Data = new { CurrentMonthLoggedUserPercentage, LoggedUserAttendanceByMonth };
+                _serviceResponse.Success = true;
+            }
+            return _serviceResponse;
+
+        }
     }
 }

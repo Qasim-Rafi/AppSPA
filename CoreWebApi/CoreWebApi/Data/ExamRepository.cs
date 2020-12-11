@@ -255,16 +255,12 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetAssignedQuiz()
         {
-
-
             var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             if (userDetails != null)
             {
                 List<QuizForListDto> quizzes = new List<QuizForListDto>();
                 if (userDetails.UserTypeId == (int)Enumm.UserType.Student)
                 {
-
-                   
                     var ids = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.QuizId);
 
                     quizzes = await (from quiz in _context.Quizzes
@@ -304,8 +300,8 @@ namespace CoreWebApi.Data
                                      on quiz.ClassSectionId equals classSection.Id
                                      join classSectionUser in _context.ClassSectionUsers
                                      on classSection.Id equals classSectionUser.ClassSectionId
-                                     where classSectionUser.UserId == _LoggedIn_UserID
-                                     && subject.Active == true
+                                     where //classSectionUser.UserId == _LoggedIn_UserID
+                                     subject.Active == true
                                      && classSection.Active == true
                                      orderby quiz.Id descending
                                      select new QuizForListDto
@@ -371,11 +367,20 @@ namespace CoreWebApi.Data
             List<QuizSubmission> submissions = new List<QuizSubmission>();
             foreach (var item in model)
             {
+                var TrueAnswers = (from q in _context.QuizQuestions
+                                   join ans in _context.QuizAnswers
+                                   on q.Id equals ans.QuestionId
+                                   where ans.IsTrue == true
+                                   && q.Id == item.QuestionId
+                                   && q.QuizId == item.QuizId
+                                   select ans).ToList();
                 submissions.Add(new QuizSubmission
                 {
                     QuizId = item.QuizId,
                     QuestionId = item.QuestionId,
                     AnswerId = item.AnswerId,
+                    IsCorrect = TrueAnswers.Select(m => m.Id).Contains(Convert.ToInt32(item.AnswerId)) ? true : false,
+                    //IsCorrect = TrueAnswers.Where(m => m.Id == Convert.ToInt32(item.AnswerId)).Count() == TrueAnswers.Count ? true : false,
                     Description = item.Description,
                     CreatedDateTime = DateTime.Now,
                     UserId = _LoggedIn_UserID
@@ -445,9 +450,6 @@ namespace CoreWebApi.Data
             return quiz.Id;
         }
 
-        public Task<ServiceResponse<object>> GetAllAssignedQuizNames()
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

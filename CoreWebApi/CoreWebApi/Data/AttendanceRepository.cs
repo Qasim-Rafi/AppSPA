@@ -61,7 +61,7 @@ namespace CoreWebApi.Data
                     attendanceExist.Comments = attendance.Comments;
                     attendanceExist.UserId = attendance.UserId;
                     attendanceExist.ClassSectionId = attendance.ClassSectionId;
-                    
+
                     await _context.SaveChangesAsync();
                 }
                 else
@@ -103,9 +103,6 @@ namespace CoreWebApi.Data
 
         }
 
-        public Task<IEnumerable<Attendance>> GetAttendanceToDisplay(int typeId, int? classSectionId, string date)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

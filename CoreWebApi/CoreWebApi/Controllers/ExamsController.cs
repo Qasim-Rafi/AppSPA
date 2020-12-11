@@ -143,14 +143,6 @@ namespace CoreWebApi.Controllers
 
         }
 
-        [HttpGet("GetAllAssignedQuizNames")]
-        public async Task<IActionResult> GetAllAssignedQuizNames()
-        {
-
-            _response = await _repo.GetAllAssignedQuizNames();
-            return Ok(_response);
-
-
-        }
+       
     }
 }

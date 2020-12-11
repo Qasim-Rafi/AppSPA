@@ -84,5 +84,10 @@ namespace CoreWebApi.Dtos
         public int? classSectionId { get; set; }
         public string date { get; set; }
     }
-
+    public class ThisMonthAttendancePercentageDto
+    {
+        public int Month { get; set; }
+        public string MonthName { get; set; } = "";
+        public decimal Percentage { get; set; }
+    }
 }

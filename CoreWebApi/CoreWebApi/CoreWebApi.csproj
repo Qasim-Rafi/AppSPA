@@ -110,6 +110,8 @@
     <Compile Remove="Migrations\20201209080925_addPhoto.Designer.cs" />
     <Compile Remove="Migrations\20201210113450_addCSCompPK.cs" />
     <Compile Remove="Migrations\20201210113450_addCSCompPK.Designer.cs" />
+    <Compile Remove="Migrations\20201211112234_updateQuizSubaddIsCorrect.cs" />
+    <Compile Remove="Migrations\20201211112234_updateQuizSubaddIsCorrect.Designer.cs" />
 
   </ItemGroup>
 
