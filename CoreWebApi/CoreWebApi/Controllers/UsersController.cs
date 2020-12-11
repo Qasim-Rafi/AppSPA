@@ -40,7 +40,7 @@ namespace CoreWebApi.Controllers
             _HostEnvironment = HostEnvironment;
         }
 
-        [HttpGet("GetUsers/{id?}")]
+        [HttpGet("GetUsers/{id?}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUsers(int id = 0)
         {
             _response = await _repo.GetUsers(id);
@@ -121,7 +121,7 @@ namespace CoreWebApi.Controllers
             return Ok(response);
 
         }
-        [HttpDelete("ChangeActiveStatus/{id}/{status}")]
+        [HttpDelete("ChangeActiveStatus/{id}/{status}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> ActiveInActiveUser(int id, bool status)
         {
 

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]
+    //[Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class ExamsController : BaseController
@@ -140,6 +140,16 @@ namespace CoreWebApi.Controllers
             var createdObj = await _repo.UpdateQuestion(id, model);
 
             return Ok(createdObj);
+
+        }
+
+        [HttpGet("GetAllAssignedQuizNames")]
+        public async Task<IActionResult> GetAllAssignedQuizNames()
+        {
+
+            _response = await _repo.GetAllAssignedQuizNames();
+            return Ok(_response);
+
 
         }
     }

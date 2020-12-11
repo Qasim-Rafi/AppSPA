@@ -94,7 +94,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public string Username { get; set; }
-        public string Password { get; set; }
+        //public string Password { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
         public string Gender { get; set; }
@@ -106,6 +106,7 @@ namespace CoreWebApi.Dtos
         public string OtherState { get; set; }
         public int UserTypeId { get; set; }
         public string UserType { get; set; }
+        public string RollNumber { get; set; }
         public bool Active { get; set; } = true;
         public string MemberSince { get; set; }
         public List<PhotoDto> Photos { get; set; }
@@ -126,6 +127,7 @@ namespace CoreWebApi.Dtos
         public string OtherState { get; set; }
         public int UserTypeId { get; set; }
         public string UserType { get; set; }
+        public string RollNumber { get; set; }
         public bool Active { get; set; } = true;
         public List<PhotoDto> Photos { get; set; }
     }

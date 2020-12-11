@@ -52,7 +52,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<UserForDetailedDto>> GetUser(GetByIdFlagDto model)
         {
             ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
-            var user = await _context.Users.Where(u => u.Id == model.Id).Select(s => new UserForDetailedDto()
+            var user = await _context.Users.Where(u => u.Id == model.Id).Select(s => new UserForDetailedDto
             {
                 Id = s.Id,
                 FullName = s.FullName,
@@ -65,7 +65,10 @@ namespace CoreWebApi.Data
                 CountryName = s.Country.Name,
                 StateName = s.State.Name,
                 OtherState = s.OtherState,
+                UserTypeId = s.UserTypeId,
+                UserType = s.Usertypes.Name,
                 Active = s.Active,
+                RollNumber = s.RollNumber,
                 MemberSince = DateFormat.ToDate(s.CreatedDateTime.ToString()),
                 Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                 {
