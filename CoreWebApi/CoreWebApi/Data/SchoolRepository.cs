@@ -288,26 +288,33 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> AddEvents(List<EventForAddDto> model)
         {
 
-
-            List<Event> listToAdd = new List<Event>();
-            foreach (var item in model)
+            try
             {
-                listToAdd.Add(new Event
+                List<Event> listToAdd = new List<Event>();
+                foreach (var item in model)
                 {
-                    Title = item.Title,
-                    Color = item.Color,
-                    Active = true,
-                    SchoolBranchId = _LoggedIn_BranchID
-                });
+                    listToAdd.Add(new Event
+                    {
+                        Title = item.Title,
+                        Color = item.Color,
+                        Active = true,
+                        SchoolBranchId = _LoggedIn_BranchID
+                    });
 
+                }
+                await _context.Events.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
+
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
+                return _serviceResponse;
             }
-            await _context.Events.AddRangeAsync(listToAdd);
-            await _context.SaveChangesAsync();
-            _serviceResponse.Success = true;
-            _serviceResponse.Message = CustomMessage.Added;
-
-            return _serviceResponse;
-
+            catch (Exception ex)
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return _serviceResponse;
+            }
         }
         public async Task<ServiceResponse<object>> DeleteEvent(int id)
         {

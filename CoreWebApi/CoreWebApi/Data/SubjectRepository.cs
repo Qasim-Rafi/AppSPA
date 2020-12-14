@@ -241,71 +241,87 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> EditSubject(SubjectDtoForEdit subject)
         {
-            Subject checkExist = _context.Subjects.FirstOrDefault(s => s.Name.ToLower() == subject.Name.ToLower() && s.SchoolBranchId == _LoggedIn_BranchID);
-            if (checkExist != null && checkExist.Id != subject.Id)
+            try
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                Subject checkExist = _context.Subjects.FirstOrDefault(s => s.Name.ToLower() == subject.Name.ToLower() && s.SchoolBranchId == _LoggedIn_BranchID);
+                if (checkExist != null && checkExist.Id != subject.Id)
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                    return _serviceResponse;
+                }
+                Subject ObjToUpdate = _context.Subjects.FirstOrDefault(s => s.Id.Equals(subject.Id));
+                if (ObjToUpdate != null)
+                {
+                    ObjToUpdate.Name = subject.Name;
+                    ObjToUpdate.CreditHours = subject.CreditHours;
+                    ObjToUpdate.Active = subject.Active;
+                    _context.Subjects.Update(ObjToUpdate);
+                    await _context.SaveChangesAsync();
+                }
+                _serviceResponse.Message = CustomMessage.Updated;
+                _serviceResponse.Success = true;
                 return _serviceResponse;
             }
-            Subject ObjToUpdate = _context.Subjects.FirstOrDefault(s => s.Id.Equals(subject.Id));
-            if (ObjToUpdate != null)
+            catch (Exception ex)
             {
-                ObjToUpdate.Name = subject.Name;
-                ObjToUpdate.CreditHours = subject.CreditHours;
-                ObjToUpdate.Active = subject.Active;
-                _context.Subjects.Update(ObjToUpdate);
-                await _context.SaveChangesAsync();
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return _serviceResponse;
             }
-            _serviceResponse.Message = CustomMessage.Updated;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
-
         }
 
         public async Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit model)
         {
-            if (model.SubjectIds.Count() > 0)
+            try
             {
-                var ToRemove = _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList();
-                if (ToRemove.Count() > 0)
+                if (model.SubjectIds.Count() > 0)
                 {
-                    _context.SubjectAssignments.RemoveRange(ToRemove);
-                    await _context.SaveChangesAsync();
-
-                    var ListToAdd = new List<SubjectAssignment>();
-                    foreach (var SubjectId in model.SubjectIds)
+                    var ToRemove = _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList();
+                    if (ToRemove.Count() > 0)
                     {
-                        ListToAdd.Add(new SubjectAssignment
-                        {
-                            SubjectId = SubjectId,
-                            ClassId = model.ClassId,
-                            SchoolId = _LoggedIn_BranchID,
-                            //TableOfContent = model.TableOfContent,
-                            CreatedById = _LoggedIn_UserID,
-                            CreatedDateTime = DateTime.Now
-                        });
-                    }
+                        _context.SubjectAssignments.RemoveRange(ToRemove);
+                        await _context.SaveChangesAsync();
 
-                    await _context.SubjectAssignments.AddRangeAsync(ListToAdd);
-                    await _context.SaveChangesAsync();
-                    _serviceResponse.Message = CustomMessage.Updated;
-                    _serviceResponse.Success = true;
+                        var ListToAdd = new List<SubjectAssignment>();
+                        foreach (var SubjectId in model.SubjectIds)
+                        {
+                            ListToAdd.Add(new SubjectAssignment
+                            {
+                                SubjectId = SubjectId,
+                                ClassId = model.ClassId,
+                                SchoolId = _LoggedIn_BranchID,
+                                //TableOfContent = model.TableOfContent,
+                                CreatedById = _LoggedIn_UserID,
+                                CreatedDateTime = DateTime.Now
+                            });
+                        }
+
+                        await _context.SubjectAssignments.AddRangeAsync(ListToAdd);
+                        await _context.SaveChangesAsync();
+                        _serviceResponse.Message = CustomMessage.Updated;
+                        _serviceResponse.Success = true;
+                    }
+                    else
+                    {
+                        _serviceResponse.Message = CustomMessage.RecordNotFound;
+                        _serviceResponse.Success = false;
+                    }
+                    return _serviceResponse;
                 }
                 else
                 {
-                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                    _serviceResponse.Message = CustomMessage.DataNotProvided;
                     _serviceResponse.Success = false;
+                    return _serviceResponse;
                 }
-                return _serviceResponse;
             }
-            else
+            catch (Exception ex)
             {
-                _serviceResponse.Message = CustomMessage.DataNotProvided;
                 _serviceResponse.Success = false;
+                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 return _serviceResponse;
             }
-
         }
 
 

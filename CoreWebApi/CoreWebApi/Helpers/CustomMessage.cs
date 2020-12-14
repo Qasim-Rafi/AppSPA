@@ -21,5 +21,6 @@ namespace CoreWebApi.Helpers
         public const string CantExceedLimit = "Can't add records more then specified";
         public const string URDeactivated = "You are de-activated. Contact your administrator";
         public const string DataNotProvided = "Data not provided. Please fill all the required fields";
+        public const string SelectLeastOneTrue = "Please select at least one true answer";
     }
 }

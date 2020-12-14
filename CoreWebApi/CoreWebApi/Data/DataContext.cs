@@ -135,6 +135,14 @@ namespace CoreWebApi.Data
             modelBuilder.Entity<SubjectAssignment>()
                .HasIndex(s => new { s.ClassId, s.SubjectId, s.SchoolId })
                .IsUnique(true);
+            // composite primary key
+            modelBuilder.Entity<User>()
+               .HasIndex(s => new { s.Username, s.SchoolBranchId })
+               .IsUnique(true);
+            // composite primary key
+            modelBuilder.Entity<Event>()
+               .HasIndex(s => new { s.Title, s.SchoolBranchId })
+               .IsUnique(true);
         }
 
 

@@ -281,43 +281,51 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<UserForListDto>> AddUser(UserForAddDto userDto)
         {
             ServiceResponse<UserForListDto> serviceResponse = new ServiceResponse<UserForListDto>();
-
-            var UserTypes = _context.UserTypes.ToList();
-            DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
-
-            var userToCreate = new User
+            try
             {
-                FullName = userDto.FullName,
-                Username = userDto.Username,
-                UserTypeId = userDto.UserTypeId,
-                CreatedDateTime = DateTime.Now,
-                Gender = userDto.Gender,
-                Active = true,
-                DateofBirth = DateOfBirth,
-                LastActive = DateTime.Now,
-                StateId = userDto.StateId,
-                CountryId = userDto.CountryId,
-                OtherState = userDto.OtherState,
-                Email = userDto.Email,
-                SchoolBranchId = _LoggedIn_BranchID,
-                RollNumber = userDto.RollNumber,
-                Role = UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
-            };
-            byte[] passwordHash, passwordSalt;
-            Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
 
-            userToCreate.PasswordHash = passwordHash;
-            userToCreate.PasswordSalt = passwordSalt;
+                var UserTypes = _context.UserTypes.ToList();
+                DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
 
-            await _context.Users.AddAsync(userToCreate);
-            await _context.SaveChangesAsync();
+                var userToCreate = new User
+                {
+                    FullName = userDto.FullName,
+                    Username = userDto.Username,
+                    UserTypeId = userDto.UserTypeId,
+                    CreatedDateTime = DateTime.Now,
+                    Gender = userDto.Gender,
+                    Active = true,
+                    DateofBirth = DateOfBirth,
+                    LastActive = DateTime.Now,
+                    StateId = userDto.StateId,
+                    CountryId = userDto.CountryId,
+                    OtherState = userDto.OtherState,
+                    Email = userDto.Email,
+                    SchoolBranchId = _LoggedIn_BranchID,
+                    RollNumber = userDto.RollNumber,
+                    Role = UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
+                };
+                byte[] passwordHash, passwordSalt;
+                Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
 
-            var createdUser = _mapper.Map<UserForListDto>(userToCreate);
+                userToCreate.PasswordHash = passwordHash;
+                userToCreate.PasswordSalt = passwordSalt;
 
-            serviceResponse.Success = true;
-            serviceResponse.Message = CustomMessage.Added;
-            return serviceResponse;
+                await _context.Users.AddAsync(userToCreate);
+                await _context.SaveChangesAsync();
 
+                var createdUser = _mapper.Map<UserForListDto>(userToCreate);
+
+                serviceResponse.Success = true;
+                serviceResponse.Message = CustomMessage.Added;
+                return serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return serviceResponse;
+            }
         }
 
 
@@ -325,114 +333,122 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<string>> EditUser(int id, UserForUpdateDto user)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-            User checkExist = _context.Users.FirstOrDefault(m => m.Username.ToLower() == user.Username.ToLower() && m.SchoolBranchId == _LoggedIn_BranchID);
-            if (checkExist != null && checkExist.Id != id)
+            try
             {
-                serviceResponse.Success = false;
-                serviceResponse.Message = CustomMessage.RecordAlreadyExist;
-                return serviceResponse;
-            }
-            User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
-            if (dbUser != null)
-            {
-                var oldStatus = dbUser.Active;
-                DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
-
-                dbUser.FullName = user.FullName;
-                dbUser.Email = user.Email;
-                dbUser.Username = user.Username.ToLower();
-                dbUser.StateId = user.StateId;
-                dbUser.CountryId = user.CountryId;
-                dbUser.OtherState = user.OtherState;
-                dbUser.DateofBirth = DateOfBirth;
-                dbUser.Gender = user.Gender;
-                dbUser.Active = user.Active;
-                //dbUser.UserTypeId = user.UserTypeId;
-                if (!string.IsNullOrEmpty(user.OldPassword))
+                User checkExist = _context.Users.FirstOrDefault(m => m.Username.ToLower() == user.Username.ToLower() && m.SchoolBranchId == _LoggedIn_BranchID);
+                if (checkExist != null && checkExist.Id != id)
                 {
-                    if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
-                    {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = CustomMessage.RecordAlreadyExist;
+                    return serviceResponse;
+                }
+                User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
+                if (dbUser != null)
+                {
+                    var oldStatus = dbUser.Active;
+                    DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
 
-                        if (!string.IsNullOrEmpty(user.Password))
+                    dbUser.FullName = user.FullName;
+                    dbUser.Email = user.Email;
+                    dbUser.Username = user.Username.ToLower();
+                    dbUser.StateId = user.StateId;
+                    dbUser.CountryId = user.CountryId;
+                    dbUser.OtherState = user.OtherState;
+                    dbUser.DateofBirth = DateOfBirth;
+                    dbUser.Gender = user.Gender;
+                    dbUser.Active = user.Active;
+                    //dbUser.UserTypeId = user.UserTypeId;
+                    if (!string.IsNullOrEmpty(user.OldPassword))
+                    {
+                        if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
                         {
-                            byte[] passwordhash, passwordSalt;
-                            Seed.CreatePasswordHash(user.Password, out passwordhash, out passwordSalt);
-                            dbUser.PasswordHash = passwordhash;
-                            dbUser.PasswordSalt = passwordSalt;
+
+                            if (!string.IsNullOrEmpty(user.Password))
+                            {
+                                byte[] passwordhash, passwordSalt;
+                                Seed.CreatePasswordHash(user.Password, out passwordhash, out passwordSalt);
+                                dbUser.PasswordHash = passwordhash;
+                                dbUser.PasswordSalt = passwordSalt;
+                            }
+                            else
+                            {
+                                throw new Exception("You didn't provide New Password");
+                            }
+
                         }
                         else
                         {
-                            throw new Exception("You didn't provide New Password");
+                            throw new Exception(CustomMessage.PasswordNotMatched);
                         }
 
+                    }
+                    await _context.SaveChangesAsync();
+
+                    // saving images
+
+                    if (user.files != null && user.files.Count() > 0)
+                    {
+                        for (int i = 0; i < user.files.Count(); i++)
+                        {
+                            var file = user.files[i];
+                            string Name = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                            if (user.IsPrimaryPhoto)
+                            {
+                                IQueryable<Photo> updatePrimaryPhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
+                                await updatePrimaryPhotos.ForEachAsync(m => m.IsPrimary = false);
+                            }
+                            Photo updatePhoto = _context.Photos.Where(m => m.UserId == dbUser.Id).FirstOrDefault();
+                            if (updatePhoto == null)
+                            {
+                                var photo = new Photo
+                                {
+                                    Name = Name,
+                                    Description = "description...",
+                                    IsPrimary = user.IsPrimaryPhoto,
+                                    UserId = dbUser.Id,
+                                    Url = _File.GetBinaryFile(file),
+                                    CreatedDatetime = DateTime.Now
+                                };
+                                await _context.Photos.AddAsync(photo);
+                                await _context.SaveChangesAsync();
+                            }
+                            else
+                            {
+                                updatePhoto.Name = Name;
+                                updatePhoto.IsPrimary = user.IsPrimaryPhoto;
+                                updatePhoto.UserId = dbUser.Id;
+                                updatePhoto.Url = _File.GetBinaryFile(file);
+                                _context.Photos.Update(updatePhoto);
+                                await _context.SaveChangesAsync();
+                            }
+
+                        }
+                    }
+                    if (oldStatus == true && user.Active == false)
+                    {
+                        serviceResponse.Message = CustomMessage.RecordDeActivated;
+                        serviceResponse.Success = true;
                     }
                     else
                     {
-                        throw new Exception(CustomMessage.PasswordNotMatched);
+                        serviceResponse.Message = CustomMessage.Updated;
+                        serviceResponse.Success = true;
                     }
-
-                }
-                await _context.SaveChangesAsync();
-
-                // saving images
-
-                if (user.files != null && user.files.Count() > 0)
-                {
-                    for (int i = 0; i < user.files.Count(); i++)
-                    {
-                        var file = user.files[i];
-                        string Name = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                        if (user.IsPrimaryPhoto)
-                        {
-                            IQueryable<Photo> updatePrimaryPhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
-                            await updatePrimaryPhotos.ForEachAsync(m => m.IsPrimary = false);
-                        }
-                        Photo updatePhoto = _context.Photos.Where(m => m.UserId == dbUser.Id).FirstOrDefault();
-                        if (updatePhoto == null)
-                        {
-                            var photo = new Photo
-                            {
-                                Name = Name,
-                                Description = "description...",
-                                IsPrimary = user.IsPrimaryPhoto,
-                                UserId = dbUser.Id,
-                                Url = _File.GetBinaryFile(file),
-                                CreatedDatetime = DateTime.Now
-                            };
-                            await _context.Photos.AddAsync(photo);
-                            await _context.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            updatePhoto.Name = Name;
-                            updatePhoto.IsPrimary = user.IsPrimaryPhoto;
-                            updatePhoto.UserId = dbUser.Id;
-                            updatePhoto.Url = _File.GetBinaryFile(file);
-                            _context.Photos.Update(updatePhoto);
-                            await _context.SaveChangesAsync();
-                        }
-
-                    }
-                }
-                if (oldStatus == true && user.Active == false)
-                {
-                    serviceResponse.Message = CustomMessage.RecordDeActivated;
-                    serviceResponse.Success = true;
                 }
                 else
                 {
-                    serviceResponse.Message = CustomMessage.Updated;
-                    serviceResponse.Success = true;
+                    serviceResponse.Message = CustomMessage.RecordNotFound;
+                    serviceResponse.Success = false;
                 }
+
+                return serviceResponse;
             }
-            else
+            catch (Exception ex)
             {
-                serviceResponse.Message = CustomMessage.RecordNotFound;
                 serviceResponse.Success = false;
+                serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return serviceResponse;
             }
-
-            return serviceResponse;
-
         }
 
 
@@ -916,12 +932,26 @@ namespace CoreWebApi.Data
             var users = await (from user in _context.Users
                                join csUser in _context.ClassSectionUsers
                                on user.Id equals csUser.UserId
+
+                               join cs in _context.ClassSections
+                               on csUser.ClassSectionId equals cs.Id
+
+                               join clas in _context.Class
+                               on cs.ClassId equals clas.Id
+
+                               join subAssign in _context.SubjectAssignments
+                               on cs.ClassId equals subAssign.ClassId
+
+                               join subject in _context.Subjects
+                               on subAssign.SubjectId equals subject.Id
+
                                where csUser.ClassSection.ClassId == model.GradeId
                                && user.Gender.ToLower() == model.Gender.ToLower()
                                && user.StateId == model.StateId
+                               && subject.Id == model.SubjectId
                                && user.Active == true
                                && user.UserTypeId == (int)Enumm.UserType.Teacher
-                               select new { user, csUser }).Select(o => new TutorForListDto
+                               select new { user, csUser, subject }).Select(o => new TutorForListDto
                                {
                                    Id = o.user.Id,
                                    FullName = o.user.FullName,
@@ -936,6 +966,8 @@ namespace CoreWebApi.Data
                                    OtherState = o.user.OtherState,
                                    GradeId = o.csUser.ClassSection.ClassId,
                                    GradeName = _context.Class.FirstOrDefault(m => m.Id == o.csUser.ClassSection.ClassId).Name,
+                                   SubjectId = o.subject.Id,
+                                   SubjectName = o.subject.Name,
                                    Photos = _context.Photos.Where(m => m.UserId == o.user.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                    {
                                        Id = x.Id,

@@ -219,6 +219,7 @@ namespace CoreWebApi.Dtos
     {
         public int StateId { get; set; }
         public int GradeId { get; set; }
+        public int SubjectId { get; set; }
         public string Gender { get; set; }
 
     }
@@ -235,8 +236,10 @@ namespace CoreWebApi.Dtos
         public string StateName { get; set; }
         public string CountryName { get; set; }
         public string OtherState { get; set; }
-        public int? GradeId { get; set; }
+        public int GradeId { get; set; }
         public string GradeName { get; set; }
+        public int SubjectId { get; set; }
+        public string SubjectName { get; set; }
         public List<PhotoDto> Photos { get; set; }
     }
     public class UnMapUserForAddDto

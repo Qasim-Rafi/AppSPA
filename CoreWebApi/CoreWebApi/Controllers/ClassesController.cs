@@ -159,9 +159,9 @@ namespace CoreWebApi.Controllers
             }
             if (await _repo.ClassSectionExists(classSection.ClassId, classSection.SectionId))
                 return BadRequest(new { message = "Class Section Already Exist" });
-            var createdObj = await _repo.AddClassSectionMapping(classSection);
+            _response = await _repo.AddClassSectionMapping(classSection);
 
-            return StatusCode(StatusCodes.Status201Created);
+            return Ok(_response);
 
         }
 
