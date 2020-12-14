@@ -285,7 +285,7 @@ namespace CoreWebApi.Data
                     {
                         ClassSectionId = model.ClassSectionId,
                         UserId = userId,
-                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true).UserTypeId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true).UserTypeId : 3,
                         CreatedDate = DateTime.Now,
                         SchoolBranchId = _LoggedIn_BranchID
                     });
@@ -307,7 +307,7 @@ namespace CoreWebApi.Data
                     {
                         ClassSectionId = item.ClassSectionId,
                         UserId = item.UserId,
-                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId : 3,
                         DeletionDate = DateTime.Now,
                         DeletedById = _LoggedIn_UserID
                     });

@@ -170,22 +170,22 @@ namespace CoreWebApi.Data
                                         && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
                                         select att).ToList().Count();
                 var CurrentMonthLoggedUserPercentage = CalculatePercentage(UserPresentCount, DaysCount);
-                
+
                 var LoggedUserAttendanceByMonthPercentage = new List<ThisMonthAttendancePercentageDto>();
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
                 foreach (var month in Months)
                 {
 
                     var StartDateByMonth = new DateTime(DateTime.Now.Year, (Array.IndexOf(Months, month) + 1), 1);
-                    var LastDateByMonth = StartDate.AddMonths(1).AddDays(-1);
-                    var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
+                    var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
+                    var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
                     var UserPresentCountByMonth = (from u in _context.Users
                                                    join att in _context.Attendances
                                                    on u.Id equals att.UserId
                                                    where u.UserTypeId == userDetails.UserTypeId
                                                    && u.Id == _LoggedIn_UserID
                                                    && att.Present == true
-                                                   && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
+                                                   && att.CreatedDatetime.Date >= StartDateByMonth.Date && att.CreatedDatetime.Date <= LastDateByMonth.Date
                                                    select att).ToList().Count();
                     LoggedUserAttendanceByMonthPercentage.Add(new ThisMonthAttendancePercentageDto
                     {
