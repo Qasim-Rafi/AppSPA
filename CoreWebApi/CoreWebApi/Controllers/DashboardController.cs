@@ -46,9 +46,9 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpGet("GetThisMonthAttendancePercentage")]
-        public async Task<IActionResult> GetStudentAttendancePercentage()
+        public async Task<IActionResult> GetLoggedUserAttendancePercentage()
         {
-            _response = await _repo.GetStudentAttendancePercentage();
+            _response = await _repo.GetLoggedUserAttendancePercentage();
             return Ok(_response);
         }
     }

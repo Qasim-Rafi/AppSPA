@@ -153,7 +153,7 @@ namespace CoreWebApi.Data
         {
             return decimal.Round((decimal)count / total * 100);
         }
-        public async Task<ServiceResponse<object>> GetStudentAttendancePercentage()
+        public async Task<ServiceResponse<object>> GetLoggedUserAttendancePercentage()
         {
             var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             if (userDetails != null)
@@ -171,7 +171,7 @@ namespace CoreWebApi.Data
                                         select att).ToList().Count();
                 var CurrentMonthLoggedUserPercentage = CalculatePercentage(UserPresentCount, DaysCount);
                 
-                var LoggedUserAttendanceByMonth = new List<ThisMonthAttendancePercentageDto>();
+                var LoggedUserAttendanceByMonthPercentage = new List<ThisMonthAttendancePercentageDto>();
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
                 foreach (var month in Months)
                 {
@@ -187,14 +187,14 @@ namespace CoreWebApi.Data
                                                    && att.Present == true
                                                    && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
                                                    select att).ToList().Count();
-                    LoggedUserAttendanceByMonth.Add(new ThisMonthAttendancePercentageDto
+                    LoggedUserAttendanceByMonthPercentage.Add(new ThisMonthAttendancePercentageDto
                     {
                         MonthName = month,
                         Month = (Array.IndexOf(Months, month) + 1),
                         Percentage = CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth)
                     });
                 }
-                _serviceResponse.Data = new { CurrentMonthLoggedUserPercentage, LoggedUserAttendanceByMonth };
+                _serviceResponse.Data = new { CurrentMonthLoggedUserPercentage, LoggedUserAttendanceByMonthPercentage };
                 _serviceResponse.Success = true;
             }
             return _serviceResponse;
