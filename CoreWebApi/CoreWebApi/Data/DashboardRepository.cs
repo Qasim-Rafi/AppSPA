@@ -98,16 +98,19 @@ namespace CoreWebApi.Data
                     StudentPercentage = ((decimal)PresentStudentCount / StudentCount * 100).ToString("#");
                 if (PresentTeacherCount > 0)
                     TeacherPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
-                
+
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+                
+                // when run an SP set this first -.net core EF
+                _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
                 var param1 = new SqlParameter("@SchoolBranchID", _LoggedIn_BranchID);
                 var param2 = new SqlParameter("@UserTypeId", (int)Enumm.UserType.Student);
                 var StudentMonthWisePercentage = StudentCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
                 StudentMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
 
-                param2.Value = (int)Enumm.UserType.Teacher;
-                var TeacherMonthWisePercentage = TeacherCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param2).ToList() : new List<GetAttendancePercentageByMonthDto>();
+                var param3 = new SqlParameter("@UserTypeId", (int)Enumm.UserType.Teacher);
+                var TeacherMonthWisePercentage = TeacherCount > 0 ? _context.SPGetAttendancePercentageByMonth.FromSqlRaw("EXECUTE GetAttendancePercentageByMonth @SchoolBranchID, @UserTypeId", param1, param3).ToList() : new List<GetAttendancePercentageByMonthDto>();
                 TeacherMonthWisePercentage.ForEach(m => m.MonthName = Months[m.Month - 1]);
 
                 var onlyStudentNames = StudentMonthWisePercentage.Select(m => m.MonthName);

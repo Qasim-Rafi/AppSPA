@@ -364,10 +364,11 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> DeleteClassSectionMapping(int id)
         {
-            var classSection = _context.ClassSections.Where(m => m.Id == id && m.Active == true).FirstOrDefault();
+            var classSection = _context.ClassSections.Where(m => m.Id == id).FirstOrDefault();//&& m.Active == true
             if (classSection != null)
             {
-                _context.ClassSections.Remove(classSection);
+                classSection.Active = false;
+                _context.ClassSections.Update(classSection);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
             }
@@ -458,6 +459,7 @@ namespace CoreWebApi.Data
                     {
                         ClassSectionId = item.ClassSectionId,
                         UserId = item.UserId,
+                        MappedCreationDate = item.CreatedDate,
                         UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId,
                         DeletionDate = DateTime.Now,
                         DeletedById = _LoggedIn_UserID

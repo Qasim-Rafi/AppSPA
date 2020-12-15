@@ -11,12 +11,12 @@ namespace CoreWebApi.Dtos
     }
     public class TimeSlotsForAddDto : BaseDto
     {
-        [Required]
+        //[Required]
         public string StartTime { get; set; }
-        [Required]
+        //[Required]
         public string EndTime { get; set; }
         public bool IsBreak { get; set; }
-        [Required]
+        //[Required]
         public string Day { get; set; }
     }
     public class TimeTableForAddDto
