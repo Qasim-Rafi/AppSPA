@@ -343,6 +343,7 @@ namespace CoreWebApi.Data
                     return serviceResponse;
                 }
                 User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
+                var UserTypes = _context.UserTypes.ToList();
                 if (dbUser != null)
                 {
                     var oldStatus = dbUser.Active;
@@ -358,6 +359,7 @@ namespace CoreWebApi.Data
                     dbUser.Gender = user.Gender;
                     dbUser.Active = user.Active;
                     dbUser.UserTypeId = user.UserTypeId;
+                    dbUser.Role = UserTypes.Where(m => m.Id == user.UserTypeId).FirstOrDefault()?.Name;
 
                     if (!string.IsNullOrEmpty(user.OldPassword))
                     {

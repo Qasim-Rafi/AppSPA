@@ -99,7 +99,7 @@ namespace CoreWebApi.Data
             var obj = await _context.Sections.Where(m => m.Id == id).FirstOrDefaultAsync();
             if (obj != null)
             {
-                var Sections = _context.ClassSections.Where(m => m.SectionId == obj.Id).ToList().Count();
+                var Sections = _context.ClassSections.Where(m => m.SectionId == obj.Id && m.Active == true).ToList().Count();
                 if (Sections > 0)
                 {
                     _serviceResponse.Success = false;
