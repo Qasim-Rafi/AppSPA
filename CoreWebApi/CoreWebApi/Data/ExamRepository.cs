@@ -273,11 +273,15 @@ namespace CoreWebApi.Data
                     quizzes = await (from quiz in _context.Quizzes
                                      join subject in _context.Subjects
                                      on quiz.SubjectId equals subject.Id
+
                                      join classSection in _context.ClassSections
                                      on quiz.ClassSectionId equals classSection.Id
+
                                      join classSectionUser in _context.ClassSectionUsers
                                      on classSection.Id equals classSectionUser.ClassSectionId
+
                                      where classSectionUser.UserId == _LoggedIn_UserID
+                                     && quiz.SchoolBranchId == _LoggedIn_BranchID
                                      && !ids.Contains(quiz.Id)
                                      && subject.Active == true
                                      && classSection.Active == true
@@ -293,8 +297,8 @@ namespace CoreWebApi.Data
                                          SubjectId = quiz.SubjectId,
                                          SubjectName = subject.Name,
                                          ClassSectionId = quiz.ClassSectionId,
-                                         ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
-                                         SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
+                                         ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId && m.Active == true).Name,
+                                         SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId && m.Active == true).SectionName,
                                          QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                      }).ToListAsync();
                 }
@@ -303,12 +307,13 @@ namespace CoreWebApi.Data
                     quizzes = await (from quiz in _context.Quizzes
                                      join subject in _context.Subjects
                                      on quiz.SubjectId equals subject.Id
+
                                      join classSection in _context.ClassSections
                                      on quiz.ClassSectionId equals classSection.Id
-                                     join classSectionUser in _context.ClassSectionUsers
-                                     on classSection.Id equals classSectionUser.ClassSectionId
-                                     where //classSectionUser.UserId == _LoggedIn_UserID
-                                     subject.Active == true
+
+                                     where quiz.CreatedById == _LoggedIn_UserID
+                                     && quiz.SchoolBranchId == _LoggedIn_BranchID
+                                     && subject.Active == true
                                      && classSection.Active == true
                                      orderby quiz.Id descending
                                      select new QuizForListDto
@@ -321,8 +326,8 @@ namespace CoreWebApi.Data
                                          SubjectId = quiz.SubjectId,
                                          SubjectName = subject.Name,
                                          ClassSectionId = quiz.ClassSectionId,
-                                         ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
-                                         SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
+                                         ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId && m.Active == true).Name,
+                                         SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId && m.Active == true).SectionName,
                                          QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                      }).ToListAsync();
                 }
