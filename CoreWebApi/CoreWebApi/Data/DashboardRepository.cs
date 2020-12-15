@@ -98,7 +98,7 @@ namespace CoreWebApi.Data
                     StudentPercentage = ((decimal)PresentStudentCount / StudentCount * 100).ToString("#");
                 if (PresentTeacherCount > 0)
                     TeacherPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
-                //if (StudentCount > 0) { }
+                
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 
                 var param1 = new SqlParameter("@SchoolBranchID", _LoggedIn_BranchID);

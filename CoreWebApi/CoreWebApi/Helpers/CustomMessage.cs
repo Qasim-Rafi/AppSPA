@@ -17,6 +17,7 @@ namespace CoreWebApi.Helpers
         public const string UserAlreadyExist = "User already exist";
         public const string RecordAlreadyExist = "Record already exist";
         public const string ChildRecordExist = "Record can't be deleted, because it's child record(s) exist in another table";
+        public const string RecordRelationExist = "Record can't be deleted, because it's relation exist in another table";
         public const string UserUnAuthorized = "Un-Authorized. Username or Password does not match. Contact your administrator";
         public const string CantExceedLimit = "Can't add records more then specified";
         public const string URDeactivated = "You are de-activated. Contact your administrator";
