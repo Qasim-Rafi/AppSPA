@@ -84,7 +84,7 @@ namespace CoreWebApi.Dtos
         //public string Country { get; set; }
 
         public bool IsPrimaryPhoto { get; set; }
-        //public int UserTypeId { get; set; }
+        public int UserTypeId { get; set; }
         public bool Active { get; set; } = true;
         public string RollNumber { get; set; }
 

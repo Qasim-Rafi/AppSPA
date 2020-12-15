@@ -357,7 +357,8 @@ namespace CoreWebApi.Data
                     dbUser.DateofBirth = DateOfBirth;
                     dbUser.Gender = user.Gender;
                     dbUser.Active = user.Active;
-                    //dbUser.UserTypeId = user.UserTypeId;
+                    dbUser.UserTypeId = user.UserTypeId;
+
                     if (!string.IsNullOrEmpty(user.OldPassword))
                     {
                         if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
@@ -936,9 +937,6 @@ namespace CoreWebApi.Data
                                join cs in _context.ClassSections
                                on csUser.ClassSectionId equals cs.Id
 
-                               join clas in _context.Class
-                               on cs.ClassId equals clas.Id
-
                                join subAssign in _context.SubjectAssignments
                                on cs.ClassId equals subAssign.ClassId
 
@@ -950,7 +948,7 @@ namespace CoreWebApi.Data
                                && user.StateId == model.StateId
                                && subject.Id == model.SubjectId
                                && user.Active == true
-                               && user.UserTypeId == (int)Enumm.UserType.Teacher
+                               && user.UserTypeId == (int)Enumm.UserType.Tutor
                                select new { user, csUser, subject }).Select(o => new TutorForListDto
                                {
                                    Id = o.user.Id,
