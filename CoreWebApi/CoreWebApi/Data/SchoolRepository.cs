@@ -226,10 +226,13 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
 
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException.ToString() ?? ex.Message;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
                 return _serviceResponse;
             }
         }
@@ -237,23 +240,34 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> UpdateTimeTable(int id, TimeTableForAddDto model)
         {
 
-            var ToUpdate = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
-            if (ToUpdate != null)
+            try
             {
-                ToUpdate.LectureId = model.LectureId;
-                ToUpdate.TeacherId = model.TeacherId;
-                _context.ClassLectureAssignment.Update(ToUpdate);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Data = ToUpdate.Id;
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Updated;
-            }
-            else
-            {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = CustomMessage.RecordNotFound;
-            }
+                var ToUpdate = await _context.ClassLectureAssignment.Where(m => m.Id == id).FirstOrDefaultAsync();
+                if (ToUpdate != null)
+                {
+                    ToUpdate.LectureId = model.LectureId;
+                    ToUpdate.TeacherId = model.TeacherId;
+                    _context.ClassLectureAssignment.Update(ToUpdate);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Data = ToUpdate.Id;
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
+                }
+                else
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                }
 
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+            }
 
             //if (ToRemove != null)
             //{
@@ -309,10 +323,13 @@ namespace CoreWebApi.Data
                 _serviceResponse.Message = CustomMessage.Added;
                 return _serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
                 return _serviceResponse;
             }
         }
@@ -403,50 +420,61 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> UpdateEvents(List<EventDayAssignmentForAddDto> model)
         {
 
-
-            List<EventDayAssignment> listToAdd = new List<EventDayAssignment>();
-            foreach (var item in model)
+            try
             {
-                if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
-                {
-                    var dayAssignment = new EventDayAssignment();
-                    dayAssignment.StartDate = Convert.ToDateTime(item.Start);
-                    if (!string.IsNullOrEmpty(item.End))
-                        dayAssignment.EndDate = Convert.ToDateTime(item.End);
-                    else
-                        dayAssignment.EndDate = null;
-                    dayAssignment.EventId = item.EventId;
-                    dayAssignment.AllDay = item.AllDay;
 
-                    listToAdd.Add(dayAssignment);
+                List<EventDayAssignment> listToAdd = new List<EventDayAssignment>();
+                foreach (var item in model)
+                {
+                    if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
+                    {
+                        var dayAssignment = new EventDayAssignment();
+                        dayAssignment.StartDate = Convert.ToDateTime(item.Start);
+                        if (!string.IsNullOrEmpty(item.End))
+                            dayAssignment.EndDate = Convert.ToDateTime(item.End);
+                        else
+                            dayAssignment.EndDate = null;
+                        dayAssignment.EventId = item.EventId;
+                        dayAssignment.AllDay = item.AllDay;
+
+                        listToAdd.Add(dayAssignment);
+                    }
+                    else
+                    {
+                        var ToUpdate = await _context.EventDaysAssignments.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
+
+                        ToUpdate.StartDate = Convert.ToDateTime(item.Start);
+                        if (!string.IsNullOrEmpty(item.End))
+                            ToUpdate.EndDate = Convert.ToDateTime(item.End);
+                        else
+                            ToUpdate.EndDate = null;
+                        ToUpdate.AllDay = item.AllDay;
+
+                        _context.EventDaysAssignments.Update(ToUpdate);
+                        await _context.SaveChangesAsync();
+
+                    }
+                }
+                if (listToAdd.Count > 0)
+                {
+                    await _context.EventDaysAssignments.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Added;
                 }
                 else
                 {
-                    var ToUpdate = await _context.EventDaysAssignments.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
-
-                    ToUpdate.StartDate = Convert.ToDateTime(item.Start);
-                    if (!string.IsNullOrEmpty(item.End))
-                        ToUpdate.EndDate = Convert.ToDateTime(item.End);
-                    else
-                        ToUpdate.EndDate = null;
-                    ToUpdate.AllDay = item.AllDay;
-
-                    _context.EventDaysAssignments.Update(ToUpdate);
-                    await _context.SaveChangesAsync();
-
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
                 }
             }
-            if (listToAdd.Count > 0)
+            catch (DbUpdateException ex)
             {
-                await _context.EventDaysAssignments.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Added;
-            }
-            else
-            {
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Updated;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
             }
             return _serviceResponse;
 

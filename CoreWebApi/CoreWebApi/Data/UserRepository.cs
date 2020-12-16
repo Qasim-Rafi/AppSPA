@@ -320,10 +320,13 @@ namespace CoreWebApi.Data
                 serviceResponse.Message = CustomMessage.Added;
                 return serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                serviceResponse.Success = false;
-                serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
                 return serviceResponse;
             }
         }
@@ -446,10 +449,13 @@ namespace CoreWebApi.Data
 
                 return serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                serviceResponse.Success = false;
-                serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
                 return serviceResponse;
             }
         }

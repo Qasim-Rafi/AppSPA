@@ -199,10 +199,13 @@ namespace CoreWebApi.Data
                 }
                 return _serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
                 return _serviceResponse;
             }
 
@@ -230,14 +233,16 @@ namespace CoreWebApi.Data
 
                 _serviceResponse.Message = CustomMessage.Added;
                 _serviceResponse.Success = true;
-                return _serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return _serviceResponse;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
             }
+            return _serviceResponse;
         }
         public async Task<ServiceResponse<object>> EditSubject(SubjectDtoForEdit subject)
         {
@@ -261,14 +266,16 @@ namespace CoreWebApi.Data
                 }
                 _serviceResponse.Message = CustomMessage.Updated;
                 _serviceResponse.Success = true;
-                return _serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return _serviceResponse;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
             }
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit model)
@@ -316,10 +323,13 @@ namespace CoreWebApi.Data
                     return _serviceResponse;
                 }
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
                 return _serviceResponse;
             }
         }

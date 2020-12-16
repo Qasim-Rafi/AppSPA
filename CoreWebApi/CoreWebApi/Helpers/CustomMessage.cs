@@ -23,5 +23,6 @@ namespace CoreWebApi.Helpers
         public const string URDeactivated = "You are de-activated. Contact your administrator";
         public const string DataNotProvided = "Data not provided. Please fill all the required fields";
         public const string SelectLeastOneTrue = "Please select at least one true answer";
+        public const string SqlDuplicateRecord = "Record already exist in the database";
     }
 }

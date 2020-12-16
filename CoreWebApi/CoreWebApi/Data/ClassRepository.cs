@@ -4,6 +4,7 @@ using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -151,10 +152,13 @@ namespace CoreWebApi.Data
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
             }
             return _serviceResponse;
         }
@@ -189,14 +193,16 @@ namespace CoreWebApi.Data
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.RecordNotFound;
                 }
-                return _serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return _serviceResponse;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
             }
+            return _serviceResponse;
 
         }
         public async Task<ServiceResponse<object>> AddClassSectionUserMapping(ClassSectionUserDtoForAdd classSectionUser)
@@ -219,14 +225,16 @@ namespace CoreWebApi.Data
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
 
-                return _serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return _serviceResponse;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
             }
+            return _serviceResponse;
 
         }
 
@@ -262,14 +270,16 @@ namespace CoreWebApi.Data
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Updated;
 
-                return _serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return _serviceResponse;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
             }
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse<ClassSectionUser>> GetClassSectionUserMappingById(int csId, int userId)
