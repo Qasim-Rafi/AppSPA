@@ -154,111 +154,111 @@ namespace CoreWebApi.Data
             var schoolBranch = context.SchoolBranch.FirstOrDefault();
             if (schoolBranch != null)
             {
-                //
-                if (!context.Class.Any())
-                {
-                    var ClassesJson = JsonConvert.SerializeObject(dataSet.Tables["Classes"]);
-                    var Classes = JsonConvert.DeserializeObject<List<Class>>(ClassesJson);
-                    foreach (var obj in Classes)
-                    {
-                        obj.Active = true;
-                        obj.SchoolBranchId = context.SchoolBranch.First().Id;
-                        obj.CreatedById = context.Users.FirstOrDefault().Id;
-                        context.Class.Add(obj);
-                    }
-                    context.SaveChanges();
-                }
-                //
-                if (!context.Sections.Any())
-                {
-                    var SectionsJson = JsonConvert.SerializeObject(dataSet.Tables["Sections"]);
-                    var Sections = JsonConvert.DeserializeObject<List<Section>>(SectionsJson);
+                ////
+                //if (!context.Class.Any())
+                //{
+                //    var ClassesJson = JsonConvert.SerializeObject(dataSet.Tables["Classes"]);
+                //    var Classes = JsonConvert.DeserializeObject<List<Class>>(ClassesJson);
+                //    foreach (var obj in Classes)
+                //    {
+                //        obj.Active = true;
+                //        obj.SchoolBranchId = context.SchoolBranch.First().Id;
+                //        obj.CreatedById = context.Users.FirstOrDefault().Id;
+                //        context.Class.Add(obj);
+                //    }
+                //    context.SaveChanges();
+                //}
+                ////
+                //if (!context.Sections.Any())
+                //{
+                //    var SectionsJson = JsonConvert.SerializeObject(dataSet.Tables["Sections"]);
+                //    var Sections = JsonConvert.DeserializeObject<List<Section>>(SectionsJson);
 
-                    foreach (var item in Sections)
-                    {
-                        item.CreatedById = context.Users.First().Id;
-                        item.SchoolBranchId = context.SchoolBranch.First().Id;
-                        context.Sections.Add(item);
-                    }
+                //    foreach (var item in Sections)
+                //    {
+                //        item.CreatedById = context.Users.First().Id;
+                //        item.SchoolBranchId = context.SchoolBranch.First().Id;
+                //        context.Sections.Add(item);
+                //    }
 
-                    context.SaveChanges();
-                }
-                //
-                if (!context.Subjects.Any())
-                {
-                    var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
-                    var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
+                //    context.SaveChanges();
+                //}
+                ////
+                //if (!context.Subjects.Any())
+                //{
+                //    var SubjectsJson = JsonConvert.SerializeObject(dataSet.Tables["Subjects"]);
+                //    var Subjects = JsonConvert.DeserializeObject<List<Subject>>(SubjectsJson);
 
-                    foreach (var (item, index) in ReturnIndex(Subjects))
-                    {
-                        item.CreditHours = 3;
-                        item.Active = true;
-                        item.SchoolBranchId = schoolBranch.Id;
-                        context.Subjects.Add(item);
-                    }
+                //    foreach (var (item, index) in ReturnIndex(Subjects))
+                //    {
+                //        item.CreditHours = 3;
+                //        item.Active = true;
+                //        item.SchoolBranchId = schoolBranch.Id;
+                //        context.Subjects.Add(item);
+                //    }
 
-                    context.SaveChanges();
-                }
-                //
-                if (!context.ClassSections.Any())
-                {
-                    var GetClasses = context.Class.Where(m => m.Active == true).ToList();
-                    var GetSections = context.Sections.ToList();
-                    //var schoolBranch = context.SchoolBranch.FirstOrDefault();
+                //    context.SaveChanges();
+                //}
+                ////
+                //if (!context.ClassSections.Any())
+                //{
+                //    var GetClasses = context.Class.Where(m => m.Active == true).ToList();
+                //    var GetSections = context.Sections.ToList();
+                //    //var schoolBranch = context.SchoolBranch.FirstOrDefault();
 
-                    foreach (var obj in GetClasses)
-                    {
-                        foreach (var item in GetSections)
-                        {
-                            var newobj = new ClassSection
-                            {
-                                ClassId = obj.Id,
-                                SectionId = item.Id,
-                                SchoolBranchId = schoolBranch != null ? schoolBranch.Id : 0,
-                                Active = true
-                            };
-                            context.ClassSections.Add(newobj);
-                        }
+                //    foreach (var obj in GetClasses)
+                //    {
+                //        foreach (var item in GetSections)
+                //        {
+                //            var newobj = new ClassSection
+                //            {
+                //                ClassId = obj.Id,
+                //                SectionId = item.Id,
+                //                SchoolBranchId = schoolBranch != null ? schoolBranch.Id : 0,
+                //                Active = true
+                //            };
+                //            context.ClassSections.Add(newobj);
+                //        }
 
-                    }
-                    context.SaveChanges();
-                }
-                //
-                if (!context.ClassSectionUsers.Any())
-                {
-                    var GetClassSection = context.ClassSections.AsEnumerable().First();
-                    var StudentID = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
-                    var TeacherID = context.UserTypes.FirstOrDefault(m => m.Name == "Teacher").Id;
-                    var GetStudentUsers = context.Users.Where(m => m.UserTypeId == StudentID).ToList();
-                    var GetTeacherUsers = context.Users.Where(m => m.UserTypeId == TeacherID).ToList();
-                    //int half = GetClassSections.Count() / 2;
-                    //foreach (var (obj, index) in ReturnIndex(GetClassSections.First()))
-                    //{
-                    //   
-                    foreach (var item in GetStudentUsers)
-                    {
-                        var newobj = new ClassSectionUser
-                        {
-                            ClassSectionId = GetClassSection.Id,
-                            UserId = item.Id,
-                            SchoolBranchId = schoolBranch.Id
-                        };
-                        context.ClassSectionUsers.Add(newobj);
-                    }
+                //    }
+                //    context.SaveChanges();
+                //}
+                ////
+                //if (!context.ClassSectionUsers.Any())
+                //{
+                //    var GetClassSection = context.ClassSections.AsEnumerable().First();
+                //    var StudentID = context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
+                //    var TeacherID = context.UserTypes.FirstOrDefault(m => m.Name == "Teacher").Id;
+                //    var GetStudentUsers = context.Users.Where(m => m.UserTypeId == StudentID).ToList();
+                //    var GetTeacherUsers = context.Users.Where(m => m.UserTypeId == TeacherID).ToList();
+                //    //int half = GetClassSections.Count() / 2;
+                //    //foreach (var (obj, index) in ReturnIndex(GetClassSections.First()))
+                //    //{
+                //    //   
+                //    foreach (var item in GetStudentUsers)
+                //    {
+                //        var newobj = new ClassSectionUser
+                //        {
+                //            ClassSectionId = GetClassSection.Id,
+                //            UserId = item.Id,
+                //            SchoolBranchId = schoolBranch.Id
+                //        };
+                //        context.ClassSectionUsers.Add(newobj);
+                //    }
 
-                    foreach (var item in GetTeacherUsers)
-                    {
-                        var newobj = new ClassSectionUser
-                        {
-                            ClassSectionId = GetClassSection.Id,
-                            UserId = item.Id,
-                            SchoolBranchId = schoolBranch.Id
-                        };
-                        context.ClassSectionUsers.Add(newobj);
-                    }
-                    context.SaveChanges();
-                    //}
-                }
+                //    foreach (var item in GetTeacherUsers)
+                //    {
+                //        var newobj = new ClassSectionUser
+                //        {
+                //            ClassSectionId = GetClassSection.Id,
+                //            UserId = item.Id,
+                //            SchoolBranchId = schoolBranch.Id
+                //        };
+                //        context.ClassSectionUsers.Add(newobj);
+                //    }
+                //    context.SaveChanges();
+                //    //}
+                //}
 
                 //
                 if (!context.Countries.Any())
@@ -294,19 +294,7 @@ namespace CoreWebApi.Data
                     }
                     context.SaveChanges();
                 }
-
-                //
-                //if (!context.SchoolAcademy.Any())
-                //{
-                //    var SchoolAcademiesJson = JsonConvert.SerializeObject(dataSet.Tables["SchoolAcademies"]);
-                //    var SchoolAcademies = JsonConvert.DeserializeObject<List<SchoolAcademy>>(SchoolAcademiesJson);
-                //    foreach (var obj in SchoolAcademies)
-                //    {
-                //        obj.Email = "test@test.com";
-                //        context.SchoolAcademy.Add(obj);
-                //    }
-                //    context.SaveChanges();
-                //}
+              
                 //
                 if (!context.QuestionTypes.Any())
                 {
