@@ -72,6 +72,9 @@ namespace CoreWebApi
                 services.AddScoped<IFilesRepository, FilesRepository>();
                 services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+                IFileProvider physicalProvider = new PhysicalFileProvider(@"D:\Published\VImages");
+                services.AddSingleton<IFileProvider>(physicalProvider);
+
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(optinos =>
                     {
@@ -155,11 +158,17 @@ namespace CoreWebApi
                 app.UseStaticFiles();
                 //if (env.IsDevelopment())
                 //{
-                app.UseStaticFiles(new StaticFileOptions()
+                app.UseFileServer(new FileServerOptions
                 {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles")),
-                    RequestPath = new PathString("/StaticFiles")
+                    FileProvider = new PhysicalFileProvider(@"D:\Published\VImages"),
+                    RequestPath = new PathString("/Images"),
+                    EnableDirectoryBrowsing = false
                 });
+                //app.UseStaticFiles(new StaticFileOptions()
+                //{
+                //    FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles")),
+                //    RequestPath = new PathString("/StaticFiles")
+                //});
                 //}
                 //else if (env.IsProduction())
                 //{

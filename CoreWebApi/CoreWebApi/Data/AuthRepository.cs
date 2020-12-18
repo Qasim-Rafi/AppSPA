@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -270,6 +271,41 @@ namespace CoreWebApi.Data
             else if (await _context.Users.AnyAsync(x => x.Username.ToLower() == userName.ToLower()))
                 return true;
             return false;
+        }
+
+        public async Task<ServiceResponse<object>> UploadFile(UploadFileDto model)
+        {
+            try
+            {
+                //string contentRootPath = _HostEnvironment.ContentRootPath;
+
+                //var pathToSave = Path.Combine(_configuration.GetSection("AppSettings:VirtualURL").Value, "StaticFiles", "Images");
+                var pathToSave = "http://localhost:8000/images";
+
+
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.File.FileName);
+                //var fullPath = Path.Combine(pathToSave);
+                //var dbPath = Path.Combine(pathToSave, fileName); //you can add this path to a list and then return all dbPaths to the client if require
+                //if (!Directory.Exists(fullPath))
+                //{
+                //    //If Directory (Folder) does not exists. Create it.
+                //    //Directory.CreateDirectory(fullPath);
+                //}
+                //var filePath = Path.Combine(pathToSave, fileName);
+                var filePath = @"C:\Users\noor\source\repos\YoutubeService22\YoutubeService22" + "/" + fileName;
+
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+                return _serviceResponse;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

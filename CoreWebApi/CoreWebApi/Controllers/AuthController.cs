@@ -18,6 +18,7 @@ using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoreWebApi.Controllers
@@ -131,6 +132,52 @@ namespace CoreWebApi.Controllers
             var bytes = Convert.FromBase64String(getFile.Url);
             return File(bytes, GetContentType(getFile.Name));
         }
+        [HttpPost("UploadFile")]
+        public async Task<IActionResult> UploadFile([FromForm] UploadFileDto model)
+        {
+            _response = await _repo.UploadFile(model);
+            return Ok(_response);
+        }
+        [HttpGet("GetFile/{fileName}")]
+        public IActionResult GetFiles([FromServices] IFileProvider fileProvider, [FromQuery] string fileName)
+        {
+            var file = fileProvider.GetFileInfo(fileName);
+            if (file.Exists)
+            {
+                var result = ReadTxtContent(file.PhysicalPath, fileName);
+                if (result == null)
+                    return NotFound();
+            }
+            return NotFound();
+        }
+        /// 
+        ///Read text (original address: https://www.cnblogs.com/EminemJK/p/13362368.html )
+        /// 
+        [NonAction]
+        private FileStreamResult ReadTxtContent(string Path, string fileName)
+        {
+            if (!System.IO.File.Exists(Path))
+            {
+                return null;
+            }
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(Path, FileMode.Open))
+            {
+                stream.CopyTo(memory);
+            }
+            memory.Position = 0;
+            return File(memory, GetContentType(Path), fileName);
+            //using (StreamReader sr = new StreamReader(Path, Encoding.UTF8))
+            //{
+            //    StringBuilder sb = new StringBuilder();
+            //    string content;
+            //    while ((content = sr.ReadLine()) != null)
+            //    {
+            //        sb.Append(content);
+            //    }
+            //    return sb.ToString();
+            //}
+        }       
         [NonAction]
         private string GetContentType(string path)
         {

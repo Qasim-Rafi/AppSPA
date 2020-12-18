@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+
 
 namespace CoreWebApi.Data
 {
@@ -100,7 +102,7 @@ namespace CoreWebApi.Data
                     TeacherPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
 
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
-                
+
                 // when run an SP set this first -.net core EF
                 _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
@@ -203,5 +205,59 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
+
+       
+      
+
+        public object GetTeacherStudentDashboardCounts()
+        {
+            int AssignmentCount = 0;
+            int QuizCount = 0;
+            int ResultCount = 0;
+            var LoggedUser = _context.Users.Where(m => m.Id == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
+            if (LoggedUser != null)
+            {
+                if (LoggedUser.UserTypeId == (int)Enumm.UserType.Teacher)
+                {
+                    AssignmentCount = (from assignment in _context.Assignments
+                                       where assignment.CreatedById == _LoggedIn_UserID
+                                       && assignment.SchoolBranchId == _LoggedIn_BranchID
+                                       select assignment).ToList().Count();
+
+                    QuizCount = (from quiz in _context.Quizzes
+                                 where quiz.CreatedById == _LoggedIn_UserID
+                                 && quiz.SchoolBranchId == _LoggedIn_BranchID
+                                 select quiz).ToList().Count();
+                }
+                else if (LoggedUser.UserTypeId == (int)Enumm.UserType.Student)
+                {
+                    AssignmentCount = (from assignment in _context.Assignments
+                                       join cs in _context.ClassSections
+                                       on assignment.ClassSectionId equals cs.Id
+                                       join csUser in _context.ClassSectionUsers
+                                       on cs.Id equals csUser.ClassSectionId
+                                       where csUser.UserId == _LoggedIn_UserID
+                                       && assignment.SchoolBranchId == _LoggedIn_BranchID
+                                       select assignment).ToList().Count();
+
+                    QuizCount = (from quiz in _context.Quizzes
+                                 join cs in _context.ClassSections
+                                 on quiz.ClassSectionId equals cs.Id
+                                 join csUser in _context.ClassSectionUsers
+                                 on cs.Id equals csUser.ClassSectionId
+                                 where csUser.UserId == _LoggedIn_UserID
+                                 && quiz.SchoolBranchId == _LoggedIn_BranchID
+                                 select quiz).ToList().Count();
+                }
+            }
+            return new
+            {
+                AssignmentCount,
+                QuizCount,
+                ResultCount,
+            };
+        }
+
+
     }
 }

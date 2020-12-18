@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Data;
+using CoreWebApi.Dtos;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 
 namespace CoreWebApi.Controllers
 {
@@ -36,6 +40,15 @@ namespace CoreWebApi.Controllers
             return Ok(result);
 
         }
+        [HttpGet("GetTeacherStudentDashboardCounts")]
+        public async Task<IActionResult> GetTeacherStudentDashboardCounts()
+        {
+            var result = _repo.GetTeacherStudentDashboardCounts();
+
+            return Ok(result);
+
+        }
+
         [HttpGet("GetAttendancePercentage")]
         public async Task<IActionResult> GetAttendancePercentage()
         {
@@ -51,5 +64,6 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetLoggedUserAttendancePercentage();
             return Ok(_response);
         }
+        
     }
 }

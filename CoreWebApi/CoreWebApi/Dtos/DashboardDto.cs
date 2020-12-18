@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,6 +20,9 @@ namespace CoreWebApi.Dtos
         public string MonthName { get; set; } = "";
         public int MonthNumber { get; set; }
         public double Percentage { get; set; }
+    }   
+    public class UploadFileDto
+    {
+        public IFormFile File { get; set; }
     }
-
 }
