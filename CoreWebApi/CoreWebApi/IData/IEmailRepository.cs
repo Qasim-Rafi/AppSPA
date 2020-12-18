@@ -7,6 +7,6 @@ namespace CoreWebApi.IData
 {
     public interface IEmailRepository
     {
-        void Send(string from, string to, string subject, string html);
+        bool Send(string from, string to, string subject, string html);
     }
 }

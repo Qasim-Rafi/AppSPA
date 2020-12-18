@@ -72,10 +72,12 @@ namespace CoreWebApi
                 services.AddScoped<IFilesRepository, FilesRepository>();
                 services.AddScoped<IEmailRepository, EmailRepository>();
                 services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
                 var EmailMetadata = Configuration.GetSection("EmailSettings").Get<EmailSettings>();
                 services.AddSingleton(EmailMetadata);
-                //IFileProvider physicalProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value);//(@"D:\Published\VImages");
-                //services.AddSingleton<IFileProvider>(physicalProvider);
+
+                IFileProvider physicalProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value);//(@"D:\Published\VImages");
+                services.AddSingleton<IFileProvider>(physicalProvider);
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(optinos =>
@@ -157,20 +159,20 @@ namespace CoreWebApi
                 //app.UseHttpsRedirection();
                 app.UseAuthentication();
 
-                app.UseStaticFiles();
+                //app.UseStaticFiles();
                 //if (env.IsDevelopment())
                 //{
-                //app.UseFileServer(new FileServerOptions
-                //{
-                //    FileProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value),//(@"D:\Published\VImages"),
-                //    RequestPath = new PathString("/Images"),
-                //    EnableDirectoryBrowsing = false
-                //});
-                app.UseStaticFiles(new StaticFileOptions()
+                app.UseFileServer(new FileServerOptions
                 {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles")),
-                    RequestPath = new PathString("/StaticFiles")
+                    FileProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value),//(@"D:\Published\VImages"),
+                    RequestPath = new PathString("/Images"),
+                    EnableDirectoryBrowsing = false
                 });
+                //app.UseStaticFiles(new StaticFileOptions()
+                //{
+                //    FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles")),
+                //    RequestPath = new PathString("/StaticFiles")
+                //});
                 //}
                 //else if (env.IsProduction())
                 //{
