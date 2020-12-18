@@ -31,10 +31,10 @@ namespace CoreWebApi
                 if (isDevelopment)
                 {
                     //Seed.SeedSchoolAcademy(context);
-                    Seed.SeedUserTypes(context);
+                    //Seed.SeedUserTypes(context);
                     //.SeedUsers(context);
-                    Seed.SeedLeaveTypes(context);
-                    Seed.SeedGenericData(context);
+                    //Seed.SeedLeaveTypes(context);
+                    //Seed.SeedGenericData(context);
                 }
             }
 

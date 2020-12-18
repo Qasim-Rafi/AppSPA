@@ -72,8 +72,9 @@ namespace CoreWebApi
                 services.AddScoped<IFilesRepository, FilesRepository>();
                 services.AddScoped<IEmailRepository, EmailRepository>();
                 services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-                //IFileProvider physicalProvider = new PhysicalFileProvider(@"D:\Published\VImages");
+                var EmailMetadata = Configuration.GetSection("EmailSettings").Get<EmailSettings>();
+                services.AddSingleton(EmailMetadata);
+                //IFileProvider physicalProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value);//(@"D:\Published\VImages");
                 //services.AddSingleton<IFileProvider>(physicalProvider);
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -161,7 +162,7 @@ namespace CoreWebApi
                 //{
                 //app.UseFileServer(new FileServerOptions
                 //{
-                //    FileProvider = new PhysicalFileProvider(@"D:\Published\VImages"),
+                //    FileProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value),//(@"D:\Published\VImages"),
                 //    RequestPath = new PathString("/Images"),
                 //    EnableDirectoryBrowsing = false
                 //});

@@ -1,4 +1,5 @@
-﻿using CoreWebApi.IData;
+﻿using CoreWebApi.Helpers;
+using CoreWebApi.IData;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
@@ -11,10 +12,12 @@ namespace CoreWebApi.Data
     public class EmailRepository : IEmailRepository
     {
         private readonly IConfiguration _configuration;
+        private readonly EmailSettings _emailSettings;
 
-        public EmailRepository(IConfiguration configuration)
+        public EmailRepository(IConfiguration configuration, EmailSettings emailSettings)
         {
             _configuration = configuration;
+            _emailSettings = emailSettings;
         }
 
         public void Send(string from, string to, string subject, string html)

@@ -6,6 +6,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using MimeKit;
 using MimeKit.Text;
 using System;
@@ -21,18 +22,21 @@ namespace CoreWebApi.Data
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext _context;
+        private readonly IConfiguration _configuration;
         ServiceResponse<object> _serviceResponse;
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
-
-        public AuthRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly EmailSettings _emailSettings;
+        public AuthRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, EmailSettings emailSettings)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _configuration = configuration;
+            _emailSettings = emailSettings;
         }
 
         public async Task<User> Login(string username, string password, int schoolBranchId)
@@ -283,7 +287,7 @@ namespace CoreWebApi.Data
             {
                 //string contentRootPath = _HostEnvironment.ContentRootPath;
 
-                //var pathToSave = Path.Combine(_configuration.GetSection("AppSettings:VirtualURL").Value, "StaticFiles", "Images");
+
                 var pathToSave = "http://localhost:8000/images";
 
 
@@ -296,7 +300,7 @@ namespace CoreWebApi.Data
                 //    //Directory.CreateDirectory(fullPath);
                 //}
                 //var filePath = Path.Combine(pathToSave, fileName);
-                var filePath = @"C:\Users\noor\source\repos\YoutubeService22\YoutubeService22" + "/" + fileName;
+                var filePath = _configuration.GetSection("AppSettings:VirtualDirectoryPath").Value + "/" + fileName;
 
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -319,7 +323,7 @@ namespace CoreWebApi.Data
             {
                 // create email message
                 var email = new MimeMessage();
-                email.From.Add(MailboxAddress.Parse("ijaztufail7@gmail.com"));
+                email.From.Add(MailboxAddress.Parse(_emailSettings.Sender));
                 email.To.Add(MailboxAddress.Parse(user.Email));
                 email.Subject = "Forgot Password?";
                 email.Body = new TextPart(TextFormat.Html) { Text = @"<h1>You have requested forgot password.</h1> The Link is http://localhost:4200/forgotpassword" };
@@ -327,9 +331,9 @@ namespace CoreWebApi.Data
                 // send email
                 using var smtp = new SmtpClient();
                 // gmail
-                smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);                
+                smtp.Connect(_emailSettings.SmtpServer, _emailSettings.Port, SecureSocketOptions.StartTls);     //587           
                 //smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
-                smtp.Authenticate("ijaztufail7@gmail.com", "G01110001");
+                smtp.Authenticate(_emailSettings.UserName, _emailSettings.Password);
                 await smtp.SendAsync(email);
                 await smtp.DisconnectAsync(true);
 
