@@ -125,6 +125,35 @@ namespace CoreWebApi.Controllers
 
 
         }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+           
+            _response = await _repo.ForgotPassword(model);
+
+            return Ok(_response);
+
+        }
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+           
+            _response = await _repo.ResetPassword(model);
+
+            return Ok(_response);
+
+        }
         [HttpGet("DownloadFile/{fileName}")]
         public IActionResult Download(string fileName)
         {

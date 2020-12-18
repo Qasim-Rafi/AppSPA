@@ -24,5 +24,6 @@ namespace CoreWebApi.Helpers
         public const string DataNotProvided = "Data not provided. Please fill all the required fields";
         public const string SelectLeastOneTrue = "Please select at least one true answer";
         public const string SqlDuplicateRecord = "Record already exist in the database";
+        public const string ResetPasswordReqSent = "Reset Password email sent at your given email address";
     }
 }

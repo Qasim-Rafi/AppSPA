@@ -206,14 +206,15 @@ namespace CoreWebApi.Data
 
         }
 
-       
-      
+
+
 
         public object GetTeacherStudentDashboardCounts()
         {
             int AssignmentCount = 0;
             int QuizCount = 0;
             int ResultCount = 0;
+            int SubjectCount = 0;
             var LoggedUser = _context.Users.Where(m => m.Id == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
             if (LoggedUser != null)
             {
@@ -228,6 +229,19 @@ namespace CoreWebApi.Data
                                  where quiz.CreatedById == _LoggedIn_UserID
                                  && quiz.SchoolBranchId == _LoggedIn_BranchID
                                  select quiz).ToList().Count();
+
+                    SubjectCount = (from subject in _context.Subjects
+                                    join subjectAssign in _context.SubjectAssignments
+                                    on subject.Id equals subjectAssign.SubjectId
+                                    join classs in _context.Class
+                                    on subjectAssign.ClassId equals classs.Id
+                                    join cs in _context.ClassSections
+                                    on classs.Id equals cs.ClassId
+                                    join csUser in _context.ClassSectionUsers
+                                    on cs.Id equals csUser.ClassSectionId
+                                    where csUser.UserId == _LoggedIn_UserID
+                                    && csUser.SchoolBranchId == _LoggedIn_BranchID                                   
+                                    select subject).ToList().Count();
                 }
                 else if (LoggedUser.UserTypeId == (int)Enumm.UserType.Student)
                 {
@@ -255,6 +269,7 @@ namespace CoreWebApi.Data
                 AssignmentCount,
                 QuizCount,
                 ResultCount,
+                SubjectCount,
             };
         }
 

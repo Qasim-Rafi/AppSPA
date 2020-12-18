@@ -10,6 +10,8 @@ namespace CoreWebApi.IData
    public interface IAuthRepository
     {
         Task<ServiceResponse<object>> Register(UserForRegisterDto user, string regNo);
+        Task<ServiceResponse<object>> ForgotPassword(ForgotPasswordDto user);
+        Task<ServiceResponse<object>> ResetPassword(ResetPasswordDto model);
 
         Task<User> Login(string username, string password, int schoolBranchId);
         Task<object> GetSchoolDetails(string regNo, int branchId);

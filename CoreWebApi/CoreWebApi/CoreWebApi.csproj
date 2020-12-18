@@ -112,11 +112,14 @@
     <Compile Remove="Migrations\20201210113450_addCSCompPK.Designer.cs" />
     <Compile Remove="Migrations\20201211112234_updateQuizSubaddIsCorrect.cs" />
     <Compile Remove="Migrations\20201211112234_updateQuizSubaddIsCorrect.Designer.cs" />
+    <Compile Remove="Migrations\20201218114218_test.cs" />
+    <Compile Remove="Migrations\20201218114218_test.Designer.cs" />
 
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="MailKit" Version="2.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />

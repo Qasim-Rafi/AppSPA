@@ -2,8 +2,12 @@
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
+using MimeKit.Text;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -305,6 +309,63 @@ namespace CoreWebApi.Data
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> ForgotPassword(ForgotPasswordDto user)
+        {
+            var User = _context.Users.Where(m => m.Email == user.Email && m.Active == true).FirstOrDefault();
+            if (User != null)
+            {
+                // create email message
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse("ijaztufail7@gmail.com"));
+                email.To.Add(MailboxAddress.Parse(user.Email));
+                email.Subject = "Forgot Password?";
+                email.Body = new TextPart(TextFormat.Html) { Text = @"<h1>You have requested forgot password.</h1> The Link is http://localhost:4200/forgotpassword" };
+
+                // send email
+                using var smtp = new SmtpClient();
+                // gmail
+                smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);                
+                //smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate("ijaztufail7@gmail.com", "G01110001");
+                await smtp.SendAsync(email);
+                await smtp.DisconnectAsync(true);
+
+                _serviceResponse.Message = CustomMessage.ResetPasswordReqSent;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            else
+            {
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> ResetPassword(ResetPasswordDto model)
+        {
+            var User = _context.Users.Where(m => m.Email == model.Email && m.Active == true).FirstOrDefault();
+            if (User != null)
+            {
+                byte[] passwordHash, passwordSalt;
+                Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
+                User.PasswordHash = passwordHash;
+                User.PasswordSalt = passwordSalt;
+                _context.Users.Update(User);
+                await _context.SaveChangesAsync();
+
+                _serviceResponse.Message = CustomMessage.Updated;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            else
+            {
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Success = false;
+                return _serviceResponse;
             }
         }
     }
