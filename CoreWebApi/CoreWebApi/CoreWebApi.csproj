@@ -139,6 +139,7 @@
 
   <ItemGroup>
     <Folder Include="Error\" />
+    <Folder Include="SchoolDocuments\" />
     <Folder Include="wwwroot\StaticFiles\" />
     <Folder Include="wwwroot\StaticFiles\Images\" />
   </ItemGroup>

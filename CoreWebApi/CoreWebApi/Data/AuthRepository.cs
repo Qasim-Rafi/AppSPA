@@ -4,6 +4,7 @@ using CoreWebApi.IData;
 using CoreWebApi.Models;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +29,8 @@ namespace CoreWebApi.Data
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
         private readonly EmailSettings _emailSettings;
-        public AuthRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, EmailSettings emailSettings)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public AuthRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, EmailSettings emailSettings, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
@@ -37,6 +39,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _configuration = configuration;
             _emailSettings = emailSettings;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<User> Login(string username, string password, int schoolBranchId)
@@ -300,7 +303,8 @@ namespace CoreWebApi.Data
                 //    //Directory.CreateDirectory(fullPath);
                 //}
                 //var filePath = Path.Combine(pathToSave, fileName);
-                var filePath = _configuration.GetSection("AppSettings:VirtualDirectoryPath").Value + "/" + fileName;
+                string contentRootPath = _webHostEnvironment.ContentRootPath;
+                var filePath = Path.Combine(contentRootPath, "SchoolDocuments", fileName);
 
 
                 using (var stream = new FileStream(filePath, FileMode.Create))

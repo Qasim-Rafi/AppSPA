@@ -20,27 +20,28 @@ namespace CoreWebApi.Controllers
     {
         private readonly IAssignmentRepository _repo;
         private readonly IMapper _mapper;
+        ServiceResponse<object> _response;
         public AssignmentsController(IAssignmentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
+            _response = new ServiceResponse<object>();
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAssignmentes()
         {
-            var ToReturn = await _repo.GetAssignments();
+            _response = await _repo.GetAssignments();
 
-            return Ok(ToReturn);
+            return Ok(_response);
 
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAssignment(int id)
         {
-            var assignment = await _repo.GetAssignment(id);
-            var ToReturn = _mapper.Map<AssignmentDtoForDetail>(assignment);
-            return Ok(ToReturn);
+            _response = await _repo.GetAssignment(id);
+            return Ok(_response);
         }
         [HttpPost("Add")]
         public async Task<IActionResult> Post([FromForm] AssignmentDtoForAdd assignment)
@@ -54,9 +55,9 @@ namespace CoreWebApi.Controllers
             //    return BadRequest(new { message = "Assignment Already Exist" });
 
 
-            var createdObj = await _repo.AddAssignment(assignment);
+            _response = await _repo.AddAssignment(assignment);
 
-            return StatusCode(StatusCodes.Status201Created);
+            return Ok(_response);
 
         }
         [HttpPut("{id}")]
@@ -68,10 +69,10 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-           
-            var updatedObj = await _repo.EditAssignment(id, assignment);
 
-            return StatusCode(StatusCodes.Status200OK);
+            _response = await _repo.EditAssignment(id, assignment);
+
+                        return Ok(_response);
 
         }
     }

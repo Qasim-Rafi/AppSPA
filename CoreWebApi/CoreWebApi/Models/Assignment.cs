@@ -17,6 +17,7 @@ namespace CoreWebApi.Models
         public string Details { get; set; }
         public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }
+        public string ReferenceUrl { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
         public string TeacherName { get; set; }

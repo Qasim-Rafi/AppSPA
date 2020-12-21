@@ -78,7 +78,7 @@ namespace CoreWebApi
                 var EmailMetadata = Configuration.GetSection("EmailSettings").Get<EmailSettings>();
                 services.AddSingleton(EmailMetadata);
 
-                IFileProvider physicalProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value);//(@"D:\Published\VImages");
+                IFileProvider physicalProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.ContentRootPath, "SchoolDocuments"));//(@"D:\Published\VImages");
                 services.AddSingleton<IFileProvider>(physicalProvider);
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -164,12 +164,12 @@ namespace CoreWebApi
                 //app.UseStaticFiles();
                 //if (env.IsDevelopment())
                 //{
-                app.UseFileServer(new FileServerOptions
-                {
-                    FileProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value),//(@"D:\Published\VImages"),
-                    RequestPath = new PathString("/Images"),
-                    EnableDirectoryBrowsing = false
-                });
+                //app.UseFileServer(new FileServerOptions
+                //{
+                //    FileProvider = new PhysicalFileProvider(Configuration.GetSection("AppSettings").GetSection("VirtualDirectoryPath").Value),//(@"D:\Published\VImages"),
+                //    RequestPath = new PathString("/Images"),
+                //    EnableDirectoryBrowsing = false
+                //});
                 //app.UseStaticFiles(new StaticFileOptions()
                 //{
                 //    FileProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.WebRootPath, "StaticFiles")),

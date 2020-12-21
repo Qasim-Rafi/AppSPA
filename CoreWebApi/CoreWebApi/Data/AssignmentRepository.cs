@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Dtos;
+﻿using AutoMapper;
+using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
@@ -21,13 +22,17 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
-        public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor)
+        private readonly IMapper _mapper;
+        ServiceResponse<object> _serviceResponse;
+        public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _context = context;
             _HostEnvironment = HostEnvironment;
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
+            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _mapper = mapper;
+            _serviceResponse = new ServiceResponse<object>();
         }
         public async Task<bool> AssignmentExists(string name)
         {
@@ -35,27 +40,42 @@ namespace CoreWebApi.Data
                 return true;
             return false;
         }
-        public async Task<Assignment> GetAssignment(int id)
+        public async Task<ServiceResponse<object>> GetAssignment(int id)
         {
-            var assignment = await _context.Assignments.FirstOrDefaultAsync(u => u.Id == id);
-            return assignment;
-        }
-
-        public async Task<object> GetAssignments()
-        {
-            var assignments = await _context.Assignments.Include(m => m.ClassSection).ToListAsync();
-            var ToReturn = assignments.Select(o => new AssignmentDtoForList
+            var assignment = await _context.Assignments.Select(o => new AssignmentDtoForList
             {
                 Id = o.Id,
                 AssignmentName = o.AssignmentName,
-                ClassSection = _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId)?.Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId)?.SectionName,
+                ClassSectionId = o.ClassSectionId,
+                ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
                 RelatedMaterial = o.RelatedMaterial,
                 Details = o.Details,
-
-            }).ToList();
-            return ToReturn;
+                ReferenceUrl = o.ReferenceUrl,
+            }).FirstOrDefaultAsync(u => u.Id == id);
+            var ToReturn = _mapper.Map<AssignmentDtoForDetail>(assignment);
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
-        public async Task<Assignment> AddAssignment(AssignmentDtoForAdd assignment)
+
+        public async Task<ServiceResponse<object>> GetAssignments()
+        {
+            var ToReturn = await _context.Assignments.Include(m => m.ClassSection).Select(o => new AssignmentDtoForList
+            {
+                Id = o.Id,
+                AssignmentName = o.AssignmentName,
+                ClassSectionId = o.ClassSectionId,
+                ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
+                RelatedMaterial = o.RelatedMaterial,
+                Details = o.Details,
+                ReferenceUrl = o.ReferenceUrl,
+            }).ToListAsync();
+            
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse; ;
+        }
+        public async Task<ServiceResponse<object>> AddAssignment(AssignmentDtoForAdd assignment)
         {
 
             var objToCreate = new Assignment
@@ -66,9 +86,9 @@ namespace CoreWebApi.Data
                 Details = assignment.Details,
                 TeacherName = assignment.TeacherName,
                 ClassSectionId = assignment.ClassSectionId,
+                ReferenceUrl = assignment.ReferenceUrl,
                 SchoolBranchId = _LoggedIn_BranchID
             };
-
 
             if (assignment.files != null && assignment.files.Count() > 0)
             {
@@ -97,10 +117,12 @@ namespace CoreWebApi.Data
             }
             await _context.Assignments.AddAsync(objToCreate);
             await _context.SaveChangesAsync();
-            return objToCreate;
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
 
         }
-        public async Task<Assignment> EditAssignment(int id, AssignmentDtoForEdit assignment)
+        public async Task<ServiceResponse<object>> EditAssignment(int id, AssignmentDtoForEdit assignment)
         {
 
 
@@ -110,10 +132,9 @@ namespace CoreWebApi.Data
                 dbObj.AssignmentName = assignment.AssignmentName;
                 dbObj.Details = assignment.Details;
                 dbObj.ClassSectionId = assignment.ClassSectionId;
-                //dbObj.TeacherName = assignment.TeacherName;
+                dbObj.ReferenceUrl = assignment.ReferenceUrl;
 
-                // _context.Assignments.Attach(assignment);
-                // _context.Entry(assignment).State = EntityState.Modified;
+
                 if (assignment.files != null && assignment.files.Count() > 0)
                 {
 
@@ -142,7 +163,9 @@ namespace CoreWebApi.Data
                 _context.Assignments.Update(dbObj);
                 await _context.SaveChangesAsync();
             }
-            return dbObj;
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Updated;
+            return _serviceResponse;
 
         }
     }

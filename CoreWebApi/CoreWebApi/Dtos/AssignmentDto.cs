@@ -20,6 +20,7 @@ namespace CoreWebApi.Dtos
         public string Details { get; set; }
         //public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }        
+        public string ReferenceUrl { get; set; }
         public string TeacherName { get; set; }
         public IFormFileCollection files { get; set; }
 
@@ -33,6 +34,7 @@ namespace CoreWebApi.Dtos
         public string Details { get; set; }
         //public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }
+        public string ReferenceUrl { get; set; }
         public string TeacherName { get; set; }
         public IFormFileCollection files { get; set; }
 
@@ -43,6 +45,7 @@ namespace CoreWebApi.Dtos
         public string AssignmentName { get; set; }
         public string Details { get; set; }
         public string RelatedMaterial { get; set; }
+        public string ReferenceUrl { get; set; }
         public int ClassSectionId { get; set; }
         public string ClassSection { get; set; }
         public string TeacherName { get; set; }
@@ -54,6 +57,7 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public string AssignmentName { get; set; }
         public string Details { get; set; }
+        public string ReferenceUrl { get; set; }
         public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }
         public string ClassSection { get; set; }
