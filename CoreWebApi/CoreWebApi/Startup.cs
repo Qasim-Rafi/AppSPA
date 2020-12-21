@@ -25,6 +25,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace CoreWebApi
 {
@@ -72,6 +73,7 @@ namespace CoreWebApi
                 services.AddScoped<IFilesRepository, FilesRepository>();
                 services.AddScoped<IEmailRepository, EmailRepository>();
                 services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
                 var EmailMetadata = Configuration.GetSection("EmailSettings").Get<EmailSettings>();
                 services.AddSingleton(EmailMetadata);

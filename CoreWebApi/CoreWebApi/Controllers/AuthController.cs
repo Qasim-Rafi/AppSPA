@@ -15,8 +15,11 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -29,17 +32,23 @@ namespace CoreWebApi.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
+        private IFileProvider _fileProvider;
+        private IUrlHelperFactory _urlHelper;
+        private IActionContextAccessor _actionContextAccessor;
         ServiceResponse<object> _response;
         private readonly DataContext _context;
 
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IHttpContextAccessor httpContextAccessor, DataContext context)
+        public AuthController(IAuthRepository repo, IConfiguration config, IHttpContextAccessor httpContextAccessor, DataContext context, IUrlHelperFactory urlHelper, IActionContextAccessor actionContextAccessor, IFileProvider fileProvider)
             : base(httpContextAccessor)
         {
             _config = config;
             _repo = repo;
             _response = new ServiceResponse<object>();
             _context = context;
+            _urlHelper = urlHelper;
+            _actionContextAccessor = actionContextAccessor;
+            _fileProvider = fileProvider;
         }
 
         [HttpPost("register")]
@@ -75,7 +84,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password, userForLoginDto.SchoolName1);
 
             if (userFromRepo == null)
@@ -134,7 +143,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-           
+
             _response = await _repo.ForgotPassword(model);
 
             return Ok(_response);
@@ -148,7 +157,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-           
+
             _response = await _repo.ResetPassword(model);
 
             return Ok(_response);
@@ -165,17 +174,21 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> UploadFile([FromForm] UploadFileDto model)
         {
             _response = await _repo.UploadFile(model);
+
             return Ok(_response);
         }
         [HttpGet("GetFile/{fileName}")]
-        public IActionResult GetFiles([FromServices] IFileProvider fileProvider, [FromQuery] string fileName)
+        public IActionResult GetFiles(string fileName)
         {
-            var file = fileProvider.GetFileInfo(fileName);
+            //var test = _urlHelper.GetUrlHelper(_actionContextAccessor.ActionContext);
+            //string virtualDirectory = test.Content("http://localhost/VImages/");
+            var file = _fileProvider.GetFileInfo(fileName);
             if (file.Exists)
             {
                 var result = ReadTxtContent(file.PhysicalPath, fileName);
                 if (result == null)
                     return NotFound();
+                return result;
             }
             return NotFound();
         }
@@ -206,7 +219,7 @@ namespace CoreWebApi.Controllers
             //    }
             //    return sb.ToString();
             //}
-        }       
+        }
         [NonAction]
         private string GetContentType(string path)
         {
