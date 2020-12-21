@@ -50,7 +50,7 @@ namespace CoreWebApi.Data
                 AssignmentName = o.AssignmentName,
                 ClassSectionId = o.ClassSectionId,
                 ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
-                RelatedMaterial = o.RelatedMaterial,
+                RelatedMaterial = _filesRepository.AppendDocPath(o.RelatedMaterial),
                 Details = o.Details,
                 ReferenceUrl = o.ReferenceUrl,
             }).FirstOrDefaultAsync(u => u.Id == id);
@@ -67,11 +67,11 @@ namespace CoreWebApi.Data
                 AssignmentName = o.AssignmentName,
                 ClassSectionId = o.ClassSectionId,
                 ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
-                RelatedMaterial = o.RelatedMaterial,
+                RelatedMaterial = _filesRepository.AppendDocPath(o.RelatedMaterial),
                 Details = o.Details,
                 ReferenceUrl = o.ReferenceUrl,
             }).ToListAsync();
-            
+
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse; ;
@@ -92,7 +92,7 @@ namespace CoreWebApi.Data
             };
 
             if (assignment.files != null && assignment.files.Count() > 0)
-            {              
+            {
                 for (int i = 0; i < assignment.files.Count(); i++)
                 {
                     var dbPath = _filesRepository.SaveFile(assignment.files[i]);

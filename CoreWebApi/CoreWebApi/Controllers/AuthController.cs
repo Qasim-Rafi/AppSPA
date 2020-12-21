@@ -170,22 +170,22 @@ namespace CoreWebApi.Controllers
             var bytes = Convert.FromBase64String(getFile.Url);
             return File(bytes, GetContentType(getFile.Name));
         }
-        [HttpPost("UploadFile")]
-        public async Task<IActionResult> UploadFile([FromForm] UploadFileDto model)
-        {
-            _response = await _repo.UploadFile(model);
+        //[HttpPost("UploadFile"), NonAction]
+        //public async Task<IActionResult> UploadFile([FromForm] UploadFileDto model)
+        //{
+        //    _response = await _repo.UploadFile(model);
 
-            return Ok(_response);
-        }
-        [HttpGet("GetFile/{fileName}")]
-        public IActionResult GetFiles(string fileName)
+        //    return Ok(_response);
+        //}
+        [HttpGet("GetFile/{docName}")]
+        public IActionResult GetFiles(string docName)
         {
             //var test = _urlHelper.GetUrlHelper(_actionContextAccessor.ActionContext);
             //string virtualDirectory = test.Content("http://localhost/VImages/");
-            var file = _fileProvider.GetFileInfo(fileName);
+            var file = _fileProvider.GetFileInfo(docName);
             if (file.Exists)
             {
-                var result = ReadTxtContent(file.PhysicalPath, fileName);
+                var result = ReadTxtContent(file.PhysicalPath, docName);
                 if (result == null)
                     return NotFound();
                 return result;

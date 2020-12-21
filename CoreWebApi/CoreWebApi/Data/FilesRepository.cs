@@ -91,6 +91,26 @@ namespace CoreWebApi.Data
                 throw ex;
             }
         }
+        public string AppendDocPath(string docName)
+        {
+            if (docName == null)
+            {
+                return null;
+            }
+            string virtualUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}";
 
+            //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
+            //string contentRootPath = _HostEnvironment.WebRootPath;
+            //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var isDevelopment = environment == Environments.Development;
+            string path;
+            if (isDevelopment)
+                path = $"{ virtualUrl }/api/Auth/GetFile/{ docName }";
+            else
+                path = $"{ virtualUrl }/webAPI/api/Auth/GetFile/{ docName }";
+
+            return path;
+        }
     }
 }
