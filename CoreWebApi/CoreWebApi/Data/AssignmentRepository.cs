@@ -42,7 +42,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetAssignment(int id)
         {
-            var assignment = await _context.Assignments.Select(o => new AssignmentDtoForList
+            var assignment = await _context.Assignments.Select(o => new AssignmentDtoForDetail
             {
                 Id = o.Id,
                 AssignmentName = o.AssignmentName,
