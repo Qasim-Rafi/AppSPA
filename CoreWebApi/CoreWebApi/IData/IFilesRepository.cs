@@ -9,7 +9,7 @@ namespace CoreWebApi.IData
 {
     public interface IFilesRepository
     {
-        //void Upload(IFormFileCollection files);
+        string SaveFile(IFormFile file);
         //object Download(string file);
         string AppendImagePath(string imageName);
         string GetBinaryFile(IFormFile file);

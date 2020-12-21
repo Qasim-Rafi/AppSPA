@@ -19,12 +19,13 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         private readonly IWebHostEnvironment _HostEnvironment;
+        private readonly IFilesRepository _filesRepository;
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
         private readonly IMapper _mapper;
         ServiceResponse<object> _serviceResponse;
-        public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository filesRepository)
         {
             _context = context;
             _HostEnvironment = HostEnvironment;
@@ -32,6 +33,7 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _mapper = mapper;
+            _filesRepository = filesRepository;
             _serviceResponse = new ServiceResponse<object>();
         }
         public async Task<bool> AssignmentExists(string name)
@@ -42,7 +44,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetAssignment(int id)
         {
-            var assignment = await _context.Assignments.Select(o => new AssignmentDtoForDetail
+            var ToReturn = await _context.Assignments.Select(o => new AssignmentDtoForDetail
             {
                 Id = o.Id,
                 AssignmentName = o.AssignmentName,
@@ -52,7 +54,6 @@ namespace CoreWebApi.Data
                 Details = o.Details,
                 ReferenceUrl = o.ReferenceUrl,
             }).FirstOrDefaultAsync(u => u.Id == id);
-            var ToReturn = _mapper.Map<AssignmentDtoForDetail>(assignment);
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -91,24 +92,10 @@ namespace CoreWebApi.Data
             };
 
             if (assignment.files != null && assignment.files.Count() > 0)
-            {
-
-                string contentRootPath = _HostEnvironment.ContentRootPath;
-                var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+            {              
                 for (int i = 0; i < assignment.files.Count(); i++)
                 {
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(assignment.files[i].FileName);
-                    var fullPath = Path.Combine(pathToSave);
-                    var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
-                    if (!Directory.Exists(fullPath))
-                    {
-                        Directory.CreateDirectory(fullPath);
-                    }
-                    var filePath = Path.Combine(fullPath, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await assignment.files[i].CopyToAsync(stream);
-                    }
+                    var dbPath = _filesRepository.SaveFile(assignment.files[i]);
                     if (i == 0)
                         objToCreate.RelatedMaterial = dbPath;
                     else
@@ -138,26 +125,13 @@ namespace CoreWebApi.Data
                 if (assignment.files != null && assignment.files.Count() > 0)
                 {
 
-                    string contentRootPath = _HostEnvironment.ContentRootPath;
-                    var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
                     for (int i = 0; i < assignment.files.Count(); i++)
                     {
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(assignment.files[i].FileName);
-                        var fullPath = Path.Combine(pathToSave);
-                        var dbPath = Path.Combine("StaticFiles", "Images", fileName); //you can add this path to a list and then return all dbPaths to the client if require
-                        if (!Directory.Exists(fullPath))
-                        {
-                            Directory.CreateDirectory(fullPath);
-                        }
-                        var filePath = Path.Combine(fullPath, fileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await assignment.files[i].CopyToAsync(stream);
-                        }
+                        var dbPath = _filesRepository.SaveFile(assignment.files[i]);
                         if (i == 0)
                             dbObj.RelatedMaterial = dbPath;
                         else
-                            dbObj.RelatedMaterial = dbObj.RelatedMaterial + " || " + dbPath;
+                            dbObj.RelatedMaterial = dbObj.RelatedMaterial + "||" + dbPath;
                     }
                 }
                 _context.Assignments.Update(dbObj);

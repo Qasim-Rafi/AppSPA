@@ -61,45 +61,36 @@ namespace CoreWebApi.Data
             var base64 = Convert.ToBase64String(bytes);
             return base64;
         }
-        //public void Upload(IFormFileCollection files)
-        //{
-        //    try
-        //    {
-        //        string contentRootPath = _HostEnvironment.ContentRootPath;
+        public string SaveFile(IFormFile file)
+        {
+            try
+            {
+                string contentRootPath = _HostEnvironment.ContentRootPath;
 
-        //        //var pathToSave = Path.Combine(_configuration.GetSection("AppSettings:VirtualURL").Value, "StaticFiles", "Images");
-        //        var pathToSave =  Path.Combine(contentRootPath, "StaticFiles", "Images");
-        //        if (files.Any(f => f.Length == 0))
-        //        {
-        //            throw new Exception("No files found");
-        //        }
+                var pathToSave = Path.Combine(contentRootPath, _configuration.GetSection("AppSettings:VirtualDirectoryPath").Value);
+                //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
 
-        //        foreach (var file in files)
-        //        {
 
-        //            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-        //            var fullPath = Path.Combine(pathToSave);
-        //            var dbPath = Path.Combine(pathToSave, fileName); //you can add this path to a list and then return all dbPaths to the client if require
-        //            if (!Directory.Exists(fullPath))
-        //            {
-        //                //If Directory (Folder) does not exists. Create it.
-        //                Directory.CreateDirectory(fullPath);
-        //            }
-        //            var filePath = Path.Combine(fullPath, fileName);
-        //            //file.s.SaveAs(filePath);
-        //            using (var stream = new FileStream(filePath, FileMode.Create))
-        //            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var dbPath = Path.Combine(pathToSave, fileName); 
+                //if (!Directory.Exists(pathToSave))
+                //{
+                //    //If Directory (Folder) does not exists. Create it.
+                //    Directory.CreateDirectory(pathToSave);
+                //}
+             
+                using (var stream = new FileStream(dbPath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                return fileName;
 
-        //                file.CopyTo(stream);
-        //            }
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
     }
 }
