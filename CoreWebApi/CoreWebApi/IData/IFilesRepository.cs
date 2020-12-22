@@ -12,7 +12,8 @@ namespace CoreWebApi.IData
         string SaveFile(IFormFile file);
         //object Download(string file);
         string AppendImagePath(string imageName);
-        string AppendDocPath(string fileName);
+        string AppendDocPath(string docName);
+        List<string> AppendMultiDocPath(string docName);
         string GetBinaryFile(IFormFile file);
     }
 }

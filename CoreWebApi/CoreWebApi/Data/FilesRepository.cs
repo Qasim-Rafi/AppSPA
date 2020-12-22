@@ -72,13 +72,13 @@ namespace CoreWebApi.Data
 
 
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                var dbPath = Path.Combine(pathToSave, fileName); 
+                var dbPath = Path.Combine(pathToSave, fileName);
                 //if (!Directory.Exists(pathToSave))
                 //{
                 //    //If Directory (Folder) does not exists. Create it.
                 //    Directory.CreateDirectory(pathToSave);
                 //}
-             
+
                 using (var stream = new FileStream(dbPath, FileMode.Create))
                 {
                     file.CopyTo(stream);
@@ -111,6 +111,33 @@ namespace CoreWebApi.Data
                 path = $"{ virtualUrl }/webAPI/api/Auth/GetFile/{ docName }";
 
             return path;
+        }
+
+        public List<string> AppendMultiDocPath(string docName)
+        {
+            List<string> docNames = docName.Split("||").ToList();
+            if (docNames.Count == 0)
+            {
+                return null;
+            }
+            string virtualUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}";
+
+            //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
+            //string contentRootPath = _HostEnvironment.WebRootPath;
+            //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var isDevelopment = environment == Environments.Development;
+            List<string> paths = new List<string>();
+            foreach (var item in docNames)
+            {
+                if (isDevelopment)
+                    paths.Add($"{ virtualUrl }/api/Auth/GetFile/{ item }");
+                else
+                    paths.Add($"{ virtualUrl }/webAPI/api/Auth/GetFile/{ item }");
+            }
+
+
+            return paths;
         }
     }
 }

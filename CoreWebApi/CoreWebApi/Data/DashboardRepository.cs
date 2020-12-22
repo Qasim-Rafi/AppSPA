@@ -220,7 +220,7 @@ namespace CoreWebApi.Data
             {
                 if (LoggedUser.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
-                    AssignmentCount = (from assignment in _context.Assignments
+                    AssignmentCount = (from assignment in _context.ClassSectionAssignment
                                        where assignment.CreatedById == _LoggedIn_UserID
                                        && assignment.SchoolBranchId == _LoggedIn_BranchID
                                        select assignment).ToList().Count();
@@ -245,7 +245,7 @@ namespace CoreWebApi.Data
                 }
                 else if (LoggedUser.UserTypeId == (int)Enumm.UserType.Student)
                 {
-                    AssignmentCount = (from assignment in _context.Assignments
+                    AssignmentCount = (from assignment in _context.ClassSectionAssignment
                                        join cs in _context.ClassSections
                                        on assignment.ClassSectionId equals cs.Id
                                        join csUser in _context.ClassSectionUsers

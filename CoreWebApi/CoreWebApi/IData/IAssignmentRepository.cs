@@ -14,6 +14,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> DeleteDoc(string Path, string fileName);
         //Task<bool> AssignmentExists(string name);
         Task<ServiceResponse<object>> AddAssignment(AssignmentDtoForAdd assignment);
+        Task<ServiceResponse<object>> SubmitAssignment(SubmitAssignmentDtoForAdd model);
         Task<ServiceResponse<object>> EditAssignment(int id, AssignmentDtoForEdit assignment);
     }
 }

@@ -64,6 +64,20 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("Submit")]
+        public async Task<IActionResult> Submit([FromForm] SubmitAssignmentDtoForAdd model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            _response = await _repo.SubmitAssignment(model);
+
+            return Ok(_response);
+
+        }
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromForm] AssignmentDtoForEdit assignment)
         {
