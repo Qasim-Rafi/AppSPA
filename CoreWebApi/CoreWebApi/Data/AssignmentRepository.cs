@@ -55,6 +55,8 @@ namespace CoreWebApi.Data
                 RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
                 Details = o.Details,
                 ReferenceUrl = o.ReferenceUrl,
+                SubjectId = o.SubjectId,
+                DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : ""
             }).FirstOrDefaultAsync(u => u.Id == id);
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
@@ -101,6 +103,8 @@ namespace CoreWebApi.Data
                                           RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
                                           Details = o.Details,
                                           ReferenceUrl = o.ReferenceUrl,
+                                          SubjectId = o.SubjectId,
+                                          DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : ""
                                       }).ToListAsync();
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
@@ -156,7 +160,7 @@ namespace CoreWebApi.Data
                 SubjectId = assignment.SubjectId,
                 ReferenceUrl = assignment.ReferenceUrl,
                 DueDateTime = DueDateTime,
-                IsPosted = assignment.IsPosted,                
+                IsPosted = assignment.IsPosted,
                 SchoolBranchId = _LoggedIn_BranchID,
                 CreatedById = _LoggedIn_UserID,
                 CreatedDateTime = DateTime.Now,
@@ -196,7 +200,7 @@ namespace CoreWebApi.Data
                 dbObj.IsPosted = assignment.IsPosted;
                 dbObj.DueDateTime = DueDateTime;
                 dbObj.SubjectId = assignment.SubjectId;
-                
+
                 if (assignment.files != null && assignment.files.Count() > 0)
                 {
                     for (int i = 0; i < assignment.files.Count(); i++)
