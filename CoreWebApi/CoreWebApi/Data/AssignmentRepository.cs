@@ -142,5 +142,31 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
+
+        public async Task<ServiceResponse<object>> DeleteDoc(string Path, string fileName)
+        {
+            var dbObj = await _context.Assignments.Where(m => m.RelatedMaterial.Contains(fileName)).FirstOrDefaultAsync();
+            if (dbObj != null)
+            {
+                string newString = dbObj.RelatedMaterial.Remove(dbObj.RelatedMaterial.IndexOf(fileName), fileName.Length);
+                dbObj.RelatedMaterial = newString;
+                _context.Assignments.Update(dbObj);
+                await _context.SaveChangesAsync();
+                FileInfo file = new FileInfo(Path);
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Deleted;
+                return _serviceResponse;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                return _serviceResponse;
+            }
+        }
     }
 }

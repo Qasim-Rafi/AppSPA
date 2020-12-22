@@ -187,10 +187,16 @@ namespace CoreWebApi.Controllers
             {
                 var result = ReadTxtContent(file.PhysicalPath, docName);
                 if (result == null)
-                    return NotFound();
+                {
+                    _response.Success = false;
+                    _response.Message = CustomMessage.RecordNotFound;
+                    return Ok(_response);
+                }
                 return result;
             }
-            return NotFound();
+            _response.Success = false;
+            _response.Message = CustomMessage.RecordNotFound;
+            return Ok(_response);
         }
         /// 
         ///Read text (original address: https://www.cnblogs.com/EminemJK/p/13362368.html )

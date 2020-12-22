@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,6 +11,7 @@ using CoreWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 
 namespace CoreWebApi.Controllers
 {
@@ -21,12 +23,14 @@ namespace CoreWebApi.Controllers
         private readonly IAssignmentRepository _repo;
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
-        public AssignmentsController(IAssignmentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private IFileProvider _fileProvider;
+        public AssignmentsController(IAssignmentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _response = new ServiceResponse<object>();
+            _fileProvider = fileProvider;
         }
 
         [HttpGet]
@@ -72,8 +76,72 @@ namespace CoreWebApi.Controllers
 
             _response = await _repo.EditAssignment(id, assignment);
 
-                        return Ok(_response);
+            return Ok(_response);
 
+        }
+        [HttpDelete("DeleteDoc/{docName}")]
+        public async Task<IActionResult> DeleteDoc(string docName)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var file = _fileProvider.GetFileInfo(docName);
+            if (file.Exists)
+            {
+                var result = ReadTxtContent(file.PhysicalPath, docName);
+                if (result == null)
+                {
+                    _response.Success = false;
+                    _response.Message = CustomMessage.RecordNotFound;
+                    return Ok(_response);
+                }
+                _response = await _repo.DeleteDoc(file.PhysicalPath, docName);
+                return Ok(_response);
+            }
+            _response.Success = false;
+            _response.Message = CustomMessage.RecordNotFound;
+            return Ok(_response);
+        }
+        [NonAction]
+        private FileStreamResult ReadTxtContent(string Path, string fileName)
+        {
+            if (!System.IO.File.Exists(Path))
+            {
+                return null;
+            }
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(Path, FileMode.Open))
+            {
+                stream.CopyTo(memory);
+            }
+            memory.Position = 0;
+            return File(memory, GetContentType(Path), fileName);
+        }
+        [NonAction]
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+        [NonAction]
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
         }
     }
 }

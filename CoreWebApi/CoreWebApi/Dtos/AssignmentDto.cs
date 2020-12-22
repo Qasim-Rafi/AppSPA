@@ -22,7 +22,7 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }        
         public string ReferenceUrl { get; set; }
         public string TeacherName { get; set; }
-        public IFormFileCollection files { get; set; }
+        public List<IFormFile> files { get; set; }
 
     }
     public class AssignmentDtoForEdit : BaseDto
@@ -36,7 +36,7 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public string ReferenceUrl { get; set; }
         public string TeacherName { get; set; }
-        public IFormFileCollection files { get; set; }
+        public List<IFormFile> files { get; set; }
 
     }
     public class AssignmentDtoForList
