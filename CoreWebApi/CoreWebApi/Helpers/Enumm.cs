@@ -21,6 +21,7 @@ namespace CoreWebApi.Helpers
             NameIdentifier = 1,
             Name,
             BranchIdentifier,
+            UserTypeId
         }
     }
     

@@ -20,6 +20,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
+        private string _LoggedIn_UserRole = "";
         public ExamRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -27,6 +28,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
 
         public async Task<ServiceResponse<object>> AddQuestion(QuizQuestionDtoForAdd model)
@@ -263,10 +265,10 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetAssignedQuiz()
         {
             var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
-            if (userDetails != null)
+            if (!string.IsNullOrEmpty(_LoggedIn_UserRole) && userDetails != null)
             {
                 List<QuizForListDto> quizzes = new List<QuizForListDto>();
-                if (userDetails.UserTypeId == (int)Enumm.UserType.Student)
+                if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
                 {
                     var ids = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.QuizId);
 
@@ -302,7 +304,7 @@ namespace CoreWebApi.Data
                                          QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                      }).ToListAsync();
                 }
-                else
+                else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
                     quizzes = await (from quiz in _context.Quizzes
                                      join subject in _context.Subjects

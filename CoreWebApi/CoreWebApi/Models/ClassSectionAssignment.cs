@@ -11,7 +11,7 @@ namespace CoreWebApi.Models
     public class ClassSectionAssignment
     {
         public int Id { get; set; }        
-        [StringLength(100, ErrorMessage = "Name cannot be longer then 50 characters.")]
+        [StringLength(100, ErrorMessage = "Name cannot be longer then 100 characters.")]
         public string AssignmentName { get; set; }
         public int ClassSectionId { get; set; }
         public int SubjectId { get; set; }

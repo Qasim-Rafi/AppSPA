@@ -23,6 +23,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
+        private string _LoggedIn_UserRole = "";
         private readonly IMapper _mapper;
         ServiceResponse<object> _serviceResponse;
         public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository filesRepository)
@@ -32,6 +33,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
             _mapper = mapper;
             _filesRepository = filesRepository;
             _serviceResponse = new ServiceResponse<object>();
@@ -61,11 +63,10 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetAssignments()
         {
-            var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
-            if (userDetails != null)
+            if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
             {
                 List<AssignmentDtoForList> ToReturn = new List<AssignmentDtoForList>();
-                if (userDetails.UserTypeId == (int)Enumm.UserType.Student)
+                if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
                 {
                     var ids = _context.ClassSectionAssigmentSubmissions.Where(m => m.StudentId == _LoggedIn_UserID).Select(m => m.ClassSectionAssignmentId);
 
@@ -78,6 +79,10 @@ namespace CoreWebApi.Data
 
                                       join classSectionUser in _context.ClassSectionUsers
                                       on classSection.Id equals classSectionUser.ClassSectionId
+
+                                      //join assignSub in _context.ClassSectionAssigmentSubmissions
+                                      //on csAssign.Id equals assignSub.ClassSectionAssignmentId into AssignSubmission
+                                      //from assignSub in AssignSubmission.DefaultIfEmpty()
 
                                       where classSectionUser.UserId == _LoggedIn_UserID
                                       && csAssign.SchoolBranchId == _LoggedIn_BranchID
@@ -98,7 +103,7 @@ namespace CoreWebApi.Data
                                           ReferenceUrl = o.ReferenceUrl,
                                       }).ToListAsync();
                 }
-                else
+                else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
                     ToReturn = await (from csAssign in _context.ClassSectionAssignment
                                       join subject in _context.Subjects
@@ -134,11 +139,12 @@ namespace CoreWebApi.Data
                 _serviceResponse.Message = CustomMessage.RecordNotFound;
                 return _serviceResponse;
             }
-
         }
         public async Task<ServiceResponse<object>> AddAssignment(AssignmentDtoForAdd assignment)
         {
+
             DateTime DueDateTime = DateTime.ParseExact(assignment.DueDateTime, "MM/dd/yyyy", null);
+
             var UserObj = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             var SubjectObj = _context.Subjects.Where(m => m.Id == assignment.SubjectId).FirstOrDefault();
             var AssignmentName = $"{DateTime.Now.ToShortDateString()} - {UserObj?.FullName} - {SubjectObj?.Name}";
@@ -150,7 +156,7 @@ namespace CoreWebApi.Data
                 SubjectId = assignment.SubjectId,
                 ReferenceUrl = assignment.ReferenceUrl,
                 DueDateTime = DueDateTime,
-                IsPosted = assignment.IsPosted,
+                IsPosted = assignment.IsPosted,                
                 SchoolBranchId = _LoggedIn_BranchID,
                 CreatedById = _LoggedIn_UserID,
                 CreatedDateTime = DateTime.Now,
@@ -181,7 +187,7 @@ namespace CoreWebApi.Data
             {
                 DateTime DueDateTime = DateTime.ParseExact(assignment.DueDateTime, "MM/dd/yyyy", null);
                 var UserObj = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
-                var SubjectObj = _context.Subjects.Where(m => m.Id == assignment.SubjectId).FirstOrDefault(); 
+                var SubjectObj = _context.Subjects.Where(m => m.Id == assignment.SubjectId).FirstOrDefault();
                 var AssignmentName = $"{DateTime.Now.ToShortDateString()} - {UserObj?.FullName} - {SubjectObj?.Name}";
                 dbObj.AssignmentName = AssignmentName;
                 dbObj.Details = assignment.Details;
@@ -189,7 +195,8 @@ namespace CoreWebApi.Data
                 dbObj.ReferenceUrl = assignment.ReferenceUrl;
                 dbObj.IsPosted = assignment.IsPosted;
                 dbObj.DueDateTime = DueDateTime;
-
+                dbObj.SubjectId = assignment.SubjectId;
+                
                 if (assignment.files != null && assignment.files.Count() > 0)
                 {
                     for (int i = 0; i < assignment.files.Count(); i++)
@@ -241,9 +248,9 @@ namespace CoreWebApi.Data
             var objToCreate = new ClassSectionAssigmentSubmission
             {
                 ClassSectionAssignmentId = model.AssignmentId,
-                Description = model.Description,               
+                Description = model.Description,
                 StudentId = _LoggedIn_UserID,
-                CreatedDatetime = DateTime.Now,                
+                CreatedDatetime = DateTime.Now,
             };
 
             if (model.files != null && model.files.Count() > 0)

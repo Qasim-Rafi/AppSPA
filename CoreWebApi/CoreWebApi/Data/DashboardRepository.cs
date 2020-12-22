@@ -23,6 +23,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
+        private string _LoggedIn_UserRole = "";
         public DashboardRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -30,6 +31,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
         public object GetDashboardCounts()
         {
@@ -103,7 +105,7 @@ namespace CoreWebApi.Data
 
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 
-                // when run an SP set this first -.net core EF
+                // when run an SP set this first -in asp.net core EF
                 _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
                 var param1 = new SqlParameter("@SchoolBranchID", _LoggedIn_BranchID);
@@ -206,19 +208,15 @@ namespace CoreWebApi.Data
 
         }
 
-
-
-
         public object GetTeacherStudentDashboardCounts()
         {
             int AssignmentCount = 0;
             int QuizCount = 0;
             int ResultCount = 0;
             int SubjectCount = 0;
-            var LoggedUser = _context.Users.Where(m => m.Id == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
-            if (LoggedUser != null)
+            if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
             {
-                if (LoggedUser.UserTypeId == (int)Enumm.UserType.Teacher)
+                if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
                     AssignmentCount = (from assignment in _context.ClassSectionAssignment
                                        where assignment.CreatedById == _LoggedIn_UserID
@@ -233,23 +231,29 @@ namespace CoreWebApi.Data
                     SubjectCount = (from subject in _context.Subjects
                                     join subjectAssign in _context.SubjectAssignments
                                     on subject.Id equals subjectAssign.SubjectId
+
                                     join classs in _context.Class
                                     on subjectAssign.ClassId equals classs.Id
+
                                     join cs in _context.ClassSections
                                     on classs.Id equals cs.ClassId
+
                                     join csUser in _context.ClassSectionUsers
                                     on cs.Id equals csUser.ClassSectionId
+
                                     where csUser.UserId == _LoggedIn_UserID
-                                    && csUser.SchoolBranchId == _LoggedIn_BranchID                                   
+                                    && csUser.SchoolBranchId == _LoggedIn_BranchID
                                     select subject).ToList().Count();
                 }
-                else if (LoggedUser.UserTypeId == (int)Enumm.UserType.Student)
+                else if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
                 {
                     AssignmentCount = (from assignment in _context.ClassSectionAssignment
                                        join cs in _context.ClassSections
                                        on assignment.ClassSectionId equals cs.Id
+
                                        join csUser in _context.ClassSectionUsers
                                        on cs.Id equals csUser.ClassSectionId
+
                                        where csUser.UserId == _LoggedIn_UserID
                                        && assignment.SchoolBranchId == _LoggedIn_BranchID
                                        select assignment).ToList().Count();
@@ -262,6 +266,23 @@ namespace CoreWebApi.Data
                                  where csUser.UserId == _LoggedIn_UserID
                                  && quiz.SchoolBranchId == _LoggedIn_BranchID
                                  select quiz).ToList().Count();
+
+                    SubjectCount = (from subject in _context.Subjects
+                                    join subjectAssign in _context.SubjectAssignments
+                                    on subject.Id equals subjectAssign.SubjectId
+
+                                    join classs in _context.Class
+                                    on subjectAssign.ClassId equals classs.Id
+
+                                    join cs in _context.ClassSections
+                                    on classs.Id equals cs.ClassId
+
+                                    join csUser in _context.ClassSectionUsers
+                                    on cs.Id equals csUser.ClassSectionId
+
+                                    where csUser.UserId == _LoggedIn_UserID
+                                    && csUser.SchoolBranchId == _LoggedIn_BranchID
+                                    select subject).ToList().Count();
                 }
             }
             return new

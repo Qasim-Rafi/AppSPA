@@ -26,6 +26,7 @@ namespace CoreWebApi.Data
         public int _LoggedIn_UserID = 0;
         public int _LoggedIn_BranchID = 0;
         public string _LoggedIn_UserName = "";
+        private string _LoggedIn_UserRole = "";
 
         public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor)
         {
@@ -37,6 +38,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
 
         public void Add<T>(T entity) where T : class

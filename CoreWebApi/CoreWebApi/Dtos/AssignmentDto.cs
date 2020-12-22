@@ -13,33 +13,31 @@ namespace CoreWebApi.Dtos
     }
     public class AssignmentDtoForAdd : BaseDto
     {
-        [Required]
-        [StringLength(30, ErrorMessage = "Assignment Name cannot be longer than 30 characters")]
+        
         public string AssignmentName { get; set; }
-        [StringLength(200, ErrorMessage = "Related Material cannot be longer then 200 characters.")]
+        //[StringLength(200, ErrorMessage = "Related Material cannot be longer then 200 characters.")]
         public string Details { get; set; }
         //public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }        
         public string ReferenceUrl { get; set; }
         public int SubjectId { get; set; }
-        public string DueDateTime { get; set; }
+        public string DueDateTime { get; set; } = DateTime.Now.ToString("MM/dd/yyyy");
         public string TeacherName { get; set; }
         public List<IFormFile> files { get; set; }
         public bool IsPosted { get; set; }
     }
     public class AssignmentDtoForEdit : BaseDto
     {
-        [Required]
-        [StringLength(30, ErrorMessage = "Assignment Name cannot be longer than 30 characters")]
+        public int Id { get; set; }
+       
         public string AssignmentName { get; set; }
-        [StringLength(200, ErrorMessage = "Related Material cannot be longer then 200 characters.")]
+        //[StringLength(200, ErrorMessage = "Related Material cannot be longer then 200 characters.")]
         public string Details { get; set; }
-        //public string RelatedMaterial { get; set; }
         public int ClassSectionId { get; set; }
         public string ReferenceUrl { get; set; }
         public string TeacherName { get; set; }
         public int SubjectId { get; set; }
-        public string DueDateTime { get; set; }
+        public string DueDateTime { get; set; } = DateTime.Now.ToString("MM/dd/yyyy");
         public IFormFileCollection files { get; set; }
         public bool IsPosted { get; set; }
 
