@@ -115,29 +115,37 @@ namespace CoreWebApi.Data
 
         public List<string> AppendMultiDocPath(string docName)
         {
-            List<string> docNames = docName.Split("||").ToList();
-            if (docNames.Count == 0)
+            if (!string.IsNullOrEmpty(docName))
             {
-                return null;
-            }
-            string virtualUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}";
+                List<string> docNames = docName.Split("||").ToList();
+                if (docNames.Count == 0)
+                {
+                    return null;
+                }
+                string virtualUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}";
 
-            //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
-            //string contentRootPath = _HostEnvironment.WebRootPath;
-            //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var isDevelopment = environment == Environments.Development;
-            List<string> paths = new List<string>();
-            foreach (var item in docNames)
+                //var VirtualURL = _configuration.GetSection("AppSettings:VirtualURL").Value;
+                //string contentRootPath = _HostEnvironment.WebRootPath;
+                //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
+                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                var isDevelopment = environment == Environments.Development;
+                List<string> paths = new List<string>();
+                foreach (var item in docNames)
+                {
+                    if (isDevelopment)
+                        paths.Add($"{ virtualUrl }/api/Auth/GetFile/{ item }");
+                    else
+                        paths.Add($"{ virtualUrl }/webAPI/api/Auth/GetFile/{ item }");
+                }
+
+
+                return paths;
+            }
+            else
             {
-                if (isDevelopment)
-                    paths.Add($"{ virtualUrl }/api/Auth/GetFile/{ item }");
-                else
-                    paths.Add($"{ virtualUrl }/webAPI/api/Auth/GetFile/{ item }");
+                List<string> paths = new List<string>();
+                return paths;
             }
-
-
-            return paths;
         }
     }
 }
