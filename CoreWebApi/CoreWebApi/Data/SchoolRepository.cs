@@ -605,5 +605,24 @@ namespace CoreWebApi.Data
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> GetEventsByDate(string date)
+        {
+            var List = await (from e in _context.Events
+                              join ed in _context.EventDaysAssignments
+                              on e.Id equals ed.EventId
+                              where e.Active == true
+                              && e.SchoolBranchId == _LoggedIn_BranchID
+                              && ed.StartDate.Value.Date == Convert.ToDateTime(date).Date
+                              select new 
+                              {
+                                  EventId = e.Id,
+                                  Title = e.Title,                                 
+                                  Color = e.Color
+                              }).ToListAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = List;
+            return _serviceResponse;
+        }
     }
 }

@@ -129,6 +129,21 @@ namespace CoreWebApi.Controllers
 
 
         }
+        [HttpGet("GetEventsByDate/{date}")]
+        public async Task<IActionResult> GetEventsByDate(string date)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetEventsByDate(date);
+
+            return Ok(_response);
+
+
+        }
         [HttpPost("AddEvents")]
         public async Task<IActionResult> AddEvents(List<EventForAddDto> model)
         {

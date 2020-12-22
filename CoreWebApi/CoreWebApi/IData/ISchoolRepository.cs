@@ -18,6 +18,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddEvents(List<EventForAddDto> model);
         Task<ServiceResponse<object>> UpdateEvents(List<EventDayAssignmentForAddDto> model);
         Task<ServiceResponse<object>> GetEvents();
+        Task<ServiceResponse<object>> GetEventsByDate(string date);
         Task<ServiceResponse<object>> GetUpcomingEvents();
         Task<ServiceResponse<object>> GetBirthdays();
         Task<ServiceResponse<object>> GetNewStudents();
