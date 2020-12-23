@@ -25,4 +25,10 @@ namespace CoreWebApi.Dtos
     {
         public IFormFile File { get; set; }
     }
+    public class NotificationDto
+    {
+        public string Description { get; set; }
+        public bool IsRead { get; set; }
+        public string CreatedDateTime { get; set; }
+    }
 }

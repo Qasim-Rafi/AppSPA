@@ -64,6 +64,20 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetLoggedUserAttendancePercentage();
             return Ok(_response);
         }
-        
+        [HttpGet("GetNotifications")]
+        public async Task<IActionResult> GetNotifications()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetNotifications();
+
+            return Ok(_response);
+
+
+        }
     }
 }

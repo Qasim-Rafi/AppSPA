@@ -614,15 +614,17 @@ namespace CoreWebApi.Data
                               where e.Active == true
                               && e.SchoolBranchId == _LoggedIn_BranchID
                               && ed.StartDate.Value.Date == Convert.ToDateTime(date).Date
-                              select new 
+                              select new
                               {
                                   EventId = e.Id,
-                                  Title = e.Title,                                 
+                                  Title = e.Title,
                                   Color = e.Color
                               }).ToListAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Data = List;
             return _serviceResponse;
         }
+
+       
     }
 }

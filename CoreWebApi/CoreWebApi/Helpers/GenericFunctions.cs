@@ -50,5 +50,10 @@ namespace CoreWebApi.Helpers
 
             return businessDays;
         }
+        public static string NotificationDescription(string[] ValuesToShow, string From)
+        {
+            var details = string.Join(" ", ValuesToShow);
+            return $"{ details }{ Environment.NewLine }From: { From }";
+        }
     }
 }

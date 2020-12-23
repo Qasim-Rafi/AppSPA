@@ -73,7 +73,7 @@ namespace CoreWebApi.Data
                 if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
                 {
                     var ids = _context.ClassSectionAssigmentSubmissions.Where(m => m.StudentId == _LoggedIn_UserID).Select(m => m.ClassSectionAssignmentId).ToList();
-                    var test = ids;
+
                     ToReturn = await (from csAssign in _context.ClassSectionAssignment
                                       join subject in _context.Subjects
                                       on csAssign.SubjectId equals subject.Id
@@ -108,7 +108,7 @@ namespace CoreWebApi.Data
                                           ReferenceUrl = o.ReferenceUrl,
                                           SubjectId = o.SubjectId,
                                           DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : "",
-                                          IsPosted = o.IsPosted,                                          
+                                          IsPosted = o.IsPosted,
                                       }).ToListAsync();
 
                 }
@@ -200,6 +200,24 @@ namespace CoreWebApi.Data
             }
             await _context.ClassSectionAssignment.AddAsync(objToCreate);
             await _context.SaveChangesAsync();
+            List<Notification> NotificationsToAdd = new List<Notification>();
+            var ToUsers = _context.ClassSectionUsers.Where(m => m.ClassSectionId == objToCreate.ClassSectionId && m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.UserId).ToList();
+            foreach (var UserId in ToUsers)
+            {
+                NotificationsToAdd.Add(new Notification
+                {
+                    Description = GenericFunctions.NotificationDescription(new string[] {
+                        SubjectObj?.Name,
+                        DueDateTime.ToShortDateString()
+                    }, UserObj?.FullName),
+                    CreatedById = _LoggedIn_UserID,
+                    CreatedDateTime = DateTime.Now,
+                    IsRead = false,
+                    UserIdTo = UserId
+                });
+            }
+            await _context.Notifications.AddRangeAsync(NotificationsToAdd);
+            await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
@@ -248,11 +266,14 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> DeleteDoc(string Path, string fileName)
         {
-            var dbObj = await _context.ClassSectionAssignment.Where(m => m.RelatedMaterial.Contains(fileName)).FirstOrDefaultAsync();
+            var RelatedMaterial = fileName.Split(",,")[1];
+            var dbObj = await _context.ClassSectionAssignment.Where(m => m.RelatedMaterial.Contains(RelatedMaterial)).FirstOrDefaultAsync();
             if (dbObj != null)
             {
-                string newString = dbObj.RelatedMaterial.Remove(dbObj.RelatedMaterial.IndexOf(fileName), fileName.Length);
-                dbObj.RelatedMaterial = newString;
+                string newRelatedMaterial = dbObj.RelatedMaterial.Remove(dbObj.RelatedMaterial.IndexOf(RelatedMaterial), RelatedMaterial.Length);
+                string newFileName = dbObj.FileName.Remove(dbObj.FileName.IndexOf(fileName), fileName.Length);
+                dbObj.RelatedMaterial = newRelatedMaterial;
+                dbObj.FileName = newFileName;
                 _context.ClassSectionAssignment.Update(dbObj);
                 await _context.SaveChangesAsync();
                 FileInfo file = new FileInfo(Path);
@@ -261,7 +282,7 @@ namespace CoreWebApi.Data
                     file.Delete();
                 }
                 _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Deleted;
+                _serviceResponse.Message = CustomMessage.FileDeleted;
                 return _serviceResponse;
             }
             else

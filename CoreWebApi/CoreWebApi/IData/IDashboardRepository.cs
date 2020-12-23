@@ -10,5 +10,6 @@ namespace CoreWebApi.Controllers
         object GetTeacherStudentDashboardCounts();        
         Task<ServiceResponse<object>> GetAttendancePercentage();
         Task<ServiceResponse<object>> GetLoggedUserAttendancePercentage();        
+        Task<ServiceResponse<object>> GetNotifications();
     }
 }

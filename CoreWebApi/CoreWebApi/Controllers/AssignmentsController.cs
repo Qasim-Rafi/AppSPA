@@ -100,10 +100,11 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var file = _fileProvider.GetFileInfo(docName);
+            var DocName = docName.Split(",,")[1];
+            var file = _fileProvider.GetFileInfo(DocName);
             if (file.Exists)
             {
-                var result = ReadTxtContent(file.PhysicalPath, docName);
+                var result = ReadTxtContent(file.PhysicalPath, DocName);
                 if (result == null)
                 {
                     _response.Success = false;

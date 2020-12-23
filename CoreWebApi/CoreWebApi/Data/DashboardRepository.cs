@@ -294,6 +294,23 @@ namespace CoreWebApi.Data
             };
         }
 
+        public async Task<ServiceResponse<object>> GetNotifications()
+        {
+            var Notifications = await (from n in _context.Notifications
+                                       join u in _context.Users
+                                       on n.UserIdTo equals u.Id
+                                       where n.UserIdTo == _LoggedIn_UserID
+                                       && u.SchoolBranchId == _LoggedIn_BranchID
+                                       select n).Select(o => new NotificationDto
+                                       {
+                                           Description = o.Description,
+                                           IsRead = o.IsRead,
+                                           CreatedDateTime = DateFormat.ToDate(o.CreatedDateTime.ToString())
+                                       }).ToListAsync();
 
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = new { Notifications, NotificationCount = Notifications.Count() };
+            return _serviceResponse;
+        }
     }
 }

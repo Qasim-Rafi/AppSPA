@@ -25,5 +25,6 @@ namespace CoreWebApi.Helpers
         public const string SelectLeastOneTrue = "Please select at least one true answer";
         public const string SqlDuplicateRecord = "Record already exist in the database";
         public const string ResetPasswordReqSent = "Reset Password email sent at your given email address";
+        public const string FileDeleted = "File(s) deleted successfully";
     }
 }
