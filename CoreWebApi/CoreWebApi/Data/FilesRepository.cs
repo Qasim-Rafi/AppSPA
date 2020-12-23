@@ -117,7 +117,7 @@ namespace CoreWebApi.Data
         {
             if (!string.IsNullOrEmpty(docName))
             {
-                List<string> docNames = docName.Split("||").ToList();
+                List<string> docNames = docName.Split(separator: "||").ToList();
                 if (docNames.Count == 0)
                 {
                     return null;

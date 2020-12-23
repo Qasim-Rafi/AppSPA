@@ -47,7 +47,8 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public string AssignmentName { get; set; }
         public string Details { get; set; }
-        public List<string> RelatedMaterial { get; set; }
+        public List<string> RelatedMaterial { get; set; }       
+        public List<string> FileName { get; set; }
         public string ReferenceUrl { get; set; }
         public int ClassSectionId { get; set; }
         public string ClassSection { get; set; }
@@ -57,6 +58,7 @@ namespace CoreWebApi.Dtos
         public string DueDateTime { get; set; }
         public int SubjectId { get; set; }
         public string SubjectName { get; set; }
+        public int ToCheck { get; set; }
     }
     public class AssignmentDtoForDetail
     {
@@ -65,6 +67,7 @@ namespace CoreWebApi.Dtos
         public string Details { get; set; }
         public string ReferenceUrl { get; set; }
         public List<string> RelatedMaterial { get; set; }
+        public List<string> FileName { get; set; }
         public int ClassSectionId { get; set; }
         public string ClassSection { get; set; }
         public string TeacherName { get; set; }

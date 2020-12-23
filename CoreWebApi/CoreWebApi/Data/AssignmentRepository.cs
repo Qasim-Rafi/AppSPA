@@ -53,6 +53,7 @@ namespace CoreWebApi.Data
                 ClassSectionId = o.ClassSectionId,
                 ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
                 RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
+                FileName = SplitValues(o.FileName),
                 Details = o.Details,
                 ReferenceUrl = o.ReferenceUrl,
                 SubjectId = o.SubjectId,
@@ -70,8 +71,8 @@ namespace CoreWebApi.Data
                 List<AssignmentDtoForList> ToReturn = new List<AssignmentDtoForList>();
                 if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
                 {
-                    var ids = _context.ClassSectionAssigmentSubmissions.Where(m => m.StudentId == _LoggedIn_UserID).Select(m => m.ClassSectionAssignmentId);
-
+                    var ids = _context.ClassSectionAssigmentSubmissions.Where(m => m.StudentId == _LoggedIn_UserID).Select(m => m.ClassSectionAssignmentId).ToList();
+                    var test = ids;
                     ToReturn = await (from csAssign in _context.ClassSectionAssignment
                                       join subject in _context.Subjects
                                       on csAssign.SubjectId equals subject.Id
@@ -101,11 +102,13 @@ namespace CoreWebApi.Data
                                           ClassSectionId = o.ClassSectionId,
                                           ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
                                           RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
+                                          FileName = SplitValues(o.FileName),
                                           Details = o.Details,
                                           ReferenceUrl = o.ReferenceUrl,
                                           SubjectId = o.SubjectId,
                                           DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : ""
                                       }).ToListAsync();
+
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
@@ -128,8 +131,11 @@ namespace CoreWebApi.Data
                                           ClassSectionId = o.ClassSectionId,
                                           ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
                                           RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
+                                          FileName = SplitValues(o.FileName),
                                           Details = o.Details,
                                           ReferenceUrl = o.ReferenceUrl,
+                                          SubjectId = o.SubjectId,
+                                          DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : ""
                                       }).ToListAsync();
                 }
 
@@ -143,6 +149,13 @@ namespace CoreWebApi.Data
                 _serviceResponse.Message = CustomMessage.RecordNotFound;
                 return _serviceResponse;
             }
+        }
+        private static List<string> SplitValues(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return new List<string>();
+            else
+                return value.Split(separator: "||").ToList();
         }
         public async Task<ServiceResponse<object>> AddAssignment(AssignmentDtoForAdd assignment)
         {
@@ -171,10 +184,15 @@ namespace CoreWebApi.Data
                 for (int i = 0; i < assignment.files.Count(); i++)
                 {
                     var dbPath = _filesRepository.SaveFile(assignment.files[i]);
+
                     if (string.IsNullOrEmpty(objToCreate.RelatedMaterial))
-                        objToCreate.RelatedMaterial = objToCreate.RelatedMaterial + dbPath;
+                        objToCreate.RelatedMaterial += dbPath;
                     else
                         objToCreate.RelatedMaterial = objToCreate.RelatedMaterial + "||" + dbPath;
+                    if (string.IsNullOrEmpty(objToCreate.FileName))
+                        objToCreate.FileName = objToCreate.FileName + assignment.files[i].FileName + ",," + dbPath;
+                    else
+                        objToCreate.FileName = objToCreate.FileName + "||" + assignment.files[i].FileName + ",," + dbPath;
                 }
             }
             await _context.ClassSectionAssignment.AddAsync(objToCreate);
@@ -210,6 +228,10 @@ namespace CoreWebApi.Data
                             dbObj.RelatedMaterial = dbObj.RelatedMaterial + dbPath;
                         else
                             dbObj.RelatedMaterial = dbObj.RelatedMaterial + "||" + dbPath;
+                        if (string.IsNullOrEmpty(dbObj.FileName))
+                            dbObj.FileName = dbObj.FileName + assignment.files[i].FileName + ",," + dbPath;
+                        else
+                            dbObj.FileName = dbObj.FileName + "||" + assignment.files[i].FileName + ",," + dbPath;
                     }
                 }
                 _context.ClassSectionAssignment.Update(dbObj);
