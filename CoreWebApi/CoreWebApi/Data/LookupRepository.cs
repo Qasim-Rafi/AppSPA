@@ -39,14 +39,14 @@ namespace CoreWebApi.Data
             var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
             if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
             {
-                list = await _context.Class.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
+                list = await _context.Class.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).ToListAsync();
             }
             else
             {
                 list = await _context.Class.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             }
-
-            _serviceResponse.Data = list;
+            var ToReturn = _mapper.Map<List<ClassDtoForList>>(list);
+            _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
@@ -114,13 +114,14 @@ namespace CoreWebApi.Data
             var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
             if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
             {
-                list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
+                list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).ToListAsync();
             }
             else
             {
                 list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             }
-            _serviceResponse.Data = list;
+            var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
+            _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

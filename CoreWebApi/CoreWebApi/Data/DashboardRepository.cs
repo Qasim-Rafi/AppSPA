@@ -45,7 +45,7 @@ namespace CoreWebApi.Data
             var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
             if (branch.Id == _LoggedIn_BranchID)
             {
-                SubjectCount = _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.CreatedBy == _LoggedIn_UserID).ToList().Count();
+                SubjectCount = _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.CreatedBy == _LoggedIn_UserID).ToList().Count();
             }
             else
             {
