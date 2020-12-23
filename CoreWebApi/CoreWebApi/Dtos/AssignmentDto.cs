@@ -58,7 +58,8 @@ namespace CoreWebApi.Dtos
         public string DueDateTime { get; set; }
         public int SubjectId { get; set; }
         public string SubjectName { get; set; }
-        public int ToCheck { get; set; }
+        public bool IsPosted { get; set; }
+        
     }
     public class AssignmentDtoForDetail
     {
@@ -76,6 +77,7 @@ namespace CoreWebApi.Dtos
         public string DueDateTime { get; set; }
         public int SubjectId { get; set; }
         public string SubjectName { get; set; }
+        public bool IsPosted { get; set; }
     }
     public class SubmitAssignmentDtoForAdd
     {        

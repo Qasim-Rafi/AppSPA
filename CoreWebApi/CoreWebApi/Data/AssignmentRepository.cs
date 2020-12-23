@@ -57,7 +57,8 @@ namespace CoreWebApi.Data
                 Details = o.Details,
                 ReferenceUrl = o.ReferenceUrl,
                 SubjectId = o.SubjectId,
-                DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : ""
+                DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : "",
+                IsPosted = o.IsPosted,
             }).FirstOrDefaultAsync(u => u.Id == id);
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
@@ -106,7 +107,8 @@ namespace CoreWebApi.Data
                                           Details = o.Details,
                                           ReferenceUrl = o.ReferenceUrl,
                                           SubjectId = o.SubjectId,
-                                          DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : ""
+                                          DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : "",
+                                          IsPosted = o.IsPosted,                                          
                                       }).ToListAsync();
 
                 }
@@ -135,7 +137,8 @@ namespace CoreWebApi.Data
                                           Details = o.Details,
                                           ReferenceUrl = o.ReferenceUrl,
                                           SubjectId = o.SubjectId,
-                                          DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : ""
+                                          DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : "",
+                                          IsPosted = o.IsPosted,
                                       }).ToListAsync();
                 }
 
