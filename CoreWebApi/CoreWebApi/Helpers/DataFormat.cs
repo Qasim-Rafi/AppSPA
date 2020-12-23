@@ -45,6 +45,13 @@ namespace CoreWebApi.Helpers
             //var dt = DateTime.ParseExact(dateString.ToString(), formats, new CultureInfo("en-US"), DateTimeStyles.None);
             //return Convert.ToDateTime(dt.ToString("dd/MM/yyyy hh:mm tt"));
         }
+        public static string ToTime(TimeSpan timeSpan)
+        {
+            DateTime time = DateTime.Today.Add(timeSpan);
+            string dt = time.ToString("hh:mm:ss tt"); 
+            return dt;
+           
+        }
     }
 
 }

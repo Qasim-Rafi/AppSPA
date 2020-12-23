@@ -201,7 +201,13 @@ namespace CoreWebApi.Data
             await _context.ClassSectionAssignment.AddAsync(objToCreate);
             await _context.SaveChangesAsync();
             List<Notification> NotificationsToAdd = new List<Notification>();
-            var ToUsers = _context.ClassSectionUsers.Where(m => m.ClassSectionId == objToCreate.ClassSectionId && m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.UserId).ToList();
+            var ToUsers = (from csUser in _context.ClassSectionUsers
+                           join u in _context.Users
+                           on csUser.UserId equals u.Id
+                           where csUser.ClassSectionId == objToCreate.ClassSectionId
+                           && csUser.SchoolBranchId == _LoggedIn_BranchID
+                           && u.Role == Enumm.UserType.Student.ToString()
+                           select csUser.UserId).ToList();
             foreach (var UserId in ToUsers)
             {
                 NotificationsToAdd.Add(new Notification

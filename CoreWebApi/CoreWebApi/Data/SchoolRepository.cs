@@ -88,8 +88,8 @@ namespace CoreWebApi.Data
                                        Id = main.Id,
                                        LectureId = main.LectureId,
                                        Day = l.Day,
-                                       StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
-                                       EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
+                                       StartTime = DateFormat.ToTime(l.StartTime),
+                                       EndTime = DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId,
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
@@ -102,9 +102,9 @@ namespace CoreWebApi.Data
 
             var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
-            var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
-            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
+            List<LectureTiming> Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            List<TimeSpan> StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
+            List<TimeSpan> EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
             for (int i = 0; i < StartTimings.Count; i++)
             {
@@ -112,6 +112,7 @@ namespace CoreWebApi.Data
                 {
                     StartTime = StartTimings[i].ToString(),
                     EndTime = EndTimings[i].ToString(),
+                    Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i])?.Day,
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
             }
@@ -151,8 +152,8 @@ namespace CoreWebApi.Data
                                        Id = main.Id,
                                        LectureId = main.LectureId,
                                        Day = l.Day,
-                                       StartTime = l.StartTime.ToString(@"hh\:mm\:ss"),
-                                       EndTime = l.EndTime.ToString(@"hh\:mm\:ss"),
+                                       StartTime = DateFormat.ToTime(l.StartTime),
+                                       EndTime = DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId,
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
@@ -625,6 +626,6 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-       
+
     }
 }
