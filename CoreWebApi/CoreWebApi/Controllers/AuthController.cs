@@ -147,21 +147,15 @@ namespace CoreWebApi.Controllers
                 role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
                 schoolName = schoolBranchDetails.school.Name,
                 token = tokenHandler.WriteToken(token),
-                classSectionName = IsPropertyExist(CSName, "ClassName") && IsPropertyExist(CSName, "SectionName") ? CSName.ClassName + " " + CSName.SectionName : "",
-                classSectionId = IsPropertyExist(CSName, "ClassSectionId") ? CSName.ClassSectionId : "",
+                classSectionName =GenericFunctions.IsPropertyExist(CSName, "ClassName") && GenericFunctions.IsPropertyExist(CSName, "SectionName") ? CSName.ClassName + " " + CSName.SectionName : "",
+                classSectionId = GenericFunctions.IsPropertyExist(CSName, "ClassSectionId") ? CSName.ClassSectionId : "",
             };
             _response.Success = true;
             return base.Ok(_response);
 
 
         }
-        public static bool IsPropertyExist(dynamic settings, string name)
-        {
-            if (settings is ExpandoObject)
-                return ((IDictionary<string, object>)settings).ContainsKey(name);
-
-            return settings.GetType().GetProperty(name) != null;
-        }
+       
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)
         {

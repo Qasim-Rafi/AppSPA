@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -54,6 +55,37 @@ namespace CoreWebApi.Helpers
         {
             var details = string.Join(" ", ValuesToShow);
             return $"{ details }{ Environment.NewLine }From: { From }";
+        }
+        public static decimal CalculatePercentage(int count, int total)
+        {
+            return decimal.Round((decimal)count / total * 100);
+        }
+        public static string CheckDate(string date)
+        {
+            if (!string.IsNullOrEmpty(date))
+            {
+                var exist = date.Contains("00:00:00");
+                if (exist)
+                {
+                    return Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                }
+                else
+                {
+                    return date;
+                }
+            }
+            else
+            {
+                return "";
+            }
+
+        }
+        public static bool IsPropertyExist(dynamic settings, string name)
+        {
+            if (settings is ExpandoObject)
+                return ((IDictionary<string, object>)settings).ContainsKey(name);
+
+            return settings.GetType().GetProperty(name) != null;
         }
     }
 }

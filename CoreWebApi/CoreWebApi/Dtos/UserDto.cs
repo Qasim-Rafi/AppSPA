@@ -43,7 +43,7 @@ namespace CoreWebApi.Dtos
         //[Required]
         //[StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
         //public string Country { get; set; }
-
+        [Required]
         public int UserTypeId { get; set; } //= 2;
 
         //[Required]
@@ -177,7 +177,7 @@ namespace CoreWebApi.Dtos
 
         [EmailAddress]
         public string Email { get; set; }
-        public int UserTypeId { get; set; } = 2;
+        public int UserTypeId { get; set; } = 1;
         public string UserTypeSignUp { get; set; }
     }
 

@@ -159,10 +159,7 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-        public static decimal CalculatePercentage(int count, int total)
-        {
-            return decimal.Round((decimal)count / total * 100);
-        }
+       
         public async Task<ServiceResponse<object>> GetLoggedUserAttendancePercentage()
         {
             var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
@@ -179,7 +176,7 @@ namespace CoreWebApi.Data
                                         && att.Present == true
                                         && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
                                         select att).ToList().Count();
-                var CurrentMonthLoggedUserPercentage = CalculatePercentage(UserPresentCount, DaysCount);
+                var CurrentMonthLoggedUserPercentage = GenericFunctions.CalculatePercentage(UserPresentCount, DaysCount);
 
                 var LoggedUserAttendanceByMonthPercentage = new List<ThisMonthAttendancePercentageDto>();
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
@@ -201,7 +198,7 @@ namespace CoreWebApi.Data
                     {
                         MonthName = month,
                         Month = (Array.IndexOf(Months, month) + 1),
-                        Percentage = CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth)
+                        Percentage = GenericFunctions.CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth)
                     });
                 }
                 _serviceResponse.Data = new { CurrentMonthLoggedUserPercentage, LoggedUserAttendanceByMonthPercentage };

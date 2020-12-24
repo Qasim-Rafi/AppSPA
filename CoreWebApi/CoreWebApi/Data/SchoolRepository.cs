@@ -386,8 +386,8 @@ namespace CoreWebApi.Data
                                                Id = ed.Id,
                                                EventId = e.Id,
                                                Title = e.Title,
-                                               Start = CheckDate(ed.StartDate.ToString()),// ed.StartDate != null ? Convert.ToDateTime(ed.StartDate).ToString("yyyy-MM-dd hh:mm:ss") : "",
-                                               End = ed.EndDate != null ? CheckDate(ed.EndDate.ToString()) : "",
+                                               Start = GenericFunctions.CheckDate(ed.StartDate.ToString()),// ed.StartDate != null ? Convert.ToDateTime(ed.StartDate).ToString("yyyy-MM-dd hh:mm:ss") : "",
+                                               End = ed.EndDate != null ? GenericFunctions.CheckDate(ed.EndDate.ToString()) : "",
                                                AllDay = ed.AllDay,
                                                Color = e.Color
                                            }).ToListAsync();
@@ -397,26 +397,7 @@ namespace CoreWebApi.Data
 
         }
 
-        private static string CheckDate(string date)
-        {
-            if (!string.IsNullOrEmpty(date))
-            {
-                var exist = date.Contains("00:00:00");
-                if (exist)
-                {
-                    return Convert.ToDateTime(date).ToString("yyyy-MM-dd");
-                }
-                else
-                {
-                    return date;
-                }
-            }
-            else
-            {
-                return "";
-            }
-
-        }
+       
 
         public async Task<ServiceResponse<object>> UpdateEvents(List<EventDayAssignmentForAddDto> model)
         {
@@ -514,8 +495,8 @@ namespace CoreWebApi.Data
                                   Id = ed.Id,
                                   EventId = e.Id,
                                   Title = e.Title,
-                                  Start = CheckDate(ed.StartDate.ToString()),
-                                  End = ed.EndDate != null ? CheckDate(ed.EndDate.ToString()) : "",
+                                  Start = GenericFunctions.CheckDate(ed.StartDate.ToString()),
+                                  End = ed.EndDate != null ? GenericFunctions.CheckDate(ed.EndDate.ToString()) : "",
                                   AllDay = ed.AllDay,
                                   Color = e.Color
                               }).ToListAsync();

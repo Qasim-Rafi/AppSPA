@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -285,12 +286,40 @@ namespace CoreWebApi.Data
             ServiceResponse<UserForListDto> serviceResponse = new ServiceResponse<UserForListDto>();
             try
             {
+                string NewRegNo = "";
+                string NewRollNo = "";
 
-                var UserTypes = _context.UserTypes.ToList();
+                if (userDto.UserTypeId == (int)Enumm.UserType.Student)
+                {
+                    SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
+                    var LastUser = _context.Users.ToList().LastOrDefault();
+                    if (!string.IsNullOrEmpty(LastUser?.RegistrationNumber))
+                    {
+                        string RegNumber = Regex.Replace(LastUser?.RegistrationNumber, @"[^\d]", "");
+                        int LastUserRegNo = Convert.ToInt32(RegNumber);
+                        int NextRegNo = ++LastUserRegNo;
+                        NewRegNo = $"{School.BranchName.Substring(0, 3)}-{NextRegNo:00000}";
+                    }
+                    else
+                    {
+                        NewRegNo = $"{School.BranchName.Substring(0, 3)}-{1:00000}";
+                    }
+                    if (!string.IsNullOrEmpty(LastUser?.RollNumber))
+                    {
+                        string RollNumber = Regex.Replace(LastUser?.RollNumber, @"[^\d]", "");
+                        int LastUserRollNo = Convert.ToInt32(RollNumber);
+                        int NextRollNo = ++LastUserRollNo;
+                        NewRollNo = $"R-{School.BranchName.Substring(0, 3)}-{NextRollNo:00000}";
+                    }
+                    else
+                    {
+                        NewRollNo = $"R-{School.BranchName.Substring(0, 3)}-{1:00000}";
+                    }
+                }
                 DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
-
                 var userToCreate = new User
                 {
+                    RegistrationNumber = NewRegNo,
                     FullName = userDto.FullName,
                     Username = userDto.Username,
                     UserTypeId = userDto.UserTypeId,
@@ -304,8 +333,8 @@ namespace CoreWebApi.Data
                     OtherState = userDto.OtherState,
                     Email = userDto.Email,
                     SchoolBranchId = _LoggedIn_BranchID,
-                    RollNumber = userDto.RollNumber,
-                    Role = UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
+                    RollNumber = NewRollNo,
+                    Role = _context.UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
                 };
                 byte[] passwordHash, passwordSalt;
                 Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
@@ -618,7 +647,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> AddUsersInGroup(UserForAddInGroupDto model)
         {
 
-            var group = new Group
+            var group = new Models.Group
             {
                 GroupName = model.GroupName,
                 ClassSectionId = model.ClassSectionId,
