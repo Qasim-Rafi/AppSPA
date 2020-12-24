@@ -11,5 +11,6 @@ namespace CoreWebApi.Controllers
         Task<ServiceResponse<object>> GetAttendancePercentage();
         Task<ServiceResponse<object>> GetLoggedUserAttendancePercentage();        
         Task<ServiceResponse<object>> GetNotifications();
+        Task<ServiceResponse<object>> GetAllStudents();
     }
 }

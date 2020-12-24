@@ -149,7 +149,7 @@ namespace CoreWebApi.Data
             else
             {
                 _serviceResponse.Success = false;
-                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Message = CustomMessage.UserNotLoggedIn;
                 return _serviceResponse;
             }
         }

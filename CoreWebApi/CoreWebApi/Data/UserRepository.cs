@@ -72,7 +72,7 @@ namespace CoreWebApi.Data
                 Active = s.Active,
                 RollNumber = s.RollNumber,
                 MemberSince = DateFormat.ToDate(s.CreatedDateTime.ToString()),
-                Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                Photos = _context.Photos.Where(m => m.UserId == s.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -161,7 +161,7 @@ namespace CoreWebApi.Data
                         Active = o.Active,
                         UserTypeId = o.UserTypeId,
                         UserType = o.Usertypes.Name,
-                        Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                        Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                         {
                             Id = x.Id,
                             Name = x.Name,
@@ -202,7 +202,7 @@ namespace CoreWebApi.Data
                         Active = o.Active,
                         UserTypeId = o.UserTypeId,
                         UserType = o.Usertypes.Name,
-                        Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                        Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                         {
                             Id = x.Id,
                             Name = x.Name,
@@ -491,7 +491,7 @@ namespace CoreWebApi.Data
                                        AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                       Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                        {
                                            Id = x.Id,
                                            Name = x.Name,
@@ -545,7 +545,7 @@ namespace CoreWebApi.Data
                                        AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
                                        PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
-                                       Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                       Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                        {
                                            Id = x.Id,
                                            Name = x.Name,
@@ -915,7 +915,7 @@ namespace CoreWebApi.Data
                                    Active = o.Active,
                                    UserTypeId = o.UserTypeId,
                                    UserType = o.Usertypes.Name,
-                                   Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                   Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                    {
                                        Id = x.Id,
                                        Name = x.Name,
@@ -976,13 +976,7 @@ namespace CoreWebApi.Data
                                    GradeName = _context.Class.FirstOrDefault(m => m.Id == o.csUser.ClassSection.ClassId).Name,
                                    SubjectId = o.subject.Id,
                                    SubjectName = o.subject.Name,
-                                   Photos = _context.Photos.Where(m => m.UserId == o.user.Id).OrderByDescending(m => m.Id).Select(x => new PhotoDto
-                                   {
-                                       Id = x.Id,
-                                       Name = x.Name,
-                                       IsPrimary = x.IsPrimary,
-                                       Url = _File.AppendImagePath(x.Name)
-                                   }).ToList(),
+                                   PhotoUrl = _context.Photos.Where(m => m.UserId == o.user.Id && m.IsPrimary == true).FirstOrDefault() != null ? _File.AppendImagePath(_context.Photos.Where(m => m.UserId == o.user.Id && m.IsPrimary == true).FirstOrDefault().Name) : "",
                                }).ToListAsync();
 
 

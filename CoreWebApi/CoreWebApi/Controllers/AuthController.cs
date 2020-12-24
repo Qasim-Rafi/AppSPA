@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -118,8 +119,24 @@ namespace CoreWebApi.Controllers
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
-
+            var NameIdentifier = Convert.ToInt32(claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value);
+            var Role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value;
+            dynamic CSName = new ExpandoObject();
+            if (Role == Enumm.UserType.Student.ToString())
+            {
+                CSName = (from u in _context.Users
+                          join csUser in _context.ClassSectionUsers
+                          on u.Id equals csUser.UserId
+                          join cs in _context.ClassSections
+                          on csUser.ClassSectionId equals cs.Id
+                          where csUser.UserId == NameIdentifier
+                          select new
+                          {
+                              ClassSectionId = cs.Id,
+                              ClassName = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
+                              SectionName = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
+                          }).FirstOrDefault();
+            }
             //var session = HttpContext.Session;
             //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
             _response.Data = new
@@ -128,7 +145,9 @@ namespace CoreWebApi.Controllers
                 loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.Name.ToString())).Value,
                 role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
                 schoolName = schoolBranchDetails.school.Name,
-                token = tokenHandler.WriteToken(token)
+                token = tokenHandler.WriteToken(token),
+                classSectionName = Role == Enumm.UserType.Student.ToString() ? CSName.ClassName + " " + CSName.SectionName : "",
+                classSectionId = CSName.ClassSectionId,
             };
             _response.Success = true;
             return base.Ok(_response);

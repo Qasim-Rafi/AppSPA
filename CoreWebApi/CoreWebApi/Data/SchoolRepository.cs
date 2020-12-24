@@ -531,7 +531,7 @@ namespace CoreWebApi.Data
                 Id = s.Id,
                 FullName = s.FullName,
                 DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).Select(x => new
+                Photos = _context.Photos.Where(m => m.UserId == s.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
                 {
                     x.Id,
                     x.Name,
@@ -540,13 +540,7 @@ namespace CoreWebApi.Data
                 }).ToList()
             }).ToListAsync();
 
-            //foreach (var user in users)
-            //{
-            //    foreach (var item in user?.Photos)
-            //    {
-            //        item.Url = _File.AppendImagePath(item.Url);
-            //    }
-            //}
+            
             _serviceResponse.Data = users;
             _serviceResponse.Success = true;
             return _serviceResponse;

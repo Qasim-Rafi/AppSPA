@@ -1,6 +1,7 @@
 ﻿using CoreWebApi.Controllers;
 using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
+using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
@@ -24,7 +25,8 @@ namespace CoreWebApi.Data
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
         private string _LoggedIn_UserRole = "";
-        public DashboardRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly IFilesRepository _File;
+        public DashboardRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IFilesRepository file)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
@@ -32,6 +34,7 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            _File = file;
         }
         public object GetDashboardCounts()
         {
@@ -312,5 +315,44 @@ namespace CoreWebApi.Data
             _serviceResponse.Data = new { Notifications, NotificationCount = Notifications.Count() };
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> GetAllStudents()
+        {
+            if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
+            {
+                if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
+                {
+                    var CSIds = await (from csUser in _context.ClassSectionUsers
+                                       where csUser.UserId == _LoggedIn_UserID
+                                       select csUser.ClassSectionId).ToListAsync();
+
+                    var Students = await (from u in _context.Users
+                                          join csUser in _context.ClassSectionUsers
+                                          on u.Id equals csUser.UserId
+                                          where u.Role == Enumm.UserType.Student.ToString()
+                                          && CSIds.Contains(csUser.ClassSectionId)
+                                          select u).Select(s => new
+                                          {
+                                              FullName = s.FullName,
+                                              RollNo = s.RollNumber,
+                                              Photos = _context.Photos.Where(m => m.UserId == s.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
+                                              {
+                                                  x.Name,
+                                                  Url = _File.AppendImagePath(x.Name)
+                                              }).ToList()
+                                          }).ToListAsync();
+
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Data = new { Students, StudentCount = Students.Count() };
+                }
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.UserNotLoggedIn;
+            }
+            return _serviceResponse;
+        }
+
     }
 }
