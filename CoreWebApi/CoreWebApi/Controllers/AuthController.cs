@@ -137,6 +137,7 @@ namespace CoreWebApi.Controllers
                               SectionName = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
                           }).FirstOrDefault();
             }
+
             //var session = HttpContext.Session;
             //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
             _response.Data = new
@@ -146,15 +147,21 @@ namespace CoreWebApi.Controllers
                 role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
                 schoolName = schoolBranchDetails.school.Name,
                 token = tokenHandler.WriteToken(token),
-                classSectionName = Role == Enumm.UserType.Student.ToString() ? CSName.ClassName + " " + CSName.SectionName : "",
-                classSectionId = Role == Enumm.UserType.Student.ToString() ? CSName.ClassSectionId : "",
+                classSectionName = IsPropertyExist(CSName, "ClassName") && IsPropertyExist(CSName, "SectionName") ? CSName.ClassName + " " + CSName.SectionName : "",
+                classSectionId = IsPropertyExist(CSName, "ClassSectionId") ? CSName.ClassSectionId : "",
             };
             _response.Success = true;
             return base.Ok(_response);
 
 
         }
+        public static bool IsPropertyExist(dynamic settings, string name)
+        {
+            if (settings is ExpandoObject)
+                return ((IDictionary<string, object>)settings).ContainsKey(name);
 
+            return settings.GetType().GetProperty(name) != null;
+        }
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)
         {

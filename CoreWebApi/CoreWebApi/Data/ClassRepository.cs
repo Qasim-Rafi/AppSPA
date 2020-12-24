@@ -325,9 +325,9 @@ namespace CoreWebApi.Data
                             CreatedDate = DateTime.Now,
                             SchoolBranchId = _LoggedIn_BranchID
                         });
-                        await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
-                        await _context.SaveChangesAsync();
                     }
+                    await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
                 }
                 else if (existingIds.Count() > model.UserIds.Count())
                 {
