@@ -147,7 +147,7 @@ namespace CoreWebApi.Controllers
                 schoolName = schoolBranchDetails.school.Name,
                 token = tokenHandler.WriteToken(token),
                 classSectionName = Role == Enumm.UserType.Student.ToString() ? CSName.ClassName + " " + CSName.SectionName : "",
-                classSectionId = CSName.ClassSectionId,
+                classSectionId = Role == Enumm.UserType.Student.ToString() ? CSName.ClassSectionId : "",
             };
             _response.Success = true;
             return base.Ok(_response);
