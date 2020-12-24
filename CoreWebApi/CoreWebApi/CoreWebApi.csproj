@@ -116,6 +116,8 @@
     <Compile Remove="Migrations\20201218114218_test.Designer.cs" />
     <Compile Remove="Migrations\20201223061519_UpdateAssignmentAddCol.cs" />
     <Compile Remove="Migrations\20201223061519_UpdateAssignmentAddCol.Designer.cs" />
+    <Compile Remove="Migrations\20201224124328_UpdateLectureTiming.cs" />
+    <Compile Remove="Migrations\20201224124328_UpdateLectureTiming.Designer.cs" />
 
   </ItemGroup>
 

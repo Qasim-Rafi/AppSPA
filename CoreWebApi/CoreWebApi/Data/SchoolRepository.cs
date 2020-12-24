@@ -45,7 +45,16 @@ namespace CoreWebApi.Data
 
             var Days = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => o.Day).Distinct().ToListAsync();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList(); //.Substring(0,1).ToUpper()
-            var Timings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var Timings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new
+            {
+                o.Id,
+                o.StartTime,
+                o.EndTime,
+                StartTimeToDisplay = DateFormat.ToTime(o.StartTime),
+                EndTimeToDisplay = DateFormat.ToTime(o.EndTime),
+                o.IsBreak,
+                o.Day,
+            }).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
             var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
             var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
@@ -54,8 +63,9 @@ namespace CoreWebApi.Data
             {
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
-                    StartTime = StartTimings[i].ToString(),
-                    EndTime = EndTimings[i].ToString(),
+                    StartTime = DateFormat.ToTime(StartTimings[i]),
+                    EndTime = DateFormat.ToTime(EndTimings[i]),
+                    Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
             }
@@ -102,7 +112,16 @@ namespace CoreWebApi.Data
 
             var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
-            List<LectureTiming> Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new
+            {
+                o.Id,
+                o.StartTime,
+                o.EndTime,
+                StartTimeToDisplay = DateFormat.ToTime(o.StartTime),
+                EndTimeToDisplay = DateFormat.ToTime(o.EndTime),
+                o.IsBreak,
+                o.Day,
+            }).ToListAsync();
             List<TimeSpan> StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
             List<TimeSpan> EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
@@ -110,9 +129,9 @@ namespace CoreWebApi.Data
             {
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
-                    StartTime = StartTimings[i].ToString(),
-                    EndTime = EndTimings[i].ToString(),
-                    Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i])?.Day,
+                    StartTime = DateFormat.ToTime(StartTimings[i]),
+                    EndTime = DateFormat.ToTime(EndTimings[i]),
+                    Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
             }
@@ -184,14 +203,18 @@ namespace CoreWebApi.Data
             List<LectureTiming> listToAdd = new List<LectureTiming>();
             foreach (var item in model)
             {
-                listToAdd.Add(new LectureTiming
+                if (!string.IsNullOrEmpty(item.StartTime) && !string.IsNullOrEmpty(item.EndTime))
                 {
-                    StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay,
-                    EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
-                    IsBreak = item.IsBreak,
-                    Day = item.Day,
-                    SchoolBranchId = _LoggedIn_BranchID
-                });
+                    listToAdd.Add(new LectureTiming
+                    {
+                        StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay,
+                        EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
+                        IsBreak = item.IsBreak,
+                        Day = item.Day,
+                        SchoolBranchId = _LoggedIn_BranchID
+                    });
+                }
+
             }
 
             await _context.LectureTiming.AddRangeAsync(listToAdd);
@@ -397,7 +420,7 @@ namespace CoreWebApi.Data
 
         }
 
-       
+
 
         public async Task<ServiceResponse<object>> UpdateEvents(List<EventDayAssignmentForAddDto> model)
         {
@@ -521,7 +544,7 @@ namespace CoreWebApi.Data
                 }).ToList()
             }).ToListAsync();
 
-            
+
             _serviceResponse.Data = users;
             _serviceResponse.Success = true;
             return _serviceResponse;
