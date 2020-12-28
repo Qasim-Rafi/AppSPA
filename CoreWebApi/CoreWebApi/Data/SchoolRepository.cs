@@ -63,8 +63,8 @@ namespace CoreWebApi.Data
             {
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
-                    StartTime = DateFormat.ToTime(StartTimings[i]),
-                    EndTime = DateFormat.ToTime(EndTimings[i]),
+                    StartTime = StartTimings[i].ToString(),//DateFormat.ToTime(StartTimings[i]),
+                    EndTime = EndTimings[i].ToString(),//DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
@@ -223,7 +223,11 @@ namespace CoreWebApi.Data
                 {
                     ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
                 }
-               
+                else if (ListToCheck.Where(m => m.StartTime == Convert.ToDateTime(item.StartTime).TimeOfDay).FirstOrDefault() != null && ListToCheck.Where(m => m.EndTime == Convert.ToDateTime(item.EndTime).TimeOfDay).FirstOrDefault() != null)
+                {
+                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} is already exist", item.StartTime, item.EndTime));
+                }
+
             }
             if (ErrorMessages.Count == 0)
             {
