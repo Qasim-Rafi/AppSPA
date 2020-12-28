@@ -18,6 +18,7 @@ namespace CoreWebApi.Dtos
         public bool IsBreak { get; set; }
         //[Required]
         public string Day { get; set; }
+        public int RowNo { get; set; }
     }
     public class TimeTableForAddDto
     {

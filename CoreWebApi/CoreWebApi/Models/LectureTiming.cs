@@ -14,7 +14,7 @@ namespace CoreWebApi.Models
         public TimeSpan EndTime { get; set; }
         public bool IsBreak { get; set; }
         public string Day { get; set; }
-
+        public int RowNo { get; set; }
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
     }

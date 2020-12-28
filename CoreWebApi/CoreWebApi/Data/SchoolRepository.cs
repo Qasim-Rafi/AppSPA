@@ -54,6 +54,7 @@ namespace CoreWebApi.Data
                 EndTimeToDisplay = DateFormat.ToTime(o.EndTime),
                 o.IsBreak,
                 o.Day,
+                o.RowNo,
             }).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
             var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
@@ -204,18 +205,7 @@ namespace CoreWebApi.Data
             List<LectureTiming> listToAdd = new List<LectureTiming>();
             foreach (var item in model)
             {
-                if (!string.IsNullOrEmpty(item.StartTime) && !string.IsNullOrEmpty(item.EndTime))
-                {
-                    listToAdd.Add(new LectureTiming
-                    {
-                        StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay,
-                        EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
-                        IsBreak = item.IsBreak,
-                        Day = item.Day,
-                        SchoolBranchId = _LoggedIn_BranchID
-                    });
-                }
-                else if (string.IsNullOrEmpty(item.StartTime) || string.IsNullOrEmpty(item.EndTime))
+                if (string.IsNullOrEmpty(item.StartTime) || string.IsNullOrEmpty(item.EndTime))
                 {
                     ErrorMessages.Add("Please provide required fields Start Time and End Time");
                 }
@@ -223,9 +213,21 @@ namespace CoreWebApi.Data
                 {
                     ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
                 }
-                else if (ListToCheck.Where(m => m.StartTime == Convert.ToDateTime(item.StartTime).TimeOfDay).FirstOrDefault() != null && ListToCheck.Where(m => m.EndTime == Convert.ToDateTime(item.EndTime).TimeOfDay).FirstOrDefault() != null)
+                else if (ListToCheck.Where(m => m.StartTime == Convert.ToDateTime(item.StartTime).TimeOfDay && m.EndTime == Convert.ToDateTime(item.EndTime).TimeOfDay).FirstOrDefault() != null)
                 {
                     ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} is already exist", item.StartTime, item.EndTime));
+                }
+                else
+                {
+                    listToAdd.Add(new LectureTiming
+                    {
+                        StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay,
+                        EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
+                        IsBreak = item.IsBreak,
+                        Day = item.Day,
+                        RowNo = item.RowNo,
+                        SchoolBranchId = _LoggedIn_BranchID
+                    });
                 }
 
             }
