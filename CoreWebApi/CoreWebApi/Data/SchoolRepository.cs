@@ -86,12 +86,12 @@ namespace CoreWebApi.Data
                                    on main.TeacherId equals u.Id
                                    join s in _context.Subjects
                                    on main.SubjectId equals s.Id
-                                   join cs in _context.ClassSections
-                                   on main.ClassSectionId equals cs.Id
+                                   join c in _context.Class
+                                   on main.ClassId equals c.Id
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
-                                   && cs.Active == true
+                                   && c.Active == true
                                    && u.Active == true
                                    select new TimeTableForListDto
                                    {
@@ -104,9 +104,9 @@ namespace CoreWebApi.Data
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
-                                       ClassSectionId = main.ClassSectionId,
-                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
-                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                       ClassId = main.ClassId,
+                                       Class = _context.Class.FirstOrDefault(m => m.Id == c.Id && m.Active == true).Name,
+                                       //Section = _context.Sections.FirstOrDefault(m => m.Id == c.SectionId && m.Active == true).SectionName,
                                        IsBreak = l.IsBreak
                                    }).ToListAsync();
 
@@ -129,8 +129,8 @@ namespace CoreWebApi.Data
             {
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
-                    StartTime = DateFormat.ToTime(StartTimings[i]),
-                    EndTime = DateFormat.ToTime(EndTimings[i]),
+                    StartTime = StartTimings[i].ToString(),//DateFormat.ToTime(StartTimings[i]),
+                    EndTime = EndTimings[i].ToString(),//DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
@@ -158,13 +158,13 @@ namespace CoreWebApi.Data
                                    on main.TeacherId equals u.Id
                                    join s in _context.Subjects
                                    on main.SubjectId equals s.Id
-                                   join cs in _context.ClassSections
-                                   on main.ClassSectionId equals cs.Id
+                                   join c in _context.Class
+                                   on main.ClassId equals c.Id
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && main.Id == id
                                    && l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
-                                   && cs.Active == true
+                                   && c.Active == true
                                    && u.Active == true
                                    select new TimeTableForListDto
                                    {
@@ -177,9 +177,9 @@ namespace CoreWebApi.Data
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
-                                       ClassSectionId = main.ClassSectionId,
-                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
-                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                       ClassId = main.ClassId,
+                                       Class = _context.Class.FirstOrDefault(m => m.Id == c.Id && m.Active == true).Name,
+                                       //Section = _context.Sections.FirstOrDefault(m => m.Id == c.SectionId && m.Active == true).SectionName,
                                        //IsBreak = l.IsBreak
                                    }).FirstOrDefaultAsync();
             if (TimeTable != null)
@@ -199,7 +199,8 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> SaveTimeSlots(List<TimeSlotsForAddDto> model)
         {
-
+            var ListToCheck = _context.LectureTiming.ToList();
+            List<string> ErrorMessages = new List<string>();
             List<LectureTiming> listToAdd = new List<LectureTiming>();
             foreach (var item in model)
             {
@@ -214,13 +215,28 @@ namespace CoreWebApi.Data
                         SchoolBranchId = _LoggedIn_BranchID
                     });
                 }
-
+                else if (string.IsNullOrEmpty(item.StartTime) || string.IsNullOrEmpty(item.EndTime))
+                {
+                    ErrorMessages.Add("Please provide required fields Start Time and End Time");
+                }
+                else if (Convert.ToDateTime(item.StartTime).TimeOfDay < Convert.ToDateTime(item.EndTime).TimeOfDay)
+                {
+                    ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
+                }
+               
             }
-
-            await _context.LectureTiming.AddRangeAsync(listToAdd);
-            await _context.SaveChangesAsync();
-            _serviceResponse.Success = true;
-            _serviceResponse.Message = CustomMessage.Added;
+            if (ErrorMessages.Count == 0)
+            {
+                await _context.LectureTiming.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Data = new { ErrorMessages };
+            }
             return _serviceResponse;
 
         }
@@ -238,7 +254,7 @@ namespace CoreWebApi.Data
                         LectureId = item.LectureId,
                         TeacherId = item.TeacherId,
                         SubjectId = item.SubjectId,
-                        ClassSectionId = item.ClassSectionId,
+                        ClassId = item.ClassId,
                         Date = DateTime.Now
                     });
                 }
