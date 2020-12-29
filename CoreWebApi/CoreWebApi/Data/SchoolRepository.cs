@@ -289,7 +289,17 @@ namespace CoreWebApi.Data
                         }
                     }
                 }
-
+                else
+                {
+                    var ToUpdate = ListToCheck.Where(m => m.Id == item.Id).FirstOrDefault();
+                    if (ToUpdate != null)
+                    {
+                        ToUpdate.StartTime = StartTime;
+                        ToUpdate.EndTime = EndTime;
+                        ToUpdate.IsBreak = item.IsBreak;
+                        listToUpdate.Add(ToUpdate);
+                    }
+                }
 
             }
             if (ErrorMessages.Count == 0)
