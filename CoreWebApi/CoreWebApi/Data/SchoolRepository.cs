@@ -214,7 +214,7 @@ namespace CoreWebApi.Data
                 {
                     ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));
                 }
-                else if (model.Where(m => Convert.ToDateTime(m.StartTime).TimeOfDay >= StartTime && Convert.ToDateTime(m.EndTime).TimeOfDay <= EndTime && m.Day == item.Day).FirstOrDefault() != null)
+                else if (model.Where(m => Convert.ToDateTime(m.StartTime).TimeOfDay >= StartTime && Convert.ToDateTime(m.EndTime).TimeOfDay <= EndTime && m.Day == item.Day && m.RowNo != item.RowNo).FirstOrDefault() != null)
                 {
                     ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is overlapped", item.StartTime, item.EndTime, item.Day));
                 }
@@ -288,6 +288,10 @@ namespace CoreWebApi.Data
                             listToUpdate.Add(ToUpdate);
                         }
                     }
+                }
+                else if (model.Where(m => Convert.ToDateTime(m.StartTime).TimeOfDay >= StartTime && Convert.ToDateTime(m.EndTime).TimeOfDay <= EndTime && m.Day == item.Day && m.RowNo != item.RowNo).FirstOrDefault() != null)
+                {
+                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is overlapped", item.StartTime, item.EndTime, item.Day));
                 }
                 else
                 {
