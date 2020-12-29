@@ -214,6 +214,10 @@ namespace CoreWebApi.Data
                 {
                     ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));
                 }
+                else if (model.Where(m => Convert.ToDateTime(m.StartTime).TimeOfDay >= StartTime && Convert.ToDateTime(m.EndTime).TimeOfDay <= EndTime && m.Day == item.Day).FirstOrDefault() != null)
+                {
+                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is overlapped", item.StartTime, item.EndTime, item.Day));
+                }
                 else
                 {
                     listToAdd.Add(new LectureTiming
@@ -273,18 +277,19 @@ namespace CoreWebApi.Data
                     {
                         ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));
                     }
-                }
-                else
-                {
-                    var ToUpdate = ListToCheck.Where(m => m.Id == item.Id).FirstOrDefault();
-                    if (ToUpdate != null)
+                    else
                     {
-                        ToUpdate.StartTime = StartTime;
-                        ToUpdate.EndTime = EndTime;
-                        ToUpdate.IsBreak = item.IsBreak;
-                        listToUpdate.Add(ToUpdate);
+                        var ToUpdate = ListToCheck.Where(m => m.Id == item.Id).FirstOrDefault();
+                        if (ToUpdate != null)
+                        {
+                            ToUpdate.StartTime = StartTime;
+                            ToUpdate.EndTime = EndTime;
+                            ToUpdate.IsBreak = item.IsBreak;
+                            listToUpdate.Add(ToUpdate);
+                        }
                     }
                 }
+
 
             }
             if (ErrorMessages.Count == 0)
@@ -609,20 +614,21 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetBirthdays()
         {
-            var NextTwoDays = DateTime.Now.AddDays(2);
-            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date >= DateTime.Now.Date && u.DateofBirth.Value.Date <= NextTwoDays.Date && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID).Select(s => new
-            {
-                Id = s.Id,
-                FullName = s.FullName,
-                DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                Photos = _context.Photos.Where(m => m.UserId == s.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
+            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date >= DateTime.Now.Date && u.DateofBirth.Value.Date <= DateTime.Now.AddDays(2).Date && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID)
+                .OrderBy(m => m.DateofBirth).Select(o => new
                 {
-                    x.Id,
-                    x.Name,
-                    x.IsPrimary,
-                    Url = _File.AppendImagePath(x.Name)
-                }).ToList()
-            }).ToListAsync();
+                    o.Id,
+                    o.FullName,
+                    DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                    ComingOn = o.DateofBirth.Value.Date == DateTime.Now.Date ? "Today" : o.DateofBirth.Value.Date == DateTime.Now.AddDays(1).Date ? "Tomorrow" : o.DateofBirth.Value.Date == DateTime.Now.AddDays(2).Date ? "After 1 Day" : "",
+                    Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
+                    {
+                        x.Id,
+                        x.Name,
+                        x.IsPrimary,
+                        Url = _File.AppendImagePath(x.Name)
+                    }).ToList()
+                }).ToListAsync();
 
 
             _serviceResponse.Data = users;
