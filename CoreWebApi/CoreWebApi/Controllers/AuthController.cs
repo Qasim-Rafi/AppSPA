@@ -122,7 +122,7 @@ namespace CoreWebApi.Controllers
             var NameIdentifier = Convert.ToInt32(claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value);
             var Role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value;
             dynamic CSName = new ExpandoObject();
-            if (Role == Enumm.UserType.Student.ToString())
+            if (Role == Enumm.UserType.Student.ToString() || Role == Enumm.UserType.Teacher.ToString())
             {
                 CSName = (from u in _context.Users
                           join csUser in _context.ClassSectionUsers
@@ -130,6 +130,7 @@ namespace CoreWebApi.Controllers
                           join cs in _context.ClassSections
                           on csUser.ClassSectionId equals cs.Id
                           where csUser.UserId == NameIdentifier
+                          && u.Role == Role
                           select new
                           {
                               ClassSectionId = cs.Id,
@@ -147,7 +148,7 @@ namespace CoreWebApi.Controllers
                 role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
                 schoolName = schoolBranchDetails.school.Name,
                 token = tokenHandler.WriteToken(token),
-                classSectionName =GenericFunctions.IsPropertyExist(CSName, "ClassName") && GenericFunctions.IsPropertyExist(CSName, "SectionName") ? CSName.ClassName + " " + CSName.SectionName : "",
+                classSectionName = GenericFunctions.IsPropertyExist(CSName, "ClassName") && GenericFunctions.IsPropertyExist(CSName, "SectionName") ? CSName.ClassName + " " + CSName.SectionName : "",
                 classSectionId = GenericFunctions.IsPropertyExist(CSName, "ClassSectionId") ? CSName.ClassSectionId : "",
             };
             _response.Success = true;
@@ -155,7 +156,7 @@ namespace CoreWebApi.Controllers
 
 
         }
-       
+
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)
         {

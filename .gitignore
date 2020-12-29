@@ -6,6 +6,6 @@ CoreWebApi/CoreWebApi/Properties/PublishProfiles/FolderProfile.pubxml.user
 CoreWebApi/.vs/CoreWebApi/DesignTimeBuild/.dtbcache.v2
 CoreWebApi/.vs/CoreWebApi/config/applicationhost.config
 /CoreWebApi/CoreWebApi/Properties/PublishProfiles
-*.png
-*.pdf
-*.json
+
+CoreWebApi/CoreWebApi/SchoolDocuments
+CoreWebApi/CoreWebApi/wwwroot/StaticFiles
