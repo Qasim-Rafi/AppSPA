@@ -178,5 +178,41 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
+
+        public ServiceResponse<object> Assignments()
+        {
+            List<ClassSectionAssignment> list = new List<ClassSectionAssignment>();
+            var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
+            if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
+            {
+                list = _context.ClassSectionAssignment.Where(m => m.SchoolBranchId == branch.Id).ToList();
+            }
+            else
+            {
+                list = _context.ClassSectionAssignment.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToList();
+            }
+            var ToReturn = _mapper.Map<List<AssignmentDtoForLookupList>>(list);
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public ServiceResponse<object> Quizzes()
+        {
+            List<Quizzes> list = new List<Quizzes>();
+            SchoolBranch branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
+            if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
+            {
+                list = _context.Quizzes.Where(m => m.SchoolBranchId == branch.Id).ToList();
+            }
+            else
+            {
+                list = _context.Quizzes.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToList();
+            }
+            var ToReturn = _mapper.Map<List<QuizDtoForLookupList>>(list);
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

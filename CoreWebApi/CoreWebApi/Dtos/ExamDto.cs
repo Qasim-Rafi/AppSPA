@@ -100,4 +100,9 @@ namespace CoreWebApi.Dtos
         public string Answer { get; set; }        
         public bool IsTrue { get; set; }
     }
+    public class QuizDtoForLookupList
+    {
+        public int Id { get; set; }
+        public string QuizDate { get; set; }
+    }
 }

@@ -127,14 +127,22 @@ namespace CoreWebApi.Controllers
         [HttpGet("SchoolBranches")]
         public IActionResult SchoolBranches()
         {
-
-
             _response = _repo.SchoolBranches();
-
-
             return Ok(_response);
-
-
+        }
+        
+        [HttpGet("Assignments")]
+        public IActionResult Assignments()
+        {
+            _response = _repo.Assignments();
+            return Ok(_response);
+        }
+        
+        [HttpGet("Quiz")]
+        public IActionResult Quiz()
+        {
+            _response = _repo.Quizzes();
+            return Ok(_response);
         }
 
     }

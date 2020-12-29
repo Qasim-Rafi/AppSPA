@@ -210,8 +210,8 @@ namespace CoreWebApi.Data
                 {
                     ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
                 }
-                else if (ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day).FirstOrDefault() != null)
-                {                   
+                else if (ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault() != null)
+                {
                     ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));
                 }
                 else
@@ -266,9 +266,13 @@ namespace CoreWebApi.Data
                 {
                     ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
                 }
-                else if (ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day).FirstOrDefault() != null)
+                else if (ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault() != null)
                 {
-                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));                    
+                    var Time = ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
+                    if (Time != null && Time.Id != item.Id)
+                    {
+                        ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));
+                    }
                 }
                 else
                 {
@@ -605,7 +609,8 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetBirthdays()
         {
-            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date == DateTime.Now.Date && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID).Select(s => new
+            var NextTwoDays = DateTime.Now.AddDays(2);
+            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date >= DateTime.Now.Date && u.DateofBirth.Value.Date <= NextTwoDays.Date && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID).Select(s => new
             {
                 Id = s.Id,
                 FullName = s.FullName,

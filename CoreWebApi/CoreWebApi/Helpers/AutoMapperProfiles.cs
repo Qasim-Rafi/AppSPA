@@ -33,6 +33,7 @@ namespace CoreWebApi.Helpers
             CreateMap<QuizQuestions, QuizQuestionDtoForAdd>();
             CreateMap<QuizAnswers, QuizAnswerDtoForAdd>();
             CreateMap<Quizzes, QuizDtoForAdd>();
+            CreateMap<Quizzes, QuizDtoForLookupList>();
             // subject
             CreateMap<Subject, SubjectDtoForAdd>();
             CreateMap<Subject, SubjectDtoForEdit>();
@@ -43,6 +44,7 @@ namespace CoreWebApi.Helpers
             CreateMap<Assignment, AssignmentDtoForEdit>();
             CreateMap<Assignment, AssignmentDtoForDetail>();
             CreateMap<Assignment, AssignmentDtoForList>();        
+            CreateMap<Assignment, AssignmentDtoForLookupList>();        
             // attendance
             CreateMap<Attendance, AttendanceDtoForAdd>();
             CreateMap<Attendance, AttendanceDtoForEdit>();

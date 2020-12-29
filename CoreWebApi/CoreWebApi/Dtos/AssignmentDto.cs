@@ -85,4 +85,11 @@ namespace CoreWebApi.Dtos
         public string Description { get; set; }
         public List<IFormFile> files { get; set; }
     }
+
+    public class AssignmentDtoForLookupList
+    {
+        public int Id { get; set; }
+        public string AssignmentName { get; set; }       
+
+    }
 }
