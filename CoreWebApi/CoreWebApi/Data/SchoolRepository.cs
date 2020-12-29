@@ -88,12 +88,12 @@ namespace CoreWebApi.Data
                                    on main.TeacherId equals u.Id
                                    join s in _context.Subjects
                                    on main.SubjectId equals s.Id
-                                   join c in _context.Class
-                                   on main.ClassId equals c.Id
+                                   join cs in _context.ClassSections
+                                   on main.ClassSectionId equals cs.Id                                  
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
-                                   && c.Active == true
+                                   && cs.Active == true
                                    && u.Active == true
                                    select new TimeTableForListDto
                                    {
@@ -106,9 +106,9 @@ namespace CoreWebApi.Data
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
-                                       ClassId = main.ClassId,
-                                       Class = _context.Class.FirstOrDefault(m => m.Id == c.Id && m.Active == true).Name,
-                                       //Section = _context.Sections.FirstOrDefault(m => m.Id == c.SectionId && m.Active == true).SectionName,
+                                       ClassSectionId = main.ClassSectionId,
+                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                        IsBreak = l.IsBreak
                                    }).ToListAsync();
 
@@ -123,8 +123,8 @@ namespace CoreWebApi.Data
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
-                    StartTime = StartTimings[i].ToString(),//DateFormat.ToTime(StartTimings[i]),
-                    EndTime = EndTimings[i].ToString(),//DateFormat.ToTime(EndTimings[i]),
+                    StartTime = DateFormat.ToTime(StartTimings[i]),
+                    EndTime = DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
@@ -152,13 +152,13 @@ namespace CoreWebApi.Data
                                    on main.TeacherId equals u.Id
                                    join s in _context.Subjects
                                    on main.SubjectId equals s.Id
-                                   join c in _context.Class
-                                   on main.ClassId equals c.Id
+                                   join cs in _context.ClassSections
+                                   on main.ClassSectionId equals cs.Id                                  
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && main.Id == id
                                    && l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
-                                   && c.Active == true
+                                   && cs.Active == true
                                    && u.Active == true
                                    select new TimeTableForListDto
                                    {
@@ -171,9 +171,9 @@ namespace CoreWebApi.Data
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
-                                       ClassId = main.ClassId,
-                                       Class = _context.Class.FirstOrDefault(m => m.Id == c.Id && m.Active == true).Name,
-                                       //Section = _context.Sections.FirstOrDefault(m => m.Id == c.SectionId && m.Active == true).SectionName,
+                                       ClassSectionId = main.ClassSectionId,
+                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                        //IsBreak = l.IsBreak
                                    }).FirstOrDefaultAsync();
             if (TimeTable != null)
@@ -204,19 +204,19 @@ namespace CoreWebApi.Data
 
                 if (string.IsNullOrEmpty(item.StartTime) || string.IsNullOrEmpty(item.EndTime))
                 {
-                    ErrorMessages.Add("Please provide required fields Start Time and End Time");
+                    ErrorMessages.Add($"Please provide required fields Start Time and End Time of {item.Day}");
                 }
                 else if (StartTime >= EndTime)
                 {
-                    ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
+                    ErrorMessages.Add($"End Time {item.EndTime} should be greater then Start Time {item.StartTime} of {item.Day}");
                 }
                 else if (ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault() != null)
                 {
-                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));
+                    ErrorMessages.Add($"Start Time {item.StartTime} and End Time {item.EndTime} of {item.Day} is already exist");
                 }
-                else if (model.Where(m => Convert.ToDateTime(m.StartTime).TimeOfDay >= StartTime && Convert.ToDateTime(m.EndTime).TimeOfDay <= EndTime && m.Day == item.Day && m.RowNo != item.RowNo).FirstOrDefault() != null)
+                else if (model.Where(m => Convert.ToDateTime(m.StartTime).TimeOfDay >= StartTime && Convert.ToDateTime(m.EndTime).TimeOfDay <= EndTime && m.Day == item.Day && m.RowNo > item.RowNo).FirstOrDefault() != null)
                 {
-                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is overlapped", item.StartTime, item.EndTime, item.Day));
+                    ErrorMessages.Add($"Start Time {item.StartTime} and End Time {item.EndTime} of {item.Day} is overlapped");
                 }
                 else
                 {
@@ -264,18 +264,18 @@ namespace CoreWebApi.Data
 
                 if (string.IsNullOrEmpty(item.StartTime) || string.IsNullOrEmpty(item.EndTime))
                 {
-                    ErrorMessages.Add("Please provide required fields Start Time and End Time");
+                    ErrorMessages.Add($"Please provide required fields Start Time and End Time of {item.Day}");
                 }
                 else if (StartTime >= EndTime)
                 {
-                    ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
+                    ErrorMessages.Add($"End Time {item.EndTime} should be greater then Start Time {item.StartTime} of {item.Day}");
                 }
                 else if (ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault() != null)
                 {
                     var Time = ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
                     if (Time != null && Time.Id != item.Id)
                     {
-                        ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));
+                        ErrorMessages.Add($"Start Time {item.StartTime} and End Time {item.EndTime} of {item.Day} is already exist");
                     }
                     else
                     {
@@ -289,9 +289,9 @@ namespace CoreWebApi.Data
                         }
                     }
                 }
-                else if (model.Where(m => Convert.ToDateTime(m.StartTime).TimeOfDay >= StartTime && Convert.ToDateTime(m.EndTime).TimeOfDay <= EndTime && m.Day == item.Day && m.RowNo != item.RowNo).FirstOrDefault() != null)
+                else if (model.Where(m => Convert.ToDateTime(m.StartTime).TimeOfDay >= StartTime && Convert.ToDateTime(m.EndTime).TimeOfDay <= EndTime && m.Day == item.Day && m.RowNo > item.RowNo).FirstOrDefault() != null)
                 {
-                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is overlapped", item.StartTime, item.EndTime, item.Day));
+                    ErrorMessages.Add($"Start Time {item.StartTime} and End Time {item.EndTime} of {item.Day} is overlapped");
                 }
                 else
                 {
@@ -336,7 +336,7 @@ namespace CoreWebApi.Data
                         LectureId = item.LectureId,
                         TeacherId = item.TeacherId,
                         SubjectId = item.SubjectId,
-                        ClassId = item.ClassId,
+                        ClassSectionId = item.ClassSectionId,
                         Date = DateTime.Now
                     });
                 }

@@ -180,7 +180,7 @@ namespace CoreWebApi.Data
                 var userToCreate = new User
                 {
                     Username = model.Username,
-                    FullName = model.Username,
+                    FullName = model.FullName,
                     UserTypeId = (int)Enumm.UserType.Admin,
                     Email = model.Email,
                     SchoolBranchId = branch.Id,

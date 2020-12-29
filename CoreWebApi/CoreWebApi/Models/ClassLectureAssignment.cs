@@ -14,7 +14,7 @@ namespace CoreWebApi.Models
         public int Id { get; set; }       
         public int LectureId { get; set; }
         public int TeacherId { get; set; }
-        public int ClassId { get; set; }
+        public int ClassSectionId { get; set; }
         public int SubjectId { get; set; }       
         public DateTime Date { get; set; }
 
@@ -22,8 +22,8 @@ namespace CoreWebApi.Models
         public virtual LectureTiming LectureTiming { get; set; }
         [ForeignKey("TeacherId")]
         public virtual User User { get; set; }
-        [ForeignKey("ClassId")]
-        public virtual Class Class { get; set; }
+        [ForeignKey("ClassSectionId")]
+        public virtual ClassSection ClassSection { get; set; }
         [ForeignKey("SubjectId")]
         public virtual Subject Subject { get; set; }
     }

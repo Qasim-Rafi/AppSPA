@@ -118,6 +118,8 @@
     <Compile Remove="Migrations\20201223061519_UpdateAssignmentAddCol.Designer.cs" />
     <Compile Remove="Migrations\20201224124328_UpdateLectureTiming.cs" />
     <Compile Remove="Migrations\20201224124328_UpdateLectureTiming.Designer.cs" />
+    <Compile Remove="Migrations\20201229131513_RevertLectureTiming.cs" />
+    <Compile Remove="Migrations\20201229131513_RevertLectureTiming.Designer.cs" />
 
   </ItemGroup>
 
