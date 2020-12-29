@@ -60,6 +60,9 @@ namespace CoreWebApi.Data
         public DbSet<SubjectContent> SubjectContents { get; set; }
         public DbSet<SubjectContentDetail> SubjectContentDetails { get; set; }
         public DbSet<ClassSectionTransaction> ClassSectionTransactions { get; set; }
+        public DbSet<DocumentType> DocumentTypes { get; set; }
+        public DbSet<Planner> Planners { get; set; }
+        //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
 
 

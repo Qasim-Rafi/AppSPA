@@ -10,6 +10,7 @@ namespace CoreWebApi.IData
     public interface ISchoolRepository
     {
         Task<ServiceResponse<object>> SaveTimeSlots(List<TimeSlotsForAddDto> model);
+        Task<ServiceResponse<object>> UpdateTimeSlots(List<TimeSlotsForUpdateDto> model);
         Task<ServiceResponse<object>> SaveTimeTable(List<TimeTableForAddDto> model);
         Task<ServiceResponse<object>> UpdateTimeTable(int id, TimeTableForAddDto model);
         Task<ServiceResponse<object>> GetTimeSlots();

@@ -23,6 +23,11 @@ namespace CoreWebApi.Helpers
             BranchIdentifier,
             UserTypeId
         }
+        public enum DocumentType
+        {
+            Assignment = 1,
+            Quiz
+        }
     }
-    
+
 }

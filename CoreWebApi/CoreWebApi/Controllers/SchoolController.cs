@@ -82,6 +82,19 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPut("UpdateTimeSlots")]
+        public async Task<IActionResult> UpdateTimeSlots(List<TimeSlotsForUpdateDto> model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateTimeSlots(model);
+
+            return Ok(_response);
+
+        }
         [HttpPost("AddTimeTable")]
         public async Task<IActionResult> AddTimeTable(List<TimeTableForAddDto> model)
         {

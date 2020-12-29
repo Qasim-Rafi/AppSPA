@@ -64,6 +64,7 @@ namespace CoreWebApi.Data
             {
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
+                    Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
                     StartTime = StartTimings[i].ToString(),//DateFormat.ToTime(StartTimings[i]),
                     EndTime = EndTimings[i].ToString(),//DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
@@ -113,16 +114,7 @@ namespace CoreWebApi.Data
 
             var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
-            var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new
-            {
-                o.Id,
-                o.StartTime,
-                o.EndTime,
-                StartTimeToDisplay = DateFormat.ToTime(o.StartTime),
-                EndTimeToDisplay = DateFormat.ToTime(o.EndTime),
-                o.IsBreak,
-                o.Day,
-            }).ToListAsync();
+            var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             List<TimeSpan> StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
             List<TimeSpan> EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
@@ -130,6 +122,7 @@ namespace CoreWebApi.Data
             {
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
+                    Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
                     StartTime = StartTimings[i].ToString(),//DateFormat.ToTime(StartTimings[i]),
                     EndTime = EndTimings[i].ToString(),//DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
@@ -203,26 +196,30 @@ namespace CoreWebApi.Data
             var ListToCheck = _context.LectureTiming.ToList();
             List<string> ErrorMessages = new List<string>();
             List<LectureTiming> listToAdd = new List<LectureTiming>();
+            //List<LectureTiming> listToUpdate = new List<LectureTiming>();
             foreach (var item in model)
             {
+                var StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay;
+                var EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay;
+
                 if (string.IsNullOrEmpty(item.StartTime) || string.IsNullOrEmpty(item.EndTime))
                 {
                     ErrorMessages.Add("Please provide required fields Start Time and End Time");
                 }
-                else if (Convert.ToDateTime(item.StartTime).TimeOfDay < Convert.ToDateTime(item.EndTime).TimeOfDay)
+                else if (StartTime >= EndTime)
                 {
                     ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
                 }
-                else if (ListToCheck.Where(m => m.StartTime == Convert.ToDateTime(item.StartTime).TimeOfDay && m.EndTime == Convert.ToDateTime(item.EndTime).TimeOfDay).FirstOrDefault() != null)
-                {
-                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} is already exist", item.StartTime, item.EndTime));
+                else if (ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day).FirstOrDefault() != null)
+                {                   
+                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));
                 }
                 else
                 {
                     listToAdd.Add(new LectureTiming
                     {
-                        StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay,
-                        EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay,
+                        StartTime = StartTime,
+                        EndTime = EndTime,
                         IsBreak = item.IsBreak,
                         Day = item.Day,
                         RowNo = item.RowNo,
@@ -235,8 +232,64 @@ namespace CoreWebApi.Data
             {
                 await _context.LectureTiming.AddRangeAsync(listToAdd);
                 await _context.SaveChangesAsync();
+                //if (listToUpdate.Count > 0)
+                //{
+                //    _context.LectureTiming.UpdateRange(listToUpdate);
+                //    await _context.SaveChangesAsync();
+                //}
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Data = new { ErrorMessages };
+            }
+            return _serviceResponse;
+
+        }
+        public async Task<ServiceResponse<object>> UpdateTimeSlots(List<TimeSlotsForUpdateDto> model)
+        {
+            var ListToCheck = _context.LectureTiming.ToList();
+            List<string> ErrorMessages = new List<string>();
+            List<LectureTiming> listToUpdate = new List<LectureTiming>();
+            foreach (var item in model)
+            {
+                var StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay;
+                var EndTime = Convert.ToDateTime(item.EndTime).TimeOfDay;
+
+                if (string.IsNullOrEmpty(item.StartTime) || string.IsNullOrEmpty(item.EndTime))
+                {
+                    ErrorMessages.Add("Please provide required fields Start Time and End Time");
+                }
+                else if (StartTime >= EndTime)
+                {
+                    ErrorMessages.Add(string.Format("End Time {1} should be greater then Start Time {0}", item.StartTime, item.EndTime));
+                }
+                else if (ListToCheck.Where(m => m.StartTime == StartTime && m.EndTime == EndTime && m.Day == item.Day).FirstOrDefault() != null)
+                {
+                    ErrorMessages.Add(string.Format("Start Time {0} and End Time {1} of {2} is already exist", item.StartTime, item.EndTime, item.Day));                    
+                }
+                else
+                {
+                    var ToUpdate = ListToCheck.Where(m => m.Id == item.Id).FirstOrDefault();
+                    if (ToUpdate != null)
+                    {
+                        ToUpdate.StartTime = StartTime;
+                        ToUpdate.EndTime = EndTime;
+                        ToUpdate.IsBreak = item.IsBreak;
+                        listToUpdate.Add(ToUpdate);
+                    }
+                }
+
+            }
+            if (ErrorMessages.Count == 0)
+            {
+                _context.LectureTiming.UpdateRange(listToUpdate);
+                await _context.SaveChangesAsync();
+
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
             }
             else
             {

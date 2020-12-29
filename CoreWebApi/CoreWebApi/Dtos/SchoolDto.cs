@@ -20,6 +20,15 @@ namespace CoreWebApi.Dtos
         public string Day { get; set; }
         public int RowNo { get; set; }
     }
+    public class TimeSlotsForUpdateDto
+    {
+        public int Id { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public bool IsBreak { get; set; }
+        public string Day { get; set; }
+        public int RowNo { get; set; }
+    }
     public class TimeTableForAddDto
     {
         [Required]
@@ -50,17 +59,13 @@ namespace CoreWebApi.Dtos
     }
     public class TimeSlotsForListDto
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public bool IsBreak { get; set; }
         public string Day { get; set; }
     }
-    public class TimeSlotDaysDto
-    {
-        public string Day { get; set; }
-    }
-
+    
     public class EventsForListDto
     {
         public int Id { get; set; }
