@@ -8,14 +8,14 @@ namespace CoreWebApi.Helpers
     public class Enumm
     {
         public enum UserType
-        {
-            SuperAdmin = 1,
-            Admin,
+        {            
+            Admin = 1,
             Parent,
             Student,
             Teacher,
             Tutor,
-            OnlineStudent
+            OnlineStudent,
+            SuperAdmin
         }
         public enum ClaimType
         {
