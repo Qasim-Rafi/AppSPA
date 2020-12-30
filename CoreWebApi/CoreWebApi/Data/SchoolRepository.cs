@@ -331,7 +331,7 @@ namespace CoreWebApi.Data
                 {
                     if (!string.IsNullOrEmpty(item.LectureId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
                     {
-                        if (item.Id == 0)
+                        if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
                         {
                             listToAdd.Add(new ClassLectureAssignment
                             {
