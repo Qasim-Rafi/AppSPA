@@ -326,25 +326,50 @@ namespace CoreWebApi.Data
             try
             {
                 List<ClassLectureAssignment> listToAdd = new List<ClassLectureAssignment>();
+                List<ClassLectureAssignment> listToUpdate = new List<ClassLectureAssignment>();
                 foreach (var item in model)
                 {
                     if (!string.IsNullOrEmpty(item.LectureId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
                     {
-                        listToAdd.Add(new ClassLectureAssignment
+                        if (string.IsNullOrEmpty(item.Id.ToString()) && item.Id == 0)
                         {
-                            LectureId = item.LectureId,
-                            TeacherId = item.TeacherId,
-                            SubjectId = item.SubjectId,
-                            ClassSectionId = item.ClassSectionId,
-                            Date = DateTime.Now
-                        });
+                            listToAdd.Add(new ClassLectureAssignment
+                            {
+                                LectureId = item.LectureId,
+                                TeacherId = item.TeacherId,
+                                SubjectId = item.SubjectId,
+                                ClassSectionId = item.ClassSectionId,
+                                Date = DateTime.Now
+                            });
+                        }
+                        else
+                        {
+                            var ToUpdate = await _context.ClassLectureAssignment.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
+                            if (ToUpdate != null)
+                            {
+                                ToUpdate.LectureId = item.LectureId;
+                                ToUpdate.TeacherId = item.TeacherId;
+                                listToUpdate.Add(ToUpdate);
+                            }
+
+                        }
+
                     }
                 }
-
-                await _context.ClassLectureAssignment.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Added;
+                if (listToAdd.Count() > 0)
+                {
+                    await _context.ClassLectureAssignment.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Added;
+                }
+                else if (listToUpdate.Count() > 0)
+                {
+                    _context.ClassLectureAssignment.UpdateRange(listToUpdate);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Updated;
+                }
                 return _serviceResponse;
 
             }

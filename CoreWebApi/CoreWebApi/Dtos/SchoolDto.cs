@@ -31,6 +31,7 @@ namespace CoreWebApi.Dtos
     }
     public class TimeTableForAddDto
     {
+        public int Id { get; set; }
         //[Required]
         public int LectureId { get; set; }
         // [Required]
