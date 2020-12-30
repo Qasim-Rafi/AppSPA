@@ -89,7 +89,7 @@ namespace CoreWebApi.Data
                                    join s in _context.Subjects
                                    on main.SubjectId equals s.Id
                                    join cs in _context.ClassSections
-                                   on main.ClassSectionId equals cs.Id                                  
+                                   on main.ClassSectionId equals cs.Id
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
@@ -109,7 +109,9 @@ namespace CoreWebApi.Data
                                        ClassSectionId = main.ClassSectionId,
                                        Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
                                        Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
-                                       IsBreak = l.IsBreak
+                                       IsBreak = l.IsBreak,
+                                       RowNo = l.RowNo
+
                                    }).ToListAsync();
 
             var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
@@ -153,7 +155,7 @@ namespace CoreWebApi.Data
                                    join s in _context.Subjects
                                    on main.SubjectId equals s.Id
                                    join cs in _context.ClassSections
-                                   on main.ClassSectionId equals cs.Id                                  
+                                   on main.ClassSectionId equals cs.Id
                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
                                    && main.Id == id
                                    && l.SchoolBranchId == _LoggedIn_BranchID
@@ -196,7 +198,6 @@ namespace CoreWebApi.Data
             var ListToCheck = _context.LectureTiming.ToList();
             List<string> ErrorMessages = new List<string>();
             List<LectureTiming> listToAdd = new List<LectureTiming>();
-            //List<LectureTiming> listToUpdate = new List<LectureTiming>();
             foreach (var item in model)
             {
                 var StartTime = Convert.ToDateTime(item.StartTime).TimeOfDay;
@@ -236,11 +237,7 @@ namespace CoreWebApi.Data
             {
                 await _context.LectureTiming.AddRangeAsync(listToAdd);
                 await _context.SaveChangesAsync();
-                //if (listToUpdate.Count > 0)
-                //{
-                //    _context.LectureTiming.UpdateRange(listToUpdate);
-                //    await _context.SaveChangesAsync();
-                //}
+
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
             }
@@ -331,14 +328,17 @@ namespace CoreWebApi.Data
                 List<ClassLectureAssignment> listToAdd = new List<ClassLectureAssignment>();
                 foreach (var item in model)
                 {
-                    listToAdd.Add(new ClassLectureAssignment
+                    if (!string.IsNullOrEmpty(item.LectureId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
                     {
-                        LectureId = item.LectureId,
-                        TeacherId = item.TeacherId,
-                        SubjectId = item.SubjectId,
-                        ClassSectionId = item.ClassSectionId,
-                        Date = DateTime.Now
-                    });
+                        listToAdd.Add(new ClassLectureAssignment
+                        {
+                            LectureId = item.LectureId,
+                            TeacherId = item.TeacherId,
+                            SubjectId = item.SubjectId,
+                            ClassSectionId = item.ClassSectionId,
+                            Date = DateTime.Now
+                        });
+                    }
                 }
 
                 await _context.ClassLectureAssignment.AddRangeAsync(listToAdd);

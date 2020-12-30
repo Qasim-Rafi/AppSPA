@@ -82,10 +82,15 @@ namespace CoreWebApi.Helpers
         }
         public static bool IsPropertyExist(dynamic settings, string name)
         {
-            if (settings is ExpandoObject)
-                return ((IDictionary<string, object>)settings).ContainsKey(name);
+            if (settings != null)
+            {
+                if (settings is ExpandoObject)
+                    return ((IDictionary<string, object>)settings).ContainsKey(name);
 
-            return settings.GetType().GetProperty(name) != null;
+                return settings.GetType().GetProperty(name) != null;
+            }
+            else
+                return false;
         }
     }
 }
