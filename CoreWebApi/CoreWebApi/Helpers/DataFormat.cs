@@ -52,6 +52,13 @@ namespace CoreWebApi.Helpers
             return dt;
            
         }
+        public static string To24HRTime(TimeSpan timeSpan)
+        {
+            DateTime time = DateTime.Today.Add(timeSpan);
+            string dt = time.ToString("hh:mm:ss"); 
+            return dt;
+           
+        }
     }
 
 }
