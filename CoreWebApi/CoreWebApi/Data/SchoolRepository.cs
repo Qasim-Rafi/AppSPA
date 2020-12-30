@@ -100,8 +100,8 @@ namespace CoreWebApi.Data
                                        Id = main.Id,
                                        LectureId = main.LectureId,
                                        Day = l.Day,
-                                       StartTime = DateFormat.ToTime(l.StartTime),
-                                       EndTime = DateFormat.ToTime(l.EndTime),
+                                       StartTime = l.StartTime.ToString(),//DateFormat.ToTime(l.StartTime),
+                                       EndTime = l.EndTime.ToString(),//DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId,
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
@@ -125,8 +125,8 @@ namespace CoreWebApi.Data
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
-                    StartTime = DateFormat.ToTime(StartTimings[i]),
-                    EndTime = DateFormat.ToTime(EndTimings[i]),
+                    StartTime = StartTimings[i].ToString(),//DateFormat.ToTime(StartTimings[i]),
+                    EndTime = EndTimings[i].ToString(),//DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
@@ -167,8 +167,8 @@ namespace CoreWebApi.Data
                                        Id = main.Id,
                                        LectureId = main.LectureId,
                                        Day = l.Day,
-                                       StartTime = DateFormat.ToTime(l.StartTime),
-                                       EndTime = DateFormat.ToTime(l.EndTime),
+                                       StartTime = l.StartTime.ToString(),// DateFormat.ToTime(l.StartTime),
+                                       EndTime = l.EndTime.ToString(),//DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId,
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
