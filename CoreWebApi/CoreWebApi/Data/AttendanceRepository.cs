@@ -1,4 +1,5 @@
-﻿using CoreWebApi.Dtos;
+﻿using AutoMapper;
+using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
@@ -20,13 +21,15 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
-        public AttendanceRepository(DataContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly IMapper _mapper;
+        public AttendanceRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _mapper = mapper;
         }
         public async Task<bool> AttendanceExists(int userId)
         {
@@ -34,20 +37,25 @@ namespace CoreWebApi.Data
                 return true;
             return false;
         }
-        public async Task<Attendance> GetAttendance(int id)
+        public async Task<ServiceResponse<object>> GetAttendance(int id)
         {
             var attendance = await _context.Attendances.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync(u => u.Id == id);
-
-            return attendance;
+            var ToReturn = _mapper.Map<AttendanceDtoForDetail>(attendance);
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
-        public async Task<IEnumerable<Attendance>> GetAttendances()
+        public async Task<ServiceResponse<List<Attendance>>> GetAttendances()
         {
+            ServiceResponse<List<Attendance>> serviceResponse = new ServiceResponse<List<Attendance>>();
             var attendances = await _context.Attendances.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-
-            return attendances;
+            
+            serviceResponse.Data = attendances;
+            serviceResponse.Success = true;
+            return serviceResponse;
         }
-        public async Task<string> AddAttendance(List<AttendanceDtoForAdd> list)
+        public async Task<ServiceResponse<object>> AddAttendance(List<AttendanceDtoForAdd> list)
         {
 
             foreach (var attendance in list)
@@ -83,11 +91,12 @@ namespace CoreWebApi.Data
                 }
             }
 
-
-            return StatusCodes.Status200OK.ToString();
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
 
         }
-        public async Task<Attendance> EditAttendance(int id, AttendanceDtoForEdit attendance)
+        public async Task<ServiceResponse<object>> EditAttendance(int id, AttendanceDtoForEdit attendance)
         {
 
             Attendance dbObj = _context.Attendances.FirstOrDefault(s => s.Id.Equals(id) && s.SchoolBranchId == _LoggedIn_BranchID);
@@ -99,10 +108,12 @@ namespace CoreWebApi.Data
                 dbObj.Late = attendance.Late;
                 await _context.SaveChangesAsync();
             }
-            return dbObj;
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
 
         }
 
-       
+
     }
 }

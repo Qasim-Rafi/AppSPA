@@ -40,8 +40,8 @@ namespace CoreWebApi.Controllers
         [HttpGet] // not in use
         public async Task<IActionResult> GetAttendancees()
         {
-            var attendances = await _repo.GetAttendances();
-            var ToReturn = attendances.Select(o => new AttendanceDtoForList
+            var response = await _repo.GetAttendances();
+            var ToReturn = response.Data.Select(o => new AttendanceDtoForList
             {
                 UserId = o.UserId,
                 Present = o.Present,
@@ -100,9 +100,8 @@ namespace CoreWebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAttendance(int id)
         {
-            var attendance = await _repo.GetAttendance(id);
-            var ToReturn = _mapper.Map<AttendanceDtoForDetail>(attendance);
-            return Ok(ToReturn);
+            _response = await _repo.GetAttendance(id);
+            return Ok(_response);
         }
         [HttpPost("Add")]
         public async Task<IActionResult> Post(List<AttendanceDtoForAdd> list)
@@ -111,9 +110,9 @@ namespace CoreWebApi.Controllers
 
             //if (await _repo.AttendanceExists(attendance.UserId))
             //    return BadRequest(new { message = "Attendance Already Exist" });
-            var createdObj = await _repo.AddAttendance(list);
+            _response = await _repo.AddAttendance(list);
 
-            return StatusCode(StatusCodes.Status201Created);
+            return Ok(_response);
 
         }
         [HttpPut("{id}")]
@@ -122,9 +121,9 @@ namespace CoreWebApi.Controllers
 
 
 
-            var updatedObj = await _repo.EditAttendance(id, attendance);
+            _response = await _repo.EditAttendance(id, attendance);
 
-            return StatusCode(StatusCodes.Status200OK);
+            return Ok(_response);
 
         }
        
