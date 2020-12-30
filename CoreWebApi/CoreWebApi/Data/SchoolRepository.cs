@@ -331,7 +331,7 @@ namespace CoreWebApi.Data
                 {
                     if (!string.IsNullOrEmpty(item.LectureId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
                     {
-                        if (string.IsNullOrEmpty(item.Id.ToString()) && item.Id == 0)
+                        if (item.Id == 0)
                         {
                             listToAdd.Add(new ClassLectureAssignment
                             {
@@ -363,7 +363,7 @@ namespace CoreWebApi.Data
                     _serviceResponse.Success = true;
                     _serviceResponse.Message = CustomMessage.Added;
                 }
-                else if (listToUpdate.Count() > 0)
+                if (listToUpdate.Count() > 0)
                 {
                     _context.ClassLectureAssignment.UpdateRange(listToUpdate);
                     await _context.SaveChangesAsync();
