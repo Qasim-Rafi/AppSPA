@@ -88,8 +88,6 @@ namespace CoreWebApi.Data
                                                  && user.SchoolBranchId == _LoggedIn_BranchID
                                                  select user).CountAsync();
 
-
-
                 int PresentTeacherCount = await (from user in _context.Users
                                                  join attendance in _context.Attendances
                                                  on user.Id equals attendance.UserId
@@ -99,12 +97,39 @@ namespace CoreWebApi.Data
                                                  && user.Active == true
                                                  && user.SchoolBranchId == _LoggedIn_BranchID
                                                  select user).CountAsync();
-                string StudentPercentage = "0";
-                string TeacherPercentage = "0";
+                int AbsentStudentCount = await (from user in _context.Users
+                                                join attendance in _context.Attendances
+                                                on user.Id equals attendance.UserId
+                                                where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                where attendance.Absent == true
+                                                && user.UserTypeId == (int)Enumm.UserType.Student
+                                                && user.Active == true
+                                                && user.SchoolBranchId == _LoggedIn_BranchID
+                                                select user).CountAsync();
+
+
+
+                int AbsentTeacherCount = await (from user in _context.Users
+                                                join attendance in _context.Attendances
+                                                on user.Id equals attendance.UserId
+                                                where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                where attendance.Absent == true
+                                                && user.UserTypeId == (int)Enumm.UserType.Teacher
+                                                && user.Active == true
+                                                && user.SchoolBranchId == _LoggedIn_BranchID
+                                                select user).CountAsync();
+                string StudentPresentPercentage = "0";
+                string TeacherPresentPercentage = "0";
+                string StudentAbsentPercentage = "0";
+                string TeacherAbsentPercentage = "0";
                 if (PresentStudentCount > 0)
-                    StudentPercentage = ((decimal)PresentStudentCount / StudentCount * 100).ToString("#");
+                    StudentPresentPercentage = ((decimal)PresentStudentCount / StudentCount * 100).ToString("#");
                 if (PresentTeacherCount > 0)
-                    TeacherPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
+                    TeacherPresentPercentage = ((decimal)PresentTeacherCount / TeacherCount * 100).ToString("#");
+                if (AbsentStudentCount > 0)
+                    StudentAbsentPercentage = ((decimal)AbsentStudentCount / StudentCount * 100).ToString("#");
+                if (AbsentTeacherCount > 0)
+                    TeacherAbsentPercentage = ((decimal)AbsentTeacherCount / TeacherCount * 100).ToString("#");
 
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 
@@ -148,7 +173,15 @@ namespace CoreWebApi.Data
                 StudentMonthWisePercentage = StudentMonthWisePercentage.OrderBy(m => m.Month).ToList();
                 TeacherMonthWisePercentage = TeacherMonthWisePercentage.OrderBy(m => m.Month).ToList();
 
-                _serviceResponse.Data = new { StudentPercentage, TeacherPercentage, StudentMonthWisePercentage, TeacherMonthWisePercentage };
+                _serviceResponse.Data = new
+                {
+                    StudentPresentPercentage,
+                    StudentAbsentPercentage,
+                    TeacherPresentPercentage,
+                    TeacherAbsentPercentage,
+                    StudentMonthWisePercentage,
+                    TeacherMonthWisePercentage
+                };
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
@@ -159,7 +192,7 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-       
+
         public async Task<ServiceResponse<object>> GetLoggedUserAttendancePercentage()
         {
             var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
