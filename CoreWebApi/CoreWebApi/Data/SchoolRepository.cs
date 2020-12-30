@@ -67,6 +67,8 @@ namespace CoreWebApi.Data
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
                     StartTime = DateFormat.To24HRTime(StartTimings[i]),//DateFormat.ToTime(StartTimings[i]),
                     EndTime = DateFormat.To24HRTime(EndTimings[i]),//DateFormat.ToTime(EndTimings[i]),
+                    StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
+                    EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
@@ -102,6 +104,8 @@ namespace CoreWebApi.Data
                                        Day = l.Day,
                                        StartTime = DateFormat.To24HRTime(l.StartTime),//DateFormat.ToTime(l.StartTime),
                                        EndTime = DateFormat.To24HRTime(l.EndTime),//DateFormat.ToTime(l.EndTime),
+                                       StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
+                                       EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId,
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
@@ -127,6 +131,8 @@ namespace CoreWebApi.Data
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
                     StartTime = DateFormat.To24HRTime(StartTimings[i]),//DateFormat.ToTime(StartTimings[i]),
                     EndTime = DateFormat.To24HRTime(EndTimings[i]),//DateFormat.ToTime(EndTimings[i]),
+                    StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
+                    EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
@@ -169,6 +175,8 @@ namespace CoreWebApi.Data
                                        Day = l.Day,
                                        StartTime = DateFormat.To24HRTime(l.StartTime),// DateFormat.ToTime(l.StartTime),
                                        EndTime = DateFormat.To24HRTime(l.EndTime),//DateFormat.ToTime(l.EndTime),
+                                       StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
+                                       EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId,
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
@@ -329,7 +337,7 @@ namespace CoreWebApi.Data
                 List<ClassLectureAssignment> listToUpdate = new List<ClassLectureAssignment>();
                 foreach (var item in model)
                 {
-                    if (!string.IsNullOrEmpty(item.LectureId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
+                    if (!string.IsNullOrEmpty(item.TeacherId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
                     {
                         if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
                         {

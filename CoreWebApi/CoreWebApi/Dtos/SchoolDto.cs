@@ -49,6 +49,8 @@ namespace CoreWebApi.Dtos
         public int LectureId { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public string StartTimeToDisplay { get; set; }
+        public string EndTimeToDisplay { get; set; }
         public int TeacherId { get; set; }
         public string Teacher { get; set; }
         public int SubjectId { get; set; }
@@ -64,6 +66,8 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public string StartTimeToDisplay { get; set; }
+        public string EndTimeToDisplay { get; set; }
         public bool IsBreak { get; set; }
         public string Day { get; set; }
     }
