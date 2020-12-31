@@ -358,6 +358,10 @@ namespace CoreWebApi.Data
                     serviceResponse.Success = false;
                     serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
                 }
+                else
+                {
+                    throw ex;
+                }
                 return serviceResponse;
             }
         }
@@ -392,9 +396,11 @@ namespace CoreWebApi.Data
                     dbUser.DateofBirth = DateOfBirth;
                     dbUser.Gender = user.Gender;
                     dbUser.Active = user.Active;
-                    dbUser.UserTypeId = user.UserTypeId;
-                    dbUser.Role = UserTypes.Where(m => m.Id == user.UserTypeId).FirstOrDefault()?.Name;
-
+                    if (user.UserTypeId > 0)
+                    {
+                        dbUser.Role = UserTypes.Where(m => m.Id == user.UserTypeId).FirstOrDefault()?.Name;
+                        dbUser.UserTypeId = user.UserTypeId;
+                    }
                     if (!string.IsNullOrEmpty(user.OldPassword))
                     {
                         if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
@@ -487,6 +493,11 @@ namespace CoreWebApi.Data
                     serviceResponse.Success = false;
                     serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
                 }
+                else
+                {
+                    throw ex;
+                }
+
                 return serviceResponse;
             }
         }

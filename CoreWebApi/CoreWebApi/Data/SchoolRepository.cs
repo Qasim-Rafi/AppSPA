@@ -58,7 +58,7 @@ namespace CoreWebApi.Data
             }).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
             var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.StartTime)).Distinct().ToListAsync();
-            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.ToTime(m.EndTime)).Distinct().ToListAsync();
+            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.EndTime)).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
             for (int i = 0; i < StartTimings.Count; i++)
             {
@@ -86,24 +86,29 @@ namespace CoreWebApi.Data
             var TimeTable = await (from main in _context.ClassLectureAssignment
                                    join l in _context.LectureTiming
                                    on main.LectureId equals l.Id
+
                                    join u in _context.Users
-                                   on main.TeacherId equals u.Id
+                                   on main.TeacherId equals u.Id into newU
+                                   from u in newU.DefaultIfEmpty()
+
                                    join s in _context.Subjects
                                    on main.SubjectId equals s.Id
+
                                    join cs in _context.ClassSections
                                    on main.ClassSectionId equals cs.Id
-                                   where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                   && l.SchoolBranchId == _LoggedIn_BranchID
+
+                                   where //u.UserTypeId == (int)Enumm.UserType.Teacher
+                                   l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
                                    && cs.Active == true
-                                   && u.Active == true
+                                   //&& u.Active == true
                                    select new TimeTableForListDto
                                    {
                                        Id = main.Id,
                                        LectureId = main.LectureId,
                                        Day = l.Day,
-                                       StartTime = DateFormat.To24HRTime(l.StartTime),//DateFormat.ToTime(l.StartTime),
-                                       EndTime = DateFormat.To24HRTime(l.EndTime),//DateFormat.ToTime(l.EndTime),
+                                       StartTime = DateFormat.To24HRTime(l.StartTime),
+                                       EndTime = DateFormat.To24HRTime(l.EndTime),
                                        StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
                                        EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId.Value,
@@ -115,8 +120,7 @@ namespace CoreWebApi.Data
                                        Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                        IsBreak = l.IsBreak,
                                        RowNo = l.RowNo
-
-                                   }).ToListAsync();
+                                   }).ToListAsync(); //.Where(m => m.Teacher != null)
 
             var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
             Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
@@ -129,8 +133,8 @@ namespace CoreWebApi.Data
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
-                    StartTime = DateFormat.To24HRTime(StartTimings[i]),//DateFormat.ToTime(StartTimings[i]),
-                    EndTime = DateFormat.To24HRTime(EndTimings[i]),//DateFormat.ToTime(EndTimings[i]),
+                    StartTime = DateFormat.To24HRTime(StartTimings[i]),
+                    EndTime = DateFormat.To24HRTime(EndTimings[i]),
                     StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
                     EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
@@ -156,18 +160,22 @@ namespace CoreWebApi.Data
             var TimeTable = await (from main in _context.ClassLectureAssignment
                                    join l in _context.LectureTiming
                                    on main.LectureId equals l.Id
+
                                    join u in _context.Users
-                                   on main.TeacherId equals u.Id
+                                   on main.TeacherId equals u.Id into newU
+                                   from u in newU.DefaultIfEmpty()
+
                                    join s in _context.Subjects
                                    on main.SubjectId equals s.Id
+
                                    join cs in _context.ClassSections
                                    on main.ClassSectionId equals cs.Id
-                                   where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                   && main.Id == id
-                                   && l.SchoolBranchId == _LoggedIn_BranchID
+
+                                   where //u.UserTypeId == (int)Enumm.UserType.Teacher
+                                   l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
                                    && cs.Active == true
-                                   && u.Active == true
+                                   //&& u.Active == true
                                    select new TimeTableForListDto
                                    {
                                        Id = main.Id,
@@ -388,6 +396,10 @@ namespace CoreWebApi.Data
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
                 }
+                else
+                {
+                    throw ex;
+                }
                 return _serviceResponse;
             }
         }
@@ -421,6 +433,10 @@ namespace CoreWebApi.Data
                 {
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+                else
+                {
+                    throw ex;
                 }
             }
 
@@ -484,6 +500,10 @@ namespace CoreWebApi.Data
                 {
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+                else
+                {
+                    throw ex;
                 }
                 return _serviceResponse;
             }
@@ -610,6 +630,10 @@ namespace CoreWebApi.Data
                 {
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+                else
+                {
+                    throw ex;
                 }
             }
             return _serviceResponse;
@@ -757,26 +781,6 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetEmptyTimeSlots()
-        {
 
-            var EmptySlots = await (from main in _context.ClassLectureAssignment
-                                        //join l in _context.LectureTiming
-                                        //on main.LectureId equals l.Id
-                                    join u in _context.Users
-                                    on main.TeacherId equals u.Id into newU
-                                    from u in newU.DefaultIfEmpty()
-                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                    && u.SchoolBranchId == _LoggedIn_BranchID
-                                    && u.Active == true
-                                    select new
-                                    {
-                                        TeacherId = main.TeacherId == null ? 0 : main.TeacherId,
-                                        UserId = u.Id,
-                                    }).ToListAsync();
-            _serviceResponse.Data = EmptySlots;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
-        }
     }
 }

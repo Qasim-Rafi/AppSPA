@@ -159,6 +159,10 @@ namespace CoreWebApi.Data
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
                 }
+                else
+                {
+                    throw ex;
+                }
             }
             return _serviceResponse;
         }
@@ -201,6 +205,10 @@ namespace CoreWebApi.Data
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
                 }
+                else
+                {
+                    throw ex;
+                }
             }
             return _serviceResponse;
 
@@ -232,6 +240,10 @@ namespace CoreWebApi.Data
                 {
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+                else
+                {
+                    throw ex;
                 }
             }
             return _serviceResponse;
@@ -277,6 +289,10 @@ namespace CoreWebApi.Data
                 {
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+                else
+                {
+                    throw ex;
                 }
             }
             return _serviceResponse;

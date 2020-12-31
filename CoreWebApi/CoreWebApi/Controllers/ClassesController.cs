@@ -111,8 +111,7 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetClassSectionMapping()
         {
             IEnumerable<ClassSection> list = await _repo.GetClassSectionMapping();
-
-            var ToReturn = list.Select(o => new ClassSectionForListDto
+            var ToReturn = list.Where(m => _context.Sections.FirstOrDefault(n => n.Id == m.SectionId)?.Active == true).Select(o => new ClassSectionForListDto
             {
                 ClassSectionId = o.Id,
                 SchoolAcademyId = o.SchoolBranchId,

@@ -26,6 +26,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using static CoreWebApi.Helpers.GenericFunctions;
 
 namespace CoreWebApi
 {
@@ -99,6 +100,7 @@ namespace CoreWebApi
                 {
                     services.AddSwaggerGen(swagger =>
                     {
+                        swagger.DocumentFilter<ApplyDocumentVendorExtensions>();
                         //This is to generate the Default UI of Swagger Documentation  
                         swagger.SwaggerDoc("v2", new OpenApiInfo
                         {
@@ -131,7 +133,9 @@ namespace CoreWebApi
 
                         }
                         });
+
                     });
+
                 }
 
 
@@ -155,7 +159,7 @@ namespace CoreWebApi
                 {
                     app.UseDeveloperExceptionPage();
                     app.UseSwagger();
-                    app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v2/swagger.json", "PlaceInfo Services"));
+                    app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v2/swagger.json", "PlaceInfo Services"); options.DefaultModelsExpandDepth(-1); });
 
                 }
 

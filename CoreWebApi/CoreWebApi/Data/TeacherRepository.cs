@@ -62,5 +62,93 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetEmptyTimeSlots()
+        {
+            var EmptyTimeSlots = await (from main in _context.ClassLectureAssignment
+                                        join l in _context.LectureTiming
+                                        on main.LectureId equals l.Id
+
+                                        join u in _context.Users
+                                        on main.TeacherId equals u.Id into newU
+                                        from u in newU.DefaultIfEmpty()
+
+                                        join s in _context.Subjects
+                                        on main.SubjectId equals s.Id
+
+                                        join cs in _context.ClassSections
+                                        on main.ClassSectionId equals cs.Id
+
+                                        where //u.UserTypeId == (int)Enumm.UserType.Teacher
+                                        l.SchoolBranchId == _LoggedIn_BranchID
+                                        && s.Active == true
+                                        && cs.Active == true
+                                        //&& u.Active == true
+                                        select new TimeTableForListDto
+                                        {
+                                            Id = main.Id,
+                                            LectureId = main.LectureId,
+                                            Day = l.Day,
+                                            StartTime = DateFormat.To24HRTime(l.StartTime),
+                                            EndTime = DateFormat.To24HRTime(l.EndTime),
+                                            StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
+                                            EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
+                                            TeacherId = main.TeacherId.Value,
+                                            Teacher = u.FullName,
+                                            SubjectId = main.SubjectId,
+                                            Subject = s.Name,
+                                            ClassSectionId = main.ClassSectionId,
+                                            Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                            Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                            IsBreak = l.IsBreak,
+                                            RowNo = l.RowNo
+                                        }).Where(m => m.Teacher == null).ToListAsync();
+
+            _serviceResponse.Data = EmptyTimeSlots;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetEmptyTeachers()
+        {
+            var EmptyTeachers = await (from u in _context.Users
+
+                                       join main in _context.ClassLectureAssignment
+                                       on u.Id equals main.TeacherId into newMain
+                                       from main in newMain.DefaultIfEmpty()
+
+                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                       && u.SchoolBranchId == _LoggedIn_BranchID
+                                       && u.Active == true
+                                       select new
+                                       {
+                                           TeacherId = u.Id,
+                                           Name = u.FullName,
+                                       }).ToListAsync();
+
+            _serviceResponse.Data = EmptyTeachers;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> AddSubstitution(SubstitutionDtoForAdd model)
+        {
+            var ToAdd = new Substitution
+            {
+                ClassSectionId = model.ClassSectionId,
+                SubjectId = model.SubjectId,
+                TeacherId = model.TeacherId,
+                SubstituteTeacherId = model.SubstituteTeacherId,
+                Remarks = model.Remarks,
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+                CreatedDate = DateTime.Now,
+            };
+            await _context.Substitutions.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

@@ -10,6 +10,9 @@ namespace CoreWebApi.IData
     public interface ITeacherRepository
     {
         Task<ServiceResponse<object>> AddPlanner(PlannerDtoForAdd model);
+        Task<ServiceResponse<object>> AddSubstitution(SubstitutionDtoForAdd model);
         Task<ServiceResponse<object>> GetPlanners();
+        Task<ServiceResponse<object>> GetEmptyTimeSlots();
+        Task<ServiceResponse<object>> GetEmptyTeachers();
     }
 }

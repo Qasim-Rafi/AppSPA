@@ -34,7 +34,7 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpPost("AddPlanner")]
-        public async Task<IActionResult> Submit(PlannerDtoForAdd model)
+        public async Task<IActionResult> AddPlanner(PlannerDtoForAdd model)
         {
 
             if (!ModelState.IsValid)
@@ -43,6 +43,40 @@ namespace CoreWebApi.Controllers
             }
 
             _response = await _repo.AddPlanner(model);
+
+            return Ok(_response);
+
+        }
+        [HttpGet("GetEmptyTimeSlots")]
+        public async Task<IActionResult> GetEmptyTimeSlots()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetEmptyTimeSlots();
+            return Ok(_response);
+        }
+        [HttpGet("GetEmptyTeachers")]
+        public async Task<IActionResult> GetEmptyTeachers()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetEmptyTeachers();
+            return Ok(_response);
+        }
+        [HttpPost("AddSubstitution")]
+        public async Task<IActionResult> AddSubstitution(SubstitutionDtoForAdd model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.AddSubstitution(model);
 
             return Ok(_response);
 

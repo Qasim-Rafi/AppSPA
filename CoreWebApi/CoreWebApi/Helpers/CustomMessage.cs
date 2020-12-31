@@ -14,6 +14,7 @@ namespace CoreWebApi.Helpers
         public const string RecordDeActivated = "Record updated and de-activated successfully";
         public const string PasswordNotMatched = "Given password does not match";
         public const string UnableToAdd = "Unable to add data";
+        public const string SomeErrorOccured = "Some error occured";
         public const string UserAlreadyExist = "User already exist";
         public const string RecordAlreadyExist = "Record already exist";
         public const string ChildRecordExist = "Record can't be deleted, because it's child record(s) exist in another table";

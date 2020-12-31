@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -91,6 +93,23 @@ namespace CoreWebApi.Helpers
             }
             else
                 return false;
+        }
+        public class ApplyDocumentVendorExtensions : IDocumentFilter
+        {
+            public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+            {
+
+                var pathsToRemove = swaggerDoc.Paths
+                .Where(pathItem => pathItem.Key.Contains("/WeatherForecast")
+                || pathItem.Key.Contains("api/Leaves") 
+                || pathItem.Key.Contains("api/Values"))
+                .ToList();
+
+                foreach (var item in pathsToRemove)
+                {
+                    swaggerDoc.Paths.Remove(item.Key);
+                }
+            }
         }
     }
 }

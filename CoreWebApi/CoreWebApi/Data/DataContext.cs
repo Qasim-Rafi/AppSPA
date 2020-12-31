@@ -62,6 +62,7 @@ namespace CoreWebApi.Data
         public DbSet<ClassSectionTransaction> ClassSectionTransactions { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<Planner> Planners { get; set; }
+        public DbSet<Substitution> Substitutions { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
 

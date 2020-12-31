@@ -4,14 +4,16 @@ using CoreWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20201231105611_AddSubstitution")]
+    partial class AddSubstitution
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1190,6 +1192,9 @@ namespace CoreWebApi.Migrations
                     b.Property<int>("SubstituteTeacherId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SubstitutedTeacherId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("TeacherId")
                         .HasColumnType("int");
 
@@ -1203,7 +1208,7 @@ namespace CoreWebApi.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.HasIndex("SubstituteTeacherId");
+                    b.HasIndex("SubstitutedTeacherId");
 
                     b.ToTable("Substitutions");
                 });
@@ -1862,9 +1867,8 @@ namespace CoreWebApi.Migrations
 
                     b.HasOne("CoreWebApi.Models.User", "SubstituteTeacher")
                         .WithMany()
-                        .HasForeignKey("SubstituteTeacherId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("SubstitutedTeacherId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.UploadedLecture", b =>
