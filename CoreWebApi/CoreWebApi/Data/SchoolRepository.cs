@@ -48,8 +48,8 @@ namespace CoreWebApi.Data
             var Timings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new
             {
                 o.Id,
-                o.StartTime,
-                o.EndTime,
+                StartTime = DateFormat.To24HRTime(o.StartTime),
+                EndTime = DateFormat.To24HRTime(o.EndTime),
                 StartTimeToDisplay = DateFormat.ToTime(o.StartTime),
                 EndTimeToDisplay = DateFormat.ToTime(o.EndTime),
                 o.IsBreak,
@@ -57,18 +57,18 @@ namespace CoreWebApi.Data
                 o.RowNo,
             }).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
-            var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
-            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
+            var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.StartTime)).Distinct().ToListAsync();
+            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.ToTime(m.EndTime)).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
             for (int i = 0; i < StartTimings.Count; i++)
             {
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
-                    StartTime = DateFormat.To24HRTime(StartTimings[i]),//DateFormat.ToTime(StartTimings[i]),
-                    EndTime = DateFormat.To24HRTime(EndTimings[i]),//DateFormat.ToTime(EndTimings[i]),
-                    StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
-                    EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
+                    StartTime = StartTimings[i],//DateFormat.ToTime(StartTimings[i]),
+                    EndTime = EndTimings[i],//DateFormat.ToTime(EndTimings[i]),
+                    StartTimeToDisplay = DateFormat.ToTime(Convert.ToDateTime(StartTimings[i]).TimeOfDay),
+                    EndTimeToDisplay = DateFormat.ToTime(Convert.ToDateTime(EndTimings[i]).TimeOfDay),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
@@ -106,12 +106,12 @@ namespace CoreWebApi.Data
                                        EndTime = DateFormat.To24HRTime(l.EndTime),//DateFormat.ToTime(l.EndTime),
                                        StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
                                        EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
-                                       TeacherId = main.TeacherId,
+                                       TeacherId = main.TeacherId.Value,
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
                                        ClassSectionId = main.ClassSectionId,
-                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                       Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
                                        Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                        IsBreak = l.IsBreak,
                                        RowNo = l.RowNo
@@ -177,12 +177,12 @@ namespace CoreWebApi.Data
                                        EndTime = DateFormat.To24HRTime(l.EndTime),//DateFormat.ToTime(l.EndTime),
                                        StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
                                        EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
-                                       TeacherId = main.TeacherId,
+                                       TeacherId = main.TeacherId.Value,
                                        Teacher = u.FullName,
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
                                        ClassSectionId = main.ClassSectionId,
-                                       Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                       Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
                                        Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                        //IsBreak = l.IsBreak
                                    }).FirstOrDefaultAsync();
@@ -337,7 +337,7 @@ namespace CoreWebApi.Data
                 List<ClassLectureAssignment> listToUpdate = new List<ClassLectureAssignment>();
                 foreach (var item in model)
                 {
-                    if (!string.IsNullOrEmpty(item.TeacherId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
+                    if (!string.IsNullOrEmpty(item.ClassSectionId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
                     {
                         if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
                         {
@@ -757,6 +757,26 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
+        public async Task<ServiceResponse<object>> GetEmptyTimeSlots()
+        {
 
+            var EmptySlots = await (from main in _context.ClassLectureAssignment
+                                        //join l in _context.LectureTiming
+                                        //on main.LectureId equals l.Id
+                                    join u in _context.Users
+                                    on main.TeacherId equals u.Id into newU
+                                    from u in newU.DefaultIfEmpty()
+                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                    && u.SchoolBranchId == _LoggedIn_BranchID
+                                    && u.Active == true
+                                    select new
+                                    {
+                                        TeacherId = main.TeacherId == null ? 0 : main.TeacherId,
+                                        UserId = u.Id,
+                                    }).ToListAsync();
+            _serviceResponse.Data = EmptySlots;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

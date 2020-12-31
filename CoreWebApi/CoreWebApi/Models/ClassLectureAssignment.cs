@@ -13,7 +13,7 @@ namespace CoreWebApi.Models
         
         public int Id { get; set; }       
         public int LectureId { get; set; }
-        public int TeacherId { get; set; }
+        public int? TeacherId { get; set; }
         public int ClassSectionId { get; set; }
         public int SubjectId { get; set; }       
         public DateTime Date { get; set; }

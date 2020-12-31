@@ -35,7 +35,7 @@ namespace CoreWebApi.Dtos
         //[Required]
         public int LectureId { get; set; }
         // [Required]
-        public int TeacherId { get; set; }
+        public int? TeacherId { get; set; }
         //[Required]
         public int SubjectId { get; set; }
         // [Required]
@@ -56,7 +56,7 @@ namespace CoreWebApi.Dtos
         public int SubjectId { get; set; }
         public string Subject { get; set; }
         public int ClassSectionId { get; set; }
-        public string Class { get; set; }
+        public string Classs { get; set; }
         public string Section { get; set; }
         public bool IsBreak { get; set; }
         public int RowNo { get; set; }
