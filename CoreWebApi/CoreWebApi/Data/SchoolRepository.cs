@@ -78,78 +78,86 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetTimeTable()
+        public async Task<ServiceResponse<object>> GetTimeTable(int classSectionId)
         {
-
-            var weekDayList = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-
-            var TimeTable = await (from main in _context.ClassLectureAssignment
-                                   join l in _context.LectureTiming
-                                   on main.LectureId equals l.Id
-
-                                   join u in _context.Users
-                                   on main.TeacherId equals u.Id into newU
-                                   from u in newU.DefaultIfEmpty()
-
-                                   join s in _context.Subjects
-                                   on main.SubjectId equals s.Id
-
-                                   join cs in _context.ClassSections
-                                   on main.ClassSectionId equals cs.Id
-
-                                   where //u.UserTypeId == (int)Enumm.UserType.Teacher
-                                   l.SchoolBranchId == _LoggedIn_BranchID
-                                   && s.Active == true
-                                   && cs.Active == true
-                                   //&& u.Active == true
-                                   select new TimeTableForListDto
-                                   {
-                                       Id = main.Id,
-                                       LectureId = main.LectureId,
-                                       Day = l.Day,
-                                       StartTime = DateFormat.To24HRTime(l.StartTime),
-                                       EndTime = DateFormat.To24HRTime(l.EndTime),
-                                       StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
-                                       EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
-                                       TeacherId = main.TeacherId.Value,
-                                       Teacher = u.FullName,
-                                       SubjectId = main.SubjectId,
-                                       Subject = s.Name,
-                                       ClassSectionId = main.ClassSectionId,
-                                       Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
-                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
-                                       IsBreak = l.IsBreak,
-                                       RowNo = l.RowNo
-                                   }).ToListAsync(); //.Where(m => m.Teacher != null)
-
-            var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
-            Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
-            var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            List<TimeSpan> StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
-            List<TimeSpan> EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
-            List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
-            for (int i = 0; i < StartTimings.Count; i++)
+            if (classSectionId > 0)
             {
-                TimeSlots.Add(new TimeSlotsForListDto
+                var weekDayList = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
+                var TimeTable = await (from main in _context.ClassLectureAssignment
+                                       join l in _context.LectureTiming
+                                       on main.LectureId equals l.Id
+
+                                       join u in _context.Users
+                                       on main.TeacherId equals u.Id into newU
+                                       from u in newU.DefaultIfEmpty()
+
+                                       join s in _context.Subjects
+                                       on main.SubjectId equals s.Id
+
+                                       join cs in _context.ClassSections
+                                       on main.ClassSectionId equals cs.Id
+
+                                       where //u.UserTypeId == (int)Enumm.UserType.Teacher
+                                       l.SchoolBranchId == _LoggedIn_BranchID
+                                       && s.Active == true
+                                       && cs.Active == true
+                                       && cs.Id == classSectionId
+                                       //&& u.Active == true
+                                       select new TimeTableForListDto
+                                       {
+                                           Id = main.Id,
+                                           LectureId = main.LectureId,
+                                           Day = l.Day,
+                                           StartTime = DateFormat.To24HRTime(l.StartTime),
+                                           EndTime = DateFormat.To24HRTime(l.EndTime),
+                                           StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
+                                           EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
+                                           TeacherId = main.TeacherId.Value,
+                                           Teacher = u.FullName,
+                                           SubjectId = main.SubjectId,
+                                           Subject = s.Name,
+                                           ClassSectionId = main.ClassSectionId,
+                                           Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                           Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                           IsBreak = l.IsBreak,
+                                           RowNo = l.RowNo
+                                       }).ToListAsync(); //.Where(m => m.Teacher != null)
+
+                var Days = TimeTable.Select(o => o.Day).Distinct().ToList();
+                Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
+                var Timings = await _context.LectureTiming.Where(m => Days.Contains(m.Day) && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+                List<TimeSpan> StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StartTime).Distinct().ToListAsync();
+                List<TimeSpan> EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.EndTime).Distinct().ToListAsync();
+                List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
+                for (int i = 0; i < StartTimings.Count; i++)
                 {
-                    Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
-                    StartTime = DateFormat.To24HRTime(StartTimings[i]),
-                    EndTime = DateFormat.To24HRTime(EndTimings[i]),
-                    StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
-                    EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
-                    Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
-                    IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
-                });
-            }
+                    TimeSlots.Add(new TimeSlotsForListDto
+                    {
+                        Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
+                        StartTime = DateFormat.To24HRTime(StartTimings[i]),
+                        EndTime = DateFormat.To24HRTime(EndTimings[i]),
+                        StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
+                        EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
+                        Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
+                        IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
+                    });
+                }
 
-            TimeTable.AddRange(TimeSlots.Where(m => m.IsBreak == true).Select(o => new TimeTableForListDto
+                TimeTable.AddRange(TimeSlots.Where(m => m.IsBreak == true).Select(o => new TimeTableForListDto
+                {
+                    IsBreak = o.IsBreak,
+                    StartTime = o.StartTime,
+                    EndTime = o.EndTime,
+                }).ToList());
+                _serviceResponse.Data = new { Days, TimeSlots, TimeTable };
+                _serviceResponse.Success = true;
+            }
+            else
             {
-                IsBreak = o.IsBreak,
-                StartTime = o.StartTime,
-                EndTime = o.EndTime,
-            }).ToList());
-            _serviceResponse.Data = new { Days, TimeSlots, TimeTable };
-            _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Success = false;
+            }
             return _serviceResponse;
 
         }

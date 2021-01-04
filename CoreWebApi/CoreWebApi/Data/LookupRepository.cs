@@ -214,5 +214,36 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> GetSubjectsByClassSection(int csId)
+        {
+            List<Subject> list = new List<Subject>();
+            var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
+            if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
+            {
+                list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).ToListAsync();
+            }
+            else
+            {
+                list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
+            }
+            var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId)
+        {
+            var users = await (from u in _context.Users
+                               where u.UserTypeId == (int)Enumm.UserType.Teacher
+                               && u.Active == true
+                               && u.SchoolBranchId == _LoggedIn_BranchID
+                               select u).ToListAsync();
+            var list = _mapper.Map<List<UserForListDto>>(users);
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

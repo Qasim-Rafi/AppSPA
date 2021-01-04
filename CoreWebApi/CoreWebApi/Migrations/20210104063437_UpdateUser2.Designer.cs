@@ -4,14 +4,16 @@ using CoreWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210104063437_UpdateUser2")]
+    partial class UpdateUser2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1208,74 +1210,6 @@ namespace CoreWebApi.Migrations
                     b.ToTable("Substitutions");
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.TeacherExperties", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("LevelFrom")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LevelTo")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SchoolBranchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("SchoolBranchId");
-
-                    b.HasIndex("SubjectId");
-
-                    b.HasIndex("TeacherId");
-
-                    b.ToTable("TeacherExperties");
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.TeacherExpertiesTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("TeacherExpertiesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransactionById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TeacherExpertiesTransactions");
-                });
-
             modelBuilder.Entity("CoreWebApi.Models.UploadedLecture", b =>
                 {
                     b.Property<int>("Id")
@@ -1937,33 +1871,6 @@ namespace CoreWebApi.Migrations
                     b.HasOne("CoreWebApi.Models.User", "SubstituteTeacher")
                         .WithMany()
                         .HasForeignKey("SubstituteTeacherId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.TeacherExperties", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
-                        .WithMany()
-                        .HasForeignKey("SchoolBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.User", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

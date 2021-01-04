@@ -11,6 +11,8 @@ namespace CoreWebApi.IData
     {
         Task<ServiceResponse<object>> AddPlanner(PlannerDtoForAdd model);
         Task<ServiceResponse<object>> AddSubstitution(SubstitutionDtoForAdd model);
+        Task<ServiceResponse<object>> AddExperties(List<TeacherExpertiesDtoForAdd> model);
+        Task<ServiceResponse<object>> ChangeExpertiesActiveStatus(int id, bool active);
         Task<ServiceResponse<object>> GetPlanners();
         Task<ServiceResponse<object>> GetEmptyTimeSlots();
         Task<ServiceResponse<object>> GetEmptyTeachers();

@@ -63,6 +63,8 @@ namespace CoreWebApi.Data
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<Planner> Planners { get; set; }
         public DbSet<Substitution> Substitutions { get; set; }
+        public DbSet<TeacherExperties> TeacherExperties { get; set; }
+        public DbSet<TeacherExpertiesTransaction> TeacherExpertiesTransactions { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
 

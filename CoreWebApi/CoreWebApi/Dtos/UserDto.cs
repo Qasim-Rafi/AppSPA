@@ -49,6 +49,11 @@ namespace CoreWebApi.Dtos
         //[Required]
         //[StringLength(50, ErrorMessage = "Roll Number cannot be longer then 50 characters")]
         public string RollNumber { get; set; }
+        public string ParentEmail { get; set; }
+        public string ParentContactNumber { get; set; }
+        public int LevelFrom { get; set; }
+        public int LevelTo { get; set; }
+        public List<string> Experties { get; set; }
         //public bool Active { get; set; }
 
     }
@@ -87,7 +92,8 @@ namespace CoreWebApi.Dtos
         public int UserTypeId { get; set; }
         public bool Active { get; set; } = true;
         public string RollNumber { get; set; }
-
+        public string ParentEmail { get; set; }
+        public string ParentContactNumber { get; set; }
         public IFormFileCollection files { get; set; }
     }
     public class UserForDetailedDto

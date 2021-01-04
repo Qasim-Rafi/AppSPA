@@ -22,5 +22,7 @@ namespace CoreWebApi.IData
         ServiceResponse<object> SchoolBranches();
         ServiceResponse<object> Assignments();
         ServiceResponse<object> Quizzes();
+        Task<ServiceResponse<object>> GetSubjectsByClassSection(int csId);
+        Task<ServiceResponse<object>> GetTeachersByClassSection(int csId);
     }
 }

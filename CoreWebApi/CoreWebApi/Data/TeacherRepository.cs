@@ -111,19 +111,30 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetEmptyTeachers()
         {
             var EmptyTeachers = await (from u in _context.Users
-
                                        join main in _context.ClassLectureAssignment
                                        on u.Id equals main.TeacherId into newMain
                                        from main in newMain.DefaultIfEmpty()
-
                                        where u.UserTypeId == (int)Enumm.UserType.Teacher
                                        && u.SchoolBranchId == _LoggedIn_BranchID
                                        && u.Active == true
-                                       select new
+                                       select new EmptyTeacherDtoForList
                                        {
                                            TeacherId = u.Id,
                                            Name = u.FullName,
                                        }).ToListAsync();
+            EmptyTeachers.AddRange(await (from u in _context.Users
+                                          join att in _context.Attendances
+                                          on u.Id equals att.UserId
+                                          where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                          && u.SchoolBranchId == _LoggedIn_BranchID
+                                          && u.Active == true
+                                          && att.Absent == true
+                                          && att.CreatedDatetime.Date == DateTime.Now.Date
+                                          select new EmptyTeacherDtoForList
+                                          {
+                                              TeacherId = u.Id,
+                                              Name = u.FullName,
+                                          }).ToListAsync());
 
             _serviceResponse.Data = EmptyTeachers;
             _serviceResponse.Success = true;
@@ -148,6 +159,61 @@ namespace CoreWebApi.Data
 
             _serviceResponse.Message = CustomMessage.Added;
             _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> AddExperties(List<TeacherExpertiesDtoForAdd> model)
+        {
+            List<TeacherExperties> ListToAdd = new List<TeacherExperties>();
+            foreach (var item in model)
+            {
+                ListToAdd.Add(new TeacherExperties
+                {
+                    SubjectId = item.SubjectId,
+                    TeacherId = item.TeacherId,
+                    LevelFrom = item.LevelFrom,
+                    LevelTo = item.LevelTo,
+                    Active = true,
+                    SchoolBranchId = _LoggedIn_BranchID,
+                    CreatedById = _LoggedIn_UserID,
+                    CreatedDateTime = DateTime.Now,
+                });
+            }
+            await _context.TeacherExperties.AddRangeAsync(ListToAdd);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> ChangeExpertiesActiveStatus(int id, bool active)
+        {
+            var ToUpdate = await _context.TeacherExperties.Where(m => m.Id == id).FirstOrDefaultAsync();
+            if (ToUpdate != null)
+            {
+                ToUpdate.Active = active;
+                _context.TeacherExperties.Update(ToUpdate);
+                await _context.SaveChangesAsync();
+
+                var ToAdd = new TeacherExpertiesTransaction
+                {
+                    TeacherExpertiesId = ToUpdate.Id,
+                    ActiveStatus = active,
+                    TransactionDate = DateTime.Now,
+                    TransactionById = _LoggedIn_UserID
+                };
+                await _context.TeacherExpertiesTransactions.AddAsync(ToAdd);
+                await _context.SaveChangesAsync();
+
+                _serviceResponse.Message = CustomMessage.Updated;
+                _serviceResponse.Success = true;
+            }
+            else
+            {
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                _serviceResponse.Success = false;
+            }
             return _serviceResponse;
         }
     }

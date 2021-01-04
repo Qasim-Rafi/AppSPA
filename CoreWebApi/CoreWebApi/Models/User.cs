@@ -62,6 +62,9 @@ namespace CoreWebApi.Models
         [StringLength(50, ErrorMessage = "Roll Number cannot be longer then 50 characters")]
         public string RollNumber { get; set; }
         public string RegistrationNumber { get; set; }
+        public string ParentEmail { get; set; }
+        public string ParentContactNumber { get; set; }
+
         [Required]
         public string Role { get; set; }
 

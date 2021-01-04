@@ -70,14 +70,22 @@ namespace CoreWebApi.Controllers
         [HttpPost("AddSubstitution")]
         public async Task<IActionResult> AddSubstitution(SubstitutionDtoForAdd model)
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
             _response = await _repo.AddSubstitution(model);
+            return Ok(_response);
 
+        }
+        [HttpGet("ChangeExpertiesActiveStatus/{id}/{active}")]
+        public async Task<IActionResult> ChangeExpertiesActiveStatus(int id, bool active)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.ChangeExpertiesActiveStatus(id,active);
             return Ok(_response);
 
         }

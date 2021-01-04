@@ -28,8 +28,8 @@ namespace CoreWebApi.Data
         public int _LoggedIn_BranchID = 0;
         public string _LoggedIn_UserName = "";
         private string _LoggedIn_UserRole = "";
-
-        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor)
+        private readonly ITeacherRepository _TeacherRepository;
+        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor, ITeacherRepository TeacherRepository)
         {
             _context = context;
             _mapper = mapper;
@@ -40,6 +40,7 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            _TeacherRepository = TeacherRepository;
         }
 
         public void Add<T>(T entity) where T : class
@@ -286,11 +287,14 @@ namespace CoreWebApi.Data
             ServiceResponse<UserForListDto> serviceResponse = new ServiceResponse<UserForListDto>();
             try
             {
+
                 string NewRegNo = "";
                 string NewRollNo = "";
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
+                    // pending task
+                    // add parent account user when adding new student
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
                     var LastUser = _context.Users.ToList().LastOrDefault();
                     if (!string.IsNullOrEmpty(LastUser?.RegistrationNumber))
@@ -316,6 +320,7 @@ namespace CoreWebApi.Data
                         NewRollNo = $"R-{School.BranchName.Substring(0, 3)}-{1:00000}";
                     }
                 }
+
                 DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
                 var userToCreate = new User
                 {
@@ -336,6 +341,11 @@ namespace CoreWebApi.Data
                     RollNumber = NewRollNo,
                     Role = _context.UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
                 };
+                if (userDto.UserTypeId == (int)Enumm.UserType.Student)
+                {
+                    userToCreate.ParentContactNumber = userDto.ParentContactNumber;
+                    userToCreate.ParentEmail = userDto.ParentEmail;
+                }
                 byte[] passwordHash, passwordSalt;
                 Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
 
@@ -345,6 +355,23 @@ namespace CoreWebApi.Data
                 await _context.Users.AddAsync(userToCreate);
                 await _context.SaveChangesAsync();
 
+                if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
+                {
+                    List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
+                    foreach (var SubjectId in userDto.Experties)
+                    {
+                        expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
+                        {
+                            SubjectId = Convert.ToInt32(SubjectId),
+                            TeacherId = userToCreate.Id,
+                            LevelFrom = userDto.LevelFrom,
+                            LevelTo = userDto.LevelTo,
+                        });
+                    }
+
+                    var response = await _TeacherRepository.AddExperties(expertiesToAdd);
+
+                }
                 var createdUser = _mapper.Map<UserForListDto>(userToCreate);
 
                 serviceResponse.Success = true;
@@ -395,6 +422,8 @@ namespace CoreWebApi.Data
                     dbUser.OtherState = user.OtherState;
                     dbUser.DateofBirth = DateOfBirth;
                     dbUser.Gender = user.Gender;
+                    dbUser.ParentEmail = user.ParentEmail;
+                    dbUser.ParentContactNumber = user.ParentContactNumber;
                     dbUser.Active = user.Active;
                     if (user.UserTypeId > 0)
                     {

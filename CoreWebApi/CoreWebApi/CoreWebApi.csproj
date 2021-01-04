@@ -122,6 +122,8 @@
     <Compile Remove="Migrations\20201229131513_RevertLectureTiming.Designer.cs" />
     <Compile Remove="Migrations\20201231074423_UpdateCLAssign.cs" />
     <Compile Remove="Migrations\20201231074423_UpdateCLAssign.Designer.cs" />
+    <Compile Remove="Migrations\20210104061943_UpdateUser2.cs" />
+    <Compile Remove="Migrations\20210104061943_UpdateUser2.Designer.cs" />
 
   </ItemGroup>
 
