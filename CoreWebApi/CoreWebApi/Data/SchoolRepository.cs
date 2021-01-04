@@ -455,7 +455,7 @@ namespace CoreWebApi.Data
                         }
 
                     }
-                    else if ((string.IsNullOrEmpty(item.SubjectId.ToString()) || item.SubjectId != 0) && item.Id > 0)
+                    else if ((string.IsNullOrEmpty(item.SubjectId.ToString()) || item.SubjectId == 0) && item.Id > 0)
                     {
                         var ToUpdate = await _context.ClassLectureAssignment.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
                         if (ToUpdate != null)
