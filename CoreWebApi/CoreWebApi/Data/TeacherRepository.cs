@@ -170,7 +170,11 @@ namespace CoreWebApi.Data
                 _context.TeacherExperties.RemoveRange(getExperties);
                 await _context.SaveChangesAsync();
 
-                var getExpertiesTrans = _context.TeacherExpertiesTransactions.Where(m => getExperties.Select(n => n.Id).Contains(m.TeacherExpertiesId)).ToList();
+                var getExpertiesTrans = (from ex in _context.TeacherExperties
+                                         join exT in _context.TeacherExpertiesTransactions
+                                         on ex.Id equals exT.TeacherExpertiesId
+                                         where ex.TeacherId == teacherId
+                                         select exT).ToList();
                 if (getExpertiesTrans.Count() > 0)
                 {
                     _context.TeacherExpertiesTransactions.RemoveRange(getExpertiesTrans);

@@ -56,42 +56,54 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<UserForDetailedDto>> GetUser(GetByIdFlagDto model)
         {
             ServiceResponse<UserForDetailedDto> serviceResponse = new ServiceResponse<UserForDetailedDto>();
-            var user = await _context.Users.Where(u => u.Id == model.Id).Select(s => new UserForDetailedDto
-            {
-                Id = s.Id,
-                FullName = s.FullName,
-                DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                Email = s.Email,
-                Gender = s.Gender,
-                Username = s.Username,
-                CountryId = s.CountryId,
-                StateId = s.StateId,
-                CountryName = s.Country.Name,
-                StateName = s.State.Name,
-                OtherState = s.OtherState,
-                UserTypeId = s.UserTypeId,
-                UserType = s.Usertypes.Name,
-                Active = s.Active,
-                RollNumber = s.RollNumber,
-                MemberSince = DateFormat.ToDate(s.CreatedDateTime.ToString()),
-                Photos = _context.Photos.Where(m => m.UserId == s.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    IsPrimary = x.IsPrimary,
-                    Url = _File.AppendImagePath(x.Name)
-                }).ToList(),
-            }).FirstOrDefaultAsync();
-            if (user != null && user.Active == false && model.IsEditable == false)
+            var GetUser = await (from user in _context.Users
+                                 where user.Id == model.Id
+                                 select new UserForDetailedDto
+                                 {
+                                     Id = user.Id,
+                                     FullName = user.FullName,
+                                     DateofBirth = user.DateofBirth != null ? DateFormat.ToDate(user.DateofBirth.ToString()) : "",
+                                     Email = user.Email,
+                                     Gender = user.Gender,
+                                     Username = user.Username,
+                                     CountryId = user.CountryId,
+                                     StateId = user.StateId,
+                                     CountryName = user.Country.Name,
+                                     StateName = user.State.Name,
+                                     OtherState = user.OtherState,
+                                     UserTypeId = user.UserTypeId,
+                                     UserType = user.Usertypes.Name,
+                                     Active = user.Active,
+                                     RollNumber = user.RollNumber,
+                                     MemberSince = DateFormat.ToDate(user.CreatedDateTime.ToString()),
+                                     ParentEmail = user.ParentEmail,
+                                     ParentContactNumber = user.ParentContactNumber,
+                                     LevelFrom = _context.TeacherExperties.FirstOrDefault(m => m.TeacherId == user.Id) != null ? _context.TeacherExperties.FirstOrDefault(m => m.TeacherId == user.Id).LevelFrom : 0,
+                                     LevelTo = _context.TeacherExperties.FirstOrDefault(m => m.TeacherId == user.Id) != null ? _context.TeacherExperties.FirstOrDefault(m => m.TeacherId == user.Id).LevelTo : 0,
+                                     Experties = _context.TeacherExperties.Where(m => m.TeacherId == user.Id).Select(o => new TeacherExpertiesDtoForList
+                                     {
+                                         ExpId = o.Id,
+                                         ExpName = _context.Subjects.FirstOrDefault(m => m.Id == o.SubjectId) != null ? _context.Subjects.FirstOrDefault(m => m.Id == o.SubjectId).Name : "",
+                                     }).ToList(),
+                                     Photos = _context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                     {
+                                         Id = x.Id,
+                                         Name = x.Name,
+                                         IsPrimary = x.IsPrimary,
+                                         Url = _File.AppendImagePath(x.Name)
+                                     }).ToList(),
+                                 }).FirstOrDefaultAsync();
+
+            if (GetUser != null && GetUser.Active == false && model.IsEditable == false)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = CustomMessage.URDeactivated;
                 return serviceResponse;
             }
-            else if (user != null)
+            else if (GetUser != null)
             {
                 serviceResponse.Success = true;
-                serviceResponse.Data = user;
+                serviceResponse.Data = GetUser;
                 return serviceResponse;
             }
             else

@@ -118,6 +118,11 @@ namespace CoreWebApi.Dtos
         public string RollNumber { get; set; }
         public bool Active { get; set; } = true;
         public string MemberSince { get; set; }
+        public string ParentEmail { get; set; }
+        public string ParentContactNumber { get; set; }
+        public int LevelFrom { get; set; }
+        public int LevelTo { get; set; }
+        public List<TeacherExpertiesDtoForList> Experties { get; set; }
         public List<PhotoDto> Photos { get; set; }
     }
     public class UserForListDto
