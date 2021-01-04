@@ -82,8 +82,8 @@ namespace CoreWebApi.Data
                                      LevelTo = _context.TeacherExperties.FirstOrDefault(m => m.TeacherId == user.Id) != null ? _context.TeacherExperties.FirstOrDefault(m => m.TeacherId == user.Id).LevelTo : 0,
                                      Experties = _context.TeacherExperties.Where(m => m.TeacherId == user.Id).Select(o => new TeacherExpertiesDtoForList
                                      {
-                                         ExpId = o.Id,
-                                         ExpName = _context.Subjects.FirstOrDefault(m => m.Id == o.SubjectId) != null ? _context.Subjects.FirstOrDefault(m => m.Id == o.SubjectId).Name : "",
+                                         Id = o.Id,
+                                         Name = _context.Subjects.FirstOrDefault(m => m.Id == o.SubjectId) != null ? _context.Subjects.FirstOrDefault(m => m.Id == o.SubjectId).Name : "",
                                      }).ToList(),
                                      Photos = _context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                      {

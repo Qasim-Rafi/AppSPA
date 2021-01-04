@@ -36,8 +36,8 @@ namespace CoreWebApi.Dtos
     }
     public class TeacherExpertiesDtoForList
     {
-        public int ExpId { get; set; }
-        public string ExpName { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
       
     }
 }
