@@ -162,15 +162,16 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> AddExperties(List<TeacherExpertiesDtoForAdd> model)
+        public async Task<ServiceResponse<object>> AddExperties(List<TeacherExpertiesDtoForAdd> model, int teacherId)
         {
             List<TeacherExperties> ListToAdd = new List<TeacherExperties>();
+            List<TeacherExpertiesTransaction> TransListToAdd = new List<TeacherExpertiesTransaction>();
             foreach (var item in model)
             {
                 ListToAdd.Add(new TeacherExperties
                 {
                     SubjectId = item.SubjectId,
-                    TeacherId = item.TeacherId,
+                    TeacherId = teacherId, //item.TeacherId,
                     LevelFrom = item.LevelFrom,
                     LevelTo = item.LevelTo,
                     Active = true,
@@ -179,9 +180,28 @@ namespace CoreWebApi.Data
                     CreatedDateTime = DateTime.Now,
                 });
             }
-            await _context.TeacherExperties.AddRangeAsync(ListToAdd);
-            await _context.SaveChangesAsync();
-
+            if (ListToAdd.Count() > 0)
+            {
+                await _context.TeacherExperties.AddRangeAsync(ListToAdd);
+                await _context.SaveChangesAsync();
+            }
+            
+            var getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
+            foreach (var item in getExperties)
+            {
+                TransListToAdd.Add(new TeacherExpertiesTransaction
+                {
+                    TeacherExpertiesId = item.Id,
+                    ActiveStatus = true,
+                    TransactionDate = DateTime.Now,
+                    TransactionById = _LoggedIn_UserID
+                });
+            }
+            if (TransListToAdd.Count()>0)
+            {
+                await _context.TeacherExpertiesTransactions.AddRangeAsync(TransListToAdd);
+                await _context.SaveChangesAsync();
+            }
             _serviceResponse.Message = CustomMessage.Added;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -189,17 +209,16 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> ChangeExpertiesActiveStatus(int id, bool active)
         {
-            var ToUpdate = await _context.TeacherExperties.Where(m => m.Id == id).FirstOrDefaultAsync();
+            var ToUpdate = await _context.TeacherExperties.Where(m => m.Id == id && active == false).FirstOrDefaultAsync();
             if (ToUpdate != null)
             {
-                ToUpdate.Active = active;
-                _context.TeacherExperties.Update(ToUpdate);
+                _context.TeacherExperties.Remove(ToUpdate);
                 await _context.SaveChangesAsync();
 
                 var ToAdd = new TeacherExpertiesTransaction
                 {
                     TeacherExpertiesId = ToUpdate.Id,
-                    ActiveStatus = active,
+                    ActiveStatus = false,
                     TransactionDate = DateTime.Now,
                     TransactionById = _LoggedIn_UserID
                 };

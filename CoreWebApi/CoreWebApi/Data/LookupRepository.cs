@@ -245,13 +245,16 @@ namespace CoreWebApi.Data
                               select s).ToListAsync();
                 //list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             }
+           
             var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
+            var SelectOption = new SubjectDtoForList { Id = null, Name = "Select Subject" };
+            ToReturn.Insert(0, SelectOption);
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId) 
+        public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId)
         {
             var users = await (from u in _context.Users
                                join csUser in _context.ClassSectionUsers
@@ -261,7 +264,10 @@ namespace CoreWebApi.Data
                                && u.SchoolBranchId == _LoggedIn_BranchID
                                && csUser.ClassSectionId == csId
                                select u).ToListAsync();
+            
             var list = _mapper.Map<List<UserForListDto>>(users);
+            var SelectOption = new UserForListDto { Id = null, FullName = "Select Teacher" };
+            list.Insert(0, SelectOption);
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;

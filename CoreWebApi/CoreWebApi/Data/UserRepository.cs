@@ -341,14 +341,15 @@ namespace CoreWebApi.Data
                     RollNumber = NewRollNo,
                     Role = _context.UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
                 };
+
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
                     userToCreate.ParentContactNumber = userDto.ParentContactNumber;
                     userToCreate.ParentEmail = userDto.ParentEmail;
                 }
+
                 byte[] passwordHash, passwordSalt;
                 Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
-
                 userToCreate.PasswordHash = passwordHash;
                 userToCreate.PasswordSalt = passwordSalt;
 
@@ -358,21 +359,22 @@ namespace CoreWebApi.Data
                 if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
                     List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
-                    foreach (var SubjectId in userDto.Experties)
+                    if (userDto.Experties.Count() > 0)
                     {
-                        expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
+                        foreach (var SubjectId in userDto.Experties)
                         {
-                            SubjectId = Convert.ToInt32(SubjectId),
-                            TeacherId = userToCreate.Id,
-                            LevelFrom = userDto.LevelFrom,
-                            LevelTo = userDto.LevelTo,
-                        });
+                            expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
+                            {
+                                SubjectId = Convert.ToInt32(SubjectId),
+                                //TeacherId = userToCreate.Id,
+                                LevelFrom = userDto.LevelFrom,
+                                LevelTo = userDto.LevelTo,
+                            });
+                        }
+                        var response = await _TeacherRepository.AddExperties(expertiesToAdd, userToCreate.Id);
                     }
-
-                    var response = await _TeacherRepository.AddExperties(expertiesToAdd);
-
                 }
-                var createdUser = _mapper.Map<UserForListDto>(userToCreate);
+                //var createdUser = _mapper.Map<UserForListDto>(userToCreate);
 
                 serviceResponse.Success = true;
                 serviceResponse.Message = CustomMessage.Added;
