@@ -164,6 +164,20 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddExperties(List<TeacherExpertiesDtoForAdd> model, int teacherId)
         {
+            var getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
+            if (getExperties.Count > 0)
+            {
+                _context.TeacherExperties.RemoveRange(getExperties);
+                await _context.SaveChangesAsync();
+
+                var getExpertiesTrans = _context.TeacherExpertiesTransactions.Where(m => getExperties.Select(n => n.Id).Contains(m.TeacherExpertiesId)).ToList();
+                if (getExpertiesTrans.Count() > 0)
+                {
+                    _context.TeacherExpertiesTransactions.RemoveRange(getExpertiesTrans);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             List<TeacherExperties> ListToAdd = new List<TeacherExperties>();
             List<TeacherExpertiesTransaction> TransListToAdd = new List<TeacherExpertiesTransaction>();
             foreach (var item in model)
@@ -185,10 +199,11 @@ namespace CoreWebApi.Data
                 await _context.TeacherExperties.AddRangeAsync(ListToAdd);
                 await _context.SaveChangesAsync();
             }
-            
-            var getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
+
+            getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
             foreach (var item in getExperties)
             {
+
                 TransListToAdd.Add(new TeacherExpertiesTransaction
                 {
                     TeacherExpertiesId = item.Id,
@@ -197,7 +212,7 @@ namespace CoreWebApi.Data
                     TransactionById = _LoggedIn_UserID
                 });
             }
-            if (TransListToAdd.Count()>0)
+            if (TransListToAdd.Count() > 0)
             {
                 await _context.TeacherExpertiesTransactions.AddRangeAsync(TransListToAdd);
                 await _context.SaveChangesAsync();

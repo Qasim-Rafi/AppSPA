@@ -287,7 +287,6 @@ namespace CoreWebApi.Data
             ServiceResponse<UserForListDto> serviceResponse = new ServiceResponse<UserForListDto>();
             try
             {
-
                 string NewRegNo = "";
                 string NewRollNo = "";
 
@@ -456,8 +455,27 @@ namespace CoreWebApi.Data
                         }
 
                     }
+
                     await _context.SaveChangesAsync();
 
+                    if (user.UserTypeId == (int)Enumm.UserType.Teacher)
+                    {
+                        List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
+                        if (user.Experties.Count() > 0)
+                        {
+                            foreach (var SubjectId in user.Experties)
+                            {
+                                expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
+                                {
+                                    SubjectId = Convert.ToInt32(SubjectId),
+                                    //TeacherId = userToCreate.Id,
+                                    LevelFrom = user.LevelFrom,
+                                    LevelTo = user.LevelTo,
+                                });
+                            }
+                            var response = await _TeacherRepository.AddExperties(expertiesToAdd, dbUser.Id);
+                        }
+                    }
                     // saving images
 
                     if (user.files != null && user.files.Count() > 0)

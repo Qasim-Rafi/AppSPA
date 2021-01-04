@@ -94,6 +94,9 @@ namespace CoreWebApi.Dtos
         public string RollNumber { get; set; }
         public string ParentEmail { get; set; }
         public string ParentContactNumber { get; set; }
+        public int LevelFrom { get; set; }
+        public int LevelTo { get; set; }
+        public List<string> Experties { get; set; }
         public IFormFileCollection files { get; set; }
     }
     public class UserForDetailedDto
@@ -119,7 +122,7 @@ namespace CoreWebApi.Dtos
     }
     public class UserForListDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
