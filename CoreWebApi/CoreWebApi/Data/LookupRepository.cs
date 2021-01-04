@@ -140,7 +140,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<ServiceResponse<object>> GetUsersByClassSection(int csId)
+        public async Task<ServiceResponse<object>> GetUsersByClassSection(int csId) // get only students
         {
             var users = await (from u in _context.Users
                                join csU in _context.ClassSectionUsers
@@ -221,11 +221,29 @@ namespace CoreWebApi.Data
             var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
             if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
             {
-                list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).ToListAsync();
+                list = await (from s in _context.Subjects
+                              join sAssign in _context.SubjectAssignments
+                              on s.Id equals sAssign.SubjectId
+                              join cs in _context.ClassSections
+                              on sAssign.ClassId equals cs.ClassId
+                              where cs.Id == csId
+                              && s.SchoolBranchId == branch.Id
+                              && s.Active == true
+                              select s).ToListAsync();
+                //list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).ToListAsync();
             }
             else
             {
-                list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
+                list = await (from s in _context.Subjects
+                              join sAssign in _context.SubjectAssignments
+                              on s.Id equals sAssign.SubjectId
+                              join cs in _context.ClassSections
+                              on sAssign.ClassId equals cs.ClassId
+                              where cs.Id == csId
+                              && s.SchoolBranchId == _LoggedIn_BranchID
+                              && s.Active == true
+                              select s).ToListAsync();
+                //list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             }
             var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
             _serviceResponse.Data = ToReturn;
@@ -233,12 +251,15 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId)
+        public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId) 
         {
             var users = await (from u in _context.Users
+                               join csUser in _context.ClassSectionUsers
+                               on u.Id equals csUser.UserId
                                where u.UserTypeId == (int)Enumm.UserType.Teacher
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
+                               && csUser.ClassSectionId == csId
                                select u).ToListAsync();
             var list = _mapper.Map<List<UserForListDto>>(users);
             _serviceResponse.Data = list;

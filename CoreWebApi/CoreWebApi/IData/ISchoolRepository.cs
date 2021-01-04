@@ -14,7 +14,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> SaveTimeTable(List<TimeTableForAddDto> model);
         Task<ServiceResponse<object>> UpdateTimeTable(int id, TimeTableForAddDto model);
         Task<ServiceResponse<object>> GetTimeSlots();
-        Task<ServiceResponse<object>> GetTimeTable(int classSectionId);
+        Task<ServiceResponse<object>> GetTimeTable();
+        Task<ServiceResponse<object>> GetTimeTableByClassSection(int classSectionId);
         Task<ServiceResponse<object>> GetTimeTableById(int id);
         Task<ServiceResponse<object>> AddEvents(List<EventForAddDto> model);
         Task<ServiceResponse<object>> UpdateEvents(List<EventDayAssignmentForAddDto> model);

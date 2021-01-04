@@ -42,7 +42,21 @@ namespace CoreWebApi.Controllers
 
         }
         
-        [HttpGet("GetTimeTable/{classSectionId?}")]
+        [HttpGet("GetTimeTable")]
+        public async Task<IActionResult> GetTimeTable()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetTimeTable();
+
+            return Ok(_response);
+
+        }
+        [HttpGet("GetTimeTable/{classSectionId}")]
         public async Task<IActionResult> GetTimeTable(int classSectionId = 0)
         {
 
@@ -51,7 +65,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetTimeTable(classSectionId);
+            _response = await _repo.GetTimeTableByClassSection(classSectionId);
 
             return Ok(_response);
 
