@@ -429,7 +429,7 @@ namespace CoreWebApi.Data
                 List<ClassLectureAssignment> listToUpdate = new List<ClassLectureAssignment>();
                 foreach (var item in model)
                 {
-                    if (!string.IsNullOrEmpty(item.ClassSectionId.ToString()) && !string.IsNullOrEmpty(item.SubjectId.ToString()))
+                    if (!string.IsNullOrEmpty(item.ClassSectionId.ToString()) && (!string.IsNullOrEmpty(item.SubjectId.ToString()) || item.SubjectId != 0))
                     {
                         if (string.IsNullOrEmpty(item.Id.ToString()) || item.Id == 0)
                         {
@@ -454,6 +454,15 @@ namespace CoreWebApi.Data
 
                         }
 
+                    }
+                    else if ((string.IsNullOrEmpty(item.SubjectId.ToString()) || item.SubjectId != 0) && item.Id > 0)
+                    {
+                        var ToUpdate = await _context.ClassLectureAssignment.Where(m => m.Id == item.Id).FirstOrDefaultAsync();
+                        if (ToUpdate != null)
+                        {
+                            _context.ClassLectureAssignment.Remove(ToUpdate);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
                 if (listToAdd.Count() > 0)

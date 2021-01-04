@@ -6,6 +6,7 @@ using CoreWebApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -475,6 +476,7 @@ namespace CoreWebApi.Data
                         List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
                         if (user.Experties.Count() > 0)
                         {
+                            //var asArray = JsonConvert.DeserializeObject<List<string>>(user.Experties.ToString());
                             foreach (var SubjectId in user.Experties)
                             {
                                 expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
