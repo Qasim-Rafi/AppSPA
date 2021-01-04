@@ -42,7 +42,7 @@ namespace CoreWebApi.Controllers
 
         }
         
-        [HttpGet("GetTimeTable/{classSectionId}")]
+        [HttpGet("GetTimeTable/{classSectionId?}")]
         public async Task<IActionResult> GetTimeTable(int classSectionId = 0)
         {
 
