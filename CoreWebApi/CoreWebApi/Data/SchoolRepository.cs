@@ -449,6 +449,7 @@ namespace CoreWebApi.Data
                             {
                                 ToUpdate.LectureId = item.LectureId;
                                 ToUpdate.TeacherId = item.TeacherId > 0 ? item.TeacherId : null;
+                                ToUpdate.SubjectId = item.SubjectId;                                
                                 listToUpdate.Add(ToUpdate);
                             }
 

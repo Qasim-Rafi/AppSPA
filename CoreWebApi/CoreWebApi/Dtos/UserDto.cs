@@ -92,6 +92,8 @@ namespace CoreWebApi.Dtos
         public int UserTypeId { get; set; }
         public bool Active { get; set; } = true;
         public string RollNumber { get; set; }
+        [DataType(DataType.EmailAddress)]
+        [EmailAddress]
         public string ParentEmail { get; set; }
         public string ParentContactNumber { get; set; }
         public int LevelFrom { get; set; }
