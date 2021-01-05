@@ -165,10 +165,11 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> AddExperties(List<TeacherExpertiesDtoForAdd> model, int teacherId)
         {
             List<TeacherExperties> ListToAdd = new List<TeacherExperties>();
+            List<TeacherExperties> ListToUpdate = new List<TeacherExperties>();
             List<TeacherExpertiesTransaction> TransListToAdd = new List<TeacherExpertiesTransaction>();
 
             var getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
-            if (getExperties.Count > 0)
+            if (model.Count > 0)
             {
                 if (getExperties.Count() <= model.Count())
                 {
@@ -187,6 +188,13 @@ namespace CoreWebApi.Data
                             CreatedDateTime = DateTime.Now,
                         });
                     }
+                    var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                    foreach (var item in ExistIds)
+                    {
+                        item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom;
+                        item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo;
+                        ListToUpdate.Add(item);
+                    }
                 }
                 else if (getExperties.Count() > model.Count())
                 {
@@ -202,6 +210,11 @@ namespace CoreWebApi.Data
             if (ListToAdd.Count() > 0)
             {
                 await _context.TeacherExperties.AddRangeAsync(ListToAdd);
+                await _context.SaveChangesAsync();
+            }
+            if (ListToUpdate.Count() > 0)
+            {
+                _context.TeacherExperties.UpdateRange(ListToUpdate);
                 await _context.SaveChangesAsync();
             }
 
