@@ -164,58 +164,78 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddExperties(List<TeacherExpertiesDtoForAdd> model, int teacherId)
         {
+            List<TeacherExperties> ListToAdd = new List<TeacherExperties>();
+            List<TeacherExpertiesTransaction> TransListToAdd = new List<TeacherExpertiesTransaction>();
+
             var getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
             if (getExperties.Count > 0)
             {
-                _context.TeacherExperties.RemoveRange(getExperties);
-                await _context.SaveChangesAsync();
-
-                var getExpertiesTrans = (from ex in _context.TeacherExperties
-                                         join exT in _context.TeacherExpertiesTransactions
-                                         on ex.Id equals exT.TeacherExpertiesId
-                                         where ex.TeacherId == teacherId
-                                         select exT).ToList();
-                if (getExpertiesTrans.Count() > 0)
+                if (getExperties.Count() <= model.Count())
                 {
-                    _context.TeacherExpertiesTransactions.RemoveRange(getExpertiesTrans);
-                    await _context.SaveChangesAsync();
+                    var NotExistIds = model.Where(m => !getExperties.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                    foreach (var item in NotExistIds)
+                    {
+                        ListToAdd.Add(new TeacherExperties
+                        {
+                            SubjectId = item.SubjectId,
+                            TeacherId = teacherId, //item.TeacherId,
+                            LevelFrom = item.LevelFrom,
+                            LevelTo = item.LevelTo,
+                            Active = true,
+                            SchoolBranchId = _LoggedIn_BranchID,
+                            CreatedById = _LoggedIn_UserID,
+                            CreatedDateTime = DateTime.Now,
+                        });
+                    }
+                }
+                else if (getExperties.Count() > model.Count())
+                {
+                    var NotExistIds = getExperties.Where(m => !model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                    if (NotExistIds.Count() > 0)
+                    {
+                        _context.TeacherExperties.RemoveRange(NotExistIds);
+                        await _context.SaveChangesAsync();
+                    }
                 }
             }
 
-            List<TeacherExperties> ListToAdd = new List<TeacherExperties>();
-            List<TeacherExpertiesTransaction> TransListToAdd = new List<TeacherExpertiesTransaction>();
-            foreach (var item in model)
-            {
-                ListToAdd.Add(new TeacherExperties
-                {
-                    SubjectId = item.SubjectId,
-                    TeacherId = teacherId, //item.TeacherId,
-                    LevelFrom = item.LevelFrom,
-                    LevelTo = item.LevelTo,
-                    Active = true,
-                    SchoolBranchId = _LoggedIn_BranchID,
-                    CreatedById = _LoggedIn_UserID,
-                    CreatedDateTime = DateTime.Now,
-                });
-            }
             if (ListToAdd.Count() > 0)
             {
                 await _context.TeacherExperties.AddRangeAsync(ListToAdd);
                 await _context.SaveChangesAsync();
             }
 
+            var getExpertiesTrans = (from ex in _context.TeacherExperties
+                                     join exT in _context.TeacherExpertiesTransactions
+                                     on ex.Id equals exT.TeacherExpertiesId
+                                     where ex.TeacherId == teacherId
+                                     select exT).ToList();
             getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
-            foreach (var item in getExperties)
-            {
 
-                TransListToAdd.Add(new TeacherExpertiesTransaction
+            if (getExpertiesTrans.Count() <= getExperties.Count())
+            {
+                var NotExistIds = getExperties.Where(m => !getExpertiesTrans.Select(n => n.TeacherExpertiesId).Contains(m.Id)).ToList();
+                foreach (var item in getExperties)
                 {
-                    TeacherExpertiesId = item.Id,
-                    ActiveStatus = true,
-                    TransactionDate = DateTime.Now,
-                    TransactionById = _LoggedIn_UserID
-                });
+                    TransListToAdd.Add(new TeacherExpertiesTransaction
+                    {
+                        TeacherExpertiesId = item.Id,
+                        ActiveStatus = true,
+                        TransactionDate = DateTime.Now,
+                        TransactionById = _LoggedIn_UserID
+                    });
+                }
             }
+            else if (getExperties.Count() > getExpertiesTrans.Count())
+            {
+                var NotExistIds = getExpertiesTrans.Where(m => !getExperties.Select(n => n.Id).Contains(m.TeacherExpertiesId)).ToList();
+                if (NotExistIds.Count() > 0)
+                {
+                    _context.TeacherExpertiesTransactions.RemoveRange(NotExistIds);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             if (TransListToAdd.Count() > 0)
             {
                 await _context.TeacherExpertiesTransactions.AddRangeAsync(TransListToAdd);

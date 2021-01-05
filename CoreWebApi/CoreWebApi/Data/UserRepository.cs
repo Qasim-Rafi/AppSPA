@@ -476,8 +476,8 @@ namespace CoreWebApi.Data
                         List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
                         if (user.Experties.Count() > 0)
                         {
-                            //var asArray = JsonConvert.DeserializeObject<List<string>>(user.Experties.ToString());
-                            foreach (var SubjectId in user.Experties)
+                            var expertiesList = user.Experties[0].Split(',').ToList();
+                            foreach (var SubjectId in expertiesList)
                             {
                                 expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
                                 {
@@ -489,6 +489,7 @@ namespace CoreWebApi.Data
                             }
                             var response = await _TeacherRepository.AddExperties(expertiesToAdd, dbUser.Id);
                         }
+
                     }
                     // saving images
 
