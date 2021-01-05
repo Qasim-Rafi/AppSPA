@@ -469,6 +469,7 @@ namespace CoreWebApi.Data
 
                     }
 
+
                     await _context.SaveChangesAsync();
 
                     if (user.UserTypeId == (int)Enumm.UserType.Teacher)
@@ -489,15 +490,12 @@ namespace CoreWebApi.Data
                             }
                             var response = await _TeacherRepository.AddExperties(expertiesToAdd, dbUser.Id);
                         }
-                        //else
-                        //{
-                        //    expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
-                        //    {
-                        //        TeacherId = dbUser.Id,
-                        //        LevelFrom = user.LevelFrom,
-                        //        LevelTo = user.LevelTo,
-                        //    });
-                        //}
+                        else
+                        {
+                            serviceResponse.Message = CustomMessage.ExpertiesRequired;
+                            serviceResponse.Success = false;
+                            return serviceResponse;
+                        }
                     }
                     // saving images
 

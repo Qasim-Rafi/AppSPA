@@ -28,5 +28,6 @@ namespace CoreWebApi.Helpers
         public const string ResetPasswordReqSent = "Reset Password email sent at your given email address";
         public const string FileDeleted = "File(s) deleted successfully";
         public const string UserNotLoggedIn = "User not logged in, Please login first.";
+        public const string ExpertiesRequired = "Please provide experties for current teacher";
     }
 }
