@@ -436,7 +436,7 @@ namespace CoreWebApi.Data
                             listToAdd.Add(new ClassLectureAssignment
                             {
                                 LectureId = item.LectureId,
-                                TeacherId = item.TeacherId,
+                                TeacherId = item.TeacherId > 0 ? item.TeacherId : null,
                                 SubjectId = item.SubjectId,
                                 ClassSectionId = item.ClassSectionId,
                                 Date = DateTime.Now
@@ -448,7 +448,7 @@ namespace CoreWebApi.Data
                             if (ToUpdate != null)
                             {
                                 ToUpdate.LectureId = item.LectureId;
-                                ToUpdate.TeacherId = item.TeacherId;
+                                ToUpdate.TeacherId = item.TeacherId > 0 ? item.TeacherId : null;
                                 listToUpdate.Add(ToUpdate);
                             }
 
