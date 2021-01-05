@@ -476,7 +476,7 @@ namespace CoreWebApi.Data
                         List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
                         if (user.Experties.Count() > 0)
                         {
-                            var expertiesList = user.Experties[0].Split(',').ToList();
+                            var expertiesList = user.Experties[0] != null ? user.Experties[0].Split(',').ToList() : new List<string>();
                             foreach (var SubjectId in expertiesList)
                             {
                                 expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
