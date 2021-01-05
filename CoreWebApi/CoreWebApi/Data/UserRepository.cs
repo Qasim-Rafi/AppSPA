@@ -378,7 +378,7 @@ namespace CoreWebApi.Data
                             expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
                             {
                                 SubjectId = Convert.ToInt32(SubjectId),
-                                //TeacherId = userToCreate.Id,
+                                TeacherId = userToCreate.Id,
                                 LevelFrom = userDto.LevelFrom,
                                 LevelTo = userDto.LevelTo,
                             });
@@ -474,22 +474,30 @@ namespace CoreWebApi.Data
                     if (user.UserTypeId == (int)Enumm.UserType.Teacher)
                     {
                         List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
-                        if (user.Experties.Count() > 0)
+                        if (user.Experties != null && user.Experties.Count() > 0 && user.Experties[0] != null)
                         {
-                            var expertiesList = user.Experties[0] != null ? user.Experties[0].Split(',').ToList() : new List<string>();
+                            var expertiesList = user.Experties[0].Split(',').ToList();
                             foreach (var SubjectId in expertiesList)
                             {
                                 expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
                                 {
                                     SubjectId = Convert.ToInt32(SubjectId),
-                                    //TeacherId = userToCreate.Id,
+                                    TeacherId = dbUser.Id,
                                     LevelFrom = user.LevelFrom,
                                     LevelTo = user.LevelTo,
                                 });
                             }
                             var response = await _TeacherRepository.AddExperties(expertiesToAdd, dbUser.Id);
                         }
-
+                        //else
+                        //{
+                        //    expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
+                        //    {
+                        //        TeacherId = dbUser.Id,
+                        //        LevelFrom = user.LevelFrom,
+                        //        LevelTo = user.LevelTo,
+                        //    });
+                        //}
                     }
                     // saving images
 

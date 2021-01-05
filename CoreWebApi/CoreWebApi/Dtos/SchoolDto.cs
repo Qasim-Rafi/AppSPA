@@ -61,6 +61,7 @@ namespace CoreWebApi.Dtos
         public bool IsBreak { get; set; }
         public int RowNo { get; set; }
     }
+
     public class TimeSlotsForListDto
     {
         public int Id { get; set; }

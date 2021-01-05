@@ -83,7 +83,7 @@ namespace CoreWebApi.Data
                                         && s.Active == true
                                         && cs.Active == true
                                         //&& u.Active == true
-                                        select new TimeTableForListDto
+                                        select new EmptyTimeSlotForListDto
                                         {
                                             Id = main.Id,
                                             LectureId = main.LectureId,
@@ -103,40 +103,91 @@ namespace CoreWebApi.Data
                                             RowNo = l.RowNo
                                         }).Where(m => m.Teacher == null).ToListAsync();
 
+            EmptyTimeSlots.AddRange(await (from main in _context.ClassLectureAssignment
+                                           join l in _context.LectureTiming
+                                           on main.LectureId equals l.Id
+
+                                           join u in _context.Users
+                                           on main.TeacherId equals u.Id
+
+                                           join att in _context.Attendances
+                                           on u.Id equals att.UserId
+
+                                           join s in _context.Subjects
+                                           on main.SubjectId equals s.Id
+
+                                           join cs in _context.ClassSections
+                                           on main.ClassSectionId equals cs.Id
+
+                                           where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                           && l.SchoolBranchId == _LoggedIn_BranchID
+                                           && s.Active == true
+                                           && cs.Active == true
+                                           && u.Active == true
+                                           && att.Absent == true
+                                           && att.CreatedDatetime.Date == DateTime.Now.Date
+                                           select new EmptyTimeSlotForListDto
+                                           {
+                                               Id = main.Id,
+                                               LectureId = main.LectureId,
+                                               Day = l.Day,
+                                               StartTime = DateFormat.To24HRTime(l.StartTime),
+                                               EndTime = DateFormat.To24HRTime(l.EndTime),
+                                               StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
+                                               EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
+                                               TeacherId = main.TeacherId.Value,
+                                               Teacher = u.FullName,
+                                               SubjectId = main.SubjectId,
+                                               Subject = s.Name,
+                                               ClassSectionId = main.ClassSectionId,
+                                               Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                               Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                               IsBreak = l.IsBreak,
+                                               RowNo = l.RowNo
+                                           }).ToListAsync());
+
+            foreach (var EmptySlot in EmptyTimeSlots)
+            {
+                EmptySlot.SubstituteTeachers = await (from u in _context.Users
+                                                      join exp in _context.TeacherExperties
+                                                      on u.Id equals exp.TeacherId
+
+                                                      join clAssign in _context.ClassLectureAssignment
+                                                      on u.Id equals clAssign.TeacherId into newCLAssign
+                                                      from clAssign in newCLAssign.DefaultIfEmpty()
+
+                                                      join l in _context.LectureTiming
+                                                      on clAssign.LectureId equals l.Id
+
+                                                      join csUser in _context.ClassSectionUsers
+                                                      on u.Id equals csUser.UserId
+
+                                                      join cs in _context.ClassSections
+                                                      on csUser.ClassSectionId equals cs.Id
+
+                                                      where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                                      && u.SchoolBranchId == _LoggedIn_BranchID
+                                                      && u.Active == true
+                                                      && exp.SubjectId == EmptySlot.SubjectId
+                                                      && cs.Id == EmptySlot.ClassSectionId
+                                                      select new EmptyTeacherDtoForList
+                                                      {
+                                                          TeacherId = u.Id,
+                                                          Name = u.FullName,
+                                                          StartTime = DateFormat.To24HRTime(l.StartTime),
+                                                          EndTime = DateFormat.To24HRTime(l.EndTime),
+                                                      }).ToListAsync();
+            }
+
+
             _serviceResponse.Data = EmptyTimeSlots;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetEmptyTeachers()
+        public async Task<ServiceResponse<object>> GetEmptyTeachers() // not in use
         {
-            var EmptyTeachers = await (from u in _context.Users
-                                       join main in _context.ClassLectureAssignment
-                                       on u.Id equals main.TeacherId into newMain
-                                       from main in newMain.DefaultIfEmpty()
-                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                       && u.SchoolBranchId == _LoggedIn_BranchID
-                                       && u.Active == true
-                                       select new EmptyTeacherDtoForList
-                                       {
-                                           TeacherId = u.Id,
-                                           Name = u.FullName,
-                                       }).ToListAsync();
-            EmptyTeachers.AddRange(await (from u in _context.Users
-                                          join att in _context.Attendances
-                                          on u.Id equals att.UserId
-                                          where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                          && u.SchoolBranchId == _LoggedIn_BranchID
-                                          && u.Active == true
-                                          && att.Absent == true
-                                          && att.CreatedDatetime.Date == DateTime.Now.Date
-                                          select new EmptyTeacherDtoForList
-                                          {
-                                              TeacherId = u.Id,
-                                              Name = u.FullName,
-                                          }).ToListAsync());
 
-            _serviceResponse.Data = EmptyTeachers;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
@@ -188,13 +239,6 @@ namespace CoreWebApi.Data
                             CreatedDateTime = DateTime.Now,
                         });
                     }
-                    var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
-                    foreach (var item in ExistIds)
-                    {
-                        item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom;
-                        item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo;
-                        ListToUpdate.Add(item);
-                    }
                 }
                 else if (getExperties.Count() > model.Count())
                 {
@@ -204,6 +248,13 @@ namespace CoreWebApi.Data
                         _context.TeacherExperties.RemoveRange(NotExistIds);
                         await _context.SaveChangesAsync();
                     }
+                }
+                var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                foreach (var item in ExistIds)
+                {
+                    item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom : 0;
+                    item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo : 0;
+                    ListToUpdate.Add(item);
                 }
             }
 

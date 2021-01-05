@@ -57,7 +57,7 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetEmptyTimeSlots();
             return Ok(_response);
         }
-        [HttpGet("GetEmptyTeachers")]
+        [HttpGet("GetEmptyTeachers"), NonAction]
         public async Task<IActionResult> GetEmptyTeachers()
         {
             if (!ModelState.IsValid)
@@ -85,7 +85,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.ChangeExpertiesActiveStatus(id,active);
+            _response = await _repo.ChangeExpertiesActiveStatus(id, active);
             return Ok(_response);
 
         }
