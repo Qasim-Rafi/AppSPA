@@ -170,21 +170,26 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> AddSubstitution(SubstitutionDtoForAdd model)
+        public async Task<ServiceResponse<object>> AddSubstitution(List<SubstitutionDtoForAdd> model)
         {
-            var ToAdd = new Substitution
+            List<Substitution> ListToAdd = new List<Substitution>();
+            foreach (var item in model)
             {
-                ClassSectionId = model.ClassSectionId,
-                SubjectId = model.SubjectId,
-                TeacherId = model.TeacherId == 0 ? null : model.TeacherId,
-                TimeSlotId = model.TimeSlotId,
-                SubstituteTeacherId = model.SubstituteTeacherId,
-                Remarks = model.Remarks,
-                CreatedById = _LoggedIn_UserID,
-                SchoolBranchId = _LoggedIn_BranchID,
-                CreatedDate = DateTime.Now,
-            };
-            await _context.Substitutions.AddAsync(ToAdd);
+                ListToAdd.Add(new Substitution
+                {
+                    ClassSectionId = item.ClassSectionId,
+                    SubjectId = item.SubjectId,
+                    TeacherId = item.TeacherId == 0 ? null : item.TeacherId,
+                    TimeSlotId = item.TimeSlotId,
+                    SubstituteTeacherId = item.SubstituteTeacherId,
+                    Remarks = item.Remarks,
+                    CreatedById = _LoggedIn_UserID,
+                    SchoolBranchId = _LoggedIn_BranchID,
+                    CreatedDate = DateTime.Now,
+                });
+            }
+
+            await _context.Substitutions.AddRangeAsync(ListToAdd);
             await _context.SaveChangesAsync();
 
             _serviceResponse.Message = CustomMessage.Added;

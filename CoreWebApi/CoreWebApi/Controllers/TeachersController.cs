@@ -68,7 +68,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
         [HttpPost("AddSubstitution")]
-        public async Task<IActionResult> AddSubstitution(SubstitutionDtoForAdd model)
+        public async Task<IActionResult> AddSubstitution(List<SubstitutionDtoForAdd> model)
         {
             if (!ModelState.IsValid)
             {

@@ -10,7 +10,7 @@ namespace CoreWebApi.IData
     public interface ITeacherRepository
     {
         Task<ServiceResponse<object>> AddPlanner(PlannerDtoForAdd model);
-        Task<ServiceResponse<object>> AddSubstitution(SubstitutionDtoForAdd model);
+        Task<ServiceResponse<object>> AddSubstitution(List<SubstitutionDtoForAdd> model);
         Task<ServiceResponse<object>> GetSubstitution();
         Task<ServiceResponse<object>> AddExperties(List<TeacherExpertiesDtoForAdd> model, int teacherId);
         Task<ServiceResponse<object>> ChangeExpertiesActiveStatus(int id, bool active);
