@@ -124,6 +124,12 @@
     <Compile Remove="Migrations\20201231074423_UpdateCLAssign.Designer.cs" />
     <Compile Remove="Migrations\20210104061943_UpdateUser2.cs" />
     <Compile Remove="Migrations\20210104061943_UpdateUser2.Designer.cs" />
+    <Compile Remove="Migrations\20210106142410_UpdateSubstitutionAddTimeSlotId.cs" />
+    <Compile Remove="Migrations\20210106142410_UpdateSubstitutionAddTimeSlotId.Designer.cs" />
+    <Compile Remove="Migrations\20210106142606_UpdateSubstitutionAddTimeSlotId.cs" />
+    <Compile Remove="Migrations\20210106142606_UpdateSubstitutionAddTimeSlotId.Designer.cs" />
+    <Compile Remove="Migrations\20210106143115_UpdateSubstitutionAddTimeSlotId.cs" />
+    <Compile Remove="Migrations\20210106143115_UpdateSubstitutionAddTimeSlotId.Designer.cs" />
 
   </ItemGroup>
 

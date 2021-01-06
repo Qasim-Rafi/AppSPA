@@ -155,8 +155,7 @@ namespace CoreWebApi.Data
             {
                 var param1 = new SqlParameter("@SlotIdParam", EmptySlot.Id);
                 EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam", param1).ToList(); ;
-                //if (result != null && result.Count() > 0)
-                //    EmptySlot.SubstituteTeachers = result.ToList();
+
             }
 
             _serviceResponse.Data = EmptyTimeSlots;
@@ -178,6 +177,7 @@ namespace CoreWebApi.Data
                 ClassSectionId = model.ClassSectionId,
                 SubjectId = model.SubjectId,
                 TeacherId = model.TeacherId,
+                TimeSlotId = model.TimeSlotId,
                 SubstituteTeacherId = model.SubstituteTeacherId,
                 Remarks = model.Remarks,
                 CreatedById = _LoggedIn_UserID,
