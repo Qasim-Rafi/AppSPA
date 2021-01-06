@@ -121,7 +121,7 @@ namespace CoreWebApi.Data
                 list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             }
             var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
-           
+
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -135,7 +135,7 @@ namespace CoreWebApi.Data
                                && u.SchoolBranchId == _LoggedIn_BranchID
                                select u).ToListAsync();
             var list = _mapper.Map<List<UserForListDto>>(users);
-          
+
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -248,7 +248,7 @@ namespace CoreWebApi.Data
                               select s).ToListAsync();
                 //list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
             }
-           
+
             var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
             var SelectOption = new SubjectDtoForList { Id = 0, Name = "Select Subject" };
             ToReturn.Insert(0, SelectOption);
@@ -259,15 +259,18 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId)
         {
+            var classId = _context.ClassSections.Where(m => m.Id == csId).FirstOrDefault()?.ClassId;
             var users = await (from u in _context.Users
                                join csUser in _context.ClassSectionUsers
                                on u.Id equals csUser.UserId
+                               join cs in _context.ClassSections
+                               on csUser.ClassSectionId equals cs.Id
                                where u.UserTypeId == (int)Enumm.UserType.Teacher
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
-                               && csUser.ClassSectionId == csId
+                               && cs.ClassId == classId.Value
                                select u).ToListAsync();
-            
+
             var list = _mapper.Map<List<UserForListDto>>(users);
             var SelectOption = new UserForListDto { Id = 0, FullName = "Select Teacher" };
             list.Insert(0, SelectOption);
