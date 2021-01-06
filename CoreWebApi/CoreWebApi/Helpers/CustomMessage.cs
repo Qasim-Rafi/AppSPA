@@ -30,4 +30,8 @@ namespace CoreWebApi.Helpers
         public const string UserNotLoggedIn = "User not logged in, Please login first.";
         public const string ExpertiesRequired = "Please provide experties for current teacher";
     }
+    public class BusinessRules
+    {
+        public const int Teacher_Min_Age = 20;
+    }
 }

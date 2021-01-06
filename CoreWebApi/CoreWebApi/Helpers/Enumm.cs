@@ -8,7 +8,7 @@ namespace CoreWebApi.Helpers
     public class Enumm
     {
         public enum UserType
-        {            
+        {
             Admin = 1,
             Parent,
             Student,
@@ -29,6 +29,7 @@ namespace CoreWebApi.Helpers
             Assignment = 1,
             Quiz
         }
+       
     }
 
 }

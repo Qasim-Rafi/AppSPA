@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -49,7 +51,7 @@ namespace CoreWebApi.Dtos
     {
         public EmptyTimeSlotForListDto()
         {
-            SubstituteTeachers = new List<EmptyTeacherDtoForList>();
+            SubstituteTeachers = new List<GetSubstituteTeachersDto>();
         }
         public int Id { get; set; }
         public string Day { get; set; }
@@ -67,6 +69,13 @@ namespace CoreWebApi.Dtos
         public string Section { get; set; }
         public bool IsBreak { get; set; }
         public int RowNo { get; set; }
-        public List<EmptyTeacherDtoForList> SubstituteTeachers { get; set; }
+        public List<GetSubstituteTeachersDto> SubstituteTeachers { get; set; }
+    }
+    public class GetSubstituteTeachersDto
+    {   [Key]
+        public int TeacherId { get; set; }
+      
+        public string FullName { get; set; } = "";
+       
     }
 }

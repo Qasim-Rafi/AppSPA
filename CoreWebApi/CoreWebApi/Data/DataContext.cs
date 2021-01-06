@@ -67,6 +67,7 @@ namespace CoreWebApi.Data
         public DbSet<TeacherExpertiesTransaction> TeacherExpertiesTransactions { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
+        public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

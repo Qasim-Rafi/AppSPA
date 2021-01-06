@@ -5,6 +5,7 @@ using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -83,6 +84,7 @@ namespace CoreWebApi.Data
                                         && s.Active == true
                                         && cs.Active == true
                                         //&& u.Active == true
+                                        orderby l.Day, l.StartTime, l.EndTime
                                         select new EmptyTimeSlotForListDto
                                         {
                                             Id = main.Id,
@@ -126,6 +128,7 @@ namespace CoreWebApi.Data
                                            && u.Active == true
                                            && att.Absent == true
                                            && att.CreatedDatetime.Date == DateTime.Now.Date
+                                           orderby l.Day, l.StartTime, l.EndTime
                                            select new EmptyTimeSlotForListDto
                                            {
                                                Id = main.Id,
@@ -146,39 +149,15 @@ namespace CoreWebApi.Data
                                                RowNo = l.RowNo
                                            }).ToListAsync());
 
+            //when run an SP set this first -in asp.net core EF
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             foreach (var EmptySlot in EmptyTimeSlots)
             {
-                EmptySlot.SubstituteTeachers = await (from u in _context.Users
-                                                      join exp in _context.TeacherExperties
-                                                      on u.Id equals exp.TeacherId
-
-                                                      join clAssign in _context.ClassLectureAssignment
-                                                      on u.Id equals clAssign.TeacherId into newCLAssign
-                                                      from clAssign in newCLAssign.DefaultIfEmpty()
-
-                                                      join l in _context.LectureTiming
-                                                      on clAssign.LectureId equals l.Id
-
-                                                      join csUser in _context.ClassSectionUsers
-                                                      on u.Id equals csUser.UserId
-
-                                                      join cs in _context.ClassSections
-                                                      on csUser.ClassSectionId equals cs.Id
-
-                                                      where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                                      && u.SchoolBranchId == _LoggedIn_BranchID
-                                                      && u.Active == true
-                                                      && exp.SubjectId == EmptySlot.SubjectId
-                                                      && cs.Id == EmptySlot.ClassSectionId
-                                                      select new EmptyTeacherDtoForList
-                                                      {
-                                                          TeacherId = u.Id,
-                                                          Name = u.FullName,
-                                                          StartTime = DateFormat.To24HRTime(l.StartTime),
-                                                          EndTime = DateFormat.To24HRTime(l.EndTime),
-                                                      }).ToListAsync();
+                var param1 = new SqlParameter("@SlotIdParam", EmptySlot.Id);
+                EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam", param1).ToList(); ;
+                //if (result != null && result.Count() > 0)
+                //    EmptySlot.SubstituteTeachers = result.ToList();
             }
-
 
             _serviceResponse.Data = EmptyTimeSlots;
             _serviceResponse.Success = true;
@@ -317,8 +296,18 @@ namespace CoreWebApi.Data
                 var NotExistIds = getExpertiesTrans.Where(m => !getExperties.Select(n => n.Id).Contains(m.TeacherExpertiesId)).ToList();
                 if (NotExistIds.Count() > 0)
                 {
-                    _context.TeacherExpertiesTransactions.RemoveRange(NotExistIds);
-                    await _context.SaveChangesAsync();
+                    foreach (var item in NotExistIds)
+                    {
+                        TransListToAdd.Add(new TeacherExpertiesTransaction
+                        {
+                            TeacherExpertiesId = item.Id,
+                            ActiveStatus = false,
+                            TransactionDate = DateTime.Now,
+                            TransactionById = _LoggedIn_UserID
+                        });
+                    }
+                    //_context.TeacherExpertiesTransactions.RemoveRange(NotExistIds);
+                    //await _context.SaveChangesAsync();
                 }
             }
 
