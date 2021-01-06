@@ -261,10 +261,10 @@ namespace CoreWebApi.Data
                 var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
                 foreach (var item in ExistIds)
                 {
-                    if (!string.IsNullOrEmpty(model.FirstOrDefault().LevelFrom.ToString()) && !string.IsNullOrEmpty(model.FirstOrDefault().LevelTo.ToString()))
+                    if (!string.IsNullOrEmpty(model.LastOrDefault().LevelFrom.ToString()) && !string.IsNullOrEmpty(model.LastOrDefault().LevelTo.ToString()))
                     {
-                        var LevelFromName = _context.Class.Where(m => m.Id == item.LevelFrom).FirstOrDefault().Name;
-                        var LevelToName = _context.Class.Where(m => m.Id == item.LevelTo).FirstOrDefault().Name;
+                        var LevelFromName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelFrom).FirstOrDefault().Name;
+                        var LevelToName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelTo).FirstOrDefault().Name;
                         List<int> NumberList = new List<int>();
                         for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
                         {
