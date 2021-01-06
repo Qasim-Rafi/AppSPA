@@ -29,6 +29,7 @@ namespace CoreWebApi.Helpers
         public const string FileDeleted = "File(s) deleted successfully";
         public const string UserNotLoggedIn = "User not logged in, Please login first.";
         public const string ExpertiesRequired = "Please provide experties for current teacher";
+        public const string TeacherMinAge = "Teacher age cannot be less then 20 years";
     }
     public class BusinessRules
     {

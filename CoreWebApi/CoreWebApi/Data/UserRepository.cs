@@ -334,6 +334,14 @@ namespace CoreWebApi.Data
                 }
 
                 DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
+                var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                var Age = Math.Truncate(TotalDays / 365);
+                if (Age < BusinessRules.Teacher_Min_Age)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = CustomMessage.TeacherMinAge;
+                    return serviceResponse;
+                }
                 var userToCreate = new User
                 {
                     RegistrationNumber = NewRegNo,
@@ -427,7 +435,14 @@ namespace CoreWebApi.Data
                 {
                     var oldStatus = dbUser.Active;
                     DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
-
+                    var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                    var Age = Math.Truncate(TotalDays / 365);
+                    if (Age < BusinessRules.Teacher_Min_Age)
+                    {
+                        serviceResponse.Success = false;
+                        serviceResponse.Message = CustomMessage.TeacherMinAge;
+                        return serviceResponse;
+                    }
                     dbUser.FullName = user.FullName;
                     dbUser.Email = user.Email;
                     dbUser.Username = user.Username.ToLower();
