@@ -486,6 +486,8 @@ namespace CoreWebApi.Data
                                     TeacherId = dbUser.Id,
                                     LevelFrom = user.LevelFrom,
                                     LevelTo = user.LevelTo,
+                                    //LevelFromName = user.LevelFromName,
+                                    //LevelToName = user.LevelToName,
                                 });
                             }
                             var response = await _TeacherRepository.AddExperties(expertiesToAdd, dbUser.Id);

@@ -227,12 +227,21 @@ namespace CoreWebApi.Data
                     var NotExistIds = model.Where(m => !getExperties.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
                     foreach (var item in NotExistIds)
                     {
+                        var LevelFromName = _context.Class.Where(m => m.Id == item.LevelFrom).FirstOrDefault().Name;
+                        var LevelToName = _context.Class.Where(m => m.Id == item.LevelTo).FirstOrDefault().Name;
+                        List<int> NumberList = new List<int>();
+                        for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
+                        {
+                            NumberList.Add(i);
+                        }
+                        var Levels = string.Join(',', NumberList);
                         ListToAdd.Add(new TeacherExperties
                         {
                             SubjectId = item.SubjectId,
                             TeacherId = teacherId, //item.TeacherId,
                             LevelFrom = item.LevelFrom,
                             LevelTo = item.LevelTo,
+                            FromToLevels = Levels,
                             Active = true,
                             SchoolBranchId = _LoggedIn_BranchID,
                             CreatedById = _LoggedIn_UserID,
@@ -252,8 +261,21 @@ namespace CoreWebApi.Data
                 var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
                 foreach (var item in ExistIds)
                 {
-                    item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom : 0;
-                    item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo : 0;
+                    if (!string.IsNullOrEmpty(model.FirstOrDefault().LevelFrom.ToString()) && !string.IsNullOrEmpty(model.FirstOrDefault().LevelTo.ToString()))
+                    {
+                        var LevelFromName = _context.Class.Where(m => m.Id == item.LevelFrom).FirstOrDefault().Name;
+                        var LevelToName = _context.Class.Where(m => m.Id == item.LevelTo).FirstOrDefault().Name;
+                        List<int> NumberList = new List<int>();
+                        for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
+                        {
+                            NumberList.Add(i);
+                        }
+                        var Levels = string.Join(',', NumberList);
+                        item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom : 0;
+                        item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo : 0;
+                        item.FromToLevels = Levels;
+                    }
+
                     ListToUpdate.Add(item);
                 }
             }

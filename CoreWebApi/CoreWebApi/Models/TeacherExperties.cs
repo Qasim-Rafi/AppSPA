@@ -14,6 +14,7 @@ namespace CoreWebApi.Models
         public int SchoolBranchId { get; set; }
         public int LevelFrom { get; set; }
         public int LevelTo { get; set; }
+        public string FromToLevels { get; set; }
         public bool Active { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }

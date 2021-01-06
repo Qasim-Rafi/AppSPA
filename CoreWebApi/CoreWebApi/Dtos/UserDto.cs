@@ -96,6 +96,8 @@ namespace CoreWebApi.Dtos
         public string ParentContactNumber { get; set; }
         public int LevelFrom { get; set; }
         public int LevelTo { get; set; }
+        public string LevelFromName { get; set; }
+        public string LevelToName { get; set; }
         public List<string> Experties { get; set; }
         public IFormFileCollection files { get; set; }
     }

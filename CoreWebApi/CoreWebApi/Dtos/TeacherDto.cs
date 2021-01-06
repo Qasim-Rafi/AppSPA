@@ -28,6 +28,8 @@ namespace CoreWebApi.Dtos
         public int TeacherId { get; set; }
         public int LevelFrom { get; set; }
         public int LevelTo { get; set; }
+        public string LevelFromName { get; set; }
+        public string LevelToName { get; set; }
     }
     public class EmptyTeacherDtoForList
     {
