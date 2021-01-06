@@ -176,7 +176,7 @@ namespace CoreWebApi.Data
             {
                 ClassSectionId = model.ClassSectionId,
                 SubjectId = model.SubjectId,
-                TeacherId = model.TeacherId,
+                TeacherId = model.TeacherId == 0 ? null : model.TeacherId,
                 TimeSlotId = model.TimeSlotId,
                 SubstituteTeacherId = model.SubstituteTeacherId,
                 Remarks = model.Remarks,
@@ -347,6 +347,46 @@ namespace CoreWebApi.Data
                 _serviceResponse.Message = CustomMessage.RecordNotFound;
                 _serviceResponse.Success = false;
             }
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetSubstitution()
+        {
+            var ToReturn = (from sub in _context.Substitutions
+                            join lt in _context.LectureTiming
+                            on sub.TimeSlotId equals lt.Id
+
+                            join teacher in _context.Users
+                            on sub.SubstituteTeacherId equals teacher.Id into newteacher
+                            from teacher in newteacher.DefaultIfEmpty()
+
+                            join subteacher in _context.Users
+                            on sub.SubstituteTeacherId equals subteacher.Id
+
+                            join s in _context.Subjects
+                            on sub.SubjectId equals s.Id
+
+                            join cs in _context.ClassSections
+                            on sub.ClassSectionId equals cs.Id
+
+                            select new SubstitutionForListDto
+                            {
+                                ClassSectionId = sub.Id,
+                                Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
+                                Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
+                                SubjectId = sub.Id,
+                                Subject = s.Name,
+                                TeacherId = sub.Id,
+                                Teacher = teacher.FullName,
+                                TimeSlotId = sub.Id,
+                                TimeSlot = DateFormat.ToTime(lt.StartTime) + " " + DateFormat.ToTime(lt.EndTime),
+                                SubstituteTeacherId = sub.SubstituteTeacherId,
+                                SubstituteTeacher = subteacher.FullName,
+                                Remarks = sub.Remarks
+
+                            }).ToList();
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
             return _serviceResponse;
         }
     }

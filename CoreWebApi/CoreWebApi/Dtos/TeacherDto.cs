@@ -78,6 +78,21 @@ namespace CoreWebApi.Dtos
         public int TeacherId { get; set; }
       
         public string FullName { get; set; } = "";
-       
+
+    }
+    public class SubstitutionForListDto
+    {
+        public int ClassSectionId { get; set; }
+        public string Class { get; set; }
+        public string Section { get; set; }
+        public int? TeacherId { get; set; }
+        public string Teacher { get; set; }
+        public int SubjectId { get; set; }
+        public string Subject { get; set; }
+        public int TimeSlotId { get; set; }
+        public string TimeSlot { get; set; }
+        public int SubstituteTeacherId { get; set; }
+        public string SubstituteTeacher { get; set; }
+        public string Remarks { get; set; }
     }
 }

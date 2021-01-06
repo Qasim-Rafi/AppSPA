@@ -78,6 +78,17 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetSubstitution")]
+        public async Task<IActionResult> GetSubstitution()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetSubstitution();
+            return Ok(_response);
+
+        }
         [HttpGet("ChangeExpertiesActiveStatus/{id}/{active}")]
         public async Task<IActionResult> ChangeExpertiesActiveStatus(int id, bool active)
         {
