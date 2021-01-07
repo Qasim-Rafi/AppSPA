@@ -334,14 +334,18 @@ namespace CoreWebApi.Data
                 }
 
                 DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
-                var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
-                var Age = Math.Truncate(TotalDays / 365);
-                if (Age < BusinessRules.Teacher_Min_Age)
+                if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
-                    serviceResponse.Success = false;
-                    serviceResponse.Message = CustomMessage.TeacherMinAge;
-                    return serviceResponse;
+                    var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                    var Age = Math.Truncate(TotalDays / 365);
+                    if (Age < BusinessRules.Teacher_Min_Age)
+                    {
+                        serviceResponse.Success = false;
+                        serviceResponse.Message = CustomMessage.TeacherMinAge;
+                        return serviceResponse;
+                    }
                 }
+               
                 var userToCreate = new User
                 {
                     RegistrationNumber = NewRegNo,
@@ -379,7 +383,7 @@ namespace CoreWebApi.Data
                 if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
                     List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
-                    if (userDto.Experties.Count() > 0)
+                    if (userDto.Experties != null && userDto.Experties.Count() > 0 && userDto.Experties[0] != null)
                     {
                         foreach (var SubjectId in userDto.Experties)
                         {
@@ -387,11 +391,17 @@ namespace CoreWebApi.Data
                             {
                                 SubjectId = Convert.ToInt32(SubjectId),
                                 TeacherId = userToCreate.Id,
-                                LevelFrom = userDto.LevelFrom,
-                                LevelTo = userDto.LevelTo,
+                                LevelFrom = Convert.ToInt32(userDto.LevelFrom),
+                                LevelTo = Convert.ToInt32(userDto.LevelTo),
                             });
                         }
                         var response = await _TeacherRepository.AddExperties(expertiesToAdd, userToCreate.Id);
+                    }
+                    else
+                    {
+                        serviceResponse.Message = CustomMessage.ExpertiesRequired;
+                        serviceResponse.Success = false;
+                        return serviceResponse;
                     }
                 }
                 //var createdUser = _mapper.Map<UserForListDto>(userToCreate);
@@ -435,14 +445,18 @@ namespace CoreWebApi.Data
                 {
                     var oldStatus = dbUser.Active;
                     DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
-                    var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
-                    var Age = Math.Truncate(TotalDays / 365);
-                    if (Age < BusinessRules.Teacher_Min_Age)
+                    if (user.UserTypeId == (int)Enumm.UserType.Teacher)
                     {
-                        serviceResponse.Success = false;
-                        serviceResponse.Message = CustomMessage.TeacherMinAge;
-                        return serviceResponse;
+                        var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                        var Age = Math.Truncate(TotalDays / 365);
+                        if (Age < BusinessRules.Teacher_Min_Age)
+                        {
+                            serviceResponse.Success = false;
+                            serviceResponse.Message = CustomMessage.TeacherMinAge;
+                            return serviceResponse;
+                        }
                     }
+                    
                     dbUser.FullName = user.FullName;
                     dbUser.Email = user.Email;
                     dbUser.Username = user.Username.ToLower();
@@ -499,8 +513,8 @@ namespace CoreWebApi.Data
                                 {
                                     SubjectId = Convert.ToInt32(SubjectId),
                                     TeacherId = dbUser.Id,
-                                    LevelFrom = user.LevelFrom,
-                                    LevelTo = user.LevelTo,
+                                    LevelFrom = Convert.ToInt32(user.LevelFrom),
+                                    LevelTo = Convert.ToInt32(user.LevelTo),
                                     //LevelFromName = user.LevelFromName,
                                     //LevelToName = user.LevelToName,
                                 });

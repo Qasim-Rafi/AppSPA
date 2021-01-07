@@ -51,8 +51,8 @@ namespace CoreWebApi.Dtos
         public string RollNumber { get; set; }
         public string ParentEmail { get; set; }
         public string ParentContactNumber { get; set; }
-        public int LevelFrom { get; set; }
-        public int LevelTo { get; set; }
+        public string LevelFrom { get; set; }
+        public string LevelTo { get; set; }
         public List<string> Experties { get; set; }
         //public bool Active { get; set; }
 
@@ -94,8 +94,8 @@ namespace CoreWebApi.Dtos
         public string RollNumber { get; set; }        
         public string ParentEmail { get; set; }
         public string ParentContactNumber { get; set; }
-        public int LevelFrom { get; set; }
-        public int LevelTo { get; set; }
+        public string LevelFrom { get; set; }
+        public string LevelTo { get; set; }
         public string LevelFromName { get; set; }
         public string LevelToName { get; set; }
         public List<string> Experties { get; set; }
