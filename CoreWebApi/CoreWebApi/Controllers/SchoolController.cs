@@ -3,6 +3,7 @@ using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -41,7 +42,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        
+
         [HttpGet("GetTimeTable")]
         public async Task<IActionResult> GetTimeTable()
         {
@@ -279,7 +280,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-           
+
             _response = await _repo.SaveUploadedLecture(model);
 
             return Ok(_response);
@@ -292,7 +293,7 @@ namespace CoreWebApi.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }           
+            }
             _response = await _repo.AddNotice(model);
             return Ok(_response);
         }
@@ -302,7 +303,7 @@ namespace CoreWebApi.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }           
+            }
             _response = await _repo.GetNotices();
             return Ok(_response);
         }
@@ -312,10 +313,20 @@ namespace CoreWebApi.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }           
+            }
             _response = await _repo.GetNoticeById(id);
             return Ok(_response);
         }
-       
+        [HttpPost("AddContactUsQuery"), AllowAnonymous]
+        public async Task<IActionResult> AddQuery(ContactUsForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.AddQuery(model);
+            return Ok(_response);
+        }
+
     }
 }

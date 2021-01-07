@@ -934,5 +934,23 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> AddQuery(ContactUsForAddDto model)
+        {
+            var ToAdd = new ContactUsQuery
+            {
+                Description = model.Description,
+                FullName = model.FullName,
+                CreatedDateTime = DateTime.Now,
+                Company = model.Company,
+                Email = model.Email,
+                Phone = model.Phone,
+            };
+            await _context.ContactUsQueries.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
     }
 }

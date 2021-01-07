@@ -185,7 +185,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetPendingQuiz()
         {
-            var quizzes = await _context.Quizzes.Where(m => _context.QuizQuestions.Where(n => n.QuizId == m.Id).Count() < m.NoOfQuestions).Select(o => new QuizForListDto
+            var quizzes = await _context.Quizzes.Where(m => _context.QuizQuestions.Where(n => n.QuizId == m.Id).Count() < m.NoOfQuestions && m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new QuizForListDto
             {
                 QuizId = o.Id,
                 QuizDate = DateFormat.ToDate(o.QuizDate.ToString()),
@@ -202,8 +202,6 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetQuizzes()
         {
-
-
             var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             List<QuizForListDto> quizzes = await (from quiz in _context.Quizzes
                                                   join subject in _context.Subjects
@@ -212,6 +210,7 @@ namespace CoreWebApi.Data
                                                   on quiz.ClassSectionId equals classSection.Id
                                                   where subject.Active == true
                                                   && classSection.Active == true
+                                                  && quiz.SchoolBranchId == _LoggedIn_BranchID
                                                   orderby quiz.Id descending
                                                   select new QuizForListDto
                                                   {

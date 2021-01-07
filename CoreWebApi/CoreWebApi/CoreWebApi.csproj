@@ -134,6 +134,12 @@
     <Compile Remove="Migrations\20210107061500_AddNoticeBoard.Designer.cs" />
     <Compile Remove="Migrations\20210107062223_AddNoticeBoard.cs" />
     <Compile Remove="Migrations\20210107062223_AddNoticeBoard.Designer.cs" />
+    <Compile Remove="Migrations\20210107073425_AddContactUs.cs" />
+    <Compile Remove="Migrations\20210107073425_AddContactUs.Designer.cs" />
+    <Compile Remove="Migrations\20210107073540_AddContactUs.cs" />
+    <Compile Remove="Migrations\20210107073540_AddContactUs.Designer.cs" />
+    <Compile Remove="Migrations\20210107073835_AddContactUs.cs" />
+    <Compile Remove="Migrations\20210107073835_AddContactUs.Designer.cs" />
 
   </ItemGroup>
 
