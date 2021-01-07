@@ -213,7 +213,8 @@ namespace CoreWebApi.Data
                 NotificationsToAdd.Add(new Notification
                 {
                     Description = GenericFunctions.NotificationDescription(new string[] {
-                        "You have a new assignment",
+                        "Assignment:",
+                        "You have been assigned a new assignment",
                         SubjectObj?.Name,
                         DueDateTime.ToShortDateString()
                     }, UserObj?.FullName),

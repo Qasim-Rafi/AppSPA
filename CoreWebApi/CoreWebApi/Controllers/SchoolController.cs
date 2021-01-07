@@ -286,5 +286,36 @@ namespace CoreWebApi.Controllers
 
 
         }
+        [HttpPost("AddNotice")]
+        public async Task<IActionResult> AddNotice(NoticeBoardForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }           
+            _response = await _repo.AddNotice(model);
+            return Ok(_response);
+        }
+        [HttpGet("GetNotices")]
+        public async Task<IActionResult> GetNotices()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }           
+            _response = await _repo.GetNotices();
+            return Ok(_response);
+        }
+        [HttpGet("GetNotice/{id}")]
+        public async Task<IActionResult> GetNoticeById(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }           
+            _response = await _repo.GetNoticeById(id);
+            return Ok(_response);
+        }
+       
     }
 }

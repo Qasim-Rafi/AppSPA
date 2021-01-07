@@ -112,4 +112,20 @@ namespace CoreWebApi.Dtos
         public string LectureUrl { get; set; }
 
     }
+    public class NoticeBoardForAddDto
+    {        
+        public string Description { get; set; }
+        public string NoticeDate { get; set; }
+    }
+    public class NoticeBoardForListDto
+    {        
+        public string Description { get; set; }
+        public string NoticeDate { get; set; }
+    }
+    public class NoticeBoardForUpdateDto
+    {        
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public string NoticeDate { get; set; }
+    }
 }

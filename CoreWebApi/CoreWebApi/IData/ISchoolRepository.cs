@@ -27,5 +27,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> SaveUploadedLecture(UploadedLectureForAddDto model);
         Task<ServiceResponse<object>> DeleteEvent(int id);
         Task<ServiceResponse<object>> DeleteEventDay(int id);
+        Task<ServiceResponse<object>> AddNotice(NoticeBoardForAddDto model);
+        Task<ServiceResponse<object>> GetNotices();
+        Task<ServiceResponse<object>> GetNoticeById(int id);
     }
 }

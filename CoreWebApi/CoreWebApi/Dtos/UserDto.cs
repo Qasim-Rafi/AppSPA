@@ -88,7 +88,7 @@ namespace CoreWebApi.Dtos
         //[StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
         //public string Country { get; set; }
 
-        public bool IsPrimaryPhoto { get; set; }
+        public bool IsPrimaryPhoto { get; set; } = true;
         public int UserTypeId { get; set; }
         public bool Active { get; set; } = true;
         public string RollNumber { get; set; }        

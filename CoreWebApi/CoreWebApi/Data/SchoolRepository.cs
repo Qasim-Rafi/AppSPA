@@ -449,7 +449,7 @@ namespace CoreWebApi.Data
                             {
                                 ToUpdate.LectureId = item.LectureId;
                                 ToUpdate.TeacherId = item.TeacherId > 0 ? item.TeacherId : null;
-                                ToUpdate.SubjectId = item.SubjectId;                                
+                                ToUpdate.SubjectId = item.SubjectId;
                                 listToUpdate.Add(ToUpdate);
                             }
 
@@ -875,6 +875,64 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
+        public async Task<ServiceResponse<object>> AddNotice(NoticeBoardForAddDto model)
+        {
+            var ToAdd = new NoticeBoard
+            {
+                Description = model.Description,
+                NoticeDate = Convert.ToDateTime(model.NoticeDate),
+                CreatedDateTime = DateTime.Now,
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID
+            };
+            await _context.NoticeBoards.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
 
+            List<Notification> NotificationsToAdd = new List<Notification>();
+            var ToUsers = (from u in _context.Users
+                           where u.Role == Enumm.UserType.Student.ToString()
+                           || u.Role == Enumm.UserType.Teacher.ToString()
+                           && u.SchoolBranchId == _LoggedIn_BranchID
+                           select u.Id).ToList();
+            foreach (var UserId in ToUsers)
+            {
+                NotificationsToAdd.Add(new Notification
+                {
+                    Description = GenericFunctions.NotificationDescription(new string[] {
+                        "Notice:",
+                        ToAdd.Description,
+                        " On " + ToAdd.NoticeDate.Value.ToShortDateString()
+                    }, _LoggedIn_UserName),
+                    CreatedById = _LoggedIn_UserID,
+                    CreatedDateTime = DateTime.Now,
+                    IsRead = false,
+                    UserIdTo = UserId
+                });
+            }
+            await _context.Notifications.AddRangeAsync(NotificationsToAdd);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetNotices()
+        {
+            var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var ToReturn = _mapper.Map<List<NoticeBoardForListDto>>(List);
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetNoticeById(int id)
+        {
+            var dbObj = await _context.NoticeBoards.Where(m => m.Id == id).FirstOrDefaultAsync();
+            var ToReturn = _mapper.Map<NoticeBoardForListDto>(dbObj);
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

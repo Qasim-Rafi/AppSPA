@@ -55,6 +55,8 @@ namespace CoreWebApi.Helpers
             CreateMap<Leave, LeaveDtoForEdit>();
             CreateMap<Leave, LeaveDtoForDetail>();
             CreateMap<Leave, LeaveDtoForList>();
+            // noticeboard
+            CreateMap<NoticeBoard, NoticeBoardForListDto>();            
            
         }
     }
