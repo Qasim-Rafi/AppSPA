@@ -308,7 +308,7 @@ namespace CoreWebApi.Data
                     // pending task
                     // add parent account user when adding new student
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
-                    var LastUser = _context.Users.ToList().LastOrDefault();
+                    var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student).ToList().LastOrDefault();
                     if (!string.IsNullOrEmpty(LastUser?.RegistrationNumber))
                     {
                         string RegNumber = Regex.Replace(LastUser?.RegistrationNumber, @"[^\d]", "");
@@ -345,7 +345,7 @@ namespace CoreWebApi.Data
                         return serviceResponse;
                     }
                 }
-               
+
                 var userToCreate = new User
                 {
                     RegistrationNumber = NewRegNo,
@@ -456,7 +456,7 @@ namespace CoreWebApi.Data
                             return serviceResponse;
                         }
                     }
-                    
+
                     dbUser.FullName = user.FullName;
                     dbUser.Email = user.Email;
                     dbUser.Username = user.Username.ToLower();

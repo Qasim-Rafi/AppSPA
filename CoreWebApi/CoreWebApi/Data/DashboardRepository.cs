@@ -98,11 +98,11 @@ namespace CoreWebApi.Data
                                                  && user.SchoolBranchId == _LoggedIn_BranchID
                                                  select user).CountAsync();
                 int AbsentStudentCount = await (from user in _context.Users
-                                                join attendance in _context.Attendances
-                                                on user.Id equals attendance.UserId
-                                                where attendance.CreatedDatetime.Date == DateTime.Now.Date
-                                                where attendance.Absent == true
-                                                && user.UserTypeId == (int)Enumm.UserType.Student
+                                                //join attendance in _context.Attendances
+                                                //on user.Id equals attendance.UserId
+                                                where //attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                //&& attendance.Absent == true
+                                                user.UserTypeId == (int)Enumm.UserType.Student
                                                 && user.Active == true
                                                 && user.SchoolBranchId == _LoggedIn_BranchID
                                                 select user).CountAsync();
@@ -110,11 +110,11 @@ namespace CoreWebApi.Data
 
 
                 int AbsentTeacherCount = await (from user in _context.Users
-                                                join attendance in _context.Attendances
-                                                on user.Id equals attendance.UserId
-                                                where attendance.CreatedDatetime.Date == DateTime.Now.Date
-                                                where attendance.Absent == true
-                                                && user.UserTypeId == (int)Enumm.UserType.Teacher
+                                                //join attendance in _context.Attendances
+                                                //on user.Id equals attendance.UserId
+                                                where //attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                //&& attendance.Absent == true
+                                                user.UserTypeId == (int)Enumm.UserType.Teacher
                                                 && user.Active == true
                                                 && user.SchoolBranchId == _LoggedIn_BranchID
                                                 select user).CountAsync();
@@ -343,12 +343,13 @@ namespace CoreWebApi.Data
                                        on n.UserIdTo equals u.Id
                                        where n.UserIdTo == _LoggedIn_UserID
                                        && u.SchoolBranchId == _LoggedIn_BranchID
+                                       orderby n.CreatedDateTime descending
                                        select n).Select(o => new NotificationDto
                                        {
                                            Description = o.Description,
                                            IsRead = o.IsRead,
                                            CreatedDateTime = DateFormat.ToDate(o.CreatedDateTime.ToString())
-                                       }).OrderByDescending(m => m.CreatedDateTime).Take(5).ToListAsync();
+                                       }).Take(5).ToListAsync();
 
             _serviceResponse.Success = true;
             _serviceResponse.Data = new { Notifications, NotificationCount = Notifications.Count() };
