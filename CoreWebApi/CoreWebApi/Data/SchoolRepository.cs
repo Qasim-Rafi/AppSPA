@@ -779,13 +779,15 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetBirthdays()
         {
-            var users = await _context.Users.Where(u => u.DateofBirth.Value.Date >= DateTime.Now.Date && u.DateofBirth.Value.Date <= DateTime.Now.AddDays(2).Date && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID)
+            var NextOneDay = DateTime.Now.AddDays(1);
+            var NextTwoDays = DateTime.Now.AddDays(2);
+            var users = await _context.Users.Where(u => (u.DateofBirth.Value.Day >= DateTime.Now.Day && u.DateofBirth.Value.Day <= NextTwoDays.Day) && (u.DateofBirth.Value.Month >= DateTime.Now.Month && u.DateofBirth.Value.Month <= NextTwoDays.Month) && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID)
                 .OrderBy(m => m.DateofBirth).Select(o => new
                 {
                     o.Id,
                     o.FullName,
                     DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
-                    ComingOn = o.DateofBirth.Value.Date == DateTime.Now.Date ? "Today" : o.DateofBirth.Value.Date == DateTime.Now.AddDays(1).Date ? "Tomorrow" : o.DateofBirth.Value.Date == DateTime.Now.AddDays(2).Date ? "After 1 Day" : "",
+                    ComingOn = o.DateofBirth.Value.Day == DateTime.Now.Day ? "Today" : o.DateofBirth.Value.Day == NextOneDay.Day ? "Tomorrow" : o.DateofBirth.Value.Day == NextTwoDays.Day ? "After 1 Day" : "",
                     Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
                     {
                         x.Id,

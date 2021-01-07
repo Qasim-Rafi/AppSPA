@@ -245,7 +245,7 @@ namespace CoreWebApi.Data
         {
             int AssignmentCount = 0;
             int QuizCount = 0;
-            int ResultCount = 0;
+            int SubstitutionCount = 0;
             int SubjectCount = 0;
             if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
             {
@@ -261,22 +261,31 @@ namespace CoreWebApi.Data
                                  && quiz.SchoolBranchId == _LoggedIn_BranchID
                                  select quiz).ToList().Count();
 
-                    SubjectCount = (from subject in _context.Subjects
-                                    join subjectAssign in _context.SubjectAssignments
-                                    on subject.Id equals subjectAssign.SubjectId
+                    SubjectCount = (from exp in _context.TeacherExperties
+                                    join u in _context.Users
+                                    on exp.TeacherId equals u.Id
+                                    //join subjectAssign in _context.SubjectAssignments
+                                    //on subject.Id equals subjectAssign.SubjectId
 
-                                    join classs in _context.Class
-                                    on subjectAssign.ClassId equals classs.Id
+                                    //join classs in _context.Class
+                                    //on subjectAssign.ClassId equals classs.Id
 
-                                    join cs in _context.ClassSections
-                                    on classs.Id equals cs.ClassId
+                                    //join cs in _context.ClassSections
+                                    //on classs.Id equals cs.ClassId
 
-                                    join csUser in _context.ClassSectionUsers
-                                    on cs.Id equals csUser.ClassSectionId
+                                    //join csUser in _context.ClassSectionUsers
+                                    //on cs.Id equals csUser.ClassSectionId
 
-                                    where csUser.UserId == _LoggedIn_UserID
-                                    && csUser.SchoolBranchId == _LoggedIn_BranchID
-                                    select subject).ToList().Count();
+                                    where u.Id == _LoggedIn_UserID
+                                    && u.SchoolBranchId == _LoggedIn_BranchID
+                                    select exp).ToList().Count();
+
+                    SubstitutionCount = (from sub in _context.Substitutions
+                                         join u in _context.Users
+                                         on sub.SubstituteTeacherId equals u.Id
+                                         where u.Id == _LoggedIn_UserID
+                                         && u.SchoolBranchId == _LoggedIn_BranchID
+                                         select sub).ToList().Count();
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
                 {
@@ -322,7 +331,7 @@ namespace CoreWebApi.Data
             {
                 AssignmentCount,
                 QuizCount,
-                ResultCount,
+                SubstitutionCount,
                 SubjectCount,
             };
         }
@@ -339,7 +348,7 @@ namespace CoreWebApi.Data
                                            Description = o.Description,
                                            IsRead = o.IsRead,
                                            CreatedDateTime = DateFormat.ToDate(o.CreatedDateTime.ToString())
-                                       }).ToListAsync();
+                                       }).OrderByDescending(m => m.CreatedDateTime).Take(5).ToListAsync();
 
             _serviceResponse.Success = true;
             _serviceResponse.Data = new { Notifications, NotificationCount = Notifications.Count() };
