@@ -20,6 +20,7 @@ namespace CoreWebApi.IData
         Task<bool> UserExists(string username);
         Task<ServiceResponse<UserForListDto>> AddUser(UserForAddDto user);
         Task<ServiceResponse<string>> EditUser(int id, UserForUpdateDto userForAddDto);
+        Task<ServiceResponse<string>> UpdateProfile(int id, UserForUpdateDto userForAddDto);
         //Task<IEnumerable<UserType>> GetUserTypes();
         Task<IEnumerable<UserByTypeListDto>> GetUsersByType(int typeId, int? classSectionId);
         Task<ServiceResponse<object>> GetUsersByClassSection(int classSectionId);

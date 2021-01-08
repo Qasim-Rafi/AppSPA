@@ -143,6 +143,17 @@ namespace CoreWebApi.Controllers
 
         }
 
-       
+        [HttpGet("GetQuizResult")]
+        public async Task<IActionResult> GetQuizResult(QuizResultDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }           
+            var createdObjId = await _repo.GetQuizResult(model);
+            return Ok(new { createdQuizId = createdObjId });
+
+        }
     }
 }

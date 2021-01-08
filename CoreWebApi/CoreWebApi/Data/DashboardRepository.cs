@@ -36,7 +36,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
             _File = file;
         }
-        public object GetDashboardCounts()
+        public ServiceResponse<object> GetDashboardCounts()
         {
             var studentTypeId = _context.UserTypes.Where(n => n.Name == Enumm.UserType.Student.ToString()).FirstOrDefault()?.Id;
             var teacherTypeId = _context.UserTypes.Where(n => n.Name == Enumm.UserType.Teacher.ToString()).FirstOrDefault()?.Id;
@@ -54,13 +54,16 @@ namespace CoreWebApi.Data
             {
                 SubjectCount = _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToList().Count();
             }
-            return new
+            
+            _serviceResponse.Data = new
             {
                 StudentCount,
                 TeacherCount,
                 EmployeeCount,
                 SubjectCount
             };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> GetAttendancePercentage()
@@ -98,11 +101,11 @@ namespace CoreWebApi.Data
                                                  && user.SchoolBranchId == _LoggedIn_BranchID
                                                  select user).CountAsync();
                 int AbsentStudentCount = await (from user in _context.Users
-                                                //join attendance in _context.Attendances
-                                                //on user.Id equals attendance.UserId
-                                                where //attendance.CreatedDatetime.Date == DateTime.Now.Date
-                                                //&& attendance.Absent == true
-                                                user.UserTypeId == (int)Enumm.UserType.Student
+                                                join attendance in _context.Attendances
+                                                on user.Id equals attendance.UserId
+                                                where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                && attendance.Absent == true
+                                                && user.UserTypeId == (int)Enumm.UserType.Student
                                                 && user.Active == true
                                                 && user.SchoolBranchId == _LoggedIn_BranchID
                                                 select user).CountAsync();
@@ -110,11 +113,11 @@ namespace CoreWebApi.Data
 
 
                 int AbsentTeacherCount = await (from user in _context.Users
-                                                //join attendance in _context.Attendances
-                                                //on user.Id equals attendance.UserId
-                                                where //attendance.CreatedDatetime.Date == DateTime.Now.Date
-                                                //&& attendance.Absent == true
-                                                user.UserTypeId == (int)Enumm.UserType.Teacher
+                                                join attendance in _context.Attendances
+                                                on user.Id equals attendance.UserId
+                                                where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                && attendance.Absent == true
+                                                && user.UserTypeId == (int)Enumm.UserType.Teacher
                                                 && user.Active == true
                                                 && user.SchoolBranchId == _LoggedIn_BranchID
                                                 select user).CountAsync();
@@ -241,7 +244,7 @@ namespace CoreWebApi.Data
 
         }
 
-        public object GetTeacherStudentDashboardCounts()
+        public ServiceResponse<object> GetTeacherStudentDashboardCounts()
         {
             int AssignmentCount = 0;
             int QuizCount = 0;
@@ -326,14 +329,16 @@ namespace CoreWebApi.Data
                                     && csUser.SchoolBranchId == _LoggedIn_BranchID
                                     select subject).ToList().Count();
                 }
-            }
-            return new
+            }           
+            _serviceResponse.Data = new
             {
                 AssignmentCount,
                 QuizCount,
                 SubstitutionCount,
                 SubjectCount,
             };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> GetNotifications()

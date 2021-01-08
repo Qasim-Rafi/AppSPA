@@ -35,17 +35,17 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetDashboardCounts")]
         public async Task<IActionResult> GetDashboardCounts()
         {
-            var result = _repo.GetDashboardCounts();
+            _response = _repo.GetDashboardCounts();
 
-            return Ok(result);
+            return Ok(_response);
 
         }
         [HttpGet("GetTeacherStudentDashboardCounts")]
         public async Task<IActionResult> GetTeacherStudentDashboardCounts()
         {
-            var result = _repo.GetTeacherStudentDashboardCounts();
+            _response = _repo.GetTeacherStudentDashboardCounts();
 
-            return Ok(result);
+            return Ok(_response);
 
         }
 

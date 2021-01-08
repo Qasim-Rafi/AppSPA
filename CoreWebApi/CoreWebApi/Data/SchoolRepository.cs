@@ -259,6 +259,7 @@ namespace CoreWebApi.Data
                                    l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
                                    && cs.Active == true
+                                   && main.Id == id
                                    //&& u.Active == true
                                    select new TimeTableForListDto
                                    {
@@ -816,7 +817,7 @@ namespace CoreWebApi.Data
                                    RegNo = u.Id,
                                    FullName = u.FullName,
                                    RegDate = DateFormat.ToDate(u.CreatedDateTime.ToString()),
-                                   Photos = _context.Photos.Where(m => m.UserId == u.Id).OrderByDescending(m => m.Id).Select(x => new
+                                   Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
                                    {
                                        x.Id,
                                        x.Name,

@@ -105,4 +105,23 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public string QuizDate { get; set; }
     }
+    public class QuizResultDto
+    {
+        public int SubjectId { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
+    }
+    //public class StudentQuizResultForListDto
+    //{
+    //    public int StudentId { get; set; }
+    //    public string StudentName { get; set; }      
+    //    public string Obtained { get; set; }      
+    //}
+    public class QuizResultForListDto
+    {
+        public int QuizId { get; set; }
+        public double TotalMarks { get; set; }
+        public int TotalQuestions { get; set; }
+        public int Result { get; set; }
+    }
 }

@@ -19,6 +19,7 @@ namespace CoreWebApi.Controllers
     //[Authorize(Roles = "Admin,Teacher,Student")]
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class LookupsController : ControllerBase
     {
         private readonly DataContext _context;

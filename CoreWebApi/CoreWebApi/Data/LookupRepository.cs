@@ -261,14 +261,12 @@ namespace CoreWebApi.Data
         {
             var classId = _context.ClassSections.Where(m => m.Id == csId).FirstOrDefault()?.ClassId;
             var users = await (from u in _context.Users
-                               join csUser in _context.ClassSectionUsers
-                               on u.Id equals csUser.UserId
-                               join cs in _context.ClassSections
-                               on csUser.ClassSectionId equals cs.Id
+                               join exp in _context.TeacherExperties
+                               on u.Id equals exp.TeacherId
                                where u.UserTypeId == (int)Enumm.UserType.Teacher
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
-                               && cs.ClassId == classId.Value
+                               && exp.FromToLevels.Contains(classId.ToString())
                                select u).ToListAsync();
 
             var list = _mapper.Map<List<UserForListDto>>(users);

@@ -463,6 +463,33 @@ namespace CoreWebApi.Data
             return quiz.Id;
         }
 
+        public async Task<ServiceResponse<object>> GetQuizResult(QuizResultDto model)
+        {
 
+            var List = await (from quiz in _context.Quizzes
+                              join question in _context.QuizQuestions
+                              on quiz.Id equals question.QuizId
+                              where quiz.SchoolBranchId == _LoggedIn_BranchID
+                              && quiz.QuizDate.Value.Date >= Convert.ToDateTime(model.FromDate).Date && quiz.QuizDate.Value.Date <= Convert.ToDateTime(model.ToDate).Date
+                              && quiz.SubjectId == model.SubjectId
+                              group question by new { question.QuizId } into g
+                              select new QuizResultForListDto
+                              {
+                                  QuizId = g.Key.QuizId,
+                                  TotalMarks = g.Sum(m => m.Marks.Value),
+                                  TotalQuestions = g.Count()
+                              }).ToListAsync();
+            foreach (var item in List)
+            {
+                var CorrectAnswers = (from sub in _context.QuizSubmissions                                      
+                                      where sub.QuizId == item.QuizId
+                                      && sub.IsCorrect == true
+                                      select sub).ToList().Count();
+                item.Result = (CorrectAnswers / item.TotalQuestions) * 100;
+            }
+            _serviceResponse.Data = List;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

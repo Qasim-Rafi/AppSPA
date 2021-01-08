@@ -89,7 +89,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PUT(int id, [FromForm] UserForUpdateDto userForUpdateDto)// [FromForm]
+        public async Task<IActionResult> UpdateUser(int id, [FromForm] UserForUpdateDto userForUpdateDto)// [FromForm]
         {
 
 
@@ -118,6 +118,18 @@ namespace CoreWebApi.Controllers
 
 
 
+            return Ok(response);
+
+        }
+        [HttpPut("UpdateProfile/{id}")]
+        public async Task<IActionResult> UpdateProfile(int id, [FromForm] UserForUpdateDto userForUpdateDto)// [FromForm]
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var response = await _repo.UpdateProfile(id, userForUpdateDto);
             return Ok(response);
 
         }

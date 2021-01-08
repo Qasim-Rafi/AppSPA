@@ -87,7 +87,7 @@ namespace CoreWebApi.Dtos
 
         [Required]
         public int ClassId { get; set; }
-        public string TableOfContent { get; set; }
+        //public string TableOfContent { get; set; }
     }
     public class SubjectContentDtoForAdd
     {

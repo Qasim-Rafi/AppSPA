@@ -126,7 +126,7 @@ namespace CoreWebApi.Data
                 Id = s.Id,
                 FullName = s.FullName,
                 DateofBirth = s.DateofBirth != null ? DateFormat.ToDate(s.DateofBirth.ToString()) : "",
-                //Photos = _context.Photos.Where(m => m.UserId == s.Id).OrderByDescending(m => m.Id).ToList()
+                //Photos = _context.Photos.Where(m => m.UserId == s.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).ToList()
             }).FirstOrDefaultAsync();
 
             //foreach (var item in serviceResponse.Data?.Photos)
@@ -382,6 +382,12 @@ namespace CoreWebApi.Data
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
+                    if (Convert.ToInt32(userDto.LevelFrom) > Convert.ToInt32(userDto.LevelTo))
+                    {
+                        serviceResponse.Success = false;
+                        serviceResponse.Message = CustomMessage.LevelFromToCheck;
+                        return serviceResponse;
+                    }
                     List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
                     if (userDto.Experties != null && userDto.Experties.Count() > 0 && userDto.Experties[0] != null)
                     {
@@ -432,19 +438,51 @@ namespace CoreWebApi.Data
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
             {
-                User checkExist = _context.Users.FirstOrDefault(m => m.Username.ToLower() == user.Username.ToLower() && m.SchoolBranchId == _LoggedIn_BranchID);
-                if (checkExist != null && checkExist.Id != id)
-                {
-                    serviceResponse.Success = false;
-                    serviceResponse.Message = CustomMessage.RecordAlreadyExist;
-                    return serviceResponse;
-                }
                 User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
-                var UserTypes = _context.UserTypes.ToList();
                 if (dbUser != null)
                 {
-                    var oldStatus = dbUser.Active;
+                    User checkExist = _context.Users.FirstOrDefault(m => m.Username.ToLower() == user.Username.ToLower() && m.SchoolBranchId == _LoggedIn_BranchID);
+                    if (checkExist != null && checkExist.Id != id)
+                    {
+                        serviceResponse.Success = false;
+                        serviceResponse.Message = CustomMessage.UserAlreadyExist;
+                        return serviceResponse;
+                    }
                     DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
+
+                    var oldStatus = dbUser.Active;
+                    var oldType = dbUser.UserTypeId;
+                    if (user.UserTypeId == (int)Enumm.UserType.Student)
+                    {
+                        var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                        var Age = Math.Truncate(TotalDays / 365);
+                        if (Age < BusinessRules.Student_Min_Age)
+                        {
+                            serviceResponse.Success = false;
+                            serviceResponse.Message = CustomMessage.StudentMinAge.Replace("age", BusinessRules.Student_Min_Age.ToString());
+                            return serviceResponse;
+                        }
+                        if (oldStatus == true && user.Active == false)
+                        {
+                            var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
+                            if (StudentReferences > 0)
+                            {
+                                serviceResponse.Message = CustomMessage.RecordRelationExist.Replace("entityname", "Student");
+                                serviceResponse.Success = false;
+                                return serviceResponse;
+                            }
+                        }
+                        if (oldType != user.UserTypeId)
+                        {
+                            var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
+                            if (StudentReferences > 0)
+                            {
+                                serviceResponse.Message = CustomMessage.UserTypeChange.Replace("entityname", "Student");
+                                serviceResponse.Success = false;
+                                return serviceResponse;
+                            }
+                        }
+                    }
                     if (user.UserTypeId == (int)Enumm.UserType.Teacher)
                     {
                         var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
@@ -452,8 +490,28 @@ namespace CoreWebApi.Data
                         if (Age < BusinessRules.Teacher_Min_Age)
                         {
                             serviceResponse.Success = false;
-                            serviceResponse.Message = CustomMessage.TeacherMinAge;
+                            serviceResponse.Message = CustomMessage.TeacherMinAge.Replace("age", BusinessRules.Teacher_Min_Age.ToString());
                             return serviceResponse;
+                        }
+                        if (oldStatus == true && user.Active == false)
+                        {
+                            var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
+                            if (StudentReferences > 0)
+                            {
+                                serviceResponse.Message = CustomMessage.RecordRelationExist.Replace("entityname", "Teacher");
+                                serviceResponse.Success = false;
+                                return serviceResponse;
+                            }
+                        }
+                        if (oldType != user.UserTypeId)
+                        {
+                            var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
+                            if (StudentReferences > 0)
+                            {
+                                serviceResponse.Message = CustomMessage.UserTypeChange.Replace("entityname", "Teacher");
+                                serviceResponse.Success = false;
+                                return serviceResponse;
+                            }
                         }
                     }
 
@@ -470,7 +528,7 @@ namespace CoreWebApi.Data
                     dbUser.Active = user.Active;
                     if (user.UserTypeId > 0)
                     {
-                        dbUser.Role = UserTypes.Where(m => m.Id == user.UserTypeId).FirstOrDefault()?.Name;
+                        dbUser.Role = _context.UserTypes.Where(m => m.Id == user.UserTypeId).FirstOrDefault()?.Name;
                         dbUser.UserTypeId = user.UserTypeId;
                     }
                     if (!string.IsNullOrEmpty(user.OldPassword))
@@ -503,6 +561,12 @@ namespace CoreWebApi.Data
 
                     if (user.UserTypeId == (int)Enumm.UserType.Teacher)
                     {
+                        if (Convert.ToInt32(user.LevelFrom) > Convert.ToInt32(user.LevelTo))
+                        {
+                            serviceResponse.Success = false;
+                            serviceResponse.Message = CustomMessage.LevelFromToCheck;
+                            return serviceResponse;
+                        }
                         List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
                         if (user.Experties != null && user.Experties.Count() > 0 && user.Experties[0] != null)
                         {
@@ -515,8 +579,6 @@ namespace CoreWebApi.Data
                                     TeacherId = dbUser.Id,
                                     LevelFrom = Convert.ToInt32(user.LevelFrom),
                                     LevelTo = Convert.ToInt32(user.LevelTo),
-                                    //LevelFromName = user.LevelFromName,
-                                    //LevelToName = user.LevelToName,
                                 });
                             }
                             var response = await _TeacherRepository.AddExperties(expertiesToAdd, dbUser.Id);
@@ -578,6 +640,161 @@ namespace CoreWebApi.Data
                         serviceResponse.Message = CustomMessage.Updated;
                         serviceResponse.Success = true;
                     }
+                }
+                else
+                {
+                    serviceResponse.Message = CustomMessage.RecordNotFound;
+                    serviceResponse.Success = false;
+                }
+
+                return serviceResponse;
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+                else
+                {
+                    throw ex;
+                }
+
+                return serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<string>> UpdateProfile(int id, UserForUpdateDto user)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                User dbUser = _context.Users.FirstOrDefault(s => s.Id.Equals(id));
+                if (dbUser != null)
+                {
+                    User checkExist = _context.Users.FirstOrDefault(m => m.Username.ToLower() == user.Username.ToLower() && m.SchoolBranchId == _LoggedIn_BranchID);
+                    if (checkExist != null && checkExist.Id != id)
+                    {
+                        serviceResponse.Success = false;
+                        serviceResponse.Message = CustomMessage.UserAlreadyExist;
+                        return serviceResponse;
+                    }
+                    DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
+                    
+                    if (user.UserTypeId == (int)Enumm.UserType.Student)
+                    {
+                        var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                        var Age = Math.Truncate(TotalDays / 365);
+                        if (Age < BusinessRules.Student_Min_Age)
+                        {
+                            serviceResponse.Success = false;
+                            serviceResponse.Message = CustomMessage.StudentMinAge.Replace("age", BusinessRules.Student_Min_Age.ToString());
+                            return serviceResponse;
+                        }
+                    }
+                    if (user.UserTypeId == (int)Enumm.UserType.Teacher)
+                    {
+                        var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                        var Age = Math.Truncate(TotalDays / 365);
+                        if (Age < BusinessRules.Teacher_Min_Age)
+                        {
+                            serviceResponse.Success = false;
+                            serviceResponse.Message = CustomMessage.TeacherMinAge.Replace("age", BusinessRules.Teacher_Min_Age.ToString());
+                            return serviceResponse;
+                        }
+
+                    }
+
+                    dbUser.FullName = user.FullName;
+                    dbUser.Email = user.Email;
+                    dbUser.Username = user.Username.ToLower();
+                    dbUser.StateId = user.StateId;
+                    dbUser.CountryId = user.CountryId;
+                    dbUser.OtherState = user.OtherState;
+                    dbUser.DateofBirth = DateOfBirth;
+                    dbUser.Gender = user.Gender;
+                    dbUser.ParentEmail = user.ParentEmail;
+                    dbUser.ParentContactNumber = user.ParentContactNumber;
+                    dbUser.Active = user.Active;
+                    if (user.UserTypeId > 0)
+                    {
+                        dbUser.Role = _context.UserTypes.Where(m => m.Id == user.UserTypeId).FirstOrDefault()?.Name;
+                        dbUser.UserTypeId = user.UserTypeId;
+                    }
+                    if (!string.IsNullOrEmpty(user.OldPassword))
+                    {
+                        if (Seed.VerifyPasswordHash(user.OldPassword, dbUser.PasswordHash, dbUser.PasswordSalt))
+                        {
+
+                            if (!string.IsNullOrEmpty(user.Password))
+                            {
+                                byte[] passwordhash, passwordSalt;
+                                Seed.CreatePasswordHash(user.Password, out passwordhash, out passwordSalt);
+                                dbUser.PasswordHash = passwordhash;
+                                dbUser.PasswordSalt = passwordSalt;
+                            }
+                            else
+                            {
+                                throw new Exception("You didn't provide New Password");
+                            }
+
+                        }
+                        else
+                        {
+                            throw new Exception(CustomMessage.PasswordNotMatched);
+                        }
+
+                    }
+
+
+                    await _context.SaveChangesAsync();
+
+
+                    // saving images
+
+                    if (user.files != null && user.files.Count() > 0)
+                    {
+                        for (int i = 0; i < user.files.Count(); i++)
+                        {
+                            var file = user.files[i];
+                            string Name = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                            if (user.IsPrimaryPhoto)
+                            {
+                                IQueryable<Photo> updatePrimaryPhotos = _context.Photos.Where(m => m.UserId == dbUser.Id);
+                                await updatePrimaryPhotos.ForEachAsync(m => m.IsPrimary = false);
+                            }
+                            Photo updatePhoto = _context.Photos.Where(m => m.UserId == dbUser.Id).FirstOrDefault();
+                            if (updatePhoto == null)
+                            {
+                                var photo = new Photo
+                                {
+                                    Name = Name,
+                                    Description = "description...",
+                                    IsPrimary = user.IsPrimaryPhoto,
+                                    UserId = dbUser.Id,
+                                    Url = _File.GetBinaryFile(file),
+                                    CreatedDatetime = DateTime.Now
+                                };
+                                await _context.Photos.AddAsync(photo);
+                                await _context.SaveChangesAsync();
+                            }
+                            else
+                            {
+                                updatePhoto.Name = Name;
+                                updatePhoto.IsPrimary = user.IsPrimaryPhoto;
+                                updatePhoto.UserId = dbUser.Id;
+                                updatePhoto.Url = _File.GetBinaryFile(file);
+                                _context.Photos.Update(updatePhoto);
+                                await _context.SaveChangesAsync();
+                            }
+
+                        }
+                    }
+
+                    serviceResponse.Message = CustomMessage.Updated;
+                    serviceResponse.Success = true;
+
                 }
                 else
                 {

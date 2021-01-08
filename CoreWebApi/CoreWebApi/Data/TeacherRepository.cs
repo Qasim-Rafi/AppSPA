@@ -214,8 +214,10 @@ namespace CoreWebApi.Data
                     {
                         var LevelFromName = _context.Class.Where(m => m.Id == item.LevelFrom).FirstOrDefault().Name;
                         var LevelToName = _context.Class.Where(m => m.Id == item.LevelTo).FirstOrDefault().Name;
-                        LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
-                        LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
+                        if (!string.IsNullOrEmpty(LevelFromName))
+                            LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
+                        if (!string.IsNullOrEmpty(LevelToName))
+                            LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
                         List<int> NumberList = new List<int>();
                         for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
                         {
@@ -252,8 +254,10 @@ namespace CoreWebApi.Data
                     {
                         var LevelFromName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelFrom).FirstOrDefault().Name;
                         var LevelToName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelTo).FirstOrDefault().Name;
-                        LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
-                        LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
+                        if (!string.IsNullOrEmpty(LevelFromName))
+                            LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
+                        if (!string.IsNullOrEmpty(LevelToName))
+                            LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
                         List<int> NumberList = new List<int>();
                         for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
                         {
