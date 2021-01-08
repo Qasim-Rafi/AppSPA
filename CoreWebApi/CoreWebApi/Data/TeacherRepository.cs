@@ -155,7 +155,16 @@ namespace CoreWebApi.Data
             foreach (var EmptySlot in EmptyTimeSlots)
             {
                 var param1 = new SqlParameter("@SlotIdParam", EmptySlot.Id);
-                EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam", param1).ToList(); ;
+                if (EmptySlot.TeacherId != 0)
+                {
+                    var param2 = new SqlParameter("@TeacherIdParam", EmptySlot.TeacherId);
+                    EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam, @TeacherIdParam", param1, param2).ToList(); ;
+
+                }
+                else
+                {
+                    EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam", param1).ToList(); ;
+                }
 
             }
 
