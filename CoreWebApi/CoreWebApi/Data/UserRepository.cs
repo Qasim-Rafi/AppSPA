@@ -545,13 +545,17 @@ namespace CoreWebApi.Data
                             }
                             else
                             {
-                                throw new Exception("You didn't provide New Password");
+                                serviceResponse.Success = false;
+                                serviceResponse.Message = CustomMessage.NewPasswordNotGiven;
+                                return serviceResponse;
                             }
 
                         }
                         else
                         {
-                            throw new Exception(CustomMessage.PasswordNotMatched);
+                            serviceResponse.Success = false;
+                            serviceResponse.Message = CustomMessage.PasswordNotMatched;
+                            return serviceResponse;
                         }
 
                     }
@@ -736,13 +740,17 @@ namespace CoreWebApi.Data
                             }
                             else
                             {
-                                throw new Exception("You didn't provide New Password");
+                                serviceResponse.Success = false;
+                                serviceResponse.Message = CustomMessage.NewPasswordNotGiven;
+                                return serviceResponse;
                             }
 
                         }
                         else
                         {
-                            throw new Exception(CustomMessage.PasswordNotMatched);
+                            serviceResponse.Success = false;
+                            serviceResponse.Message = CustomMessage.PasswordNotMatched;
+                            return serviceResponse;
                         }
 
                     }

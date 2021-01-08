@@ -13,6 +13,7 @@ namespace CoreWebApi.Helpers
         public const string Deleted = "Record(s) deleted successfully";
         public const string RecordDeActivated = "Record updated and de-activated successfully";
         public const string PasswordNotMatched = "Given password does not match";
+        public const string NewPasswordNotGiven = "New password not provided";
         public const string UnableToAdd = "Unable to add data";
         public const string SomeErrorOccured = "Some error occured";
         public const string UserAlreadyExist = "{entityname} user already exist";

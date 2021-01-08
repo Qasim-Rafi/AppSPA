@@ -327,46 +327,46 @@ namespace CoreWebApi.Data
                 var existingIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserTypeId == (int)Enumm.UserType.Student).ToList();
                 var existingUserIds = existingIds.Select(m => m.UserId);
 
-                if (existingIds.Count() <= model.UserIds.Count())
+                //if (existingIds.Count() <= model.UserIds.Count())
+                //{
+                var IdsToAdd = model.UserIds.Except(existingUserIds);
+                List<ClassSectionUser> listToAdd = new List<ClassSectionUser>();
+                foreach (var userId in IdsToAdd)
                 {
-                    var IdsToAdd = model.UserIds.Except(existingUserIds);
-                    List<ClassSectionUser> listToAdd = new List<ClassSectionUser>();
-                    foreach (var userId in IdsToAdd)
+                    listToAdd.Add(new ClassSectionUser
                     {
-                        listToAdd.Add(new ClassSectionUser
-                        {
-                            ClassSectionId = model.ClassSectionId,
-                            UserId = userId,
-                            UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true).UserTypeId : 3,
-                            CreatedDate = DateTime.Now,
-                            SchoolBranchId = _LoggedIn_BranchID
-                        });
-                    }
-                    await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
-                    await _context.SaveChangesAsync();
+                        ClassSectionId = model.ClassSectionId,
+                        UserId = userId,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true).UserTypeId : 3,
+                        CreatedDate = DateTime.Now,
+                        SchoolBranchId = _LoggedIn_BranchID
+                    });
                 }
-                else if (existingIds.Count() > model.UserIds.Count())
-                {
-                    var IdsToRemove = existingUserIds.Except(model.UserIds);
-                    existingIds = existingIds.Where(m => IdsToRemove.Contains(m.UserId)).ToList();
-                    _context.ClassSectionUsers.RemoveRange(existingIds);
-                    await _context.SaveChangesAsync();
+                await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
+                await _context.SaveChangesAsync();
+                //}
+                //else if (existingIds.Count() > model.UserIds.Count())
+                //{
+                //    var IdsToRemove = existingUserIds.Except(model.UserIds);
+                //    existingIds = existingIds.Where(m => IdsToRemove.Contains(m.UserId)).ToList();
+                //    _context.ClassSectionUsers.RemoveRange(existingIds);
+                //    await _context.SaveChangesAsync();
 
-                    List<ClassSectionTransaction> ToAdd = new List<ClassSectionTransaction>();
-                    foreach (var item in existingIds)
-                    {
-                        ToAdd.Add(new ClassSectionTransaction
-                        {
-                            ClassSectionId = item.ClassSectionId,
-                            UserId = item.UserId,
-                            UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId : 3,
-                            DeletionDate = DateTime.Now,
-                            DeletedById = _LoggedIn_UserID
-                        });
-                    }
-                    await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
-                    await _context.SaveChangesAsync();
-                }
+                //    List<ClassSectionTransaction> ToAdd = new List<ClassSectionTransaction>();
+                //    foreach (var item in existingIds)
+                //    {
+                //        ToAdd.Add(new ClassSectionTransaction
+                //        {
+                //            ClassSectionId = item.ClassSectionId,
+                //            UserId = item.UserId,
+                //            UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId : 3,
+                //            DeletionDate = DateTime.Now,
+                //            DeletedById = _LoggedIn_UserID
+                //        });
+                //    }
+                //    await _context.ClassSectionTransactions.AddRangeAsync(ToAdd);
+                //    await _context.SaveChangesAsync();
+                //}
 
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
