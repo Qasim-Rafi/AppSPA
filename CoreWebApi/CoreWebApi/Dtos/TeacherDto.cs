@@ -12,7 +12,7 @@ namespace CoreWebApi.Dtos
     }
     public class PlannerDtoForAdd
     {
-        public string Description { get; set; }      
+        public string Description { get; set; }
         public int DocumentTypeId { get; set; }
         public int ReferenceId { get; set; }
     }
@@ -46,7 +46,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public string Name { get; set; }
-      
+
     }
 
     public class EmptyTimeSlotForListDto
@@ -74,9 +74,9 @@ namespace CoreWebApi.Dtos
         public List<GetSubstituteTeachersDto> SubstituteTeachers { get; set; }
     }
     public class GetSubstituteTeachersDto
-    {   [Key]
+    {
+        [Key]
         public int TeacherId { get; set; }
-      
         public string FullName { get; set; } = "";
 
     }

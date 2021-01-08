@@ -103,7 +103,7 @@ namespace CoreWebApi.Data
                 if (Sections > 0)
                 {
                     _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.RecordRelationExist;
+                    _serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Section");
                     return _serviceResponse;
                 }
                 else
@@ -112,7 +112,7 @@ namespace CoreWebApi.Data
                     _context.Sections.Update(obj);
                     await _context.SaveChangesAsync();
                     _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Deleted;
+                    _serviceResponse.Message = CustomMessage.ActiveStatusUpdated;
                     return _serviceResponse;
                 }
             }

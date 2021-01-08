@@ -454,12 +454,13 @@ namespace CoreWebApi.Data
                     var oldType = dbUser.UserTypeId;
                     if (user.UserTypeId == (int)Enumm.UserType.Student)
                     {
+                        
                         var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
                         var Age = Math.Truncate(TotalDays / 365);
                         if (Age < BusinessRules.Student_Min_Age)
                         {
                             serviceResponse.Success = false;
-                            serviceResponse.Message = CustomMessage.StudentMinAge.Replace("age", BusinessRules.Student_Min_Age.ToString());
+                            serviceResponse.Message =string.Format(CustomMessage.StudentMinAge, BusinessRules.Student_Min_Age.ToString());
                             return serviceResponse;
                         }
                         if (oldStatus == true && user.Active == false)
@@ -467,7 +468,7 @@ namespace CoreWebApi.Data
                             var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
                             if (StudentReferences > 0)
                             {
-                                serviceResponse.Message = CustomMessage.RecordRelationExist.Replace("entityname", "Student");
+                                serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Student");
                                 serviceResponse.Success = false;
                                 return serviceResponse;
                             }
@@ -477,7 +478,7 @@ namespace CoreWebApi.Data
                             var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
                             if (StudentReferences > 0)
                             {
-                                serviceResponse.Message = CustomMessage.UserTypeChange.Replace("entityname", "Student");
+                                serviceResponse.Message = string.Format(CustomMessage.UserTypeChange, "Student");
                                 serviceResponse.Success = false;
                                 return serviceResponse;
                             }
@@ -490,7 +491,7 @@ namespace CoreWebApi.Data
                         if (Age < BusinessRules.Teacher_Min_Age)
                         {
                             serviceResponse.Success = false;
-                            serviceResponse.Message = CustomMessage.TeacherMinAge.Replace("age", BusinessRules.Teacher_Min_Age.ToString());
+                            serviceResponse.Message = string.Format(CustomMessage.TeacherMinAge, BusinessRules.Teacher_Min_Age.ToString());
                             return serviceResponse;
                         }
                         if (oldStatus == true && user.Active == false)
@@ -498,7 +499,7 @@ namespace CoreWebApi.Data
                             var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
                             if (StudentReferences > 0)
                             {
-                                serviceResponse.Message = CustomMessage.RecordRelationExist.Replace("entityname", "Teacher");
+                                serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Teacher");
                                 serviceResponse.Success = false;
                                 return serviceResponse;
                             }
@@ -508,7 +509,7 @@ namespace CoreWebApi.Data
                             var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
                             if (StudentReferences > 0)
                             {
-                                serviceResponse.Message = CustomMessage.UserTypeChange.Replace("entityname", "Teacher");
+                                serviceResponse.Message = string.Format(CustomMessage.UserTypeChange, "Teacher");
                                 serviceResponse.Success = false;
                                 return serviceResponse;
                             }
@@ -693,7 +694,7 @@ namespace CoreWebApi.Data
                         if (Age < BusinessRules.Student_Min_Age)
                         {
                             serviceResponse.Success = false;
-                            serviceResponse.Message = CustomMessage.StudentMinAge.Replace("age", BusinessRules.Student_Min_Age.ToString());
+                            serviceResponse.Message = string.Format(CustomMessage.StudentMinAge, BusinessRules.Student_Min_Age.ToString());
                             return serviceResponse;
                         }
                     }
@@ -704,7 +705,7 @@ namespace CoreWebApi.Data
                         if (Age < BusinessRules.Teacher_Min_Age)
                         {
                             serviceResponse.Success = false;
-                            serviceResponse.Message = CustomMessage.TeacherMinAge.Replace("age", BusinessRules.Teacher_Min_Age.ToString());
+                            serviceResponse.Message = string.Format(CustomMessage.TeacherMinAge, BusinessRules.Teacher_Min_Age.ToString());
                             return serviceResponse;
                         }
 
