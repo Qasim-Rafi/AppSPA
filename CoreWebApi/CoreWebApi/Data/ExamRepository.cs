@@ -269,7 +269,7 @@ namespace CoreWebApi.Data
                 List<QuizForListDto> quizzes = new List<QuizForListDto>();
                 if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
                 {
-                    var ids = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.QuizId);
+                    //var ids = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.QuizId);
 
                     quizzes = await (from quiz in _context.Quizzes
                                      join subject in _context.Subjects
@@ -283,7 +283,7 @@ namespace CoreWebApi.Data
 
                                      where classSectionUser.UserId == _LoggedIn_UserID
                                      && quiz.SchoolBranchId == _LoggedIn_BranchID
-                                     && !ids.Contains(quiz.Id)
+                                     //&& !ids.Contains(quiz.Id)
                                      && subject.Active == true
                                      && classSection.Active == true
                                      && quiz.QuizDate.Value.Date >= DateTime.Now.Date
@@ -301,6 +301,7 @@ namespace CoreWebApi.Data
                                          ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId && m.Active == true).Name,
                                          SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId && m.Active == true).SectionName,
                                          QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
+                                         IsSubmitted = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Count() > 0 ? true : false
                                      }).ToListAsync();
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
@@ -481,7 +482,7 @@ namespace CoreWebApi.Data
                               }).ToListAsync();
             foreach (var item in List)
             {
-                var CorrectAnswers = (from sub in _context.QuizSubmissions                                      
+                var CorrectAnswers = (from sub in _context.QuizSubmissions
                                       where sub.QuizId == item.QuizId
                                       && sub.IsCorrect == true
                                       select sub).ToList().Count();

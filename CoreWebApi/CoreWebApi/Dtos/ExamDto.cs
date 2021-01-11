@@ -78,6 +78,7 @@ namespace CoreWebApi.Dtos
         public string SectionName { get; set; }
         public int QuestionCount { get; set; }
         public bool IsPosted { get; set; }
+        public bool IsSubmitted { get; set; }
         public List<QuestionForListDto> Questions { get; set; }
         
     }

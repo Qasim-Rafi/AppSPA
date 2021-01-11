@@ -54,7 +54,7 @@ namespace CoreWebApi.Data
             {
                 SubjectCount = _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToList().Count();
             }
-            
+
             _serviceResponse.Data = new
             {
                 StudentCount,
@@ -100,6 +100,7 @@ namespace CoreWebApi.Data
                                                  && user.Active == true
                                                  && user.SchoolBranchId == _LoggedIn_BranchID
                                                  select user).CountAsync();
+
                 int AbsentStudentCount = await (from user in _context.Users
                                                 join attendance in _context.Attendances
                                                 on user.Id equals attendance.UserId
@@ -110,7 +111,18 @@ namespace CoreWebApi.Data
                                                 && user.SchoolBranchId == _LoggedIn_BranchID
                                                 select user).CountAsync();
 
+                var attendances = await _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+                var classSections = await (from cs in _context.ClassSections
+                                           where !attendances.Select(m => m.ClassSectionId).Contains(cs.Id)
+                                           && cs.Active == true
+                                           && cs.SchoolBranchId == _LoggedIn_BranchID
+                                           select cs).ToListAsync();
+                var studentsByCS = _context.ClassSectionUsers.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && m.SchoolBranchId == _LoggedIn_BranchID).ToList();
 
+                foreach (var item in classSections)
+                {
+                    AbsentStudentCount += studentsByCS.Where(m => m.ClassSectionId == item.Id).ToList().Count();
+                }
 
                 int AbsentTeacherCount = await (from user in _context.Users
                                                 join attendance in _context.Attendances
@@ -121,6 +133,14 @@ namespace CoreWebApi.Data
                                                 && user.Active == true
                                                 && user.SchoolBranchId == _LoggedIn_BranchID
                                                 select user).CountAsync();
+
+                var teachersByCS = _context.ClassSectionUsers.Where(m => m.UserTypeId == (int)Enumm.UserType.Teacher && m.SchoolBranchId == _LoggedIn_BranchID).ToList();               
+
+                foreach (var item in classSections)
+                {
+                    AbsentTeacherCount += teachersByCS.Where(m => m.ClassSectionId == item.Id).ToList().Count();
+                }
+
                 string StudentPresentPercentage = "0";
                 string TeacherPresentPercentage = "0";
                 string StudentAbsentPercentage = "0";
@@ -329,7 +349,7 @@ namespace CoreWebApi.Data
                                     && csUser.SchoolBranchId == _LoggedIn_BranchID
                                     select subject).ToList().Count();
                 }
-            }           
+            }
             _serviceResponse.Data = new
             {
                 AssignmentCount,

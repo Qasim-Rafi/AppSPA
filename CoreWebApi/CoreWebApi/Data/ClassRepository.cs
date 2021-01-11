@@ -327,16 +327,15 @@ namespace CoreWebApi.Data
             {
                 var CanHaveStudents = _context.ClassSections.Where(m => m.Id == model.ClassSectionId && m.Active == true).FirstOrDefault()?.NumberOfStudents;
                 var ToAddStudents = model.UserIds.Count();
-                if (CanHaveStudents < ToAddStudents)
+
+                var existingUserIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserTypeId == (int)Enumm.UserType.Student).Select(m => m.UserId).ToList();
+                //var existingUserIds = existingIds;
+                if (CanHaveStudents < (existingUserIds.Count() + ToAddStudents))
                 {
                     _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.CantExceedLimit;
+                    _serviceResponse.Message = string.Format(CustomMessage.CantExceedLimit, CanHaveStudents.ToString());
                     return _serviceResponse;
                 }
-
-                var existingIds = _context.ClassSectionUsers.Where(m => m.ClassSectionId == model.ClassSectionId && m.UserTypeId == (int)Enumm.UserType.Student).ToList();
-                var existingUserIds = existingIds.Select(m => m.UserId);
-
                 //if (existingIds.Count() <= model.UserIds.Count())
                 //{
                 var IdsToAdd = model.UserIds.Except(existingUserIds);
@@ -347,13 +346,16 @@ namespace CoreWebApi.Data
                     {
                         ClassSectionId = model.ClassSectionId,
                         UserId = userId,
-                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true).UserTypeId : 3,
+                        UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true).UserTypeId : (int)Enumm.UserType.Student,
                         CreatedDate = DateTime.Now,
                         SchoolBranchId = _LoggedIn_BranchID
                     });
                 }
-                await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
-                await _context.SaveChangesAsync();
+                if (listToAdd.Count > 0)
+                {
+                    await _context.ClassSectionUsers.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
+                }
                 //}
                 //else if (existingIds.Count() > model.UserIds.Count())
                 //{

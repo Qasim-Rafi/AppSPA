@@ -48,16 +48,21 @@ namespace CoreWebApi.Helpers
         public static string ToTime(TimeSpan timeSpan)
         {
             DateTime time = DateTime.Today.Add(timeSpan);
-            string dt = time.ToString("hh:mm:ss tt"); 
+            string dt = time.ToString("hh:mm:ss tt");
             return dt;
-           
+
         }
         public static string To24HRTime(TimeSpan timeSpan)
         {
-            DateTime time = DateTime.Today.Add(timeSpan);
-            string dt = time.ToString("hh:mm:ss"); 
-            return dt;
-           
+            string shortForm = "";
+            shortForm += $"{timeSpan.Hours:00}";
+            shortForm += ":" + $"{timeSpan.Minutes:00}";
+            shortForm += ":" + $"{timeSpan.Seconds:00}";
+            return shortForm;
+            //DateTime time = DateTime.Today.Add(timeSpan);
+            //string dt = time.ToString("hh:mm:ss");
+            //return dt;
+
         }
     }
 

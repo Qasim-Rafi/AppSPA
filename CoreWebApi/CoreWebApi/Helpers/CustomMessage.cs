@@ -21,7 +21,7 @@ namespace CoreWebApi.Helpers
         public const string ChildRecordExist = "Record can't be deleted, because it's child record(s) exist in another table";
         public const string RecordRelationExist = "{0} record can't be deleted, because it's reference exist in another table";
         public const string UserUnAuthorized = "Un-Authorized. Username or Password does not match. Contact your administrator";
-        public const string CantExceedLimit = "Can't add records more then specified";
+        public const string CantExceedLimit = "Can't add records more then {0}";
         public const string URDeactivated = "You are de-activated. Contact your administrator";
         public const string DataNotProvided = "Data not provided. Please fill all the required fields";
         public const string SelectLeastOneTrue = "Please select at least one true answer";
