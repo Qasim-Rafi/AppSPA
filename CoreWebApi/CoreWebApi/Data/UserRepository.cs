@@ -302,6 +302,7 @@ namespace CoreWebApi.Data
             {
                 string NewRegNo = "";
                 string NewRollNo = "";
+                DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
@@ -331,9 +332,16 @@ namespace CoreWebApi.Data
                     {
                         NewRollNo = $"R-{School.BranchName.Substring(0, 3)}-{1:00000}";
                     }
+                    var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                    var Age = Math.Truncate(TotalDays / 365);
+                    if (Age < BusinessRules.Student_Min_Age)
+                    {
+                        serviceResponse.Success = false;
+                        serviceResponse.Message = string.Format(CustomMessage.StudentMinAge, BusinessRules.Student_Min_Age.ToString());
+                        return serviceResponse;
+                    }
                 }
 
-                DateTime DateOfBirth = DateTime.ParseExact(userDto.DateofBirth, "MM/dd/yyyy", null);
                 if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
                     var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
@@ -341,7 +349,7 @@ namespace CoreWebApi.Data
                     if (Age < BusinessRules.Teacher_Min_Age)
                     {
                         serviceResponse.Success = false;
-                        serviceResponse.Message = CustomMessage.TeacherMinAge;
+                        serviceResponse.Message = string.Format(CustomMessage.TeacherMinAge, BusinessRules.Teacher_Min_Age.ToString());
                         return serviceResponse;
                     }
                 }

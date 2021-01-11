@@ -87,7 +87,16 @@ namespace CoreWebApi.Data
             Class dbObj = _context.Class.FirstOrDefault(s => s.Id.Equals(@class.Id));
             if (dbObj != null)
             {
-
+                if (dbObj.Active == true && @class.Active == false)
+                {
+                    var Classes = _context.ClassSections.Where(m => m.ClassId == dbObj.Id && m.Active == true).ToList().Count();
+                    if (Classes > 0)
+                    {
+                        _serviceResponse.Success = false;
+                        _serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Class");
+                        return _serviceResponse;
+                    }
+                }
                 dbObj.Name = @class.Name;
                 dbObj.Active = @class.Active;
                 _context.Class.Update(dbObj);
@@ -104,22 +113,23 @@ namespace CoreWebApi.Data
             var obj = await _context.Class.Where(m => m.Id == id).FirstOrDefaultAsync();
             if (obj != null)
             {
-                var Sections = _context.ClassSections.Where(m => m.ClassId == obj.Id && m.Active == true).ToList().Count();
-                if (Sections > 0)
+                if (obj.Active == true && active == false)
                 {
-                    _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.ChildRecordExist;
-                    return _serviceResponse;
+                    var Classes = _context.ClassSections.Where(m => m.ClassId == obj.Id && m.Active == true).ToList().Count();
+                    if (Classes > 0)
+                    {
+                        _serviceResponse.Success = false;
+                        _serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Class");
+                        return _serviceResponse;
+                    }
                 }
-                else
-                {
-                    obj.Active = active;
-                    _context.Class.Update(obj);
-                    await _context.SaveChangesAsync();
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.Deleted;
-                    return _serviceResponse;
-                }
+                obj.Active = active;
+                _context.Class.Update(obj);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.ActiveStatusUpdated;
+                return _serviceResponse;
+
             }
             else
             {
