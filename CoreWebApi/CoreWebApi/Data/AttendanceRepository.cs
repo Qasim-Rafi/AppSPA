@@ -30,6 +30,28 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _mapper = mapper;
+            OnInIt();
+        }
+        public void OnInIt()
+        {
+            var leave = _context.Leaves.Where(m => m.FromDate.Date >= DateTime.Now.Date && m.ToDate.Date <= DateTime.Now.Date).FirstOrDefault();
+            if (leave != null)
+            {
+                var ToAdd = new Attendance
+                {
+                    Present = false,
+                    Absent = true,
+                    Late = false,
+                    Comments = "",
+                    UserId = leave.UserId,
+                    ClassSectionId = 0,
+                    CreatedDatetime = DateTime.Now,
+                    SchoolBranchId = _LoggedIn_BranchID
+                };
+
+                _context.Attendances.Add(ToAdd);
+                _context.SaveChanges();
+            }
         }
         public async Task<bool> AttendanceExists(int userId)
         {
@@ -46,18 +68,31 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<Attendance>>> GetAttendances()
+        public async Task<ServiceResponse<object>> GetAttendances()
         {
-            ServiceResponse<List<Attendance>> serviceResponse = new ServiceResponse<List<Attendance>>();
             var attendances = await _context.Attendances.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            
-            serviceResponse.Data = attendances;
-            serviceResponse.Success = true;
-            return serviceResponse;
+            var ToReturn = attendances.Select(o => new AttendanceDtoForList
+            {
+                UserId = o.UserId,
+                Present = o.Present,
+                Absent = o.Absent,
+                Late = o.Late,
+                Comments = o.Comments,
+                //LeaveCount = _context.Leaves.Where(m => m.UserId == o.UserId).Count(),
+                //AbsentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Absent == true).Count(),
+                //LateCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Late == true).Count(),
+                //PresentCount = _context.Attendances.Where(m => m.UserId == o.UserId && m.Present == true).Count(),
+                ////LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
+                ////LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
+                ////LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
+                ////LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
+            }).ToList();
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
         public async Task<ServiceResponse<object>> AddAttendance(List<AttendanceDtoForAdd> list)
         {
-
             foreach (var attendance in list)
             {
                 var attendanceExist = _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.UserId == attendance.UserId && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();

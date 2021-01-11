@@ -8,9 +8,6 @@ namespace CoreWebApi.Models
     public class LeaveApprovalType
     {
         public int Id { get; set; }
-        public string   Discription { get; set; }
-
-        public virtual Leave Leave { get; set; }
-
+        public string Description { get; set; }
     }
 }

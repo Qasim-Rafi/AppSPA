@@ -12,18 +12,19 @@ namespace CoreWebApi.Models
     public class Leave
     {
         public int Id { get; set; }
-        public int LeaveTypeId { get; set; }
-        public int UserId { get; set; }
-        [Required]
+      
+        //[Required]
         [StringLength(250, ErrorMessage = "Details cannot be longer then 250 characters")]
         public string Details { get; set; }
         [DateValidation(ErrorMessage = "From Date is not in correct format")]
         public DateTime FromDate { get; set; }
         [DateValidation(ErrorMessage = "To Date is not in correct format")]
         public DateTime ToDate { get; set; }
-
+        public int LeaveTypeId { get; set; }
+        public int UserId { get; set; }
         public int LeaveApprovalTypeId { get; set; }
         public int SchoolBranchId { get; set; }
+        public DateTime CreatedDateTime { get; set; }
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
@@ -31,7 +32,7 @@ namespace CoreWebApi.Models
         public virtual LeaveType LeaveType { get; set; }
 
         [ForeignKey("LeaveApprovalTypeId")]
-        public virtual  LeaveApprovalType LeaveApprovalType { get; set; }
+        public virtual LeaveApprovalType LeaveApprovalType { get; set; }
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
     }

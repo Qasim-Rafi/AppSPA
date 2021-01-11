@@ -9,7 +9,5 @@ namespace CoreWebApi.Models
     {
         public int Id { get; set; }
         public string Type { get; set; }
-
-       public virtual Leave  Leave { get; set; }
     }
 }

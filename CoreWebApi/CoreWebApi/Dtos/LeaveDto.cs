@@ -12,36 +12,45 @@ namespace CoreWebApi.Dtos
     }
     public class LeaveDtoForAdd : BaseDto
     {
-        public int LeaveTypeId { get; set; }
-        public int UserId { get; set; }
-        [Required]
         [StringLength(250, ErrorMessage = "Details cannot be longer then 250 characters")]
         public string Details { get; set; }
-        [Required]
         [DateValidation(ErrorMessage = "From Date is not in correct format")]
         public DateTime FromDate { get; set; }
-        [Required]
         [DateValidation(ErrorMessage = "To Date is not in correct format")]
         public DateTime ToDate { get; set; }
+        public string LeaveTypeId { get; set; }
+        public string UserId { get; set; }
     }
     public class LeaveDtoForEdit
     {
-        [Required]
+        public int Id { get; set; }
         [StringLength(250, ErrorMessage = "Details cannot be longer then 250 characters")]
         public string Details { get; set; }
-        [Required]
         [DateValidation(ErrorMessage = "From Date is not in correct format")]
         public DateTime FromDate { get; set; }
         [DateValidation(ErrorMessage = "To Date is not in correct format")]
-        [Required] 
         public DateTime ToDate { get; set; }
-        public int LeaveTypeId { get; set; }
-
+        public string LeaveTypeId { get; set; }
+        public string UserId { get; set; }
     }
     public class LeaveDtoForList
     {
+        public string Details { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
+        public int LeaveTypeId { get; set; }
+        public string LeaveType { get; set; }
+        public int UserId { get; set; }
+        public string User { get; set; }
     }
     public class LeaveDtoForDetail
     {
+        public string Details { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
+        public int LeaveTypeId { get; set; }
+        public string LeaveType { get; set; }
+        public int UserId { get; set; }
+        public string User { get; set; }
     }
 }

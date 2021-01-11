@@ -58,7 +58,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
         [HttpGet("GetEmptyTeachers"), NonAction]
-        public async Task<IActionResult> GetEmptyTeachers()
+        public async Task<IActionResult> GetEmptyTeachers() // not in use
         {
             if (!ModelState.IsValid)
             {

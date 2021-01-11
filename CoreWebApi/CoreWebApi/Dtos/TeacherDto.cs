@@ -71,6 +71,7 @@ namespace CoreWebApi.Dtos
         public string Section { get; set; }
         public bool IsBreak { get; set; }
         public int RowNo { get; set; }
+        public int SubstituteTeacherId { get; set; }
         public List<GetSubstituteTeachersDto> SubstituteTeachers { get; set; }
     }
     public class GetSubstituteTeachersDto

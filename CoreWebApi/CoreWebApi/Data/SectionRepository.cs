@@ -84,6 +84,16 @@ namespace CoreWebApi.Data
             Section dbObj = _context.Sections.FirstOrDefault(s => s.Id.Equals(section.Id));
             if (dbObj != null)
             {
+                if (dbObj.Active == true && section.Active == false)
+                {
+                    var Sections = _context.ClassSections.Where(m => m.SectionId == dbObj.Id && m.Active == true).ToList().Count();
+                    if (Sections > 0)
+                    {
+                        _serviceResponse.Success = false;
+                        _serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Section");
+                        return _serviceResponse;
+                    }
+                }
                 dbObj.SectionName = section.SectionName;
                 dbObj.Active = section.Active;
                 _context.Sections.Update(dbObj);
@@ -99,22 +109,24 @@ namespace CoreWebApi.Data
             var obj = await _context.Sections.Where(m => m.Id == id).FirstOrDefaultAsync();
             if (obj != null)
             {
-                var Sections = _context.ClassSections.Where(m => m.SectionId == obj.Id && m.Active == true).ToList().Count();
-                if (Sections > 0)
+                if (obj.Active == true && active == false)
                 {
-                    _serviceResponse.Success = false;
-                    _serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Section");
-                    return _serviceResponse;
+                    var Sections = _context.ClassSections.Where(m => m.SectionId == obj.Id && m.Active == true).ToList().Count();
+                    if (Sections > 0)
+                    {
+                        _serviceResponse.Success = false;
+                        _serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Section");
+                        return _serviceResponse;
+                    }
                 }
-                else
-                {
-                    obj.Active = active;
-                    _context.Sections.Update(obj);
-                    await _context.SaveChangesAsync();
-                    _serviceResponse.Success = true;
-                    _serviceResponse.Message = CustomMessage.ActiveStatusUpdated;
-                    return _serviceResponse;
-                }
+
+                obj.Active = active;
+                _context.Sections.Update(obj);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.ActiveStatusUpdated;
+                return _serviceResponse;
+
             }
             else
             {

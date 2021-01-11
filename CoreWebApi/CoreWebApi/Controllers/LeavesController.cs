@@ -21,77 +21,54 @@ namespace CoreWebApi.Controllers
     {
         private readonly ILeaveRepository _repo;
         private readonly IMapper _mapper;
-        public LeavesController(ILeaveRepository repo, IMapper mapper,
-            IHttpContextAccessor httpContextAccessor)
+        ServiceResponse<object> _response;
+        public LeavesController(ILeaveRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
+            _response = new ServiceResponse<object>();
         }
 
         [HttpGet]
         public async Task<IActionResult> GetLeavees()
         {
-            var leaves = await _repo.GetLeaves();
-            var ToReturn = _mapper.Map<IEnumerable<Leave>>(leaves);
-            return Ok(ToReturn);
+            _response = await _repo.GetLeaves();
+            return Ok(_response);
 
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLeave(int id)
         {
-            var leave = await _repo.GetLeave(id);
-            var ToReturn = _mapper.Map<Leave>(leave);
-            return Ok(ToReturn);
+            _response = await _repo.GetLeave(id);
+            return Ok(_response);
         }
         [HttpPost("Add")]
         public async Task<IActionResult> Post(LeaveDtoForAdd leave)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                if (await _repo.LeaveExists(leave.UserId))
-                    return BadRequest(new { message = "Leave Already Exist" });
-
-                var createdObj = await _repo.AddLeave(leave);
-
-                return StatusCode(StatusCodes.Status201Created);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            if (await _repo.LeaveExists(Convert.ToInt32(leave.UserId), leave.FromDate, leave.ToDate))
+                return BadRequest(new { message = CustomMessage.RecordAlreadyExist });
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
-            }
+            _response = await _repo.AddLeave(leave);
+
+            return Ok(_response);
+
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, LeaveDtoForEdit leave)
         {
-
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var updatedObj = await _repo.EditLeave(id, leave);
-
-                return StatusCode(StatusCodes.Status200OK);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
+            _response = await _repo.EditLeave(id, leave);
 
-                return BadRequest(new
-                {
-                    message = ex.Message == "" ? ex.InnerException.ToString() : ex.Message
-                });
+            return Ok(_response);
 
-            }
         }
     }
 }

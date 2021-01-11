@@ -80,6 +80,10 @@ namespace CoreWebApi.Data
                                         join cs in _context.ClassSections
                                         on main.ClassSectionId equals cs.Id
 
+                                        join sub in _context.Substitutions
+                                        on main.LectureId equals sub.TimeSlotId into newSub
+                                        from sub in newSub.DefaultIfEmpty()
+
                                         where //u.UserTypeId == (int)Enumm.UserType.Teacher
                                         l.SchoolBranchId == _LoggedIn_BranchID
                                         && s.Active == true
@@ -103,8 +107,9 @@ namespace CoreWebApi.Data
                                             Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
                                             Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                             IsBreak = l.IsBreak,
-                                            RowNo = l.RowNo
-                                        }).Where(m => m.Teacher == null).ToListAsync();
+                                            RowNo = l.RowNo,
+                                            SubstituteTeacherId = sub.SubstituteTeacherId
+                                        }).Where(m => m.Teacher == null && m.SubstituteTeacherId == null).ToListAsync();
 
             EmptyTimeSlots.AddRange(await (from main in _context.ClassLectureAssignment
                                            join l in _context.LectureTiming
@@ -121,6 +126,10 @@ namespace CoreWebApi.Data
 
                                            join cs in _context.ClassSections
                                            on main.ClassSectionId equals cs.Id
+
+                                           join sub in _context.Substitutions
+                                           on main.LectureId equals sub.TimeSlotId into newSub
+                                           from sub in newSub.DefaultIfEmpty()
 
                                            where u.UserTypeId == (int)Enumm.UserType.Teacher
                                            && l.SchoolBranchId == _LoggedIn_BranchID
@@ -147,8 +156,9 @@ namespace CoreWebApi.Data
                                                Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
                                                Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
                                                IsBreak = l.IsBreak,
-                                               RowNo = l.RowNo
-                                           }).ToListAsync());
+                                               RowNo = l.RowNo,
+                                               SubstituteTeacherId = sub.SubstituteTeacherId
+                                           }).Where(m => m.SubstituteTeacherId == null).ToListAsync());
 
             //when run an SP set this first -in asp.net core EF
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

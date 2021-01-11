@@ -228,7 +228,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             if (await _repo.ClassSectionUserExists(classSectionUser.ClassSectionId, classSectionUser.UserId))
-                return BadRequest(new { message = "Class Section Teacher Already Exist" });
+                return BadRequest(new { message = "Teacher for this class section already exist" });
 
             _response = await _repo.AddClassSectionUserMapping(classSectionUser);
 

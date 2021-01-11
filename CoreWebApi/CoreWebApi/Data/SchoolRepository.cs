@@ -613,7 +613,7 @@ namespace CoreWebApi.Data
                 if (Count > 0)
                 {
                     _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.ChildRecordExist;
+                    _serviceResponse.Message = CustomMessage.CantDeleteEvent;
                 }
                 else
                 {

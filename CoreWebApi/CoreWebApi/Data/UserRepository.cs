@@ -454,13 +454,13 @@ namespace CoreWebApi.Data
                     var oldType = dbUser.UserTypeId;
                     if (user.UserTypeId == (int)Enumm.UserType.Student)
                     {
-                        
+
                         var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
                         var Age = Math.Truncate(TotalDays / 365);
                         if (Age < BusinessRules.Student_Min_Age)
                         {
                             serviceResponse.Success = false;
-                            serviceResponse.Message =string.Format(CustomMessage.StudentMinAge, BusinessRules.Student_Min_Age.ToString());
+                            serviceResponse.Message = string.Format(CustomMessage.StudentMinAge, BusinessRules.Student_Min_Age.ToString());
                             return serviceResponse;
                         }
                         if (oldStatus == true && user.Active == false)
@@ -478,7 +478,7 @@ namespace CoreWebApi.Data
                             var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
                             if (StudentReferences > 0)
                             {
-                                serviceResponse.Message = string.Format(CustomMessage.UserTypeChange, "Student");
+                                serviceResponse.Message = string.Format(CustomMessage.CantChangeUserType, "Student");
                                 serviceResponse.Success = false;
                                 return serviceResponse;
                             }
@@ -496,8 +496,9 @@ namespace CoreWebApi.Data
                         }
                         if (oldStatus == true && user.Active == false)
                         {
-                            var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
-                            if (StudentReferences > 0)
+                            var GetReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
+                            var GetReferences2 = _context.ClassLectureAssignment.Where(m => m.TeacherId == dbUser.Id).ToList().Count();
+                            if (GetReferences > 0 || GetReferences2 > 0)
                             {
                                 serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "Teacher");
                                 serviceResponse.Success = false;
@@ -509,7 +510,7 @@ namespace CoreWebApi.Data
                             var StudentReferences = _context.ClassSectionUsers.Where(m => m.UserId == dbUser.Id).ToList().Count();
                             if (StudentReferences > 0)
                             {
-                                serviceResponse.Message = string.Format(CustomMessage.UserTypeChange, "Teacher");
+                                serviceResponse.Message = string.Format(CustomMessage.CantChangeUserType, "Teacher");
                                 serviceResponse.Success = false;
                                 return serviceResponse;
                             }
@@ -686,7 +687,7 @@ namespace CoreWebApi.Data
                         return serviceResponse;
                     }
                     DateTime DateOfBirth = DateTime.ParseExact(user.DateofBirth, "MM/dd/yyyy", null);
-                    
+
                     if (user.UserTypeId == (int)Enumm.UserType.Student)
                     {
                         var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
@@ -829,8 +830,6 @@ namespace CoreWebApi.Data
             }
         }
 
-
-
         public async Task<IEnumerable<UserByTypeListDto>> GetUsersByType(int typeId, int? classSectionId)
         {
             var today = DateTime.Now;
@@ -840,11 +839,13 @@ namespace CoreWebApi.Data
                 var users = await (from u in _context.Users
                                    join csU in _context.ClassSectionUsers
                                    on u.Id equals csU.UserId
+
                                    where u.UserTypeId == typeId
                                    && csU.ClassSectionId == classSectionId
                                    && u.Active == true
                                    && u.SchoolBranchId == _LoggedIn_BranchID
-                                   select u).OrderByDescending(m => m.Id).Select(o => new UserByTypeListDto
+                                   orderby u.Id descending
+                                   select u).Select(o => new UserByTypeListDto
                                    {
                                        UserId = o.Id,
                                        FullName = o.FullName,
@@ -898,7 +899,8 @@ namespace CoreWebApi.Data
                                    where u.UserTypeId == typeId
                                    && u.Active == true
                                    && u.SchoolBranchId == _LoggedIn_BranchID
-                                   select u).OrderByDescending(m => m.Id).Select(o => new UserByTypeListDto
+                                   orderby u.Id descending
+                                   select u).Select(o => new UserByTypeListDto
                                    {
                                        UserId = o.Id,
                                        FullName = o.FullName,
@@ -920,13 +922,6 @@ namespace CoreWebApi.Data
                                            Url = _File.AppendImagePath(x.Name)
                                        }).ToList(),
                                    }).ToListAsync();
-                //foreach (var user in users)
-                //{
-                //    foreach (var item in user?.Photos)
-                //    {
-                //        item.Url = _File.AppendImagePath(item.Url);
-                //    }
-                //}
 
                 return users;
 
@@ -947,7 +942,6 @@ namespace CoreWebApi.Data
                            {
                                id = u.Id,
                                userId = m.UserId
-
                            }).Where(x => x.userId == null).ToList();
 
             List<User> unmappedStudents = await _context.Users.Where(m => userIds.Select(sel => sel.id).Contains(m.Id) && m.UserTypeId == (int)Enumm.UserType.Student).ToListAsync();
@@ -1246,13 +1240,23 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> ActiveInActiveUser(int id, bool status)
         {
-
             var user = _context.Users.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).FirstOrDefault();
+            if (user.Active == true && status == false)
+            {
+                var GetReferences = _context.ClassSectionUsers.Where(m => m.UserId == user.Id).ToList().Count();
+                var GetReferences2 = _context.ClassLectureAssignment.Where(m => m.TeacherId == user.Id).ToList().Count();
+                if (GetReferences > 0 || GetReferences2 > 0)
+                {
+                    _serviceResponse.Message = string.Format(CustomMessage.RecordRelationExist, "This");
+                    _serviceResponse.Success = false;
+                    return _serviceResponse;
+                }
+            }
             user.Active = status;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
-            _serviceResponse.Message = CustomMessage.Deleted;
+            _serviceResponse.Message = CustomMessage.ActiveStatusUpdated;
             return _serviceResponse;
 
         }

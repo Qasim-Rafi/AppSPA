@@ -140,6 +140,8 @@
     <Compile Remove="Migrations\20210107073540_AddContactUs.Designer.cs" />
     <Compile Remove="Migrations\20210107073835_AddContactUs.cs" />
     <Compile Remove="Migrations\20210107073835_AddContactUs.Designer.cs" />
+    <Compile Remove="Migrations\20210109170912_UpdateLeave.cs" />
+    <Compile Remove="Migrations\20210109170912_UpdateLeave.Designer.cs" />
 
   </ItemGroup>
 

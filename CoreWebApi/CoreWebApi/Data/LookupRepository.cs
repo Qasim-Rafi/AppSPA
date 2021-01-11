@@ -259,14 +259,18 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId)
         {
-            var classId = _context.ClassSections.Where(m => m.Id == csId).FirstOrDefault()?.ClassId;
+            var className = (from cs in _context.ClassSections
+                             join c in _context.Class
+                             on cs.ClassId equals c.Id
+                             where cs.Id == csId
+                             select c.Name)?.FirstOrDefault();
             var users = await (from u in _context.Users
                                join exp in _context.TeacherExperties
                                on u.Id equals exp.TeacherId
                                where u.UserTypeId == (int)Enumm.UserType.Teacher
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
-                               && exp.FromToLevels.Contains(classId.ToString())
+                               && exp.FromToLevels.Contains(className)
                                select u).ToListAsync();
 
             var list = _mapper.Map<List<UserForListDto>>(users);

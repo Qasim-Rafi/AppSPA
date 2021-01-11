@@ -16,7 +16,7 @@ namespace CoreWebApi.Helpers
         public const string NewPasswordNotGiven = "New password not provided";
         public const string UnableToAdd = "Unable to add data";
         public const string SomeErrorOccured = "Some error occured";
-        public const string UserAlreadyExist = "{0} user already exist";
+        public const string UserAlreadyExist = "User already exist";
         public const string RecordAlreadyExist = "Record already exist";
         public const string ChildRecordExist = "Record can't be deleted, because it's child record(s) exist in another table";
         public const string RecordRelationExist = "{0} record can't be deleted, because it's reference exist in another table";
@@ -33,8 +33,9 @@ namespace CoreWebApi.Helpers
         public const string LevelFromToCheck = "Level from should be less than level to";
         public const string TeacherMinAge = "Teacher age cannot be less then {0} years";
         public const string StudentMinAge = "Student age cannot be less then {0} years";
-        public const string UserTypeChange = "Can't change user-type of {0} record, because it's reference exist in another table";
+        public const string CantChangeUserType = "Can't change user-type of {0} record, because it has reference in other system operation(s)";
         public const string ActiveStatusUpdated = "Active status updated successfully";
+        public const string CantDeleteEvent = "Event mapped in Calendar could not able to remove";
     }
     public class BusinessRules
     {

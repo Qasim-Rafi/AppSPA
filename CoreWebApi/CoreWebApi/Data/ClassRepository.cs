@@ -411,7 +411,14 @@ namespace CoreWebApi.Data
 
         public async Task<bool> ClassSectionUserExists(int csId, int userId)
         {
-            if (await _context.ClassSectionUsers.AnyAsync(x => x.ClassSectionId == csId && x.UserId == userId && x.ClassSection.SchoolBranchId == _LoggedIn_BranchID && x.User.SchoolBranchId == _LoggedIn_BranchID))
+            var exist = await (from u in _context.Users
+                               join csU in _context.ClassSectionUsers
+                               on u.Id equals csU.UserId
+                               where csU.ClassSectionId == csId
+                               && u.UserTypeId == (int)Enumm.UserType.Teacher
+                               && csU.ClassSection.SchoolBranchId == _LoggedIn_BranchID
+                               select csU).AnyAsync();
+            if (exist)
                 return true;
             return false;
         }
