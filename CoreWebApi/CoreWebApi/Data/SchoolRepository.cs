@@ -44,12 +44,12 @@ namespace CoreWebApi.Data
             var weekDayList = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
             var Days = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => o.Day).Distinct().ToListAsync();
-            Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList(); //.Substring(0,1).ToUpper()
+            Days = Days.OrderBy(i => weekDayList.IndexOf(i.ToString())).ToList();
             var Timings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new
             {
                 o.Id,
-                StartTime = DateFormat.To24HRTime(o.StartTime),
-                EndTime = DateFormat.To24HRTime(o.EndTime),
+                StartTime = DateFormat.ToTime(o.StartTime),
+                EndTime = DateFormat.ToTime(o.EndTime),
                 StartTimeToDisplay = DateFormat.ToTime(o.StartTime),
                 EndTimeToDisplay = DateFormat.ToTime(o.EndTime),
                 o.IsBreak,
@@ -57,8 +57,8 @@ namespace CoreWebApi.Data
                 o.RowNo,
             }).ToListAsync();
             //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
-            var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.StartTime)).Distinct().ToListAsync();
-            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.EndTime)).Distinct().ToListAsync();
+            var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.ToTime(m.StartTime)).Distinct().ToListAsync();
+            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.ToTime(m.EndTime)).Distinct().ToListAsync();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
             for (int i = 0; i < StartTimings.Count; i++)
             {
@@ -107,8 +107,8 @@ namespace CoreWebApi.Data
                                        Id = main.Id,
                                        LectureId = main.LectureId,
                                        Day = l.Day,
-                                       StartTime = DateFormat.To24HRTime(l.StartTime),
-                                       EndTime = DateFormat.To24HRTime(l.EndTime),
+                                       StartTime = DateFormat.ToTime(l.StartTime),
+                                       EndTime = DateFormat.ToTime(l.EndTime),
                                        StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
                                        EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId.Value,
@@ -133,8 +133,8 @@ namespace CoreWebApi.Data
                 TimeSlots.Add(new TimeSlotsForListDto
                 {
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
-                    StartTime = DateFormat.To24HRTime(StartTimings[i]),
-                    EndTime = DateFormat.To24HRTime(EndTimings[i]),
+                    StartTime = DateFormat.ToTime(StartTimings[i]),
+                    EndTime = DateFormat.ToTime(EndTimings[i]),
                     StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
                     EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
@@ -185,8 +185,8 @@ namespace CoreWebApi.Data
                                            Id = main.Id,
                                            LectureId = main.LectureId,
                                            Day = l.Day,
-                                           StartTime = DateFormat.To24HRTime(l.StartTime),
-                                           EndTime = DateFormat.To24HRTime(l.EndTime),
+                                           StartTime = DateFormat.ToTime(l.StartTime),
+                                           EndTime = DateFormat.ToTime(l.EndTime),
                                            StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
                                            EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
                                            TeacherId = main.TeacherId.Value,
@@ -211,8 +211,8 @@ namespace CoreWebApi.Data
                     TimeSlots.Add(new TimeSlotsForListDto
                     {
                         Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
-                        StartTime = DateFormat.To24HRTime(StartTimings[i]),
-                        EndTime = DateFormat.To24HRTime(EndTimings[i]),
+                        StartTime = DateFormat.ToTime(StartTimings[i]),
+                        EndTime = DateFormat.ToTime(EndTimings[i]),
                         StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
                         EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
                         Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
@@ -266,8 +266,8 @@ namespace CoreWebApi.Data
                                        Id = main.Id,
                                        LectureId = main.LectureId,
                                        Day = l.Day,
-                                       StartTime = DateFormat.To24HRTime(l.StartTime),// DateFormat.ToTime(l.StartTime),
-                                       EndTime = DateFormat.To24HRTime(l.EndTime),//DateFormat.ToTime(l.EndTime),
+                                       StartTime = DateFormat.ToTime(l.StartTime),// DateFormat.ToTime(l.StartTime),
+                                       EndTime = DateFormat.ToTime(l.EndTime),//DateFormat.ToTime(l.EndTime),
                                        StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
                                        EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
                                        TeacherId = main.TeacherId.Value,

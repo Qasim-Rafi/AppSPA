@@ -77,12 +77,17 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("States")]
-        public async Task<IActionResult> GetStates()
+        [HttpGet("Cities/{stateId}")]
+        public async Task<IActionResult> Cities(int stateId)
         {
-            _response = await _repo.GetStates();
+            _response = await _repo.GetCities(stateId);
+            return Ok(_response);
 
-
+        }
+        [HttpGet("States/{countryId}")]
+        public async Task<IActionResult> GetStates(int countryId)
+        {
+            _response = await _repo.GetStates(countryId);
             return Ok(_response);
 
         }
@@ -90,8 +95,6 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetCountries()
         {
             _response = await _repo.GetCountries();
-
-
             return Ok(_response);
 
         }

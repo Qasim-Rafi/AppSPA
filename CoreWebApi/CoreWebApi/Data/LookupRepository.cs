@@ -100,9 +100,17 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetStates()
+        public async Task<ServiceResponse<object>> GetCities(int stateId)
         {
-            var list = await _context.States.ToListAsync();
+            //var list = await _context.Cities.Where(m => m.StateId == stateId).ToListAsync();
+            _serviceResponse.Data = null;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetStates(int countryId)
+        {
+            var list = await _context.States.Where(m => m.CountryId == countryId).ToListAsync();
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -271,7 +279,7 @@ namespace CoreWebApi.Data
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
                                && exp.FromToLevels.Contains(className)
-                               select u).ToListAsync();
+                               select u).Distinct().ToListAsync();
 
             var list = _mapper.Map<List<UserForListDto>>(users);
             var SelectOption = new UserForListDto { Id = 0, FullName = "Select Teacher" };
@@ -280,5 +288,7 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+
     }
 }

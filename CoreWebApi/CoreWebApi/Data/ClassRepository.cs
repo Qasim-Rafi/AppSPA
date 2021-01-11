@@ -382,10 +382,17 @@ namespace CoreWebApi.Data
                 _serviceResponse.Message = CustomMessage.Added;
                 return _serviceResponse;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                _serviceResponse.Success = false;
-                _serviceResponse.Message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+                else
+                {
+                    throw ex;
+                }
                 return _serviceResponse;
             }
         }

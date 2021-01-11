@@ -14,7 +14,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetClasses();
         Task<ServiceResponse<object>> GetSections();
         Task<ServiceResponse<object>> GetSubjects();
-        Task<ServiceResponse<object>> GetStates();
+        Task<ServiceResponse<object>> GetCities(int stateId);
+        Task<ServiceResponse<object>> GetStates(int countryId);
         Task<ServiceResponse<object>> GetCountries();
         Task<ServiceResponse<object>> GetUsersByClassSection(int csId);
         Task<ServiceResponse<object>> GetTeachers();
