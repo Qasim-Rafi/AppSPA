@@ -22,7 +22,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<string>> EditUser(int id, UserForUpdateDto userForAddDto);
         Task<ServiceResponse<string>> UpdateProfile(int id, UserForUpdateDto userForAddDto);
         //Task<IEnumerable<UserType>> GetUserTypes();
-        Task<IEnumerable<UserByTypeListDto>> GetUsersByType(int typeId, int? classSectionId);
+        Task<ServiceResponse<IEnumerable<UserByTypeListDto>>> GetUsersByType(int typeId, int? classSectionId);
         Task<ServiceResponse<object>> GetUsersByClassSection(int classSectionId);
         Task<ServiceResponse<object>> GetUnmappedStudents();
         Task<ServiceResponse<object>> UnMapUser(UnMapUserForAddDto model);

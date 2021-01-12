@@ -560,12 +560,13 @@ namespace CoreWebApi.Data
             foreach (var question in questions)
             {
                 List<AnswerForListDto> answers = await (from ans in _context.QuizAnswers
+
                                                         where ans.QuestionId == question.QuestionId
                                                         select new AnswerForListDto
                                                         {
                                                             AnswerId = ans.Id,
                                                             Answer = ans.Answer,
-                                                            IsTrue = userDetails.UserTypeId != (int)Enumm.UserType.Student && Convert.ToBoolean(ans.IsTrue),
+                                                            IsTrue = _context.QuizSubmissions.FirstOrDefault(m => m.AnswerId == ans.Id && m.QuestionId == question.QuestionId && m.QuizId == quizz.QuizId) != null ? true : false,
                                                         }).ToListAsync();
                 question.Answers.AddRange(answers);
             }

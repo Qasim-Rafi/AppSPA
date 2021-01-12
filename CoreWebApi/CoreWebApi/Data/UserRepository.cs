@@ -310,16 +310,24 @@ namespace CoreWebApi.Data
                     // add parent account user when adding new student
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
                     var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student).ToList().LastOrDefault();
-                    if (!string.IsNullOrEmpty(LastUser?.RegistrationNumber))
+
+                    if (userDto.HasRegNumber)
                     {
-                        string RegNumber = Regex.Replace(LastUser?.RegistrationNumber, @"[^\d]", "");
-                        int LastUserRegNo = Convert.ToInt32(RegNumber);
-                        int NextRegNo = ++LastUserRegNo;
-                        NewRegNo = $"{School.BranchName.Substring(0, 3)}-{NextRegNo:00000}";
+                        NewRegNo = userDto.RegistrationNumber;
                     }
                     else
                     {
-                        NewRegNo = $"{School.BranchName.Substring(0, 3)}-{1:00000}";
+                        if (!string.IsNullOrEmpty(LastUser?.RegistrationNumber))
+                        {
+                            string RegNumber = Regex.Replace(LastUser?.RegistrationNumber, @"[^\d]", "");
+                            int LastUserRegNo = Convert.ToInt32(RegNumber);
+                            int NextRegNo = ++LastUserRegNo;
+                            NewRegNo = $"{School.BranchName.Substring(0, 3)}-{NextRegNo:00000}";
+                        }
+                        else
+                        {
+                            NewRegNo = $"{School.BranchName.Substring(0, 3)}-{1:00000}";
+                        }
                     }
                     if (!string.IsNullOrEmpty(LastUser?.RollNumber))
                     {
@@ -838,8 +846,9 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<IEnumerable<UserByTypeListDto>> GetUsersByType(int typeId, int? classSectionId)
+        public async Task<ServiceResponse<IEnumerable<UserByTypeListDto>>> GetUsersByType(int typeId, int? classSectionId)
         {
+            ServiceResponse<IEnumerable<UserByTypeListDto>> serviceResponse = new ServiceResponse<IEnumerable<UserByTypeListDto>>();
             var today = DateTime.Now;
             var thisMonth = new DateTime(today.Year, today.Month, 1);
             if (!string.IsNullOrEmpty(classSectionId.ToString()))
@@ -899,7 +908,8 @@ namespace CoreWebApi.Data
                 //        item.Url = _File.AppendImagePath(item.Url);
                 //    }
                 //}
-                return users;
+                serviceResponse.Data = users;
+                serviceResponse.Success = true;
             }
             else
             {
@@ -931,9 +941,11 @@ namespace CoreWebApi.Data
                                        }).ToList(),
                                    }).ToListAsync();
 
-                return users;
+                serviceResponse.Data = users;
+                serviceResponse.Success = true;
 
             }
+            return serviceResponse;
 
         }
 

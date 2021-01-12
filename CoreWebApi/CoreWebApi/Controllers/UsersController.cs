@@ -166,10 +166,10 @@ namespace CoreWebApi.Controllers
         public async Task<IActionResult> GetUsersByType(int typeId, int? classSectionId)
         {
 
-            var users = await _repo.GetUsersByType(typeId, classSectionId);
+            var response = await _repo.GetUsersByType(typeId, classSectionId);
 
             //var usersToReturn = _mapper.Map<List<UserForListDto>>(users);
-            return Ok(users);
+            return Ok(response);
 
         }
         [HttpGet("GetUsersByClassSection/{classSectionId}")]

@@ -49,10 +49,10 @@ namespace CoreWebApi.Controllers
         [HttpPost("GetAttendanceToDisplay")]
         public async Task<IActionResult> GetAttendanceToDisplay(AttendanceDtoForDisplay model)
         {
-            var users = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
+            var responseUsers = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
             DateTime DTdate = DateTime.ParseExact(model.date, "MM/dd/yyyy", null);
             //var DTdate = Convert.ToDateTime(model.date);
-            var ToReturn = (from user in users
+            var ToReturn = (from user in responseUsers.Data
                             join attendance in _context.Attendances
                             on user.UserId equals attendance.UserId
                            
