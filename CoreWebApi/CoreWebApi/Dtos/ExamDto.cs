@@ -93,6 +93,7 @@ namespace CoreWebApi.Dtos
         public double Marks { get; set; }
         public int QuestionTypeId { get; set; }
         public string QuestionType { get; set; }
+        public bool IsAnsCorrect { get; set; } = false;
         public List<AnswerForListDto> Answers { get; set; }
     }
     public class AnswerForListDto
@@ -111,6 +112,7 @@ namespace CoreWebApi.Dtos
         public int SubjectId { get; set; }
         public string FromDate { get; set; }
         public string ToDate { get; set; }
+        public int QuizId { get; set; } = 0;
     }
     //public class StudentQuizResultForListDto
     //{
@@ -122,7 +124,7 @@ namespace CoreWebApi.Dtos
     {
         public int QuizId { get; set; }
         public double TotalMarks { get; set; }
-        public int TotalQuestions { get; set; }
-        public int Result { get; set; }
+        public decimal TotalQuestions { get; set; }
+        public decimal Result { get; set; }
     }
 }

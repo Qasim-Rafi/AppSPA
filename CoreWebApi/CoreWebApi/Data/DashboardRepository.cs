@@ -121,7 +121,7 @@ namespace CoreWebApi.Data
 
                 foreach (var item in classSections)
                 {
-                    AbsentStudentCount += studentsByCS.Where(m => m.ClassSectionId == item.Id).ToList().Count();
+                    AbsentStudentCount += studentsByCS.Where(m => m.ClassSectionId == item.Id && !attendances.Select(n => n.UserId).Contains(m.UserId)).ToList().Count();
                 }
 
                 int AbsentTeacherCount = await (from user in _context.Users
@@ -134,11 +134,11 @@ namespace CoreWebApi.Data
                                                 && user.SchoolBranchId == _LoggedIn_BranchID
                                                 select user).CountAsync();
 
-                var teachersByCS = _context.ClassSectionUsers.Where(m => m.UserTypeId == (int)Enumm.UserType.Teacher && m.SchoolBranchId == _LoggedIn_BranchID).ToList();               
+                var teachersByCS = _context.ClassSectionUsers.Where(m => m.UserTypeId == (int)Enumm.UserType.Teacher && m.SchoolBranchId == _LoggedIn_BranchID).ToList();
 
                 foreach (var item in classSections)
                 {
-                    AbsentTeacherCount += teachersByCS.Where(m => m.ClassSectionId == item.Id).ToList().Count();
+                    AbsentTeacherCount += teachersByCS.Where(m => m.ClassSectionId == item.Id && !attendances.Select(n => n.UserId).Contains(m.UserId)).ToList().Count();
                 }
 
                 string StudentPresentPercentage = "0";

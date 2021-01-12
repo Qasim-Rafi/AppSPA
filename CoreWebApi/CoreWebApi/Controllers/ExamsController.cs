@@ -143,15 +143,27 @@ namespace CoreWebApi.Controllers
 
         }
 
-        [HttpGet("GetQuizResult")]
-        public async Task<IActionResult> GetQuizResult(QuizResultDto model)
+        [HttpPost("GetAllQuizResult")]
+        public async Task<IActionResult> GetAllQuizResult(QuizResultDto model)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }           
-            var createdObjId = await _repo.GetQuizResult(model);
+            var createdObjId = await _repo.GetAllQuizResult(model);
+            return Ok(new { createdQuizId = createdObjId });
+
+        }
+        [HttpGet("GetQuizResult/{quizId}")]
+        public async Task<IActionResult> GetQuizResult(int quizId)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }           
+            var createdObjId = await _repo.GetQuizResult(quizId);
             return Ok(new { createdQuizId = createdObjId });
 
         }

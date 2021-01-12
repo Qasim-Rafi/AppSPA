@@ -880,10 +880,12 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddNotice(NoticeBoardForAddDto model)
         {
+            DateTime NoticeDate = DateTime.ParseExact(model.NoticeDate, "MM/dd/yyyy", null);
+
             var ToAdd = new NoticeBoard
             {
                 Description = model.Description,
-                NoticeDate = Convert.ToDateTime(model.NoticeDate),
+                NoticeDate = NoticeDate,
                 CreatedDateTime = DateTime.Now,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID
