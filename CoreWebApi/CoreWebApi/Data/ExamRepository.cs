@@ -331,6 +331,7 @@ namespace CoreWebApi.Data
                                          ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId && m.Active == true).Name,
                                          SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId && m.Active == true).SectionName,
                                          QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
+                                         IsSubmitted = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Count() > 0 ? true : false
                                      }).ToListAsync();
                 }
 

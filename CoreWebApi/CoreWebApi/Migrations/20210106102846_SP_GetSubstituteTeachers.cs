@@ -11,8 +11,8 @@ namespace CoreWebApi.Migrations
 								  DROP PROCEDURE SP_GetSubstituteTeachers
 								GO
 								CREATE PROCEDURE SP_GetSubstituteTeachers
-								@SlotIdParam int
-								@TeacherIdParam int = null
+								@SlotIdParam int,
+								@TeacherIdParam int = NULL
 								AS
 								BEGIN
 	
@@ -36,7 +36,7 @@ namespace CoreWebApi.Migrations
 								inner join ClassSections cs on cs.Id = ca.ClassSectionId
 								inner join Class c on c.Id = cs.ClassId
 								inner join LectureTiming lt on ca.LectureId = lt.Id
-								where (TeacherId is null or TeacherID = @TeacherIdParam) 
+								where (TeacherId IS NULL or TeacherID = @TeacherIdParam) 
 								and ca.Id = @SlotIdParam
 
 								-- Open the Cursor
