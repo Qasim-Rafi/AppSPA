@@ -6,6 +6,7 @@ using CoreWebApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace CoreWebApi.Data
     public class UserRepository : IUserRepository
     {
 
+        protected readonly IConfiguration _configuration;
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _HostEnvironment;
@@ -30,7 +32,7 @@ namespace CoreWebApi.Data
         public string _LoggedIn_UserName = "";
         private string _LoggedIn_UserRole = "";
         private readonly ITeacherRepository _TeacherRepository;
-        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor, ITeacherRepository TeacherRepository)
+        public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor, ITeacherRepository TeacherRepository, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
@@ -42,6 +44,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
             _TeacherRepository = TeacherRepository;
+            _configuration = configuration;
         }
 
         public void Add<T>(T entity) where T : class
@@ -310,8 +313,8 @@ namespace CoreWebApi.Data
                     // add parent account user when adding new student
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
                     var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student).ToList().LastOrDefault();
-
-                    if (userDto.HasRegNumber)
+                    var HasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:HasRegistrationNumber").Value);
+                    if (HasRegistrationNumber)
                     {
                         NewRegNo = userDto.RegistrationNumber;
                     }

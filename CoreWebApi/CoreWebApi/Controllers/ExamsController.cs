@@ -111,16 +111,14 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpPost("SubmitQuiz")]
-        public async Task<IActionResult> PostQuizSubmission(List<QuizSubmissionDto> model)
+        public async Task<IActionResult> SubmitQuiz(List<QuizSubmissionDto> model)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            //if (await _repo.SubjectExists(subject.Name))
-            //    return BadRequest(new { message = "Subject Already Exist" });
-
+            
             _response = await _repo.SubmitQuiz(model);
 
             return Ok(_response);
@@ -165,6 +163,17 @@ namespace CoreWebApi.Controllers
             }           
             var createdObjId = await _repo.GetQuizResult(quizId);
             return Ok(new { createdQuizId = createdObjId });
+
+        }
+        [HttpPost("AddResult")]
+        public async Task<IActionResult> AddResult(AddResultForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }            
+            _response = await _repo.AddResult(model);
+            return Ok(_response);
 
         }
     }

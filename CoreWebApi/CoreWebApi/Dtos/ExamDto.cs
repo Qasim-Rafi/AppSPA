@@ -127,4 +127,13 @@ namespace CoreWebApi.Dtos
         public decimal TotalQuestions { get; set; }
         public decimal Result { get; set; }
     }
+
+    public class AddResultForAddDto : BaseDto
+    {
+        public int ClassSectionId { get; set; }
+        public int ReferenceId { get; set; }
+        public string Remarks { get; set; }
+        public decimal TotalMarks { get; set; }
+        public decimal ResultMarks { get; set; }
+    }
 }

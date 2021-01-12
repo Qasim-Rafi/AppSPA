@@ -540,6 +540,7 @@ namespace CoreWebApi.Data
                                               ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
                                               SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
                                               QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
+                                              
                                           }).FirstOrDefaultAsync();
 
             List<QuestionForListDto> questions = await (from q in _context.QuizQuestions
@@ -572,6 +573,26 @@ namespace CoreWebApi.Data
             }
 
             _serviceResponse.Data = quizz;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> AddResult(AddResultForAddDto model)
+        {
+            var ToAdd = new Result
+            {
+                ClassSectionId = model.ClassSectionId,
+                ReferenceId = model.ReferenceId,
+                Remarks = model.Remarks,
+                ResultMarks = model.ResultMarks,
+                TotalMarks = model.TotalMarks,
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+                CreatedDateTime = DateTime.Now
+            };
+            await _context.Results.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Message = CustomMessage.Added;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
