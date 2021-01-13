@@ -169,12 +169,12 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> AddSubjects(List<SubjectDtoForAdd> model)
+        public async Task<ServiceResponse<object>> AddSubject(SubjectDtoForAdd model)
         {
             try
             {
                 var ListToAdd = new List<Subject>();
-                var subject = model.First();
+                var subject = model;
                 if (!await SubjectExists(subject.Name))
                 {
                     ListToAdd.Add(new Subject

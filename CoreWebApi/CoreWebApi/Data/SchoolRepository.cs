@@ -489,7 +489,7 @@ namespace CoreWebApi.Data
                 if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
                 {
                     _serviceResponse.Success = false;
-                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                    _serviceResponse.Message = CustomMessage.TeacherLectureDuplicate;
                 }
                 else
                 {

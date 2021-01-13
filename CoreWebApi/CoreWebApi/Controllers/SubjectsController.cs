@@ -54,7 +54,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
         [HttpPost("AddSubjects")]
-        public async Task<IActionResult> AddSubjects(List<SubjectDtoForAdd> model)
+        public async Task<IActionResult> AddSubject(SubjectDtoForAdd model)
         {
 
             if (!ModelState.IsValid)
@@ -64,7 +64,7 @@ namespace CoreWebApi.Controllers
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = CustomMessage.RecordAlreadyExist });
 
-            _response = await _repo.AddSubjects(model);
+            _response = await _repo.AddSubject(model);
 
             return Ok(_response);
 

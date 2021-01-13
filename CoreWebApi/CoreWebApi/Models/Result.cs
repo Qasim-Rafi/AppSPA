@@ -12,8 +12,8 @@ namespace CoreWebApi.Models
         public int ClassSectionId { get; set; }
         public int ReferenceId { get; set; }
         public string Remarks { get; set; }
-        public decimal TotalMarks { get; set; }
-        public decimal ResultMarks { get; set; }
+        public double TotalMarks { get; set; }
+        public double ObtainedMarks { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
         public int SchoolBranchId { get; set; }

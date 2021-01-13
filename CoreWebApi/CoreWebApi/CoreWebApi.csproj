@@ -144,6 +144,10 @@
     <Compile Remove="Migrations\20210109170912_UpdateLeave.Designer.cs" />
     <Compile Remove="Migrations\20210112094830_AddResult.cs" />
     <Compile Remove="Migrations\20210112094830_AddResult.Designer.cs" />
+    <Compile Remove="Migrations\20210113074545_UpdateClassLecAssignCompPK.cs" />
+    <Compile Remove="Migrations\20210113074545_UpdateClassLecAssignCompPK.Designer.cs" />
+    <Compile Remove="Migrations\20210113081355_UpdateQuizSubAndResult.cs" />
+    <Compile Remove="Migrations\20210113081355_UpdateQuizSubAndResult.Designer.cs" />
 
   </ItemGroup>
 

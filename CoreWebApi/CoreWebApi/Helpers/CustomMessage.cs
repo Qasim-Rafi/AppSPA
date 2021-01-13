@@ -25,7 +25,7 @@ namespace CoreWebApi.Helpers
         public const string URDeactivated = "You are de-activated. Contact your administrator";
         public const string DataNotProvided = "Data not provided. Please fill all the required fields";
         public const string SelectLeastOneTrue = "Please select at least one true answer";
-        public const string SqlDuplicateRecord = "Record already exist";
+        public const string SqlDuplicateRecord = "Duplicate record found";
         public const string ResetPasswordReqSent = "Reset Password email sent at your given email address";
         public const string FileDeleted = "File(s) deleted successfully";
         public const string UserNotLoggedIn = "User not logged in, Please login first.";
@@ -36,6 +36,7 @@ namespace CoreWebApi.Helpers
         public const string CantChangeUserType = "Can't change user-type of {0} record, because it has reference in other system operation(s)";
         public const string ActiveStatusUpdated = "Active status updated successfully";
         public const string CantDeleteEvent = "Event mapped in Calendar could not able to remove";
+        public const string TeacherLectureDuplicate = "Duplicate teacher in same time slot in another class section found";
     }
     public class BusinessRules
     {

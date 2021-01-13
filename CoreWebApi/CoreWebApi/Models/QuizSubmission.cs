@@ -13,6 +13,7 @@ namespace CoreWebApi.Models
         public int QuestionId { get; set; }
         public int? AnswerId { get; set; }
         public bool IsCorrect { get; set; }
+        public double ResultMarks { get; set; }
         public string Description { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int UserId { get; set; }

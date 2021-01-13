@@ -4,14 +4,16 @@ using CoreWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210113074854_UpdateClassLecAssignCompPK")]
+    partial class UpdateClassLecAssignCompPK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -866,9 +868,6 @@ namespace CoreWebApi.Migrations
                     b.Property<int>("QuizId")
                         .HasColumnType("int");
 
-                    b.Property<double>("ResultMarks")
-                        .HasColumnType("float");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -943,20 +942,20 @@ namespace CoreWebApi.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("ObtainedMarks")
-                        .HasColumnType("float");
-
                     b.Property<int>("ReferenceId")
                         .HasColumnType("int");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("ResultMarks")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("SchoolBranchId")
                         .HasColumnType("int");
 
-                    b.Property<double>("TotalMarks")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalMarks")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

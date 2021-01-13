@@ -584,7 +584,7 @@ namespace CoreWebApi.Data
                 ClassSectionId = model.ClassSectionId,
                 ReferenceId = model.ReferenceId,
                 Remarks = model.Remarks,
-                ResultMarks = model.ResultMarks,
+                ObtainedMarks = model.ObtainedMarks,
                 TotalMarks = model.TotalMarks,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,

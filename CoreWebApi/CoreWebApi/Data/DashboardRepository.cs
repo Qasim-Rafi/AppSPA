@@ -113,8 +113,8 @@ namespace CoreWebApi.Data
 
                 var attendances = await _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
                 var classSections = await (from cs in _context.ClassSections
-                                           where !attendances.Select(m => m.ClassSectionId).Contains(cs.Id)
-                                           && cs.Active == true
+                                           where //!attendances.Select(m => m.ClassSectionId).Contains(cs.Id)
+                                           cs.Active == true
                                            && cs.SchoolBranchId == _LoggedIn_BranchID
                                            select cs).ToListAsync();
                 var studentsByCS = _context.ClassSectionUsers.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && m.SchoolBranchId == _LoggedIn_BranchID).ToList();
