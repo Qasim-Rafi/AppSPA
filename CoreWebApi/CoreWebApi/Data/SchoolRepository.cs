@@ -924,9 +924,14 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetNotices()
         {
-            var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            var ToReturn = _mapper.Map<List<NoticeBoardForListDto>>(List);
-            _serviceResponse.Data = ToReturn;
+            var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new NoticeBoardForListDto
+            {
+                Description = o.Description,
+                NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString())
+            }).ToListAsync();
+
+            //var ToReturn = _mapper.Map<List<NoticeBoardForListDto>>(List);
+            _serviceResponse.Data = List;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
