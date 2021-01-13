@@ -160,23 +160,34 @@ namespace CoreWebApi.Data
                                                SubstituteTeacherId = sub.SubstituteTeacherId
                                            }).Where(m => m.SubstituteTeacherId == null).ToListAsync());
 
-            //when run an SP set this first -in asp.net core EF
-            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             foreach (var EmptySlot in EmptyTimeSlots)
             {
-                var param1 = new SqlParameter("@SlotIdParam", EmptySlot.Id);
-                if (EmptySlot.TeacherId != 0)
-                {
-                    var param2 = new SqlParameter("@TeacherIdParam", EmptySlot.TeacherId);
-                    EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam, @TeacherIdParam", param1, param2).ToList(); ;
-
-                }
-                else
-                {
-                    EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam", param1).ToList(); ;
-                }
-
+                EmptySlot.SubstituteTeachers = await (from u in _context.Users                                                     
+                                                      where !EmptyTimeSlots.Select(m => m.TeacherId).Contains(u.Id)
+                                                      && u.UserTypeId == (int)Enumm.UserType.Teacher
+                                                      select new SubstituteTeacherListDto
+                                                      {
+                                                          TeacherId = u.Id,
+                                                          FullName = u.FullName,
+                                                      }).ToListAsync();
             }
+            //when run an SP set this first -in asp.net core EF
+            //_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            //foreach (var EmptySlot in EmptyTimeSlots)
+            //{
+            //    var param1 = new SqlParameter("@SlotIdParam", EmptySlot.Id);
+            //    if (EmptySlot.TeacherId != 0)
+            //    {
+            //        var param2 = new SqlParameter("@TeacherIdParam", EmptySlot.TeacherId);
+            //        EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam, @TeacherIdParam", param1, param2).ToList(); ;
+
+            //    }
+            //    else
+            //    {
+            //        EmptySlot.SubstituteTeachers = _context.SPGetSubstituteTeachers.FromSqlRaw("EXECUTE SP_GetSubstituteTeachers @SlotIdParam", param1).ToList(); ;
+            //    }
+
+            //}
 
             _serviceResponse.Data = EmptyTimeSlots;
             _serviceResponse.Success = true;

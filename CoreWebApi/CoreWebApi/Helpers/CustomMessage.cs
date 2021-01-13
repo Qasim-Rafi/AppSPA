@@ -18,10 +18,10 @@ namespace CoreWebApi.Helpers
         public const string SomeErrorOccured = "Some error occured";
         public const string UserAlreadyExist = "User already exist";
         public const string RecordAlreadyExist = "Record already exist";
-        public const string ChildRecordExist = "Record can't be deleted, because it's child record(s) exist in another table";
-        public const string RecordRelationExist = "{0} record can't be deleted, because it's reference exist in another table";
+        public const string ChildRecordExist = "Record contains child record(s) in another table. Please remove them first";
+        public const string RecordRelationExist = "{0} record contains association in another table. Please remove all associations";
         public const string UserUnAuthorized = "Un-Authorized. Username or Password does not match. Contact your administrator";
-        public const string CantExceedLimit = "Can't add records more then {0}";
+        public const string CantExceedLimit = "Student assigned limit exceed from allocated student of numbers {0}";
         public const string URDeactivated = "You are de-activated. Contact your administrator";
         public const string DataNotProvided = "Data not provided. Please fill all the required fields";
         public const string SelectLeastOneTrue = "Please select at least one true answer";
@@ -35,8 +35,8 @@ namespace CoreWebApi.Helpers
         public const string StudentMinAge = "Student age cannot be less then {0} years";
         public const string CantChangeUserType = "Can't change user-type of {0} record, because it has reference in other system operation(s)";
         public const string ActiveStatusUpdated = "Active status updated successfully";
-        public const string CantDeleteEvent = "Event mapped in Calendar could not able to remove";
-        public const string TeacherLectureDuplicate = "Duplicate teacher in same time slot in another class section found";
+        public const string CantDeleteEvent = "Event mapped in Calendar could not be able to remove";
+        public const string TeacherLectureDuplicate = "Duplicate teacher in same time slot in another class-section found";
     }
     public class BusinessRules
     {

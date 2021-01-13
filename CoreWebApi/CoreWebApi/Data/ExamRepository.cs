@@ -378,7 +378,6 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> SubmitQuiz(List<QuizSubmissionDto> model)
         {
-
             List<QuizSubmission> ListToAdd = new List<QuizSubmission>();
             foreach (var item in model)
             {
@@ -396,7 +395,6 @@ namespace CoreWebApi.Data
                     QuestionId = item.QuestionId,
                     AnswerId = item.AnswerId,
                     //IsCorrect = TrueAnswers.Select(m => m.Id).Contains(Convert.ToInt32(item.AnswerId)) ? true : false,
-                    //IsCorrect = TrueAnswers.Where(m => m.Id == Convert.ToInt32(item.AnswerId)).Count() == TrueAnswers.Count ? true : false,
                     Description = item.Description,
                     CreatedDateTime = DateTime.Now,
                     UserId = _LoggedIn_UserID
@@ -404,17 +402,18 @@ namespace CoreWebApi.Data
                 if (TrueAnswers.Count() == 1)
                 {
                     submission.IsCorrect = TrueAnswers.Select(m => m.Id).Contains(Convert.ToInt32(item.AnswerId)) ? true : false;
-                    submission.ResultMarks = _context.QuizQuestions.FirstOrDefault(m => m.QuizId == item.QuizId && m.Id == item.QuestionId).Marks.Value;
+                    submission.ResultMarks = submission.IsCorrect == true ? _context.QuizQuestions.FirstOrDefault(m => m.QuizId == item.QuizId && m.Id == item.QuestionId).Marks.Value : 0;
                 }
                 else if (TrueAnswers.Count() == 2)
                 {
-                    int ContainCount = TrueAnswers.Where(m => m.Id == Convert.ToInt32(item.AnswerId)).Count();
+                    //int ContainCount = TrueAnswers.Where(m => m.Id == Convert.ToInt32(item.AnswerId)).Count();
                     submission.IsCorrect = TrueAnswers.Select(m => m.Id).Contains(Convert.ToInt32(item.AnswerId)) ? true : false;
-                    submission.ResultMarks = ContainCount == 1 ? _context.QuizQuestions.FirstOrDefault(m => m.QuizId == item.QuizId && m.Id == item.QuestionId).Marks.Value
-                        : ContainCount == 2 ? ((_context.QuizQuestions.FirstOrDefault(m => m.QuizId == item.QuizId && m.Id == item.QuestionId).Marks.Value) / 2) : 0;
+                    double set = (_context.QuizQuestions.FirstOrDefault(m => m.QuizId == item.QuizId && m.Id == item.QuestionId).Marks.Value / 2);
+                    submission.ResultMarks = submission.IsCorrect == true ? set : 0;
                 }
 
                 ListToAdd.Add(submission);
+
             }
 
             await _context.QuizSubmissions.AddRangeAsync(ListToAdd);
@@ -627,7 +626,6 @@ namespace CoreWebApi.Data
             foreach (var question in questions)
             {
                 var answers = await (from ans in _context.QuizAnswers
-
                                      where ans.QuestionId == question.QuestionId
                                      select new AnswerResultForListDto
                                      {

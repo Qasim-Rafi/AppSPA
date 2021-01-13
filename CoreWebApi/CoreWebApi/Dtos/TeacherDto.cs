@@ -53,7 +53,7 @@ namespace CoreWebApi.Dtos
     {
         public EmptyTimeSlotForListDto()
         {
-            SubstituteTeachers = new List<GetSubstituteTeachersDto>();
+            SubstituteTeachers = new List<SubstituteTeacherListDto>();
         }
         public int Id { get; set; }
         public string Day { get; set; }
@@ -72,13 +72,19 @@ namespace CoreWebApi.Dtos
         public bool IsBreak { get; set; }
         public int RowNo { get; set; }
         public int SubstituteTeacherId { get; set; }
-        public List<GetSubstituteTeachersDto> SubstituteTeachers { get; set; }
+        public List<SubstituteTeacherListDto> SubstituteTeachers { get; set; }
     }
     public class GetSubstituteTeachersDto
     {
         [Key]
         public int TeacherId { get; set; }
         public string FullName { get; set; } = "";
+
+    }
+    public class SubstituteTeacherListDto
+    {
+        public int TeacherId { get; set; }
+        public string FullName { get; set; }
 
     }
     public class SubstitutionForListDto

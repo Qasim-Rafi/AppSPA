@@ -148,6 +148,8 @@
     <Compile Remove="Migrations\20210113074545_UpdateClassLecAssignCompPK.Designer.cs" />
     <Compile Remove="Migrations\20210113081355_UpdateQuizSubAndResult.cs" />
     <Compile Remove="Migrations\20210113081355_UpdateQuizSubAndResult.Designer.cs" />
+    <Compile Remove="Migrations\20210113120005_UpdateSubjectAssign2.cs" />
+    <Compile Remove="Migrations\20210113120005_UpdateSubjectAssign2.Designer.cs" />
 
   </ItemGroup>
 

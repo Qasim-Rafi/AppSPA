@@ -80,7 +80,7 @@ namespace CoreWebApi.Data
                                  join c in _context.Class
                                  on ass.ClassId equals c.Id
                                  join sch in _context.SchoolBranch
-                                 on ass.SchoolId equals sch.Id
+                                 on ass.SchoolBranchId equals sch.Id
                                  where ass.Id == id
                                  && s.Active == true
                                  && s.SchoolBranchId == _LoggedIn_BranchID
@@ -89,7 +89,7 @@ namespace CoreWebApi.Data
                                      Id = s.Id,
                                      ClassId = ass.ClassId,
                                      ClassName = c.Name,
-                                     SchoolId = ass.SchoolId,
+                                     SchoolId = ass.SchoolBranchId,
                                      SchoolName = sch.BranchName,
                                      TableOfContent = ass.TableOfContent,
                                  }).FirstOrDefaultAsync();
@@ -127,15 +127,15 @@ namespace CoreWebApi.Data
                             join c in _context.Class
                             on ass.ClassId equals c.Id
                             join sch in _context.SchoolBranch
-                            on ass.SchoolId equals sch.Id
-                            where ass.SchoolId == _LoggedIn_BranchID
+                            on ass.SchoolBranchId equals sch.Id
+                            where ass.SchoolBranchId == _LoggedIn_BranchID
                             && c.Active == true
                             && sch.Active == true
                             select new
                             {
                                 ClassId = c.Id,
                                 ClassName = c.Name,
-                                SchoolId = sch.Id,
+                                SchoolBranchId = sch.Id,
                                 SchoolName = sch.BranchName,
                                 TableOfContent = ass.TableOfContent,
                             }).Distinct().ToList().Select(o => new AssignSubjectDtoForList
@@ -143,7 +143,7 @@ namespace CoreWebApi.Data
                                 Id = _context.SubjectAssignments.FirstOrDefault(m => m.ClassId == o.ClassId).Id,
                                 ClassId = o.ClassId,
                                 ClassName = o.ClassName,
-                                SchoolId = o.SchoolId,
+                                SchoolId = o.SchoolBranchId,
                                 SchoolName = o.SchoolName,
                                 TableOfContent = o.TableOfContent,
                             }).ToList();
@@ -225,7 +225,7 @@ namespace CoreWebApi.Data
                     {
                         SubjectId = SubjectId,
                         ClassId = model.ClassId,
-                        SchoolId = _LoggedIn_BranchID,
+                        SchoolBranchId = _LoggedIn_BranchID,
                         //TableOfContent = model.TableOfContent,
                         CreatedById = _LoggedIn_UserID,
                         CreatedDateTime = DateTime.Now
@@ -309,7 +309,7 @@ namespace CoreWebApi.Data
                             {
                                 SubjectId = SubjectId,
                                 ClassId = model.ClassId,
-                                SchoolId = _LoggedIn_BranchID,
+                                SchoolBranchId = _LoggedIn_BranchID,
                                 //TableOfContent = model.TableOfContent,
                                 CreatedById = _LoggedIn_UserID,
                                 CreatedDateTime = DateTime.Now
