@@ -20,7 +20,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddResult(AddResultForAddDto model);
         Task<bool> UpdateQuestion(int id, QuizQuestionDtoForAdd model);
         Task<ServiceResponse<object>> GetAllQuizResult(QuizResultDto model);
-        Task<ServiceResponse<object>> GetQuizResult(int quizId);
+        Task<ServiceResponse<object>> GetQuizResult(int quizId, int studentId);
 
     }
 }

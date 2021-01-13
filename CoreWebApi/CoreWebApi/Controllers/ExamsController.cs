@@ -72,7 +72,7 @@ namespace CoreWebApi.Controllers
             }
             //if (await _repo.SubjectExists(subject.Name))
             //    return BadRequest(new { message = "Subject Already Exist" });
-          
+
             var createdObjId = await _repo.AddQuiz(model);
 
             return Ok(new { createdQuizId = createdObjId });
@@ -118,7 +118,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             _response = await _repo.SubmitQuiz(model);
 
             return Ok(_response);
@@ -148,20 +148,20 @@ namespace CoreWebApi.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }           
+            }
             var createdObjId = await _repo.GetAllQuizResult(model);
             return Ok(new { createdQuizId = createdObjId });
 
         }
-        [HttpGet("GetQuizResult/{quizId}")]
-        public async Task<IActionResult> GetQuizResult(int quizId)
+        [HttpGet("GetQuizResult/{quizId}/{studentId}")]
+        public async Task<IActionResult> GetQuizResult(int quizId, int studentId)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }           
-            var createdObjId = await _repo.GetQuizResult(quizId);
+            }
+            var createdObjId = await _repo.GetQuizResult(quizId, studentId);
             return Ok(new { createdQuizId = createdObjId });
 
         }
@@ -171,7 +171,7 @@ namespace CoreWebApi.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }            
+            }
             _response = await _repo.AddResult(model);
             return Ok(_response);
 

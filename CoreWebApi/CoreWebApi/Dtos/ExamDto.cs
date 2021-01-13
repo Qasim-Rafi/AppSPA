@@ -120,12 +120,12 @@ namespace CoreWebApi.Dtos
     //    public string StudentName { get; set; }      
     //    public string Obtained { get; set; }      
     //}
-    public class QuizResultForListDto
+    public class StudentQuizResultForListDto
     {
         public int QuizId { get; set; }
-        public double TotalMarks { get; set; }
-        public decimal TotalQuestions { get; set; }
-        public decimal Result { get; set; }
+        public int StudentId { get; set; }
+        public string StudentName { get; set; }
+        public List<QuizResultForListDto> QuizList { get; set; }
     }
 
     public class AddResultForAddDto : BaseDto
@@ -135,5 +135,48 @@ namespace CoreWebApi.Dtos
         public string Remarks { get; set; }
         public double TotalMarks { get; set; }
         public double ObtainedMarks { get; set; }
+    }
+    public class QuizResultForListDto
+    {
+        public QuizResultForListDto()
+        {
+            Questions = new List<QuestionResultForListDto>();
+        }
+        public int QuizId { get; set; }
+        public string QuizDate { get; set; }
+        public string TeacherName { get; set; }
+        public int NoOfQuestions { get; set; }
+        public int SubjectId { get; set; }
+        public string SubjectName { get; set; }
+        public int ClassSectionId { get; set; }
+        public string ClassName { get; set; }
+        public string SectionName { get; set; }
+        public int QuestionCount { get; set; }
+        public double TotalMarks { get; set; }
+        public double ObtainedMarks { get; set; }
+        public bool IsPosted { get; set; }
+        public bool IsSubmitted { get; set; }
+        public List<QuestionResultForListDto> Questions { get; set; }
+
+    }
+    public class QuestionResultForListDto
+    {
+        public QuestionResultForListDto()
+        {
+            Answers = new List<AnswerResultForListDto>();
+        }
+        public int QuestionId { get; set; }
+        public string Question { get; set; }
+        public double Marks { get; set; }
+        public int QuestionTypeId { get; set; }
+        public string QuestionType { get; set; }
+        public bool IsAnsCorrect { get; set; } = false;
+        public List<AnswerResultForListDto> Answers { get; set; }
+    }
+    public class AnswerResultForListDto
+    {
+        public int AnswerId { get; set; }
+        public string Answer { get; set; }
+        public bool IsTrue { get; set; }
     }
 }
