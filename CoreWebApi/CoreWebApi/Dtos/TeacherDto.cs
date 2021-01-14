@@ -102,4 +102,9 @@ namespace CoreWebApi.Dtos
         public string SubstituteTeacher { get; set; }
         public string Remarks { get; set; }
     }
+    public class TeacherTimeTableForListDto
+    {
+        public string Day { get; set; }
+        public List<TimeTableForListDto> TimeTable { get; set; }
+    }
 }

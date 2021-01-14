@@ -16,6 +16,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> ChangeExpertiesActiveStatus(int id, bool active);
         Task<ServiceResponse<object>> GetPlanners();
         Task<ServiceResponse<object>> GetEmptyTimeSlots();
+        Task<ServiceResponse<object>> GetTeacherTimeTable();
         Task<ServiceResponse<object>> GetEmptyTeachers();
     }
 }

@@ -162,7 +162,7 @@ namespace CoreWebApi.Data
 
             foreach (var EmptySlot in EmptyTimeSlots)
             {
-                EmptySlot.SubstituteTeachers = await (from u in _context.Users                                                     
+                EmptySlot.SubstituteTeachers = await (from u in _context.Users
                                                       where !EmptyTimeSlots.Select(m => m.TeacherId).Contains(u.Id)
                                                       && u.UserTypeId == (int)Enumm.UserType.Teacher
                                                       select new SubstituteTeacherListDto
@@ -429,6 +429,62 @@ namespace CoreWebApi.Data
                                 Remarks = sub.Remarks
 
                             }).ToList();
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetTeacherTimeTable()
+        {
+            var weekDays = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            List<TeacherTimeTableForListDto> ToReturn = new List<TeacherTimeTableForListDto>();
+            foreach (var item in weekDays)
+            {
+                var ToAdd = new TeacherTimeTableForListDto
+                {
+                    Day = item,
+                    TimeTable = await (from main in _context.ClassLectureAssignment
+                                       join l in _context.LectureTiming
+                                       on main.LectureId equals l.Id
+
+                                       join u in _context.Users
+                                       on main.TeacherId equals u.Id
+
+                                       join s in _context.Subjects
+                                       on main.SubjectId equals s.Id
+
+                                       join cs in _context.ClassSections
+                                       on main.ClassSectionId equals cs.Id
+
+                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                       && l.SchoolBranchId == _LoggedIn_BranchID
+                                       && s.Active == true
+                                       && cs.Active == true
+                                       && u.Id == _LoggedIn_UserID
+                                       && l.Day == item
+                                       select new TimeTableForListDto
+                                       {
+                                           Id = main.Id,
+                                           LectureId = main.LectureId,
+                                           Day = l.Day,
+                                           StartTime = DateFormat.To24HRTime(l.StartTime),
+                                           EndTime = DateFormat.To24HRTime(l.EndTime),
+                                           StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
+                                           EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
+                                           TeacherId = main.TeacherId.Value,
+                                           Teacher = u.FullName,
+                                           SubjectId = main.SubjectId,
+                                           Subject = s.Name,
+                                           ClassSectionId = main.ClassSectionId,
+                                           Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
+                                           Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                           IsBreak = l.IsBreak,
+                                           RowNo = l.RowNo
+                                       }).ToListAsync()
+                };
+                if (ToAdd.TimeTable.Count() > 0)
+                    ToReturn.Add(ToAdd);
+            }
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;

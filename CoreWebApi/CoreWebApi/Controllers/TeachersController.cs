@@ -57,6 +57,16 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetEmptyTimeSlots();
             return Ok(_response);
         }
+        [HttpGet("GetTeacherTimeTable")]
+        public async Task<IActionResult> GetTeacherTimeTable()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetTeacherTimeTable();
+            return Ok(_response);
+        }
         [HttpGet("GetEmptyTeachers"), NonAction]
         public async Task<IActionResult> GetEmptyTeachers() // not in use
         {
