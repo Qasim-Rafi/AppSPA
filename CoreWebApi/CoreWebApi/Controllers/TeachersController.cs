@@ -110,5 +110,16 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("CheckExpertiesBeforeDelete")]
+        public async Task<IActionResult> CheckExpertiesBeforeDelete(List<int> model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.CheckExpertiesBeforeDelete(model);
+            return Ok(_response);
+
+        }
     }
 }

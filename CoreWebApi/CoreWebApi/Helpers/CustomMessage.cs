@@ -37,6 +37,7 @@ namespace CoreWebApi.Helpers
         public const string ActiveStatusUpdated = "Active status updated successfully";
         public const string CantDeleteEvent = "Event mapped in Calendar could not be able to remove";
         public const string TeacherLectureDuplicate = "Duplicate teacher in same time slot in another class-section found";
+        public const string ExpertiesHasRelation = "These experties {0} have associations in time-table. Please remove all assiciations first";
     }
     public class BusinessRules
     {

@@ -502,5 +502,22 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> CheckExpertiesBeforeDelete(List<int> model)
+        {
+            var ToReturn = new List<string>();
+            var ExistingExperties = await _context.ClassLectureAssignment.Where(m => model.Contains(m.SubjectId)).Select(m => m.Subject.Name).Distinct().ToListAsync();
+            if (ExistingExperties.Count() > 0)
+            {
+                var str = string.Join(',', ExistingExperties);
+                _serviceResponse.Message = string.Format(CustomMessage.ExpertiesHasRelation, str);
+                _serviceResponse.Success = false;
+            }
+            else
+            {
+                _serviceResponse.Success = true;
+            }
+            return _serviceResponse;
+        }
     }
 }

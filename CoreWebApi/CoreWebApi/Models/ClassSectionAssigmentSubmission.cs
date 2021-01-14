@@ -17,7 +17,7 @@ namespace CoreWebApi.Models
         public int StudentId { get; set; }
         public string  Description { get; set; }
         public DateTime CreatedDatetime { get; set; }
-        [Required]
+        //[Required]
         public string SubmittedMaterial { get; set; }
 
         [ForeignKey("ClassSectionAssignmentId")]
