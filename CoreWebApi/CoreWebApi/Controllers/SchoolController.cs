@@ -327,6 +327,16 @@ namespace CoreWebApi.Controllers
             _response = await _repo.AddQuery(model);
             return Ok(_response);
         }
+        [HttpPost("AddUsefulResources")]
+        public async Task<IActionResult> AddUsefulResources(List<UsefulResourceForAddDto> model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.AddUsefulResources(model);
+            return Ok(_response);
+        }
 
     }
 }

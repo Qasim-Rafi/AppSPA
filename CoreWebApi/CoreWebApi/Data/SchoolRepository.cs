@@ -962,5 +962,25 @@ namespace CoreWebApi.Data
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> AddUsefulResources(List<UsefulResourceForAddDto> model)
+        {
+            var ListToAdd = new List<UsefulResource>();
+            foreach (var item in model)
+            {
+                ListToAdd.Add(new UsefulResource
+                {
+                    Title = item.Title,
+                    Description = item.Description,
+                    Link = item.Link,
+                    CreatedById = _LoggedIn_UserID
+                });
+            }
+            await _context.UsefulResources.AddRangeAsync(ListToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
     }
 }

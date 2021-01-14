@@ -162,17 +162,16 @@ namespace CoreWebApi.Data
 
             foreach (var EmptySlot in EmptyTimeSlots)
             {
-                EmptySlot.SubstituteTeachers = await (from u in _context.Users
-                                                      join cla in _context.ClassLectureAssignment
-                                                      on u.Id equals cla.TeacherId into newCla
-                                                      from cla in newCla.DefaultIfEmpty()
-
+                EmptySlot.SubstituteTeachers = await (from u in _context.Users                                                        
                                                       join att in _context.Attendances
                                                       on u.Id equals att.UserId
 
                                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
                                                       && att.Absent == false
                                                       && att.CreatedDatetime.Date == DateTime.Now.Date
+                                                      && u.SchoolBranchId == _LoggedIn_BranchID
+                                                      && _context.ClassLectureAssignment.Where(m => m.LectureId == EmptySlot.LectureId && m.TeacherId == u.Id).FirstOrDefault() == null
+                                                      //!EmptyTimeSlots.Select(m => m.TeacherId).Contains(u.Id)
                                                       select new SubstituteTeacherListDto
                                                       {
                                                           TeacherId = u.Id,

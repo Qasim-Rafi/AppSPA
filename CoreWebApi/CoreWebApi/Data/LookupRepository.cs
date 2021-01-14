@@ -265,7 +265,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId)
+        public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId, int subjectId)
         {
             var className = (from cs in _context.ClassSections
                              join c in _context.Class
@@ -279,6 +279,7 @@ namespace CoreWebApi.Data
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
                                && exp.FromToLevels.Contains(className)
+                               && exp.SubjectId == subjectId
                                select u).Distinct().ToListAsync();
 
             var list = _mapper.Map<List<UserForListDto>>(users);

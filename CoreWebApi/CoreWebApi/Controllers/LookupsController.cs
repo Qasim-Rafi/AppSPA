@@ -46,7 +46,7 @@ namespace CoreWebApi.Controllers
         {
             _response = await _repo.GetClassSections();
 
-           
+
             return Ok(_response);
 
         }
@@ -134,14 +134,14 @@ namespace CoreWebApi.Controllers
             _response = _repo.SchoolBranches();
             return Ok(_response);
         }
-        
+
         [HttpGet("Assignments")]
         public IActionResult Assignments()
         {
             _response = _repo.Assignments();
             return Ok(_response);
         }
-        
+
         [HttpGet("Quiz")]
         public IActionResult Quiz()
         {
@@ -157,10 +157,10 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("TeachersByClassSection/{classSectionId}")]
-        public async Task<IActionResult> TeachersByClassSection(int classSectionId = 0)
+        [HttpGet("TeachersByClassSection/{classSectionId}/{subjectId}")]
+        public async Task<IActionResult> TeachersByClassSection(int classSectionId = 0, int subjectId = 0)
         {
-            _response = await _repo.GetTeachersByClassSection(classSectionId);
+            _response = await _repo.GetTeachersByClassSection(classSectionId, subjectId);
 
             return Ok(_response);
 

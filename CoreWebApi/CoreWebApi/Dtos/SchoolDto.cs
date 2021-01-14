@@ -137,4 +137,10 @@ namespace CoreWebApi.Dtos
         [EmailAddress]
         public string Email { get; set; }
     }
+    public class UsefulResourceForAddDto
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Link { get; set; }
+    }
 }
