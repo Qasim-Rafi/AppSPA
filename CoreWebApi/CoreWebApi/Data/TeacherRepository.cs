@@ -162,7 +162,7 @@ namespace CoreWebApi.Data
 
             foreach (var EmptySlot in EmptyTimeSlots)
             {
-                EmptySlot.SubstituteTeachers = await (from u in _context.Users                                                        
+                EmptySlot.SubstituteTeachers = await (from u in _context.Users
                                                       join att in _context.Attendances
                                                       on u.Id equals att.UserId
 
@@ -495,7 +495,8 @@ namespace CoreWebApi.Data
                                            IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
                                        }).ToListAsync()
                 };
-                ToReturn.Add(ToAdd);
+                if (ToAdd.TimeTable.Count() > 0)
+                    ToReturn.Add(ToAdd);
             }
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
