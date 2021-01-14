@@ -30,7 +30,8 @@ namespace CoreWebApi.Data
         private string _LoggedIn_UserName = "";
         private readonly EmailSettings _emailSettings;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public AuthRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, EmailSettings emailSettings, IWebHostEnvironment webHostEnvironment)
+        private readonly IFilesRepository _fileRepo;
+        public AuthRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, EmailSettings emailSettings, IWebHostEnvironment webHostEnvironment, IFilesRepository filesRepository)
         {
             _context = context;
             _serviceResponse = new ServiceResponse<object>();
@@ -40,6 +41,7 @@ namespace CoreWebApi.Data
             _configuration = configuration;
             _emailSettings = emailSettings;
             _webHostEnvironment = webHostEnvironment;
+            _fileRepo = filesRepository;
         }
 
         public async Task<User> Login(string username, string password, int schoolBranchId)
@@ -81,6 +83,7 @@ namespace CoreWebApi.Data
                                            select new
                                            {
                                                school,
+                                               logo = _fileRepo.AppendMultiDocPath(school.Logo),
                                                branch
                                            }
                                ).FirstOrDefaultAsync();
@@ -99,6 +102,7 @@ namespace CoreWebApi.Data
                                            select new
                                            {
                                                school,
+                                               logo = _fileRepo.AppendMultiDocPath(school.Logo),
                                                branch
                                            }
                               ).FirstOrDefaultAsync();
@@ -155,7 +159,18 @@ namespace CoreWebApi.Data
                     SecondaryAddress = "---",
                     Active = true
                 };
+                if (model.files != null && model.files.Count() > 0)
+                {
+                    for (int i = 0; i < model.files.Count(); i++)
+                    {
+                        var dbPath = _fileRepo.SaveFile(model.files[i]);
 
+                        if (string.IsNullOrEmpty(schoolAcademy.Logo))
+                            schoolAcademy.Logo += dbPath;
+                        else
+                            schoolAcademy.Logo = schoolAcademy.Logo + "||" + dbPath;                        
+                    }
+                }
                 _context.SchoolAcademy.Add(schoolAcademy);
                 _context.SaveChanges();
                 int schoolAcademyId = schoolAcademy.Id;

@@ -32,7 +32,8 @@ namespace CoreWebApi.Models
         public string PrimaryAddress { get; set; }
         [StringLength(500, ErrorMessage = "Address cannot be longer then 500 characters")]
         public string SecondaryAddress { get; set; }
-
+        [StringLength(200)] 
+        public string Logo { get; set; }
         public bool Active { get; set; }
 
         public virtual ICollection<SchoolBranch> SchoolBranches { get; set; }

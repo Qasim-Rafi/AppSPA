@@ -197,6 +197,7 @@ namespace CoreWebApi.Dtos
         public string Email { get; set; }
         public int UserTypeId { get; set; } = 1;
         public string UserTypeSignUp { get; set; }
+        public List<IFormFile> files { get; set; }
     }
 
     public class UserForAddInGroupDto : BaseDto

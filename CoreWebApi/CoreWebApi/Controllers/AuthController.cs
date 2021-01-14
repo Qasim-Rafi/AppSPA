@@ -147,6 +147,7 @@ namespace CoreWebApi.Controllers
                 loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.Name.ToString())).Value,
                 role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
                 schoolName = schoolBranchDetails.school.Name,
+                schoolLogo = schoolBranchDetails.logo,
                 token = tokenHandler.WriteToken(token),
                 classSectionName = GenericFunctions.IsPropertyExist(CSName, "ClassName") && GenericFunctions.IsPropertyExist(CSName, "SectionName") ? CSName.ClassName + " " + CSName.SectionName : "",
                 classSectionId = GenericFunctions.IsPropertyExist(CSName, "ClassSectionId") ? CSName.ClassSectionId : "",
