@@ -39,7 +39,7 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpPost("AddResult")]
-        public async Task<IActionResult> AddResult([FromForm] ResultForAddDto model)
+        public async Task<IActionResult> AddResult([FromForm] List<ResultForAddDto> model)
         {
 
             if (!ModelState.IsValid)

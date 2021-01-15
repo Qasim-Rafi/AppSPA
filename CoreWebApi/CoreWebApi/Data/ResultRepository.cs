@@ -35,22 +35,27 @@ namespace CoreWebApi.Data
             _serviceResponse = new ServiceResponse<object>();
         }
 
-        public async Task<ServiceResponse<object>> AddResult(ResultForAddDto model)
+        public async Task<ServiceResponse<object>> AddResult(List<ResultForAddDto> model)
         {
-            var ToAdd = new Result
+            var ListToAdd = new List<Result>();
+            foreach (var item in model)
             {
-                ClassSectionId = model.ClassSectionId,
-                SubjectId = model.SubjectId,
-                StudentId = model.StudentId,
-                ReferenceId = model.ReferenceId,
-                Remarks = model.Remarks,
-                ObtainedMarks = model.ObtainedMarks,
-                TotalMarks = model.TotalMarks,
-                CreatedById = _LoggedIn_UserID,
-                SchoolBranchId = _LoggedIn_BranchID,
-                CreatedDateTime = DateTime.Now
-            };
-            await _context.Results.AddAsync(ToAdd);
+                ListToAdd.Add( new Result
+                {
+                    ClassSectionId = item.ClassSectionId,
+                    SubjectId = item.SubjectId,
+                    StudentId = item.StudentId,
+                    ReferenceId = item.ReferenceId,
+                    Remarks = item.Remarks,
+                    ObtainedMarks = item.ObtainedMarks,
+                    TotalMarks = item.TotalMarks,
+                    CreatedById = _LoggedIn_UserID,
+                    SchoolBranchId = _LoggedIn_BranchID,
+                    CreatedDateTime = DateTime.Now
+                });
+            }
+           
+            await _context.Results.AddRangeAsync(ListToAdd);
             await _context.SaveChangesAsync();
             _serviceResponse.Message = CustomMessage.Added;
             _serviceResponse.Success = true;
@@ -68,7 +73,7 @@ namespace CoreWebApi.Data
                                            ClassSectionId = cs.Id,
                                            Class = cs.Class.Name,
                                            Section = cs.Section.SectionName
-                                       }).ToListAsync();
+                                       }).Distinct().ToListAsync();
 
             var Subjects = await (from cla in _context.ClassLectureAssignment
                                   join s in _context.Subjects
@@ -82,7 +87,7 @@ namespace CoreWebApi.Data
                                       SubjectId = s.Id,
                                       SubjectName = s.Name,
                                       ClassSectionId = cla.ClassSectionId,
-                                  }).ToListAsync();
+                                  }).Distinct().ToListAsync();
 
             var Exams = await (from u in _context.Users
                                join ass in _context.ClassSectionAssignment
