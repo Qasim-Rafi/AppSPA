@@ -128,14 +128,7 @@ namespace CoreWebApi.Dtos
         public List<QuizResultForListDto> QuizList { get; set; }
     }
 
-    public class AddResultForAddDto : BaseDto
-    {
-        public int ClassSectionId { get; set; }
-        public int ReferenceId { get; set; }
-        public string Remarks { get; set; }
-        public double TotalMarks { get; set; }
-        public double ObtainedMarks { get; set; }
-    }
+   
     public class QuizResultForListDto
     {
         public QuizResultForListDto()

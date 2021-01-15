@@ -641,24 +641,6 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> AddResult(AddResultForAddDto model)
-        {
-            var ToAdd = new Result
-            {
-                ClassSectionId = model.ClassSectionId,
-                ReferenceId = model.ReferenceId,
-                Remarks = model.Remarks,
-                ObtainedMarks = model.ObtainedMarks,
-                TotalMarks = model.TotalMarks,
-                CreatedById = _LoggedIn_UserID,
-                SchoolBranchId = _LoggedIn_BranchID,
-                CreatedDateTime = DateTime.Now
-            };
-            await _context.Results.AddAsync(ToAdd);
-            await _context.SaveChangesAsync();
-            _serviceResponse.Message = CustomMessage.Added;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
-        }
+        
     }
 }

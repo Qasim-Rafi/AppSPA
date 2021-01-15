@@ -986,9 +986,9 @@ namespace CoreWebApi.Data
             {
                 Title = p.Title,
                 Description = p.Description,
-                Link = p.Link.Substring(p.Link.LastIndexOf("=") + 1)
+                Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link
             }).ToListAsync();
-            
+
             _serviceResponse.Data = Resources;
             _serviceResponse.Success = true;
             return _serviceResponse;

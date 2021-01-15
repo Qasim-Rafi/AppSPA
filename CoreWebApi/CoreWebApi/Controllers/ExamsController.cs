@@ -165,16 +165,6 @@ namespace CoreWebApi.Controllers
             return Ok(new { createdQuizId = createdObjId });
 
         }
-        [HttpPost("AddResult")]
-        public async Task<IActionResult> AddResult(AddResultForAddDto model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            _response = await _repo.AddResult(model);
-            return Ok(_response);
-
-        }
+        
     }
 }
