@@ -84,7 +84,7 @@ namespace CoreWebApi.Data
 
             // while adding new migration uncomment below line and then comment it again after...
             // modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
-            // modelBuilder.Ignore<GetSubstituteTeachersDto>();
+             modelBuilder.Ignore<GetSubstituteTeachersDto>();
 
             //
             modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>

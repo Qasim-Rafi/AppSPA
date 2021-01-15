@@ -24,9 +24,9 @@ namespace CoreWebApi.Models
         public virtual SchoolBranch SchoolBranch { get; set; }
         [ForeignKey("ClassSectionId")]
         public virtual ClassSection ClassSection { get; set; }
-        [ForeignKey("StudentId")]
-        public virtual User Student { get; set; }
-        [ForeignKey("SubjectId")]
-        public virtual Subject Subject { get; set; }
+        //[ForeignKey("StudentId")]
+        //public virtual User Student { get; set; }
+        //[ForeignKey("SubjectId")]
+        //public virtual Subject Subject { get; set; }
     }
 }

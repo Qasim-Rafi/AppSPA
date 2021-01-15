@@ -80,7 +80,8 @@ namespace CoreWebApi.Data
                                   select new SubjectForResultListDto
                                   {
                                       SubjectId = s.Id,
-                                      SubjectName = s.Name
+                                      SubjectName = s.Name,
+                                      ClassSectionId = cla.ClassSectionId,
                                   }).ToListAsync();
 
             var Exams = await (from u in _context.Users
@@ -96,6 +97,7 @@ namespace CoreWebApi.Data
                                    RefId = ass.Id,
                                    RefName = ass.AssignmentName,
                                }).ToListAsync();
+
             Exams.AddRange(await (from u in _context.Users
                                   join q in _context.Quizzes
                                   on u.Id equals q.CreatedById
@@ -122,7 +124,8 @@ namespace CoreWebApi.Data
                                   select new StudentForResultListDto
                                   {
                                       StudentId = u.Id,
-                                      StudentName = u.FullName
+                                      StudentName = u.FullName,
+                                      ClassSectionId = cla.ClassSectionId,
                                   }).ToListAsync();
 
             _serviceResponse.Data = new { ClassSections, Subjects, Exams, Students };

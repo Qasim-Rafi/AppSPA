@@ -33,24 +33,22 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public string Class { get; set; }
         public string Section { get; set; }
-
     }
     public class ExamForResultListDto
     {
         public int RefId { get; set; }
         public string RefName { get; set; }
-
     }
     public class StudentForResultListDto
     {
         public int StudentId { get; set; }
         public string StudentName { get; set; }
+        public int ClassSectionId { get; set; }
     }
     public class SubjectForResultListDto
     {
         public int SubjectId { get; set; }
         public string SubjectName { get; set; }
-
-
+        public int ClassSectionId { get; set; }
     }
 }

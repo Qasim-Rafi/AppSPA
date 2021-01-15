@@ -160,6 +160,12 @@
     <Compile Remove="Migrations\20210114124450_AddReply_UpdateMessage.Designer.cs" />
     <Compile Remove="Migrations\20210114125215_AddReply_UpdateMessage.cs" />
     <Compile Remove="Migrations\20210114125215_AddReply_UpdateMessage.Designer.cs" />
+    <Compile Remove="Migrations\20210115103453_UpdateResult.cs" />
+    <Compile Remove="Migrations\20210115103453_UpdateResult.Designer.cs" />
+    <Compile Remove="Migrations\20210115103543_UpdateResult.cs" />
+    <Compile Remove="Migrations\20210115103543_UpdateResult.Designer.cs" />
+    <Compile Remove="Migrations\20210115114440_UpdateResult.cs" />
+    <Compile Remove="Migrations\20210115114440_UpdateResult.Designer.cs" />
 
   </ItemGroup>
 
