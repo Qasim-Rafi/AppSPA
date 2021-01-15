@@ -37,5 +37,19 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("SendReply")]
+        public async Task<IActionResult> SendReply([FromForm] ReplyForAddDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.SendReply(model);
+
+            return Ok(_response);
+
+        }
     }
 }

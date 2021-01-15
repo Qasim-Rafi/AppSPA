@@ -982,8 +982,13 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetUsefulResources()
         {
-            var Resources = await _context.UsefulResources.ToListAsync();
-
+            var Resources = await _context.UsefulResources.Select(p => new UsefulResourceForListDto
+            {
+                Title = p.Title,
+                Description = p.Description,
+                Link = p.Link.Substring(p.Link.LastIndexOf("=") + 1)
+            }).ToListAsync();
+            
             _serviceResponse.Data = Resources;
             _serviceResponse.Success = true;
             return _serviceResponse;

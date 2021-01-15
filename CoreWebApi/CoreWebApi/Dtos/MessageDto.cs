@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace CoreWebApi.Dtos
         public string Comment { get; set; }
         public int MessageFromUserId { get; set; }
         public int? MessageReplyId { get; set; }
-        public string Attachment { get; set; }
+        public IFormFileCollection files { get; set; }
     }
     public class ReplyForAddDto
     {
@@ -22,6 +23,6 @@ namespace CoreWebApi.Dtos
         public int ReplyToUserId { get; set; }
         public string Reply { get; set; }
         public int ReplyFromUserId { get; set; }
-        public string Attachment { get; set; }
+        public IFormFileCollection files { get; set; }
     }
 }

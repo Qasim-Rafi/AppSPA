@@ -313,7 +313,7 @@ namespace CoreWebApi.Data
                     // add parent account user when adding new student
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
                     var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student).ToList().LastOrDefault();
-                    var HasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:HasRegistrationNumber").Value);
+                    var HasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:SchoolHaveRegistrationNumbers").Value);
                     if (HasRegistrationNumber)
                     {
                         NewRegNo = userDto.RegistrationNumber;

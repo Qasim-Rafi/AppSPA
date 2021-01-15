@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
-{  
+{
     public class MessageRepository : IMessageRepository
     {
         private readonly DataContext _context;
@@ -42,9 +42,20 @@ namespace CoreWebApi.Data
                 MessageToUserId = model.MessageToUserId,
                 IsRead = false,
                 CreatedDateTime = DateTime.Now,
-                MessageFromUserId = _LoggedIn_UserID
+                MessageFromUserId = _LoggedIn_UserID,
+                MessageReplyId = model.MessageReplyId,
             };
-
+            if (model.files != null && model.files.Count() > 0)
+            {
+                for (int i = 0; i < model.files.Count(); i++)
+                {
+                    var dbPath = _fileRepo.SaveFile(model.files[i]);
+                    if (string.IsNullOrEmpty(ToAdd.Attachment))
+                        ToAdd.Attachment += dbPath;
+                    else
+                        ToAdd.Attachment = ToAdd.Attachment + "||" + dbPath;                   
+                }
+            }
             await _context.Messages.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
@@ -59,9 +70,20 @@ namespace CoreWebApi.Data
                 ReplyToUserId = model.ReplyToUserId,
                 IsRead = false,
                 CreatedDateTime = DateTime.Now,
-                ReplyFromUserId = _LoggedIn_UserID
+                ReplyFromUserId = _LoggedIn_UserID,
+                MessageId = model.MessageId,
             };
-
+            if (model.files != null && model.files.Count() > 0)
+            {
+                for (int i = 0; i < model.files.Count(); i++)
+                {
+                    var dbPath = _fileRepo.SaveFile(model.files[i]);
+                    if (string.IsNullOrEmpty(ToAdd.Attachment))
+                        ToAdd.Attachment += dbPath;
+                    else
+                        ToAdd.Attachment = ToAdd.Attachment + "||" + dbPath;
+                }
+            }
             await _context.MessageReplies.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
