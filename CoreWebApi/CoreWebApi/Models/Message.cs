@@ -10,16 +10,17 @@ namespace CoreWebApi.Models
     {
         public int Id { get; set; }
         public int MessageToUserId { get; set; }
-        public string  Comment { get; set; }
-        public int MessageFromUserId  { get; set; }
-        public int ReplyMessageId { get; set; }
-        public string AttachmentPath { get; set; }
+        public string Comment { get; set; }
+        public int MessageFromUserId { get; set; }
+        public int? MessageReplyId { get; set; }
+        public string Attachment { get; set; }
+        public bool IsRead { get; set; }
+        public DateTime CreatedDateTime { get; set; }
 
-        //[ForeignKey("MessageFromUserId")]
-        //public virtual User User { get; set; }
-
+        [ForeignKey("MessageFromUserId")]
+        public virtual User MessageFromUser { get; set; }
         [ForeignKey("MessageToUserId")]
-        public virtual User UserTo { get; set; }
-
+        public virtual User MessageToUser { get; set; }
+       
     }
 }

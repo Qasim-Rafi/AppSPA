@@ -328,13 +328,23 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
         [HttpPost("AddUsefulResources")]
-        public async Task<IActionResult> AddUsefulResources(List<UsefulResourceForAddDto> model)
+        public async Task<IActionResult> AddUsefulResources(UsefulResourceForAddDto model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             _response = await _repo.AddUsefulResources(model);
+            return Ok(_response);
+        }
+        [HttpGet("GetUsefulResources")]
+        public async Task<IActionResult> GetUsefulResources()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetUsefulResources();
             return Ok(_response);
         }
 

@@ -154,6 +154,12 @@
     <Compile Remove="Migrations\20210114082851_UpdateAssignSubm.Designer.cs" />
     <Compile Remove="Migrations\20210114111551_UpdateSchAcademy.cs" />
     <Compile Remove="Migrations\20210114111551_UpdateSchAcademy.Designer.cs" />
+    <Compile Remove="Migrations\20210114124147_AddReply_UpdateMessage.cs" />
+    <Compile Remove="Migrations\20210114124147_AddReply_UpdateMessage.Designer.cs" />
+    <Compile Remove="Migrations\20210114124450_AddReply_UpdateMessage.cs" />
+    <Compile Remove="Migrations\20210114124450_AddReply_UpdateMessage.Designer.cs" />
+    <Compile Remove="Migrations\20210114125215_AddReply_UpdateMessage.cs" />
+    <Compile Remove="Migrations\20210114125215_AddReply_UpdateMessage.Designer.cs" />
 
   </ItemGroup>
 

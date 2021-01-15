@@ -69,6 +69,7 @@ namespace CoreWebApi.Data
         public DbSet<ContactUsQuery> ContactUsQueries { get; set; }
         public DbSet<Result> Results { get; set; }
         public DbSet<UsefulResource> UsefulResources { get; set; }
+        public DbSet<MessageReply> MessageReplies { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }

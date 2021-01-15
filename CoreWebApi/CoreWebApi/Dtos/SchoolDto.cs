@@ -143,4 +143,15 @@ namespace CoreWebApi.Dtos
         public string Description { get; set; }
         public string Link { get; set; }
     }
+    public class UsefulResourceForListDto
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Link { get; set; }
+    }
+    public class UsefulResourceTopicWiseForListDto
+    {
+        public string Topic { get; set; }
+        public List<UsefulResourceForListDto> TopicWiseLinks { get; set; } = new List<UsefulResourceForListDto>();
+    }
 }
