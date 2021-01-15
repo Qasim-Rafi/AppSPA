@@ -398,6 +398,7 @@ namespace CoreWebApi.Data
                                           && CSIds.Contains(csUser.ClassSectionId)
                                           select u).Select(s => new
                                           {
+                                              Id = s.Id,
                                               FullName = s.FullName,
                                               RollNo = s.RollNumber,
                                               Photos = _context.Photos.Where(m => m.UserId == s.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
