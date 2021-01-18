@@ -9,7 +9,7 @@ namespace CoreWebApi.IData
 {
     public interface IAttendanceRepository
     {
-        Task<ServiceResponse<object>> GetAttendances();
+        Task<ServiceResponse<object>> GetAttendances(IEnumerable<UserByTypeListDto> list, AttendanceDtoForDisplay model);
         Task<ServiceResponse<object>> GetAttendance(int id);
         Task<bool> AttendanceExists(int userId);
         Task<ServiceResponse<object>> AddAttendance(List<AttendanceDtoForAdd> Attendances);

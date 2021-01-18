@@ -40,7 +40,7 @@ namespace CoreWebApi.Controllers
         [HttpGet, NonAction] // not in use
         public async Task<IActionResult> GetAttendancees()
         {
-            _response = await _repo.GetAttendances();
+            _response = await _repo.GetAttendances(null, null);
 
             //var ToReturn = _mapper.Map<IEnumerable<AttendanceDtoForList>>(attendances);
             return Ok(_response);
@@ -49,37 +49,8 @@ namespace CoreWebApi.Controllers
         [HttpPost("GetAttendanceToDisplay")]
         public async Task<IActionResult> GetAttendanceToDisplay(AttendanceDtoForDisplay model)
         {
-            var responseUsers = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
-            DateTime DTdate = DateTime.ParseExact(model.date, "MM/dd/yyyy", null);
-            //var DTdate = Convert.ToDateTime(model.date);
-            var ToReturn = (from user in responseUsers.Data
-                            join attendance in _context.Attendances
-                            on user.UserId equals attendance.UserId
-                           
-                            where attendance.CreatedDatetime.Date == DTdate.Date
-                            select new { user, attendance }).Select(o => new AttendanceDtoForList
-                            {
-                                Id = o.attendance.Id,
-                                UserId = o.attendance.UserId,
-                                ClassSectionId = o.attendance.ClassSectionId,
-                                FullName = o.user.FullName,
-                                CreatedDatetime = DateFormat.ToDate(o.attendance.CreatedDatetime.ToString()),
-                                Present = o.attendance.Present,
-                                Absent = o.attendance.Absent,
-                                Late = o.attendance.Late,
-                                Comments = o.attendance.Comments,
-                                LeaveCount = _context.Leaves.Where(m => m.UserId == o.user.UserId).Count(),
-                                AbsentCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Absent == true).Count(),
-                                LateCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Late == true).Count(),
-                                PresentCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Present == true).Count(),
-                                Photos = o.user.Photos
-                                //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
-                                //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
-                                //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
-                                //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
-                            }).ToList();
-            _response.Data = ToReturn;
-            _response.Success = true;
+            ServiceResponse<IEnumerable<UserByTypeListDto>> responseUsers = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
+            _response = await _repo.GetAttendances(responseUsers.Data, model);
             return Ok(_response);
 
         }

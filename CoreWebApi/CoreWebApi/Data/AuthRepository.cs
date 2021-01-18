@@ -353,12 +353,12 @@ namespace CoreWebApi.Data
                     resetLink = "http://localhost:4200/resetpassword";
                 else
                     resetLink = "https://e-learningbox.com/resetpassword";
-                email.Body = new TextPart(TextFormat.Html) { Text = $"<h1>You have requested forgot password.</h1> Here is the link is to reset your password: {resetLink}" };
+                email.Body = new TextPart(TextFormat.Html) { Text = $"<h1>You have requested reset password.</h1> Here is the link is to reset your password: {resetLink}" };
 
                 // send email
                 using var smtp = new SmtpClient();
                 // gmail
-                smtp.Connect(_emailSettings.SmtpServer, _emailSettings.Port, SecureSocketOptions.StartTls);     //587           
+                smtp.Connect(_emailSettings.SmtpServer, _emailSettings.Port, SecureSocketOptions.StartTls); //587           
                 //smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
                 smtp.Authenticate(_emailSettings.UserName, _emailSettings.Password);
                 await smtp.SendAsync(email);
