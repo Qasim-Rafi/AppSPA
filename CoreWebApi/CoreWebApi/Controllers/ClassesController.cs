@@ -120,7 +120,8 @@ namespace CoreWebApi.Controllers
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId && m.Active == true)?.Name,
                 SectionId = o.SectionId,
                 SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true)?.SectionName,
-                NumberOfStudents = o.NumberOfStudents
+                NumberOfStudents = o.NumberOfStudents,
+                Active = o.Active,
             });
             return Ok(ToReturn);
 
@@ -143,7 +144,7 @@ namespace CoreWebApi.Controllers
                 SectionId = o.SectionId,
                 SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
                 NumberOfStudents = o.NumberOfStudents,
-
+                Active = o.Active,
             });
             return Ok(_response);
 
