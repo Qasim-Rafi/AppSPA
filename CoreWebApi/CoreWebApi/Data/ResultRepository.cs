@@ -103,19 +103,19 @@ namespace CoreWebApi.Data
                                    RefName = ass.AssignmentName,
                                }).ToListAsync();
 
-            //Exams.AddRange(await (from u in _context.Users
-            //                      join q in _context.Quizzes
-            //                      on u.Id equals q.CreatedById
+            Exams.AddRange(await (from u in _context.Users
+                                  join q in _context.Quizzes
+                                  on u.Id equals q.CreatedById
 
-            //                      //join sub in _context.QuizSubmissions
-            //                      //on q.Id equals sub.QuizId
+                                  //join sub in _context.QuizSubmissions
+                                  //on q.Id equals sub.QuizId
 
-            //                      where u.Id == _LoggedIn_UserID
-            //                      select new ExamForResultListDto
-            //                      {
-            //                          RefId = q.Id,
-            //                          RefName = q.QuizDate.Value.ToShortDateString(),
-            //                      }).ToListAsync());
+                                  where u.Id == _LoggedIn_UserID
+                                  select new ExamForResultListDto
+                                  {
+                                      RefId = q.Id,
+                                      RefName = q.QuizDate.Value.ToShortDateString(),
+                                  }).ToListAsync());
 
             var Students = await (from cla in _context.ClassLectureAssignment
                                   join csU in _context.ClassSectionUsers

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using MimeKit;
 using MimeKit.Text;
 using System;
@@ -169,7 +168,7 @@ namespace CoreWebApi.Data
                         if (string.IsNullOrEmpty(schoolAcademy.Logo))
                             schoolAcademy.Logo += dbPath;
                         else
-                            schoolAcademy.Logo = schoolAcademy.Logo + "||" + dbPath;
+                            schoolAcademy.Logo = schoolAcademy.Logo + "||" + dbPath;                        
                     }
                 }
                 _context.SchoolAcademy.Add(schoolAcademy);
@@ -346,15 +345,7 @@ namespace CoreWebApi.Data
                 email.From.Add(MailboxAddress.Parse(_emailSettings.Sender));
                 email.To.Add(MailboxAddress.Parse(user.Email));
                 email.Subject = "Forgot Password?";
-
-                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-                var isDevelopment = environment == Environments.Development;
-                string resetLink = "";
-                if(isDevelopment)
-                    resetLink = "http://localhost:4200/forgotpassword";
-                else
-                    resetLink = "https://e-learningbox.com/forgotpassword";
-                email.Body = new TextPart(TextFormat.Html) { Text = $"<h1>You have requested forgot password.</h1> Here is the link is to reset your password: {resetLink}" };
+                email.Body = new TextPart(TextFormat.Html) { Text = @"<h1>You have requested forgot password.</h1> The Link is http://localhost:4200/forgotpassword" };
 
                 // send email
                 using var smtp = new SmtpClient();

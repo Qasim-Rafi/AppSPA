@@ -45,7 +45,7 @@ namespace CoreWebApi.Dtos
         public int SchoolAcademyId { get; set; }
         public string SchoolName { get; set; }
         public int NumberOfStudents { get; set; }
-        public bool Active { get; set; }
+        //public bool Active { get; set; }
         //public DateTime CreatedDatetime { get; set; }
         //public int CreatedById { get; set; }
     }
@@ -59,7 +59,6 @@ namespace CoreWebApi.Dtos
         public int SchoolAcademyId { get; set; }
         public string SchoolName { get; set; }
         public int NumberOfStudents { get; set; }
-        public bool Active { get; set; }
     }
     public class ClassSectionUserDtoForAdd
     {

@@ -157,8 +157,8 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("TeachersByClassSection/{classSectionId}/{subjectId?}")]
-        public async Task<IActionResult> TeachersByClassSection(int classSectionId, int subjectId = 0)
+        [HttpGet("TeachersByClassSection/{classSectionId}/{subjectId}")]
+        public async Task<IActionResult> TeachersByClassSection(int classSectionId = 0, int subjectId = 0)
         {
             _response = await _repo.GetTeachersByClassSection(classSectionId, subjectId);
 

@@ -272,10 +272,7 @@ namespace CoreWebApi.Data
                              on cs.ClassId equals c.Id
                              where cs.Id == csId
                              select c.Name)?.FirstOrDefault();
-            var users = new List<User>();
-            if (subjectId > 0)
-            {
-                users = await (from u in _context.Users
+            var users = await (from u in _context.Users
                                join exp in _context.TeacherExperties
                                on u.Id equals exp.TeacherId
                                where u.UserTypeId == (int)Enumm.UserType.Teacher
@@ -284,18 +281,7 @@ namespace CoreWebApi.Data
                                && exp.FromToLevels.Contains(className)
                                && exp.SubjectId == subjectId
                                select u).Distinct().ToListAsync();
-            }
-            else
-            {
-                users = await (from u in _context.Users
-                               join exp in _context.TeacherExperties
-                               on u.Id equals exp.TeacherId
-                               where u.UserTypeId == (int)Enumm.UserType.Teacher
-                               && u.Active == true
-                               && u.SchoolBranchId == _LoggedIn_BranchID
-                               && exp.FromToLevels.Contains(className)
-                               select u).Distinct().ToListAsync();
-            }
+
             var list = _mapper.Map<List<UserForListDto>>(users);
             var SelectOption = new UserForListDto { Id = 0, FullName = "Select Teacher" };
             list.Insert(0, SelectOption);
