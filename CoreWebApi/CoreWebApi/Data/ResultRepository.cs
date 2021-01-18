@@ -131,7 +131,7 @@ namespace CoreWebApi.Data
                                       StudentId = u.Id,
                                       StudentName = u.FullName,
                                       ClassSectionId = cla.ClassSectionId,
-                                  }).ToListAsync();
+                                  }).Distinct().ToListAsync();
             //var CustomOption = new ExamForResultListDto { RefId = 0, RefName = "Final Exam" };
             //Exams.Insert(0, CustomOption);
             _serviceResponse.Data = new { ClassSections, Subjects, Exams, Students };
