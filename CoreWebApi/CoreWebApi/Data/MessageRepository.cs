@@ -144,23 +144,50 @@ namespace CoreWebApi.Data
         {
             var User = _context.Users.Where(m => m.Id == userId).FirstOrDefault();
             var UserToDetails = _mapper.Map<UserForDetailedDto>(User);
-            var ChatMessages = await (from m in _context.Messages
+            var SentMessages = await (from m in _context.Messages
                                           //join r in _context.MessageReplies
                                           //on m.Id equals r.MessageId
 
                                       where m.MessageFromUserId == _LoggedIn_UserID
                                       && m.MessageToUserId == userId
-                                      select new MessageForListDto
+                                      group m by new { m.CreatedDateTime.TimeOfDay } into g
+                                      select new
                                       {
-                                          Id = m.Id,
-                                          MessageFromUserId = m.MessageFromUserId,
-                                          MessageFromUser = m.MessageFromUser.FullName,
-                                          Comment = m.Comment,
-                                          MessageToUserId = m.MessageToUserId,
-                                          MessageToUser = m.MessageToUser.FullName
+                                          Time = g.Key.TimeOfDay,
+                                          Messages = g.Select(o => new MessageForListDto
+                                          {
+                                              Id = o.Id,
+                                              MessageFromUserId = o.MessageFromUserId,
+                                              MessageFromUser = o.MessageFromUser.FullName,
+                                              Comment = o.Comment,
+                                              MessageToUserId = o.MessageToUserId,
+                                              MessageToUser = o.MessageToUser.FullName
+                                          }).ToList(),
+
                                       }).ToListAsync();
+            var ReceivedMessages = await (from m in _context.Messages
+                                              //join r in _context.MessageReplies
+                                              //on m.Id equals r.MessageId
+
+                                          where m.MessageFromUserId == userId
+                                          && m.MessageToUserId == _LoggedIn_UserID
+                                          group m by new { m.CreatedDateTime.TimeOfDay } into g
+                                          select new
+                                          {
+                                              Time = g.Key.TimeOfDay,
+                                              Messages = g.Select(o => new MessageForListDto
+                                              {
+                                                  Id = o.Id,
+                                                  MessageFromUserId = o.MessageFromUserId,
+                                                  MessageFromUser = o.MessageFromUser.FullName,
+                                                  Comment = o.Comment,
+                                                  MessageToUserId = o.MessageToUserId,
+                                                  MessageToUser = o.MessageToUser.FullName
+                                              }).ToList(),
+
+                                          }).ToListAsync();
             _serviceResponse.Success = true;
-            _serviceResponse.Data = new { UserToDetails, ChatMessages };
+            _serviceResponse.Data = new { UserToDetails, SentMessages, ReceivedMessages };
             return _serviceResponse;
         }
         public async Task<ServiceResponse<object>> SendMessage(MessageForAddDto model)
