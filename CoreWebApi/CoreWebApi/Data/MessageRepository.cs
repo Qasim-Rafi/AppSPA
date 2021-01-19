@@ -142,6 +142,8 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetChatMessages(int userId)
         {
+            var User = _context.Users.Where(m => m.Id == userId).FirstOrDefault();
+            var UserToDetails = _mapper.Map<UserForDetailedDto>(User);
             var ChatMessages = await (from m in _context.Messages
                                           //join r in _context.MessageReplies
                                           //on m.Id equals r.MessageId
@@ -158,7 +160,7 @@ namespace CoreWebApi.Data
                                           MessageToUser = m.MessageToUser.FullName
                                       }).ToListAsync();
             _serviceResponse.Success = true;
-            _serviceResponse.Data = ChatMessages;
+            _serviceResponse.Data = new { UserToDetails, ChatMessages };
             return _serviceResponse;
         }
         public async Task<ServiceResponse<object>> SendMessage(MessageForAddDto model)
