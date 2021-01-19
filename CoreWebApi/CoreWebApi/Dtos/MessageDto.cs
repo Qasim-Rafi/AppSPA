@@ -25,4 +25,21 @@ namespace CoreWebApi.Dtos
         public int ReplyFromUserId { get; set; }
         public IFormFileCollection files { get; set; }
     }
+    public class MessageForListDto
+    {
+        public int Id { get; set; }
+        public int MessageToUserId { get; set; }
+        public string MessageToUser { get; set; }
+        public string Comment { get; set; }
+        public int MessageFromUserId { get; set; }
+        public string MessageFromUser { get; set; }
+        public int? MessageReplyId { get; set; }
+        public IFormFileCollection files { get; set; }
+    }
+    public class ChatUserForListDto
+    {
+        public int UserId { get; set; }
+        public string UserName { get; set; }
+        public string Photo { get; set; }
+    }
 }

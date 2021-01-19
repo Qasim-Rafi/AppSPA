@@ -56,9 +56,17 @@ namespace CoreWebApi.Data
                 o.Day,
                 o.RowNo,
             }).ToListAsync();
-            //Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
-            var StartTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.StartTime)).Distinct().ToListAsync();
-            var EndTimings = await _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.EndTime)).Distinct().ToListAsync();
+            Timings = Timings.OrderBy(i => weekDayList.IndexOf(i.Day.ToString())).ToList();
+            var StartTimings = (from l in _context.LectureTiming
+                                where l.SchoolBranchId == _LoggedIn_BranchID
+                                //orderby l.Day
+                                select DateFormat.To24HRTime(l.StartTime)).Distinct().ToList();
+            var EndTimings = (from l in _context.LectureTiming
+                              where l.SchoolBranchId == _LoggedIn_BranchID
+                              //orderby l.Day
+                              select DateFormat.To24HRTime(l.EndTime)).Distinct().ToList();
+            //var StartTimings = _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.StartTime)).ToList();
+            //var EndTimings = _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(m => DateFormat.To24HRTime(m.EndTime)).Distinct().ToList();
             List<TimeSlotsForListDto> TimeSlots = new List<TimeSlotsForListDto>();
             for (int i = 0; i < StartTimings.Count; i++)
             {

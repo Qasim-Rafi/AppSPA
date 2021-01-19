@@ -23,6 +23,7 @@ namespace CoreWebApi.Controllers
             _repo = repo;
             _response = new ServiceResponse<object>();
         }
+       
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage([FromForm] MessageForAddDto model)
         {
@@ -47,6 +48,34 @@ namespace CoreWebApi.Controllers
             }
 
             _response = await _repo.SendReply(model);
+
+            return Ok(_response);
+
+        }
+        [HttpGet("GetUsersForChat")]
+        public async Task<IActionResult> GetUsersForChat()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetUsersForChat();
+
+            return Ok(_response);
+
+        }
+        [HttpGet("GetChatMessages/{userId}")]
+        public async Task<IActionResult> GetChatMessages(int userId)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetChatMessages(userId);
 
             return Ok(_response);
 

@@ -4,6 +4,7 @@ using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,100 @@ namespace CoreWebApi.Data
             _serviceResponse = new ServiceResponse<object>();
         }
 
+        public async Task<ServiceResponse<object>> GetUsersForChat()
+        {
+            List<ChatUserForListDto> Users = new List<ChatUserForListDto>();
+            if (_LoggedIn_UserRole == Enumm.UserType.Admin.ToString())
+            {
+                Users = (from u in _context.Users
+
+                         where u.UserTypeId == (int)Enumm.UserType.Teacher
+                         && u.SchoolBranchId == _LoggedIn_BranchID
+                         select new ChatUserForListDto
+                         {
+                             UserId = u.Id,
+                             UserName = u.FullName
+                         }).ToList();
+            }
+            else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
+            {
+                var ClassSections = await (from cla in _context.ClassLectureAssignment
+                                           join cs in _context.ClassSections
+                                           on cla.ClassSectionId equals cs.Id
+                                           where cla.TeacherId == _LoggedIn_UserID
+                                           select new ClassSectionForResultListDto
+                                           {
+                                               ClassSectionId = cs.Id,
+                                               Class = cs.Class.Name,
+                                               Section = cs.Section.SectionName
+                                           }).Distinct().ToListAsync();
+                Users = await (from u in _context.Users
+                               join csU in _context.ClassSectionUsers
+                               on u.Id equals csU.UserId
+
+                               where ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
+                               && u.UserTypeId == (int)Enumm.UserType.Student
+                               select new ChatUserForListDto
+                               {
+                                   UserId = u.Id,
+                                   UserName = u.FullName,
+                               }).Distinct().ToListAsync();
+
+            }
+            else if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
+            {
+                var ClassSections = await (from u in _context.Users
+                                           join csU in _context.ClassSectionUsers
+                                           on u.Id equals csU.UserId
+
+                                           join cs in _context.ClassSections
+                                           on csU.ClassSectionId equals cs.Id
+
+                                           where csU.UserId == _LoggedIn_UserID
+                                           select new ClassSectionForResultListDto
+                                           {
+                                               ClassSectionId = cs.Id,
+                                               Class = cs.Class.Name,
+                                               Section = cs.Section.SectionName
+                                           }).Distinct().ToListAsync();
+                Users = (from u in _context.Users
+                         join cla in _context.ClassLectureAssignment
+                         on u.Id equals cla.TeacherId
+
+                         where u.UserTypeId == (int)Enumm.UserType.Teacher
+                         && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
+                         && u.SchoolBranchId == _LoggedIn_BranchID
+                         select new ChatUserForListDto
+                         {
+                             UserId = u.Id,
+                             UserName = u.FullName
+                         }).ToList();
+            }
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = Users;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> GetChatMessages(int userId)
+        {
+            var ChatMessages = await (from m in _context.Messages
+                                          //join r in _context.MessageReplies
+                                          //on m.Id equals r.MessageId
+
+                                      where m.MessageFromUserId == _LoggedIn_UserID
+                                      && m.MessageToUserId == userId
+                                      select new MessageForListDto
+                                      {
+                                          Id = m.Id,
+                                          MessageFromUserId = m.MessageFromUserId,
+                                          MessageFromUser = m.MessageFromUser.FullName,
+                                          Comment = m.Comment,
+                                          MessageToUserId = m.MessageToUserId,
+                                          MessageToUser = m.MessageToUser.FullName
+                                      }).ToListAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = ChatMessages;
+            return _serviceResponse;
+        }
         public async Task<ServiceResponse<object>> SendMessage(MessageForAddDto model)
         {
             var ToAdd = new Message
@@ -53,7 +148,7 @@ namespace CoreWebApi.Data
                     if (string.IsNullOrEmpty(ToAdd.Attachment))
                         ToAdd.Attachment += dbPath;
                     else
-                        ToAdd.Attachment = ToAdd.Attachment + "||" + dbPath;                   
+                        ToAdd.Attachment = ToAdd.Attachment + "||" + dbPath;
                 }
             }
             await _context.Messages.AddAsync(ToAdd);
@@ -90,5 +185,7 @@ namespace CoreWebApi.Data
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
         }
+
+
     }
 }
