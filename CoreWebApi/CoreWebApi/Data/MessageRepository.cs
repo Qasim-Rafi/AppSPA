@@ -142,50 +142,79 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetChatMessages(int userId)
         {
-            var User = _context.Users.Where(m => m.Id == userId).FirstOrDefault();
-            var UserToDetails = _mapper.Map<UserForDetailedDto>(User);
-            var SentMessages = await (from m in _context.Messages
-                                          //join r in _context.MessageReplies
-                                          //on m.Id equals r.MessageId
+            var User = await _context.Users.Where(m => m.Id == userId).FirstOrDefaultAsync();
+            var UserToDetails = User != null ? _mapper.Map<UserForDetailedDto>(User) : new UserForDetailedDto();
 
-                                      where m.MessageFromUserId == _LoggedIn_UserID
-                                      && m.MessageToUserId == userId
-                                      group m by new { m.CreatedDateTime.TimeOfDay } into g
-                                      select new
-                                      {
-                                          Time = g.Key.TimeOfDay,
-                                          Messages = g.Select(o => new MessageForListDto
-                                          {
-                                              Id = o.Id,
-                                              MessageFromUserId = o.MessageFromUserId,
-                                              MessageFromUser = o.MessageFromUser.FullName,
-                                              Comment = o.Comment,
-                                              MessageToUserId = o.MessageToUserId,
-                                              MessageToUser = o.MessageToUser.FullName
-                                          }).ToList(),
+            var SentMessages = _context.Messages.Where(m => m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId)
+                .AsEnumerable().GroupBy(g => g.CreatedDateTime).Select(g => new MessageForListByTimeDto
+                {
+                    Time = g.Key.ToString(),
+                    Messages = g.Select(o => new MessageForListDto
+                    {
+                        Id = o.Id,
+                        MessageFromUserId = o.MessageFromUserId,
+                        MessageFromUser = o.MessageFromUser?.FullName,
+                        Comment = o.Comment,
+                        MessageToUserId = o.MessageToUserId,
+                        MessageToUser = o.MessageToUser?.FullName
+                    }).ToList()
+                });
+            var ReceivedMessages = _context.Messages.Where(m => m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)
+                .AsEnumerable().GroupBy(g => g.CreatedDateTime).Select(g => new MessageForListByTimeDto
+                {
+                    Time = g.Key.ToString(),
+                    Messages = g.Select(o => new MessageForListDto
+                    {
+                        Id = o.Id,
+                        MessageFromUserId = o.MessageFromUserId,
+                        MessageFromUser = o.MessageFromUser?.FullName,
+                        Comment = o.Comment,
+                        MessageToUserId = o.MessageToUserId,
+                        MessageToUser = o.MessageToUser?.FullName
+                    }).ToList()
+                });
+            //var SentMessages = await (from m in _context.Messages
+            //                              //join r in _context.MessageReplies
+            //                              //on m.Id equals r.MessageId
 
-                                      }).ToListAsync();
-            var ReceivedMessages = await (from m in _context.Messages
-                                              //join r in _context.MessageReplies
-                                              //on m.Id equals r.MessageId
+            //                          where m.MessageFromUserId == _LoggedIn_UserID
+            //                          && m.MessageToUserId == userId
+            //                          group m by new { m.CreatedDateTime.Hour, m.CreatedDateTime.Minute, m.CreatedDateTime.Second } into g
+            //                          select new MessageForListByTimeDto
+            //                          {
+            //                              Time = g.Key.Minute.ToString(),
+            //                              Messages = g.Select(o => new MessageForListDto
+            //                              {
+            //                                  Id = o.Id,
+            //                                  MessageFromUserId = o.MessageFromUserId,
+            //                                  MessageFromUser = o.MessageFromUser.FullName,
+            //                                  Comment = o.Comment,
+            //                                  MessageToUserId = o.MessageToUserId,
+            //                                  MessageToUser = o.MessageToUser.FullName
+            //                              }).ToList(),
 
-                                          where m.MessageFromUserId == userId
-                                          && m.MessageToUserId == _LoggedIn_UserID
-                                          group m by new { m.CreatedDateTime.TimeOfDay } into g
-                                          select new
-                                          {
-                                              Time = g.Key.TimeOfDay,
-                                              Messages = g.Select(o => new MessageForListDto
-                                              {
-                                                  Id = o.Id,
-                                                  MessageFromUserId = o.MessageFromUserId,
-                                                  MessageFromUser = o.MessageFromUser.FullName,
-                                                  Comment = o.Comment,
-                                                  MessageToUserId = o.MessageToUserId,
-                                                  MessageToUser = o.MessageToUser.FullName
-                                              }).ToList(),
+            //                          }).ToListAsync();
+            //var ReceivedMessages = await (from m in _context.Messages
+            //                                  //join r in _context.MessageReplies
+            //                                  //on m.Id equals r.MessageId
 
-                                          }).ToListAsync();
+            //                              where m.MessageFromUserId == userId
+            //                              && m.MessageToUserId == _LoggedIn_UserID
+            //                              group m by new { m.CreatedDateTime.Hour, m.CreatedDateTime.Minute, m.CreatedDateTime.Second } into g
+            //                              select new MessageForListByTimeDto
+            //                              {
+            //                                  Time = g.Key.Minute.ToString(),
+            //                                  Messages = g.Select(o => new MessageForListDto
+            //                                  {
+            //                                      Id = o.Id,
+            //                                      MessageFromUserId = o.MessageFromUserId,
+            //                                      MessageFromUser = o.MessageFromUser.FullName,
+            //                                      Comment = o.Comment,
+            //                                      MessageToUserId = o.MessageToUserId,
+            //                                      MessageToUser = o.MessageToUser.FullName
+            //                                  }).ToList(),
+
+            //                              }).ToListAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Data = new { UserToDetails, SentMessages, ReceivedMessages };
             return _serviceResponse;

@@ -36,6 +36,11 @@ namespace CoreWebApi.Dtos
         public int? MessageReplyId { get; set; }
         public IFormFileCollection files { get; set; }
     }
+    public class MessageForListByTimeDto
+    {
+        public string Time { get; set; }
+        public List<MessageForListDto> Messages { get; set; } = new List<MessageForListDto>();
+    }
     public class ChatUserForListDto
     {
         public int UserId { get; set; }
