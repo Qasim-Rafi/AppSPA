@@ -41,13 +41,25 @@ namespace CoreWebApi.Data
             if (_LoggedIn_UserRole == Enumm.UserType.Admin.ToString())
             {
                 Users = (from u in _context.Users
+                         join csU in _context.ClassSectionUsers
+                         on u.Id equals csU.UserId
+
+                         join cs in _context.ClassSections
+                         on csU.ClassSectionId equals cs.Id
 
                          where u.UserTypeId == (int)Enumm.UserType.Teacher
                          && u.SchoolBranchId == _LoggedIn_BranchID
                          select new ChatUserForListDto
                          {
                              UserId = u.Id,
-                             UserName = u.FullName
+                             UserName = u.FullName,
+                             Description = cs.Class.Name + " " + cs.Section.SectionName,
+                             Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                             {
+                                 Id = x.Id,
+                                 Name = x.Name,
+                                 Url = _fileRepo.AppendImagePath(x.Name)
+                             }).ToList(),
                          }).ToList();
             }
             else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
@@ -66,12 +78,22 @@ namespace CoreWebApi.Data
                                join csU in _context.ClassSectionUsers
                                on u.Id equals csU.UserId
 
+                               join cs in _context.ClassSections
+                               on csU.ClassSectionId equals cs.Id
+
                                where ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
                                && u.UserTypeId == (int)Enumm.UserType.Student
                                select new ChatUserForListDto
                                {
                                    UserId = u.Id,
                                    UserName = u.FullName,
+                                   Description = cs.Class.Name + " " + cs.Section.SectionName,
+                                   Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                   {
+                                       Id = x.Id,
+                                       Name = x.Name,
+                                       Url = _fileRepo.AppendImagePath(x.Name)
+                                   }).ToList(),
                                }).Distinct().ToListAsync();
 
             }
@@ -95,13 +117,23 @@ namespace CoreWebApi.Data
                          join cla in _context.ClassLectureAssignment
                          on u.Id equals cla.TeacherId
 
+                         join cs in _context.ClassSections
+                         on cla.ClassSectionId equals cs.Id
+
                          where u.UserTypeId == (int)Enumm.UserType.Teacher
                          && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
                          && u.SchoolBranchId == _LoggedIn_BranchID
                          select new ChatUserForListDto
                          {
                              UserId = u.Id,
-                             UserName = u.FullName
+                             UserName = u.FullName,
+                             Description = cs.Class.Name + " " + cs.Section.SectionName,
+                             Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                             {
+                                 Id = x.Id,
+                                 Name = x.Name,
+                                 Url = _fileRepo.AppendImagePath(x.Name)
+                             }).ToList(),
                          }).ToList();
             }
             _serviceResponse.Success = true;
