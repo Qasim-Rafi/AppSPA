@@ -38,7 +38,8 @@ namespace CoreWebApi.Dtos
     }
     public class MessageForListByTimeDto
     {
-        public string Time { get; set; }
+        public DateTime Time { get; set; }
+        public string TimeToDisplay { get; set; }
         public List<MessageForListDto> Messages { get; set; } = new List<MessageForListDto>();
     }
     public class ChatUserForListDto
