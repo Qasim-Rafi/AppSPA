@@ -145,42 +145,37 @@ namespace CoreWebApi.Data
             List<MessageForListByTimeDto> Messages = new List<MessageForListByTimeDto>();
             var User = await _context.Users.Where(m => m.Id == userId).FirstOrDefaultAsync();
             var UserToDetails = User != null ? _mapper.Map<UserForDetailedDto>(User) : new UserForDetailedDto();
-            var SentMessages = _context.Messages.Where(m => m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId)
-               .AsEnumerable().GroupBy(g => g.CreatedDateTime).Select(g => new MessageForListByTimeDto
-               {
-                   Time = g.Key,
-                   Messages = g.Select(o => new MessageForListDto
-                   {
-                       Id = o.Id,
-                       MessageFromUserId = o.MessageFromUserId,
-                       MessageFromUser = o.MessageFromUser?.FullName,
-                       Comment = o.Comment,
-                       MessageToUserId = o.MessageToUserId,
-                       MessageToUser = o.MessageToUser?.FullName
-                   }).ToList()
-               });
-            var ReceivedMessages = _context.Messages.Where(m => m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)
-                .AsEnumerable().GroupBy(g => g.CreatedDateTime).Select(g => new MessageForListByTimeDto
-                {
-                    Time = g.Key,
-                    Messages = g.Select(o => new MessageForListDto
-                    {
-                        Id = o.Id,
-                        MessageFromUserId = o.MessageFromUserId,
-                        MessageFromUser = o.MessageFromUser?.FullName,
-                        Comment = o.Comment,
-                        MessageToUserId = o.MessageToUserId,
-                        MessageToUser = o.MessageToUser?.FullName
-                    }).ToList()
-                });
+            var SentMessages = _context.Messages.Where(m => m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId).Select(o => new MessageForListDto
+            {
+                Id = o.Id,
+                Time = o.CreatedDateTime,
+                MessageFromUserId = o.MessageFromUserId,
+                MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
+                Comment = o.Comment,
+                MessageToUserId = o.MessageToUserId,
+                MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
+                Type = "Message"
+            }).ToList();
 
-            var DateTimes = _context.Messages.Where(m => m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId).Select(m => m.CreatedDateTime).ToList();
+            var ReceivedMessages = _context.Messages.Where(m => m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID).Select(o => new MessageForListDto
+            {
+                Id = o.Id,
+                Time = o.CreatedDateTime,
+                MessageFromUserId = o.MessageFromUserId,
+                MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
+                Comment = o.Comment,
+                MessageToUserId = o.MessageToUserId,
+                MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
+                Type = "Reply"
+            }).ToList();
+
+            var DateTimes = _context.Messages.Where(m => m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId).Select(m => m.CreatedDateTime).Distinct().ToList();
             foreach (var item in DateTimes)
             {
                 var ToAdd = new MessageForListByTimeDto();
                 ToAdd.TimeToDisplay = item.ToString();
-                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == item.Date && m.Time.Hour == item.Hour && m.Time.Minute == item.Minute).FirstOrDefault().Messages;
-                ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == item.Date && m.Time.Hour == item.Hour && m.Time.Minute == item.Minute).FirstOrDefault().Messages);
+                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == item.Date && m.Time.Hour == item.Hour && m.Time.Minute == item.Minute).ToList();
+                ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == item.Date && m.Time.Hour == item.Hour && m.Time.Minute == item.Minute).ToList());
                 Messages.Add(ToAdd);
             }
 

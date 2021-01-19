@@ -28,6 +28,8 @@ namespace CoreWebApi.Dtos
     public class MessageForListDto
     {
         public int Id { get; set; }
+        public DateTime Time { get; set; }
+        public string Type { get; set; }
         public int MessageToUserId { get; set; }
         public string MessageToUser { get; set; }
         public string Comment { get; set; }
