@@ -20,11 +20,12 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
         private readonly IHubContext<MessageNotificationHub> _hubContext;
-        public MessagesController(IMessageRepository repo, IMapper mapper)
+        public MessagesController(IMessageRepository repo, IMapper mapper, IHubContext<MessageNotificationHub> hubContext)
         {
             _mapper = mapper;
             _repo = repo;
             _response = new ServiceResponse<object>();
+            _hubContext = hubContext;
         }
 
         [HttpPost("SendMessage")]

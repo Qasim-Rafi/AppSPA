@@ -171,14 +171,14 @@ namespace CoreWebApi.Data
                 Type = "Reply"
             }).ToList();
 
-            var DateTimes = _context.Messages.Where(m => m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).Distinct().ToList();
+            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).Distinct().ToList();
             foreach (var item in DateTimes)
             {
                 var DateTime = Convert.ToDateTime(item);
                 var ToAdd = new MessageForListByTimeDto();
                 ToAdd.TimeToDisplay = item;
-                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderByDescending(m => m.Time).ToList();
-                ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderByDescending(m => m.Time).ToList());
+                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderBy(m => m.Time).ToList();
+                ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderBy(m => m.Time).ToList());
                 Messages.Add(ToAdd);
             }
 

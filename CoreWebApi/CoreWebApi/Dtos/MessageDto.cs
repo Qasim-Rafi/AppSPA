@@ -13,7 +13,7 @@ namespace CoreWebApi.Dtos
     {
         public int MessageToUserId { get; set; }
         public string Comment { get; set; }
-        public int MessageFromUserId { get; set; }
+        // public int MessageFromUserId { get; set; }
         public int? MessageReplyId { get; set; }
         public IFormFileCollection files { get; set; }
     }
@@ -22,7 +22,7 @@ namespace CoreWebApi.Dtos
         public int MessageId { get; set; }
         public int ReplyToUserId { get; set; }
         public string Reply { get; set; }
-        public int ReplyFromUserId { get; set; }
+        // public int ReplyFromUserId { get; set; }
         public IFormFileCollection files { get; set; }
     }
     public class MessageForListDto
