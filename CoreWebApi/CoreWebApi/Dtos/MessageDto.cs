@@ -29,6 +29,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public DateTime Time { get; set; }
+        public string TimeToDisplay { get; set; }
         public string Type { get; set; }
         public int MessageToUserId { get; set; }
         public string MessageToUser { get; set; }
@@ -40,7 +41,6 @@ namespace CoreWebApi.Dtos
     }
     public class MessageForListByTimeDto
     {
-        public DateTime Time { get; set; }
         public string TimeToDisplay { get; set; }
         public List<MessageForListDto> Messages { get; set; } = new List<MessageForListDto>();
     }

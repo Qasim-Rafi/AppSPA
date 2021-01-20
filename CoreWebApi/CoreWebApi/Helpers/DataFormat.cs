@@ -35,11 +35,21 @@ namespace CoreWebApi.Helpers
             //var dt = new DateTime(year, month, day, hour, minute, second).ToString("dd/MM/yyyy");
             //return Convert.ToDateTime(dt);// Convert.ToDateTime($"{day}-{month}-{year} {hour}:{minute} {tt}");
         }
-        public static string ToDateTime(string dateString)
+        public static string ToDateTime(DateTime dateString)
         {
-            var getDate = Convert.ToDateTime(dateString);
+            //var getDate = Convert.ToDateTime(dateString);
 
-            var dt = getDate.Date.ToString("dd-MM-yyyy hh:mm tt");
+            var dt = dateString.ToString("dd-MM-yyyy hh:mm tt");
+            return dt;
+            //string[] formats = { "dd/MM/yyyy", "dd/MM/yyyy h:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "MM/dd/yyyy", "MM/dd/yyyy hh:mm tt", "MM/dd/yyyy hh:mm:ss tt", "yyyy/MM/dd", "yyyy/MM/dd hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss", "yyyy/MM/dd hh:mm tt" };
+            //var dt = DateTime.ParseExact(dateString.ToString(), formats, new CultureInfo("en-US"), DateTimeStyles.None);
+            //return Convert.ToDateTime(dt.ToString("dd/MM/yyyy hh:mm tt"));
+        }
+        public static string ToDateTimeWithSeconds(DateTime dateString)
+        {
+            //var getDate = Convert.ToDateTime(dateString);
+
+            var dt = dateString.ToString("dd-MM-yyyy hh:mm:ss tt");
             return dt;
             //string[] formats = { "dd/MM/yyyy", "dd/MM/yyyy h:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "MM/dd/yyyy", "MM/dd/yyyy hh:mm tt", "MM/dd/yyyy hh:mm:ss tt", "yyyy/MM/dd", "yyyy/MM/dd hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss", "yyyy/MM/dd hh:mm tt" };
             //var dt = DateTime.ParseExact(dateString.ToString(), formats, new CultureInfo("en-US"), DateTimeStyles.None);

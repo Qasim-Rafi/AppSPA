@@ -149,6 +149,7 @@ namespace CoreWebApi.Data
             {
                 Id = o.Id,
                 Time = o.CreatedDateTime,
+                TimeToDisplay = DateFormat.ToDateTimeWithSeconds(o.CreatedDateTime),
                 MessageFromUserId = o.MessageFromUserId,
                 MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                 Comment = o.Comment,
@@ -161,6 +162,7 @@ namespace CoreWebApi.Data
             {
                 Id = o.Id,
                 Time = o.CreatedDateTime,
+                TimeToDisplay = DateFormat.ToDateTimeWithSeconds(o.CreatedDateTime),
                 MessageFromUserId = o.MessageFromUserId,
                 MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                 Comment = o.Comment,
@@ -169,13 +171,14 @@ namespace CoreWebApi.Data
                 Type = "Reply"
             }).ToList();
 
-            var DateTimes = _context.Messages.Where(m => m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId).Select(m => m.CreatedDateTime).Distinct().ToList();
+            var DateTimes = _context.Messages.Where(m => m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).Distinct().ToList();
             foreach (var item in DateTimes)
             {
+                var DateTime = Convert.ToDateTime(item);
                 var ToAdd = new MessageForListByTimeDto();
-                ToAdd.TimeToDisplay = item.ToString();
-                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == item.Date && m.Time.Hour == item.Hour && m.Time.Minute == item.Minute).ToList();
-                ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == item.Date && m.Time.Hour == item.Hour && m.Time.Minute == item.Minute).ToList());
+                ToAdd.TimeToDisplay = item;
+                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderByDescending(m => m.Time).ToList();
+                ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderByDescending(m => m.Time).ToList());
                 Messages.Add(ToAdd);
             }
 
