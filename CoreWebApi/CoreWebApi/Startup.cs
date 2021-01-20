@@ -27,6 +27,7 @@ using Microsoft.Extensions.FileProviders;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using static CoreWebApi.Helpers.GenericFunctions;
+using CoreWebApi.Hubs;
 
 namespace CoreWebApi
 {
@@ -84,6 +85,8 @@ namespace CoreWebApi
 
                 IFileProvider physicalProvider = new PhysicalFileProvider(Path.Combine(_HostEnvironment.ContentRootPath, "SchoolDocuments"));//(@"D:\Published\VImages");
                 services.AddSingleton<IFileProvider>(physicalProvider);
+
+                services.AddSignalR();
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(optinos =>
@@ -196,8 +199,11 @@ namespace CoreWebApi
                 app.UseAuthorization();
 
                 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+               
                 app.UseEndpoints(endpoints =>
                 {
+                    endpoints.MapHub<MessageNotificationHub>("/notificationHub");
                     endpoints.MapControllers();
                 });
             }
