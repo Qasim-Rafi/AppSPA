@@ -140,7 +140,7 @@ namespace CoreWebApi.Data
             _serviceResponse.Data = Users;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> GetChatMessages(int userId)
+        public async Task<ServiceResponse<object>> GetChatMessages(int userId, bool forSignal = false)
         {
             List<MessageForListByTimeDto> Messages = new List<MessageForListByTimeDto>();
             var User = await _context.Users.Where(m => m.Id == userId).FirstOrDefaultAsync();
@@ -171,7 +171,8 @@ namespace CoreWebApi.Data
                 Type = "Reply"
             }).ToList();
 
-            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).Distinct().ToList();
+            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
+            DateTimes = DateTimes.Distinct().ToList();
             foreach (var item in DateTimes)
             {
                 var DateTime = Convert.ToDateTime(item);
@@ -183,7 +184,11 @@ namespace CoreWebApi.Data
             }
 
             _serviceResponse.Success = true;
-            _serviceResponse.Data = new { UserToDetails, Messages };
+            if (forSignal)
+                _serviceResponse.Data = Messages;
+            else
+                _serviceResponse.Data = new { UserToDetails, Messages };
+
             return _serviceResponse;
         }
         public async Task<ServiceResponse<object>> SendMessage(MessageForAddDto model)

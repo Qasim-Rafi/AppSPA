@@ -38,7 +38,7 @@ namespace CoreWebApi.Controllers
             }
 
             _response = await _repo.SendMessage(model);
-            var msgs = await _repo.GetChatMessages(model.MessageToUserId);
+            var msgs = await _repo.GetChatMessages(model.MessageToUserId, true);
             if (_response.Success)
             {
                 await _hubContext.Clients.All.SendAsync("MessageNotificationAlert", msgs.Data);
@@ -84,7 +84,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetChatMessages(userId);
+            _response = await _repo.GetChatMessages(userId, false);
 
             return Ok(_response);
 
