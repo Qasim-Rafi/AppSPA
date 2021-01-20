@@ -387,9 +387,14 @@ namespace CoreWebApi.Data
             {
                 if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
-                    var CSIds = await (from csUser in _context.ClassSectionUsers
-                                       where csUser.UserId == _LoggedIn_UserID
-                                       select csUser.ClassSectionId).ToListAsync();
+                    var CSIds = await (from cla in _context.ClassLectureAssignment
+                                       join cs in _context.ClassSections
+                                       on cla.ClassSectionId equals cs.Id
+                                       where cla.TeacherId == _LoggedIn_UserID
+                                       select cs.Id).Distinct().ToListAsync();
+                    //var CSIds = await (from csUser in _context.ClassSectionUsers
+                    //                   where csUser.UserId == _LoggedIn_UserID
+                    //                   select csUser.ClassSectionId).ToListAsync();
 
                     var Students = await (from u in _context.Users
                                           join csUser in _context.ClassSectionUsers
