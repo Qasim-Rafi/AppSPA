@@ -149,7 +149,7 @@ namespace CoreWebApi.Data
             {
                 Id = o.Id,
                 Time = o.CreatedDateTime,
-                TimeToDisplay = DateFormat.ToDateTimeWithSeconds(o.CreatedDateTime),
+                TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
                 MessageFromUserId = o.MessageFromUserId,
                 MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                 Comment = o.Comment,
@@ -162,7 +162,7 @@ namespace CoreWebApi.Data
             {
                 Id = o.Id,
                 Time = o.CreatedDateTime,
-                TimeToDisplay = DateFormat.ToDateTimeWithSeconds(o.CreatedDateTime),
+                TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
                 MessageFromUserId = o.MessageFromUserId,
                 MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                 Comment = o.Comment,
