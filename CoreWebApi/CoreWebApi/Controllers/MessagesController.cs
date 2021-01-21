@@ -37,7 +37,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var response = await _repo.SendMessage(model);
+            _response = await _repo.SendMessage(model);
             var lastMessage = await _repo.GetChatMessages(model.MessageToUserId, true);
             if (_response.Success)
             {
