@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
+using CoreWebApi.Hubs;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +37,7 @@ namespace CoreWebApi.Data
             _fileRepo = filesRepository;
             _serviceResponse = new ServiceResponse<object>();
         }
-
+      
         public async Task<ServiceResponse<object>> GetUsersForChat()
         {
             List<ChatUserForListDto> Users = new List<ChatUserForListDto>();
@@ -62,7 +65,7 @@ namespace CoreWebApi.Data
                                      Name = x.Name,
                                      Url = _fileRepo.AppendImagePath(x.Name)
                                  }).ToList(),
-                             }).ToList();
+                             }).Distinct().ToList();
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
@@ -136,7 +139,7 @@ namespace CoreWebApi.Data
                                      Name = x.Name,
                                      Url = _fileRepo.AppendImagePath(x.Name)
                                  }).ToList(),
-                             }).ToList();
+                             }).Distinct().ToList();
                 }
             }
             else
@@ -179,14 +182,21 @@ namespace CoreWebApi.Data
                 MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
                 Type = "Reply"
             }).ToList();
-             
+
             var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).OrderBy(m => m.CreatedDateTime).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();
             foreach (var item in DateTimes)
             {
                 var DateTime = Convert.ToDateTime(item);
+
                 var ToAdd = new MessageForListByTimeDto();
-                ToAdd.TimeToDisplay = item;
+
+                if (DateTime.Date == DateTime.Now.Date)
+                    ToAdd.TimeToDisplay = "Today";
+                else if (DateTime.Date == DateTime.Now.AddDays(-1).Date)
+                    ToAdd.TimeToDisplay = "Yesterday";
+                else
+                    ToAdd.TimeToDisplay = item;
                 ToAdd.Messages = SentMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderBy(m => m.Time).ToList();
                 ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderBy(m => m.Time).ToList());
                 Messages.Add(ToAdd);
