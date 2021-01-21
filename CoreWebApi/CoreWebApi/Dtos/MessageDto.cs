@@ -44,6 +44,19 @@ namespace CoreWebApi.Dtos
         public string TimeToDisplay { get; set; }
         public List<MessageForListDto> Messages { get; set; } = new List<MessageForListDto>();
     }
+    public class SignalRMessageForListDto
+    {
+        public int Id { get; set; }
+        public string TimeToDisplay { get; set; }
+        public string DateTimeToDisplay { get; set; }
+        public string Type { get; set; }
+        public int MessageToUserId { get; set; }
+        public string MessageToUser { get; set; }
+        public string Comment { get; set; }
+        public int MessageFromUserId { get; set; }
+        public string MessageFromUser { get; set; }
+        public int? MessageReplyId { get; set; }
+    }
     public class ChatUserForListDto
     {
         public int UserId { get; set; }

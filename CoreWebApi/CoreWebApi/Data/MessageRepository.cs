@@ -38,103 +38,112 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetUsersForChat()
         {
             List<ChatUserForListDto> Users = new List<ChatUserForListDto>();
-            if (_LoggedIn_UserRole == Enumm.UserType.Admin.ToString())
+            if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
             {
-                Users = (from u in _context.Users
-                         join csU in _context.ClassSectionUsers
-                         on u.Id equals csU.UserId
+                if (_LoggedIn_UserRole == Enumm.UserType.Admin.ToString())
+                {
+                    Users = (from u in _context.Users
+                             join csU in _context.ClassSectionUsers
+                             on u.Id equals csU.UserId
 
-                         join cs in _context.ClassSections
-                         on csU.ClassSectionId equals cs.Id
+                             join cs in _context.ClassSections
+                             on csU.ClassSectionId equals cs.Id
 
-                         where u.UserTypeId == (int)Enumm.UserType.Teacher
-                         && u.SchoolBranchId == _LoggedIn_BranchID
-                         select new ChatUserForListDto
-                         {
-                             UserId = u.Id,
-                             UserName = u.FullName,
-                             Description = cs.Class.Name + " " + cs.Section.SectionName,
-                             Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                             where u.UserTypeId == (int)Enumm.UserType.Teacher
+                             && u.SchoolBranchId == _LoggedIn_BranchID
+                             select new ChatUserForListDto
                              {
-                                 Id = x.Id,
-                                 Name = x.Name,
-                                 Url = _fileRepo.AppendImagePath(x.Name)
-                             }).ToList(),
-                         }).ToList();
-            }
-            else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
-            {
-                var ClassSections = await (from cla in _context.ClassLectureAssignment
-                                           join cs in _context.ClassSections
-                                           on cla.ClassSectionId equals cs.Id
-                                           where cla.TeacherId == _LoggedIn_UserID
-                                           select new ClassSectionForResultListDto
-                                           {
-                                               ClassSectionId = cs.Id,
-                                               Class = cs.Class.Name,
-                                               Section = cs.Section.SectionName
-                                           }).Distinct().ToListAsync();
-                Users = await (from u in _context.Users
-                               join csU in _context.ClassSectionUsers
-                               on u.Id equals csU.UserId
+                                 UserId = u.Id,
+                                 UserName = u.FullName,
+                                 Description = cs.Class.Name + " " + cs.Section.SectionName,
+                                 Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                 {
+                                     Id = x.Id,
+                                     Name = x.Name,
+                                     Url = _fileRepo.AppendImagePath(x.Name)
+                                 }).ToList(),
+                             }).ToList();
+                }
+                else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
+                {
+                    var ClassSections = await (from cla in _context.ClassLectureAssignment
+                                               join cs in _context.ClassSections
+                                               on cla.ClassSectionId equals cs.Id
+                                               where cla.TeacherId == _LoggedIn_UserID
+                                               select new ClassSectionForResultListDto
+                                               {
+                                                   ClassSectionId = cs.Id,
+                                                   Class = cs.Class.Name,
+                                                   Section = cs.Section.SectionName
+                                               }).Distinct().ToListAsync();
+                    Users = await (from u in _context.Users
+                                   join csU in _context.ClassSectionUsers
+                                   on u.Id equals csU.UserId
 
-                               join cs in _context.ClassSections
-                               on csU.ClassSectionId equals cs.Id
+                                   join cs in _context.ClassSections
+                                   on csU.ClassSectionId equals cs.Id
 
-                               where ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
-                               && u.UserTypeId == (int)Enumm.UserType.Student
-                               select new ChatUserForListDto
-                               {
-                                   UserId = u.Id,
-                                   UserName = u.FullName,
-                                   Description = cs.Class.Name + " " + cs.Section.SectionName,
-                                   Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                   where ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
+                                   && u.UserTypeId == (int)Enumm.UserType.Student
+                                   select new ChatUserForListDto
                                    {
-                                       Id = x.Id,
-                                       Name = x.Name,
-                                       Url = _fileRepo.AppendImagePath(x.Name)
-                                   }).ToList(),
-                               }).Distinct().ToListAsync();
+                                       UserId = u.Id,
+                                       UserName = u.FullName,
+                                       Description = cs.Class.Name + " " + cs.Section.SectionName,
+                                       Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                       {
+                                           Id = x.Id,
+                                           Name = x.Name,
+                                           Url = _fileRepo.AppendImagePath(x.Name)
+                                       }).ToList(),
+                                   }).Distinct().ToListAsync();
 
-            }
-            else if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
-            {
-                var ClassSections = await (from u in _context.Users
-                                           join csU in _context.ClassSectionUsers
-                                           on u.Id equals csU.UserId
+                }
+                else if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
+                {
+                    var ClassSections = await (from u in _context.Users
+                                               join csU in _context.ClassSectionUsers
+                                               on u.Id equals csU.UserId
 
-                                           join cs in _context.ClassSections
-                                           on csU.ClassSectionId equals cs.Id
+                                               join cs in _context.ClassSections
+                                               on csU.ClassSectionId equals cs.Id
 
-                                           where csU.UserId == _LoggedIn_UserID
-                                           select new ClassSectionForResultListDto
-                                           {
-                                               ClassSectionId = cs.Id,
-                                               Class = cs.Class.Name,
-                                               Section = cs.Section.SectionName
-                                           }).Distinct().ToListAsync();
-                Users = (from u in _context.Users
-                         join cla in _context.ClassLectureAssignment
-                         on u.Id equals cla.TeacherId
+                                               where csU.UserId == _LoggedIn_UserID
+                                               select new ClassSectionForResultListDto
+                                               {
+                                                   ClassSectionId = cs.Id,
+                                                   Class = cs.Class.Name,
+                                                   Section = cs.Section.SectionName
+                                               }).Distinct().ToListAsync();
+                    Users = (from u in _context.Users
+                             join cla in _context.ClassLectureAssignment
+                             on u.Id equals cla.TeacherId
 
-                         join cs in _context.ClassSections
-                         on cla.ClassSectionId equals cs.Id
+                             join cs in _context.ClassSections
+                             on cla.ClassSectionId equals cs.Id
 
-                         where u.UserTypeId == (int)Enumm.UserType.Teacher
-                         && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
-                         && u.SchoolBranchId == _LoggedIn_BranchID
-                         select new ChatUserForListDto
-                         {
-                             UserId = u.Id,
-                             UserName = u.FullName,
-                             Description = cs.Class.Name + " " + cs.Section.SectionName,
-                             Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                             where u.UserTypeId == (int)Enumm.UserType.Teacher
+                             && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
+                             && u.SchoolBranchId == _LoggedIn_BranchID
+                             select new ChatUserForListDto
                              {
-                                 Id = x.Id,
-                                 Name = x.Name,
-                                 Url = _fileRepo.AppendImagePath(x.Name)
-                             }).ToList(),
-                         }).ToList();
+                                 UserId = u.Id,
+                                 UserName = u.FullName,
+                                 Description = cs.Class.Name + " " + cs.Section.SectionName,
+                                 Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                 {
+                                     Id = x.Id,
+                                     Name = x.Name,
+                                     Url = _fileRepo.AppendImagePath(x.Name)
+                                 }).ToList(),
+                             }).ToList();
+                }
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.UserNotLoggedIn;
+                return _serviceResponse;
             }
             _serviceResponse.Success = true;
             _serviceResponse.Data = Users;

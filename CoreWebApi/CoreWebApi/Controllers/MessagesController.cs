@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
 using CoreWebApi.Hubs;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,10 +40,26 @@ namespace CoreWebApi.Controllers
             }
 
             _response = await _repo.SendMessage(model);
-            var lastMessage = await _repo.GetChatMessages(model.MessageToUserId, true);
+            var response = await _repo.GetChatMessages(model.MessageToUserId, true);
             if (_response.Success)
             {
-                await _hubContext.Clients.All.SendAsync("MessageNotificationAlert", lastMessage);
+                var lastMessageStr = JsonConvert.SerializeObject(response.Data);
+                var lastMessage = JsonConvert.DeserializeObject<MessageForListByTimeDto>(lastMessageStr);
+                var ToReturn = new SignalRMessageForListDto
+                {
+                    Id = lastMessage.Messages[0].Id,
+                    Type = lastMessage.Messages[0].Type,
+                    DateTimeToDisplay = lastMessage.TimeToDisplay,
+                    TimeToDisplay = lastMessage.Messages[0].TimeToDisplay,
+                    Comment = lastMessage.Messages[0].Comment,
+                    MessageFromUserId = lastMessage.Messages[0].MessageFromUserId,
+                    MessageFromUser = lastMessage.Messages[0].MessageFromUser,
+                    MessageToUserId = lastMessage.Messages[0].MessageToUserId,
+                    MessageToUser = lastMessage.Messages[0].MessageToUser
+                };
+                // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);
+
+                await _hubContext.Clients.All.SendAsync("MessageNotificationAlert", ToReturn);
             }
 
             return Ok(_response);
