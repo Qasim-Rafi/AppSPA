@@ -171,7 +171,7 @@ namespace CoreWebApi.Data
                 Type = "Reply"
             }).ToList();
 
-            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
+            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).OrderBy(m => m.CreatedDateTime).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();
             foreach (var item in DateTimes)
             {
@@ -185,7 +185,7 @@ namespace CoreWebApi.Data
 
             _serviceResponse.Success = true;
             if (forSignal)
-                _serviceResponse.Data = Messages;
+                _serviceResponse.Data = Messages.LastOrDefault();
             else
                 _serviceResponse.Data = new { UserToDetails, Messages };
 

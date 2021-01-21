@@ -163,12 +163,12 @@ namespace CoreWebApi.Data
             foreach (var EmptySlot in EmptyTimeSlots)
             {
                 EmptySlot.SubstituteTeachers = await (from u in _context.Users
-                                                      join att in _context.Attendances
-                                                      on u.Id equals att.UserId
+                                                      //join att in _context.Attendances
+                                                      //on u.Id equals att.UserId
 
                                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
-                                                      && att.Absent == false
-                                                      && att.CreatedDatetime.Date == DateTime.Now.Date
+                                                      //&& att.Absent == false
+                                                      //&& att.CreatedDatetime.Date == DateTime.Now.Date
                                                       && u.SchoolBranchId == _LoggedIn_BranchID
                                                       && _context.ClassLectureAssignment.Where(m => m.LectureId == EmptySlot.LectureId && m.TeacherId == u.Id).FirstOrDefault() == null
                                                       //!EmptyTimeSlots.Select(m => m.TeacherId).Contains(u.Id)
@@ -423,7 +423,7 @@ namespace CoreWebApi.Data
                             select new SubstitutionForListDto
                             {
                                 ClassSectionId = sub.Id,
-                                Class = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
+                                Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
                                 Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
                                 SubjectId = sub.Id,
                                 Subject = s.Name,

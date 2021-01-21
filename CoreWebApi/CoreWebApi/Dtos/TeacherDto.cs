@@ -90,7 +90,7 @@ namespace CoreWebApi.Dtos
     public class SubstitutionForListDto
     {
         public int ClassSectionId { get; set; }
-        public string Class { get; set; }
+        public string Classs { get; set; }
         public string Section { get; set; }
         public int? TeacherId { get; set; }
         public string Teacher { get; set; }

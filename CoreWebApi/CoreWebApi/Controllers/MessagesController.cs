@@ -37,11 +37,11 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.SendMessage(model);
-            var msgs = await _repo.GetChatMessages(model.MessageToUserId, true);
+            var response = await _repo.SendMessage(model);
+            var lastMessage = await _repo.GetChatMessages(model.MessageToUserId, true);
             if (_response.Success)
             {
-                await _hubContext.Clients.All.SendAsync("MessageNotificationAlert", msgs.Data);
+                await _hubContext.Clients.All.SendAsync("MessageNotificationAlert", lastMessage);
             }
 
             return Ok(_response);
