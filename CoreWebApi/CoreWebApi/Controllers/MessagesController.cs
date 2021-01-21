@@ -60,7 +60,7 @@ namespace CoreWebApi.Controllers
                     MessageFromUser = lastMessage.Messages[0].MessageFromUser,
                     MessageToUserId = lastMessage.Messages[0].MessageToUserId,
                     MessageToUser = lastMessage.Messages[0].MessageToUser,
-                    IsReceived = lastMessage.Messages[0].MessageToUserId == _LoggedIn_UserID ? true : false
+                    IsReceived = false
                 };
 
                 // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);
