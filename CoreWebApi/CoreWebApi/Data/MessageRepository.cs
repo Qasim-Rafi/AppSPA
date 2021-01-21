@@ -179,7 +179,7 @@ namespace CoreWebApi.Data
                 MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
                 Type = "Reply"
             }).ToList();
-
+             
             var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).OrderBy(m => m.CreatedDateTime).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();
             foreach (var item in DateTimes)

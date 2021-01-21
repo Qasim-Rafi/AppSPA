@@ -56,6 +56,7 @@ namespace CoreWebApi.Dtos
         public int MessageFromUserId { get; set; }
         public string MessageFromUser { get; set; }
         public int? MessageReplyId { get; set; }
+        public bool IsReceived { get; set; }
     }
     public class ChatUserForListDto
     {

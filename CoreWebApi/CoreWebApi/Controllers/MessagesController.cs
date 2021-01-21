@@ -4,12 +4,14 @@ using CoreWebApi.Helpers;
 using CoreWebApi.Hubs;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
@@ -22,12 +24,14 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
         private readonly IHubContext<MessageNotificationHub> _hubContext;
-        public MessagesController(IMessageRepository repo, IMapper mapper, IHubContext<MessageNotificationHub> hubContext)
+        private int _LoggedIn_UserID = 0;
+        public MessagesController(IMessageRepository repo, IMapper mapper, IHubContext<MessageNotificationHub> hubContext, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _response = new ServiceResponse<object>();
             _hubContext = hubContext;
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
         }
 
         [HttpPost("SendMessage")]
@@ -55,8 +59,10 @@ namespace CoreWebApi.Controllers
                     MessageFromUserId = lastMessage.Messages[0].MessageFromUserId,
                     MessageFromUser = lastMessage.Messages[0].MessageFromUser,
                     MessageToUserId = lastMessage.Messages[0].MessageToUserId,
-                    MessageToUser = lastMessage.Messages[0].MessageToUser
+                    MessageToUser = lastMessage.Messages[0].MessageToUser,
+                    IsReceived = lastMessage.Messages[0].MessageToUserId == _LoggedIn_UserID ? true : false
                 };
+
                 // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);
 
                 await _hubContext.Clients.All.SendAsync("MessageNotificationAlert", ToReturn);
