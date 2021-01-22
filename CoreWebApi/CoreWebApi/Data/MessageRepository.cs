@@ -38,7 +38,7 @@ namespace CoreWebApi.Data
             _fileRepo = filesRepository;
             _serviceResponse = new ServiceResponse<object>();
         }
-      
+
         public async Task<ServiceResponse<object>> GetUsersForChat()
         {
             List<ChatUserForListDto> Users = new List<ChatUserForListDto>();
@@ -186,17 +186,18 @@ namespace CoreWebApi.Data
 
             var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).OrderBy(m => m.CreatedDateTime).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();
-            foreach (var item in DateTimes)
+            for (var i = 0; i < DateTimes.Count(); i++)
             {
                 //var DateTime0 = Convert.ToDateTime(item);
+                var item = DateTimes[i];
                 var ToAdd = new MessageForListByTimeDto();
                 DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
                 if (dt.Date == DateTime.Now.Date)
-                    ToAdd.TimeToDisplay = "Today";
+                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
                 else if (dt.Date == DateTime.Now.AddDays(-1).Date)
-                    ToAdd.TimeToDisplay = "Yesterday";
+                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
                 else
-                    ToAdd.TimeToDisplay = item;
+                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
                 ToAdd.Messages = SentMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList();
                 ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList());
                 Messages.Add(ToAdd);
