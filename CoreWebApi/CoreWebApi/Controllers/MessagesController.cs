@@ -51,16 +51,15 @@ namespace CoreWebApi.Controllers
                 var lastMessage = JsonConvert.DeserializeObject<MessageForListByTimeDto>(lastMessageStr);
                 var ToReturn = new SignalRMessageForListDto
                 {
-                    Id = lastMessage.Messages[0].Id,
-                    Type = lastMessage.Messages[0].Type,
+                    Id = lastMessage.Messages.Last().Id,
+                    Type = lastMessage.Messages.Last().Type,
                     DateTimeToDisplay = lastMessage.TimeToDisplay,
-                    TimeToDisplay = lastMessage.Messages[0].TimeToDisplay,
-                    Comment = lastMessage.Messages[0].Comment,
-                    MessageFromUserId = lastMessage.Messages[0].MessageFromUserId,
-                    MessageFromUser = lastMessage.Messages[0].MessageFromUser,
-                    MessageToUserId = lastMessage.Messages[0].MessageToUserId,
-                    MessageToUser = lastMessage.Messages[0].MessageToUser,
-                    IsReceived = false
+                    TimeToDisplay = lastMessage.Messages.Last().TimeToDisplay,
+                    Comment = lastMessage.Messages.Last().Comment,
+                    MessageFromUserId = lastMessage.Messages.Last().MessageFromUserId,
+                    MessageFromUser = lastMessage.Messages.Last().MessageFromUser,
+                    MessageToUserId = lastMessage.Messages.Last().MessageToUserId,
+                    MessageToUser = lastMessage.Messages.Last().MessageToUser,
                 };
 
                 // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);

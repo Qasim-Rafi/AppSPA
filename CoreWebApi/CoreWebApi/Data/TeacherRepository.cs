@@ -422,14 +422,14 @@ namespace CoreWebApi.Data
 
                             select new SubstitutionForListDto
                             {
-                                ClassSectionId = sub.Id,
+                                ClassSectionId = cs.Id,
                                 Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
                                 Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
-                                SubjectId = sub.Id,
+                                SubjectId = s.Id,
                                 Subject = s.Name,
-                                TeacherId = sub.Id,
+                                TeacherId = sub.TeacherId,
                                 Teacher = teacher.FullName,
-                                TimeSlotId = sub.Id,
+                                TimeSlotId = sub.TimeSlotId,
                                 TimeSlot = DateFormat.ToTime(lt.StartTime) + " " + DateFormat.ToTime(lt.EndTime),
                                 SubstituteTeacherId = sub.SubstituteTeacherId,
                                 SubstituteTeacher = subteacher.FullName,
