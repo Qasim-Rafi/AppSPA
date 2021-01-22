@@ -401,6 +401,7 @@ namespace CoreWebApi.Data
                                           on u.Id equals csUser.UserId
                                           where u.Role == Enumm.UserType.Student.ToString()
                                           && CSIds.Contains(csUser.ClassSectionId)
+                                          && u.Active == true
                                           select u).Select(s => new
                                           {
                                               Id = s.Id,

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -187,18 +188,17 @@ namespace CoreWebApi.Data
             DateTimes = DateTimes.Distinct().ToList();
             foreach (var item in DateTimes)
             {
-                var DateTime = Convert.ToDateTime(item);
-
+                //var DateTime0 = Convert.ToDateTime(item);
                 var ToAdd = new MessageForListByTimeDto();
-
-                if (DateTime.Date == DateTime.Now.Date)
+                DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
+                if (dt.Date == DateTime.Now.Date)
                     ToAdd.TimeToDisplay = "Today";
-                else if (DateTime.Date == DateTime.Now.AddDays(-1).Date)
+                else if (dt.Date == DateTime.Now.AddDays(-1).Date)
                     ToAdd.TimeToDisplay = "Yesterday";
                 else
                     ToAdd.TimeToDisplay = item;
-                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderBy(m => m.Time).ToList();
-                ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == DateTime.Date && m.Time.Hour == DateTime.Hour && m.Time.Minute == DateTime.Minute).OrderBy(m => m.Time).ToList());
+                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList();
+                ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList());
                 Messages.Add(ToAdd);
             }
 
