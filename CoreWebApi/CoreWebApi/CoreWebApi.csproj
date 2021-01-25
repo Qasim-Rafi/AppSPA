@@ -166,6 +166,14 @@
     <Compile Remove="Migrations\20210115103543_UpdateResult.Designer.cs" />
     <Compile Remove="Migrations\20210115114440_UpdateResult.cs" />
     <Compile Remove="Migrations\20210115114440_UpdateResult.Designer.cs" />
+    <Compile Remove="Migrations\20210125053621_UpdateMessage_Group.cs" />
+    <Compile Remove="Migrations\20210125053621_UpdateMessage_Group.Designer.cs" />
+    <Compile Remove="Migrations\20210125053758_UpdateMessage_Group.cs" />
+    <Compile Remove="Migrations\20210125053758_UpdateMessage_Group.Designer.cs" />
+    <Compile Remove="Migrations\20210125054408_UpdateMessage_Group.cs" />
+    <Compile Remove="Migrations\20210125054408_UpdateMessage_Group.Designer.cs" />
+    <Compile Remove="Migrations\20210125054937_UpdateMessage_AddChatGroup.cs" />
+    <Compile Remove="Migrations\20210125054937_UpdateMessage_AddChatGroup.Designer.cs" />
 
   </ItemGroup>
 

@@ -44,7 +44,7 @@ namespace CoreWebApi.Controllers
             }
 
             _response = await _repo.SendMessage(model);
-            var response = await _repo.GetChatMessages(model.MessageToUserId, true);
+            var response = await _repo.GetChatMessages(model.MessageToUserIds, true);
             if (_response.Success)
             {
                 var lastMessageStr = JsonConvert.SerializeObject(response.Data);
@@ -99,7 +99,7 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpGet("GetChatMessages/{userId}")]
-        public async Task<IActionResult> GetChatMessages(int userId)
+        public async Task<IActionResult> GetChatMessages(string userIds)
         {
 
             if (!ModelState.IsValid)
@@ -107,7 +107,35 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetChatMessages(userId, false);
+            _response = await _repo.GetChatMessages(userIds, false);
+
+            return Ok(_response);
+
+        }
+        [HttpPost("AddChatGroup")]
+        public async Task<IActionResult> AddChatGroup(ChatGroupForAddDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.AddChatGroup(model);
+
+            return Ok(_response);
+
+        }
+        [HttpGet("GetChatGroup")]
+        public async Task<IActionResult> GetChatGroup()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetChatGroup();
 
             return Ok(_response);
 

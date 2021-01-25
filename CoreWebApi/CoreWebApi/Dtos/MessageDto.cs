@@ -11,7 +11,7 @@ namespace CoreWebApi.Dtos
     }
     public class MessageForAddDto
     {
-        public int MessageToUserId { get; set; }
+        public string MessageToUserIds { get; set; }
         public string Comment { get; set; }
         // public int MessageFromUserId { get; set; }
         public int? MessageReplyId { get; set; }
@@ -63,5 +63,19 @@ namespace CoreWebApi.Dtos
         public string UserName { get; set; }
         public string Description { get; set; }
         public List<PhotoDto> Photos { get; set; }
+    }
+
+    public class ChatGroupForAddDto
+    {
+        public string GroupName { get; set; }
+        public List<int> UserIds { get; set; }       
+    }
+    public class ChatGroupForListDto
+    {
+        public int Id { get; set; }
+        public string GroupName { get; set; }
+        public string UserIdsStr { get; set; }       
+        public List<string> UserIds { get; set; }       
+        public string Names { get; set; }       
     }
 }

@@ -9,7 +9,7 @@ namespace CoreWebApi.Models
     public class Message
     {
         public int Id { get; set; }
-        public int MessageToUserId { get; set; }
+        public string MessageToUserIds { get; set; }
         public string Comment { get; set; }
         public int MessageFromUserId { get; set; }
         public int? MessageReplyId { get; set; }
@@ -19,8 +19,8 @@ namespace CoreWebApi.Models
 
         [ForeignKey("MessageFromUserId")]
         public virtual User MessageFromUser { get; set; }
-        [ForeignKey("MessageToUserId")]
-        public virtual User MessageToUser { get; set; }
+        //[ForeignKey("MessageToUserId")]
+        //public virtual User MessageToUser { get; set; }
        
     }
 }
