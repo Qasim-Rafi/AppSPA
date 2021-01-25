@@ -58,8 +58,8 @@ namespace CoreWebApi.Controllers
                     Comment = lastMessage.Messages.Last().Comment,
                     MessageFromUserId = lastMessage.Messages.Last().MessageFromUserId,
                     MessageFromUser = lastMessage.Messages.Last().MessageFromUser,
-                    MessageToUserId = lastMessage.Messages.Last().MessageToUserId,
-                    MessageToUser = lastMessage.Messages.Last().MessageToUser,
+                    MessageToUserIdsStr = lastMessage.Messages.Last().MessageToUserIdsStr,
+                    //MessageToUser = lastMessage.Messages.Last().MessageToUser,
                 };
 
                 // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);
@@ -98,8 +98,8 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("GetChatMessages/{userId}")]
-        public async Task<IActionResult> GetChatMessages(string userIds)
+        [HttpPost("GetChatMessages")]
+        public async Task<IActionResult> GetChatMessages(List<string> userIds)
         {
 
             if (!ModelState.IsValid)
