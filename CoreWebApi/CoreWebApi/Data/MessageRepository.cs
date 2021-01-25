@@ -275,6 +275,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddChatGroup(ChatGroupForAddDto model)
         {
+            model.UserIds.Add(_LoggedIn_UserID);
             var ToAdd = new ChatGroup
             {
                 GroupName = model.GroupName,
@@ -291,7 +292,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetChatGroup()
         {
-            var ToReturn = await _context.ChatGroups.Where(m => m.CreatedById == _LoggedIn_UserID).Select(o => new ChatGroupForListDto
+            var ToReturn = await _context.ChatGroups.Where(m => m.CreatedById == _LoggedIn_UserID || m.UserIds.Contains(_LoggedIn_UserID.ToString())).Select(o => new ChatGroupForListDto
             {
                 Id = o.Id,
                 GroupName = o.GroupName,
