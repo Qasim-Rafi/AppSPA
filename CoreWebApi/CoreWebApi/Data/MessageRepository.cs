@@ -57,8 +57,8 @@ namespace CoreWebApi.Data
                              && u.SchoolBranchId == _LoggedIn_BranchID
                              select new ChatUserForListDto
                              {
-                                 UserId = u.Id,
-                                 UserName = u.FullName,
+                                 UserIds = new List<int>() { u.Id },
+                                 Names = u.FullName,
                                  Description = cs.Class.Name + " " + cs.Section.SectionName,
                                  Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                  {
@@ -91,8 +91,8 @@ namespace CoreWebApi.Data
                                    && u.UserTypeId == (int)Enumm.UserType.Student
                                    select new ChatUserForListDto
                                    {
-                                       UserId = u.Id,
-                                       UserName = u.FullName,
+                                       UserIds = new List<int>() { u.Id },
+                                       Names = u.FullName,
                                        Description = cs.Class.Name + " " + cs.Section.SectionName,
                                        Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                        {
@@ -131,8 +131,8 @@ namespace CoreWebApi.Data
                              && u.SchoolBranchId == _LoggedIn_BranchID
                              select new ChatUserForListDto
                              {
-                                 UserId = u.Id,
-                                 UserName = u.FullName,
+                                 UserIds = new List<int>() { u.Id },
+                                 Names = u.FullName,
                                  Description = cs.Class.Name + " " + cs.Section.SectionName,
                                  Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                  {

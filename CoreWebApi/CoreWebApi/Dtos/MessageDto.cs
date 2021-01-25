@@ -60,8 +60,8 @@ namespace CoreWebApi.Dtos
     }
     public class ChatUserForListDto
     {
-        public int UserId { get; set; }
-        public string UserName { get; set; }
+        public List<int> UserIds { get; set; }
+        public string Names { get; set; }
         public string Description { get; set; }
         public List<PhotoDto> Photos { get; set; }
     }
