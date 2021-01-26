@@ -188,12 +188,12 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetChatMessages(List<string> userIds, bool forSignal = false)
         {
-            string UserIdds = string.Join(',', userIds);
+            string UserId = userIds.First();
             List<GroupMessageForListByTimeDto> Messages = new List<GroupMessageForListByTimeDto>();
             var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
             var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
-            var SentMessages = _context.GroupMessages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
-            || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString())))
+            var SentMessages = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
+            || (UserId.Equals(m.MessageFromUserId.ToString()) && m.MessageToUserId.Equals(_LoggedIn_UserID.ToString())))
                 .Select(o => new GroupMessageForListDto
                 {
                     Id = o.Id,
@@ -202,12 +202,12 @@ namespace CoreWebApi.Data
                     MessageFromUserId = o.MessageFromUserId,
                     MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                     Comment = o.Comment,
-                    MessageToUserIdsStr = o.MessageToUserIds,
+                    MessageToUserIdsStr = o.MessageToUserId.ToString(),
                     Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
                 }).ToList();
 
-            var DateTimes = _context.GroupMessages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
-            || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString())))
+            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
+            || (UserId.Equals(m.MessageFromUserId.ToString()) && m.MessageToUserId.Equals(_LoggedIn_UserID.ToString())))
                 .OrderBy(m => m.CreatedDateTime)
                 .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();

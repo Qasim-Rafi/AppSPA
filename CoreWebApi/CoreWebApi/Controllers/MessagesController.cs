@@ -48,8 +48,8 @@ namespace CoreWebApi.Controllers
             if (_response.Success)
             {
                 var lastMessageStr = JsonConvert.SerializeObject(response.Data);
-                var lastMessage = JsonConvert.DeserializeObject<MessageForListByTimeDto>(lastMessageStr);
-                var ToReturn = new SignalRMessageForListDto
+                var lastMessage = JsonConvert.DeserializeObject<GroupMessageForListByTimeDto>(lastMessageStr);
+                var ToReturn = new GroupSignalRMessageForListDto
                 {
                     Id = lastMessage.Messages.Last().Id,
                     Type = lastMessage.Messages.Last().Type,
@@ -58,8 +58,8 @@ namespace CoreWebApi.Controllers
                     Comment = lastMessage.Messages.Last().Comment,
                     MessageFromUserId = lastMessage.Messages.Last().MessageFromUserId,
                     MessageFromUser = lastMessage.Messages.Last().MessageFromUser,
-                    MessageToUserId = lastMessage.Messages.Last().MessageToUserId,
-                    MessageToUser = lastMessage.Messages.Last().MessageToUser,
+                    MessageToUserIdsStr = lastMessage.Messages.Last().MessageToUserIdsStr,
+                    //MessageToUser = lastMessage.Messages.Last().MessageToUser,
                 };
 
                 // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);

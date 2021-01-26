@@ -29,7 +29,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
-            _mapper = mapper;            
+            _mapper = mapper;
         }
         public void OnInIt()
         {
@@ -87,16 +87,33 @@ namespace CoreWebApi.Data
                                 Absent = o.attendance.Absent,
                                 Late = o.attendance.Late,
                                 Comments = o.attendance.Comments,
-                                LeaveCount = _context.Leaves.Where(m => m.UserId == o.user.UserId).Count(),
-                                AbsentCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Absent == true).Count(),
-                                LateCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Late == true).Count(),
-                                PresentCount = _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Present == true).Count(),
+                                LeaveCount = o.user.LeaveCount,// _context.Leaves.Where(m => m.UserId == o.user.UserId).Count(),
+                                AbsentCount = o.user.AbsentCount,//_context.Attendances.Where(m => m.UserId == o.user.UserId && m.Absent == true).Count(),
+                                LateCount = o.user.LateCount,//_context.Attendances.Where(m => m.UserId == o.user.UserId && m.Late == true).Count(),
+                                PresentCount = o.user.PresentCount,// _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Present == true).Count(),
                                 Photos = o.user.Photos
                                 //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
                                 //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
                                 //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
                                 //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
                             }).ToList();
+            ToReturn.AddRange(list.Where(m => !ToReturn.Select(m => m.UserId).Contains(m.UserId)).Select(o => new AttendanceDtoForList
+            {
+                UserId = o.UserId,
+                ClassSectionId = o.ClassSectionId,
+                FullName = o.FullName,
+                CreatedDatetime = "",
+                Present = false,
+                Absent = false,
+                Late = false,
+                Comments = "",
+                LeaveCount = o.LeaveCount,
+                AbsentCount = o.AbsentCount,
+                LateCount = o.LateCount,
+                PresentCount = o.PresentCount,
+                Photos = o.Photos
+            }).ToList());
+            //ToReturn.AddRange(ToReturn.Where(m => !list.Select(m => m.UserId).Contains(m.UserId)));
             //var attendances = await _context.Attendances.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             //var ToReturn = attendances.Select(o => new AttendanceDtoForList
             //{
