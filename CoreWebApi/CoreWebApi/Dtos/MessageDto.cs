@@ -62,6 +62,7 @@ namespace CoreWebApi.Dtos
         public string MessageFromUser { get; set; }
         public int? MessageReplyId { get; set; }
         public IFormFileCollection files { get; set; }
+        public int GroupId { get; set; }
     }
     public class MessageForListByTimeDto
     {
@@ -98,6 +99,7 @@ namespace CoreWebApi.Dtos
         public int MessageFromUserId { get; set; }
         public string MessageFromUser { get; set; }
         public int? MessageReplyId { get; set; }
+        public int GroupId { get; set; }
     }
     public class ChatUserForListDto
     {

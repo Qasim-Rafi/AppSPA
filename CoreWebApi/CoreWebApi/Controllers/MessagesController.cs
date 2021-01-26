@@ -59,6 +59,7 @@ namespace CoreWebApi.Controllers
                     MessageFromUserId = lastMessage.Messages.Last().MessageFromUserId,
                     MessageFromUser = lastMessage.Messages.Last().MessageFromUser,
                     MessageToUserIdsStr = lastMessage.Messages.Last().MessageToUserIdsStr,
+                    GroupId = 0,
                     //MessageToUser = lastMessage.Messages.Last().MessageToUser,
                 };
 
@@ -96,6 +97,7 @@ namespace CoreWebApi.Controllers
                     MessageFromUserId = lastMessage.Messages.Last().MessageFromUserId,
                     MessageFromUser = lastMessage.Messages.Last().MessageFromUser,
                     MessageToUserIdsStr = lastMessage.Messages.Last().MessageToUserIdsStr,
+                    GroupId = lastMessage.Messages.Last().GroupId,
                     //MessageToUser = lastMessage.Messages.Last().MessageToUser,
                 };
 

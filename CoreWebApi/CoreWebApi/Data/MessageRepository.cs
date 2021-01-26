@@ -55,6 +55,7 @@ namespace CoreWebApi.Data
 
                              where u.UserTypeId == (int)Enumm.UserType.Teacher
                              && u.SchoolBranchId == _LoggedIn_BranchID
+
                              select new ChatUserForListDto
                              {
                                  UserIds = new List<int>() { u.Id },
@@ -71,6 +72,7 @@ namespace CoreWebApi.Data
                     Users.AddRange((from u in _context.Users
                                     where u.UserTypeId == (int)Enumm.UserType.Admin
                                     && u.SchoolBranchId == _LoggedIn_BranchID
+                                    && u.Id != _LoggedIn_UserID
                                     select new ChatUserForListDto
                                     {
                                         UserIds = new List<int>() { u.Id },
@@ -118,6 +120,30 @@ namespace CoreWebApi.Data
                                            Url = _fileRepo.AppendImagePath(x.Name)
                                        }).ToList(),
                                    }).Distinct().ToListAsync();
+
+                    Users.AddRange((from u in _context.Users
+                                    join csU in _context.ClassSectionUsers
+                                    on u.Id equals csU.UserId
+
+                                    join cs in _context.ClassSections
+                                    on csU.ClassSectionId equals cs.Id
+
+                                    where u.UserTypeId == (int)Enumm.UserType.Teacher
+                                    && u.SchoolBranchId == _LoggedIn_BranchID
+                                    && ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
+                                    && u.Id != _LoggedIn_UserID
+                                    select new ChatUserForListDto
+                                    {
+                                        UserIds = new List<int>() { u.Id },
+                                        Names = u.FullName,
+                                        Description = cs.Class.Name + " " + cs.Section.SectionName,
+                                        Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            Url = _fileRepo.AppendImagePath(x.Name)
+                                        }).ToList(),
+                                    }).Distinct().ToList());
 
                     Users.AddRange((from u in _context.Users
                                     where u.UserTypeId == (int)Enumm.UserType.Admin
@@ -174,6 +200,30 @@ namespace CoreWebApi.Data
                                      Url = _fileRepo.AppendImagePath(x.Name)
                                  }).ToList(),
                              }).Distinct().ToList();
+
+                    Users.AddRange((from u in _context.Users
+                                    join cla in _context.ClassLectureAssignment
+                                    on u.Id equals cla.TeacherId
+
+                                    join cs in _context.ClassSections
+                                    on cla.ClassSectionId equals cs.Id
+
+                                    where u.UserTypeId == (int)Enumm.UserType.Student
+                                    && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
+                                    && u.SchoolBranchId == _LoggedIn_BranchID
+                                    && u.Id != _LoggedIn_UserID
+                                    select new ChatUserForListDto
+                                    {
+                                        UserIds = new List<int>() { u.Id },
+                                        Names = u.FullName,
+                                        Description = cs.Class.Name + " " + cs.Section.SectionName,
+                                        Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            Url = _fileRepo.AppendImagePath(x.Name)
+                                        }).ToList(),
+                                    }).Distinct().ToList());
                 }
             }
             else
@@ -188,7 +238,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetChatMessages(List<string> userIds, bool forSignal = false)
         {
-            int UserId =Convert.ToInt32( userIds.First());
+            int UserId = Convert.ToInt32(userIds.First());
             List<GroupMessageForListByTimeDto> Messages = new List<GroupMessageForListByTimeDto>();
             var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
             var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
@@ -251,7 +301,8 @@ namespace CoreWebApi.Data
                     MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                     Comment = o.Comment,
                     MessageToUserIdsStr = o.MessageToUserIds,
-                    Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
+                    Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2", // 1=Message, 2=Reply
+                    GroupId = o.GroupId,
                 }).ToList();
 
             var DateTimes = _context.GroupMessages.Where(m => m.GroupId == groupId && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
