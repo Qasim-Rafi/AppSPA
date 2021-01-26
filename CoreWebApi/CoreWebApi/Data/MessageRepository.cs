@@ -101,6 +101,7 @@ namespace CoreWebApi.Data
                                            Url = _fileRepo.AppendImagePath(x.Name)
                                        }).ToList(),
                                    }).Distinct().ToListAsync();
+                    //Users.AddRange();
 
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
@@ -153,25 +154,23 @@ namespace CoreWebApi.Data
             _serviceResponse.Data = Users;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> GetChatMessages(List<string> userIds, bool forSignal = false)
+        public async Task<ServiceResponse<object>> GetChatMessages(int userId, bool forSignal = false)
         {
             List<MessageForListByTimeDto> Messages = new List<MessageForListByTimeDto>();
-            var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
-            var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
-            var SentMessages = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && userIds.Contains(m.MessageToUserIds))
-            || (userIds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString())))
-                .Select(o => new MessageForListDto
-                {
-                    Id = o.Id,
-                    Time = o.CreatedDateTime,
-                    TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
-                    MessageFromUserId = o.MessageFromUserId,
-                    MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
-                    Comment = o.Comment,
-                    MessageToUserIdsStr = o.MessageToUserIds,
-                    //MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
-                    Type = o.MessageFromUserId == _LoggedIn_UserID ? "Message" : "Reply"
-                }).ToList();
+            var User = await _context.Users.Where(m => m.Id == userId).FirstOrDefaultAsync();
+            var UserToDetails = User != null ? _mapper.Map<UserForDetailedDto>(User) : new UserForDetailedDto();
+            var SentMessages = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).Select(o => new MessageForListDto
+            {
+                Id = o.Id,
+                Time = o.CreatedDateTime,
+                TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
+                MessageFromUserId = o.MessageFromUserId,
+                MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
+                Comment = o.Comment,
+                MessageToUserId = o.MessageToUserId,
+                MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
+                Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
+            }).ToList();
 
             //var ReceivedMessages = _context.Messages.Where(m => m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID).Select(o => new MessageForListDto
             //{
@@ -186,10 +185,7 @@ namespace CoreWebApi.Data
             //    Type = "Reply"
             //}).ToList();
 
-            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && userIds.Contains(m.MessageToUserIds))
-            || (userIds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString())))
-                .OrderBy(m => m.CreatedDateTime)
-                .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
+            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && m.MessageToUserId == userId) || (m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID)).OrderBy(m => m.CreatedDateTime).Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();
             for (var i = 0; i < DateTimes.Count(); i++)
             {
@@ -216,12 +212,77 @@ namespace CoreWebApi.Data
 
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetGroupChatMessages(List<string> userIds, int groupId, bool forSignal = false)
+        {
+            List<GroupMessageForListByTimeDto> Messages = new List<GroupMessageForListByTimeDto>();
+            var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
+            var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
+            var SentMessages = _context.GroupMessages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && userIds.Contains(m.MessageToUserIds))
+            || (userIds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))
+            && m.GroupId == groupId)
+                .Select(o => new GroupMessageForListDto
+                {
+                    Id = o.Id,
+                    Time = o.CreatedDateTime,
+                    TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
+                    MessageFromUserId = o.MessageFromUserId,
+                    MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
+                    Comment = o.Comment,
+                    MessageToUserIdsStr = o.MessageToUserIds,
+                    //MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
+                    Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
+                }).ToList();
+
+            //var ReceivedMessages = _context.Messages.Where(m => m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID).Select(o => new MessageForListDto
+            //{
+            //    Id = o.Id,
+            //    Time = o.CreatedDateTime,
+            //    TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
+            //    MessageFromUserId = o.MessageFromUserId,
+            //    MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
+            //    Comment = o.Comment,
+            //    MessageToUserId = o.MessageToUserId,
+            //    MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
+            //    Type = "Reply"
+            //}).ToList();
+
+            var DateTimes = _context.GroupMessages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && userIds.Contains(m.MessageToUserIds))
+            || (userIds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))
+            && m.GroupId == groupId)
+                .OrderBy(m => m.CreatedDateTime)
+                .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
+            DateTimes = DateTimes.Distinct().ToList();
+            for (var i = 0; i < DateTimes.Count(); i++)
+            {
+                //var DateTime0 = Convert.ToDateTime(item);
+                var item = DateTimes[i];
+                var ToAdd = new GroupMessageForListByTimeDto();
+                DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
+                if (dt.Date == DateTime.Now.Date)
+                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
+                else if (dt.Date == DateTime.Now.AddDays(-1).Date)
+                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
+                else
+                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
+                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList();
+                //ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList());
+                Messages.Add(ToAdd);
+            }
+
+            _serviceResponse.Success = true;
+            if (forSignal)
+                _serviceResponse.Data = Messages.LastOrDefault();
+            else
+                _serviceResponse.Data = new { UserToDetails, Messages };
+
+            return _serviceResponse;
+        }
         public async Task<ServiceResponse<object>> SendMessage(MessageForAddDto model)
         {
             var ToAdd = new Message
             {
                 Comment = model.Comment,
-                MessageToUserIds = string.Join(',', model.MessageToUserIds),
+                MessageToUserId = model.MessageToUserId,
                 IsRead = false,
                 CreatedDateTime = DateTime.Now,
                 MessageFromUserId = _LoggedIn_UserID,
@@ -239,6 +300,35 @@ namespace CoreWebApi.Data
                 }
             }
             await _context.Messages.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> SendGroupMessage(GroupMessageForAddDto model)
+        {
+            var ToAdd = new GroupMessage
+            {
+                Comment = model.Comment,
+                MessageToUserIds = string.Join(',', model.MessageToUserIds),
+                IsRead = false,
+                CreatedDateTime = DateTime.Now,
+                MessageFromUserId = _LoggedIn_UserID,
+                MessageReplyId = model.MessageReplyId,
+                GroupId = model.GroupId,
+            };
+            if (model.files != null && model.files.Count() > 0)
+            {
+                for (int i = 0; i < model.files.Count(); i++)
+                {
+                    var dbPath = _fileRepo.SaveFile(model.files[i]);
+                    if (string.IsNullOrEmpty(ToAdd.Attachment))
+                        ToAdd.Attachment += dbPath;
+                    else
+                        ToAdd.Attachment = ToAdd.Attachment + "||" + dbPath;
+                }
+            }
+            await _context.GroupMessages.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
@@ -290,7 +380,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetChatGroup()
+        public async Task<ServiceResponse<object>> GetChatGroups()
         {
             var ToReturn = await _context.ChatGroups.Where(m => m.CreatedById == _LoggedIn_UserID || m.UserIds.Contains(_LoggedIn_UserID.ToString())).Select(o => new ChatGroupForListDto
             {

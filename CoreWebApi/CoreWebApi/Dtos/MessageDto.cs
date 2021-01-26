@@ -11,9 +11,18 @@ namespace CoreWebApi.Dtos
     }
     public class MessageForAddDto
     {
-        public List<string> MessageToUserIds { get; set; }
+        public int MessageToUserId { get; set; }
         public string Comment { get; set; }
         // public int MessageFromUserId { get; set; }
+        public int? MessageReplyId { get; set; }
+        public IFormFileCollection files { get; set; }
+    }
+    public class GroupMessageForAddDto
+    {
+        public List<string> MessageToUserIds { get; set; }
+        public string Comment { get; set; }
+        public int MessageFromUserId { get; set; }
+        public int GroupId { get; set; }
         public int? MessageReplyId { get; set; }
         public IFormFileCollection files { get; set; }
     }
@@ -26,6 +35,20 @@ namespace CoreWebApi.Dtos
         public IFormFileCollection files { get; set; }
     }
     public class MessageForListDto
+    {
+        public int Id { get; set; }
+        public DateTime Time { get; set; }
+        public string TimeToDisplay { get; set; }
+        public string Type { get; set; }
+        public int MessageToUserId { get; set; }
+        public string MessageToUser { get; set; }
+        public string Comment { get; set; }
+        public int MessageFromUserId { get; set; }
+        public string MessageFromUser { get; set; }
+        public int? MessageReplyId { get; set; }
+        public IFormFileCollection files { get; set; }
+    }
+    public class GroupMessageForListDto
     {
         public int Id { get; set; }
         public DateTime Time { get; set; }
@@ -45,7 +68,25 @@ namespace CoreWebApi.Dtos
         public string TimeToDisplay { get; set; }
         public List<MessageForListDto> Messages { get; set; } = new List<MessageForListDto>();
     }
+    public class GroupMessageForListByTimeDto
+    {
+        public string TimeToDisplay { get; set; }
+        public List<GroupMessageForListDto> Messages { get; set; } = new List<GroupMessageForListDto>();
+    }
     public class SignalRMessageForListDto
+    {
+        public int Id { get; set; }
+        public string TimeToDisplay { get; set; }
+        public string DateTimeToDisplay { get; set; }
+        public string Type { get; set; }
+        public int MessageToUserId { get; set; }
+        public string MessageToUser { get; set; }
+        public string Comment { get; set; }
+        public int MessageFromUserId { get; set; }
+        public string MessageFromUser { get; set; }
+        public int? MessageReplyId { get; set; }
+    }
+    public class GroupSignalRMessageForListDto
     {
         public int Id { get; set; }
         public string TimeToDisplay { get; set; }
@@ -79,8 +120,8 @@ namespace CoreWebApi.Dtos
         public List<string> UserIds { get; set; }
         public string Names { get; set; }
     }
-    public class SingalUserMessageForAddDto
-    {
-        public List<int> UserIds { get; set; }
-    }
+    //public class SingalUserMessageForAddDto
+    //{
+    //    public List<int> UserIds { get; set; }
+    //}
 }

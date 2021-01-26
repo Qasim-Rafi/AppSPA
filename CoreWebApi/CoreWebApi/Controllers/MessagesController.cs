@@ -33,7 +33,6 @@ namespace CoreWebApi.Controllers
             _hubContext = hubContext;
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
         }
-
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage([FromForm] MessageForAddDto model)
         {
@@ -44,12 +43,49 @@ namespace CoreWebApi.Controllers
             }
 
             _response = await _repo.SendMessage(model);
-            var response = await _repo.GetChatMessages(model.MessageToUserIds, true);
+            var response = await _repo.GetChatMessages(model.MessageToUserId, true);
             if (_response.Success)
             {
                 var lastMessageStr = JsonConvert.SerializeObject(response.Data);
                 var lastMessage = JsonConvert.DeserializeObject<MessageForListByTimeDto>(lastMessageStr);
                 var ToReturn = new SignalRMessageForListDto
+                {
+                    Id = lastMessage.Messages.Last().Id,
+                    Type = lastMessage.Messages.Last().Type,
+                    DateTimeToDisplay = lastMessage.TimeToDisplay,
+                    TimeToDisplay = lastMessage.Messages.Last().TimeToDisplay,
+                    Comment = lastMessage.Messages.Last().Comment,
+                    MessageFromUserId = lastMessage.Messages.Last().MessageFromUserId,
+                    MessageFromUser = lastMessage.Messages.Last().MessageFromUser,
+                    MessageToUserId = lastMessage.Messages.Last().MessageToUserId,
+                    MessageToUser = lastMessage.Messages.Last().MessageToUser,
+                };
+
+                // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);
+
+                await _hubContext.Clients.All.SendAsync("MessageNotificationAlert", ToReturn);
+            }
+
+            return Ok(_response);
+
+        }
+        [HttpPost("SendGroupMessage")]
+        public async Task<IActionResult> SendGroupMessage([FromForm] GroupMessageForAddDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.SendGroupMessage(model);
+
+            var response = await _repo.GetGroupChatMessages(model.MessageToUserIds, model.GroupId, true);
+            if (_response.Success)
+            {
+                var lastMessageStr = JsonConvert.SerializeObject(response.Data);
+                var lastMessage = JsonConvert.DeserializeObject<GroupMessageForListByTimeDto>(lastMessageStr);
+                var ToReturn = new GroupSignalRMessageForListDto
                 {
                     Id = lastMessage.Messages.Last().Id,
                     Type = lastMessage.Messages.Last().Type,
@@ -98,8 +134,8 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPost("GetChatMessages")]
-        public async Task<IActionResult> GetChatMessages(List<string> userIds)
+        [HttpGet("GetChatMessages/{userId}")]
+        public async Task<IActionResult> GetChatMessages(int userId)
         {
 
             if (!ModelState.IsValid)
@@ -107,7 +143,21 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetChatMessages(userIds, false);
+            _response = await _repo.GetChatMessages(userId, false);
+
+            return Ok(_response);
+
+        }
+        [HttpPost("GetGroupChatMessages")]
+        public async Task<IActionResult> GetGroupChatMessages(List<string> userIds, int groupId)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetGroupChatMessages(userIds, groupId, false);
 
             return Ok(_response);
 
@@ -135,7 +185,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetChatGroup();
+            _response = await _repo.GetChatGroups();
 
             return Ok(_response);
 

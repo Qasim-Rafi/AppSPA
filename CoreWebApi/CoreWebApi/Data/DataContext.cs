@@ -71,6 +71,7 @@ namespace CoreWebApi.Data
         public DbSet<UsefulResource> UsefulResources { get; set; }
         public DbSet<MessageReply> MessageReplies { get; set; }
         public DbSet<ChatGroup> ChatGroups { get; set; }
+        public DbSet<GroupMessage> GroupMessages { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }
