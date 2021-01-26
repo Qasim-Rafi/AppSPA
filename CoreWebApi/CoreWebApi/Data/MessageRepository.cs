@@ -188,12 +188,12 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetChatMessages(List<string> userIds, bool forSignal = false)
         {
-            string UserId = userIds.First();
+            int UserId =Convert.ToInt32( userIds.First());
             List<GroupMessageForListByTimeDto> Messages = new List<GroupMessageForListByTimeDto>();
             var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
             var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
             var SentMessages = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
-            || (UserId.Equals(m.MessageFromUserId.ToString()) && m.MessageToUserId.Equals(_LoggedIn_UserID.ToString())))
+            || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID)))
                 .Select(o => new GroupMessageForListDto
                 {
                     Id = o.Id,
@@ -207,7 +207,7 @@ namespace CoreWebApi.Data
                 }).ToList();
 
             var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
-            || (UserId.Equals(m.MessageFromUserId.ToString()) && m.MessageToUserId.Equals(_LoggedIn_UserID.ToString())))
+            || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID)))
                 .OrderBy(m => m.CreatedDateTime)
                 .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();
