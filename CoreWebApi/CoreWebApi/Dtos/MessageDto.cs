@@ -126,7 +126,7 @@ namespace CoreWebApi.Dtos
     //} 
     public class GroupMessageForParamDto
     {
-        public int groupId { get; set; }
+        public int groupId { get; set; } = 0;
         public List<string> userIds { get; set; }
     }
 }

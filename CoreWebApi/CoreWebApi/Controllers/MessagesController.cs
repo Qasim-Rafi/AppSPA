@@ -43,7 +43,8 @@ namespace CoreWebApi.Controllers
             }
 
             _response = await _repo.SendMessage(model);
-            var response = await _repo.GetChatMessages(model.MessageToUserId, true);
+            var userToIds = new List<string>() { model.MessageToUserId.ToString() };
+            var response = await _repo.GetChatMessages(userToIds, true);
             if (_response.Success)
             {
                 var lastMessageStr = JsonConvert.SerializeObject(response.Data);
@@ -134,20 +135,20 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("GetChatMessages/{userId}")]
-        public async Task<IActionResult> GetChatMessages(int userId)
-        {
+        //[HttpGet("GetChatMessages/{userId}")] // not in use
+        //public async Task<IActionResult> GetChatMessages(int userId)
+        //{
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            _response = await _repo.GetChatMessages(userId, false);
+        //    _response = await _repo.GetChatMessages(userId, false);
 
-            return Ok(_response);
+        //    return Ok(_response);
 
-        }
+        //}
         [HttpPost("GetGroupChatMessages")]
         public async Task<IActionResult> GetGroupChatMessages(GroupMessageForParamDto model)
         {
@@ -156,9 +157,10 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            _response = await _repo.GetGroupChatMessages(model.userIds, model.groupId, false);
-
+            if (model.groupId > 0)
+                _response = await _repo.GetGroupChatMessages(model.userIds, model.groupId, false);
+            else
+                _response = await _repo.GetChatMessages(model.userIds, false);
             return Ok(_response);
 
         }
