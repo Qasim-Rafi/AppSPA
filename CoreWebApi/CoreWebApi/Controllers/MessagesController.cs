@@ -149,7 +149,7 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpPost("GetGroupChatMessages")]
-        public async Task<IActionResult> GetGroupChatMessages(List<string> userIds, int groupId)
+        public async Task<IActionResult> GetGroupChatMessages(GroupMessageForParamDto model)
         {
 
             if (!ModelState.IsValid)
@@ -157,7 +157,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetGroupChatMessages(userIds, groupId, false);
+            _response = await _repo.GetGroupChatMessages(model.userIds, model.groupId, false);
 
             return Ok(_response);
 
