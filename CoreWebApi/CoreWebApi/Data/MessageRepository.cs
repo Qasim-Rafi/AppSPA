@@ -67,6 +67,23 @@ namespace CoreWebApi.Data
                                      Url = _fileRepo.AppendImagePath(x.Name)
                                  }).ToList(),
                              }).Distinct().ToList();
+
+                    Users.AddRange((from u in _context.Users
+                                    where u.UserTypeId == (int)Enumm.UserType.Admin
+                                    && u.SchoolBranchId == _LoggedIn_BranchID
+                                    select new ChatUserForListDto
+                                    {
+                                        UserIds = new List<int>() { u.Id },
+                                        Names = u.FullName,
+                                        Description = "",
+                                        Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            Url = _fileRepo.AppendImagePath(x.Name)
+                                        }).ToList(),
+                                    }).Distinct().ToList());
+
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
@@ -101,7 +118,22 @@ namespace CoreWebApi.Data
                                            Url = _fileRepo.AppendImagePath(x.Name)
                                        }).ToList(),
                                    }).Distinct().ToListAsync();
-                    //Users.AddRange();
+
+                    Users.AddRange((from u in _context.Users
+                                    where u.UserTypeId == (int)Enumm.UserType.Admin
+                                    && u.SchoolBranchId == _LoggedIn_BranchID
+                                    select new ChatUserForListDto
+                                    {
+                                        UserIds = new List<int>() { u.Id },
+                                        Names = u.FullName,
+                                        Description = "",
+                                        Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            Url = _fileRepo.AppendImagePath(x.Name)
+                                        }).ToList(),
+                                    }).Distinct().ToList());
 
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
@@ -214,12 +246,12 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetGroupChatMessages(List<string> userIds, int groupId, bool forSignal = false)
         {
+            string UserIdds = string.Join(',', userIds);
             List<GroupMessageForListByTimeDto> Messages = new List<GroupMessageForListByTimeDto>();
             var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
             var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
-            var SentMessages = _context.GroupMessages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && userIds.Contains(m.MessageToUserIds))
-            || (userIds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))
-            && m.GroupId == groupId)
+            var SentMessages = _context.GroupMessages.Where(m => m.GroupId == groupId && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+            || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
                 .Select(o => new GroupMessageForListDto
                 {
                     Id = o.Id,
@@ -229,32 +261,16 @@ namespace CoreWebApi.Data
                     MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                     Comment = o.Comment,
                     MessageToUserIdsStr = o.MessageToUserIds,
-                    //MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
                     Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
                 }).ToList();
 
-            //var ReceivedMessages = _context.Messages.Where(m => m.MessageFromUserId == userId && m.MessageToUserId == _LoggedIn_UserID).Select(o => new MessageForListDto
-            //{
-            //    Id = o.Id,
-            //    Time = o.CreatedDateTime,
-            //    TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
-            //    MessageFromUserId = o.MessageFromUserId,
-            //    MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
-            //    Comment = o.Comment,
-            //    MessageToUserId = o.MessageToUserId,
-            //    MessageToUser = o.MessageToUser != null ? o.MessageToUser.FullName : "",
-            //    Type = "Reply"
-            //}).ToList();
-
-            var DateTimes = _context.GroupMessages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && userIds.Contains(m.MessageToUserIds))
-            || (userIds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))
-            && m.GroupId == groupId)
+            var DateTimes = _context.GroupMessages.Where(m => m.GroupId == groupId && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+            || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
                 .OrderBy(m => m.CreatedDateTime)
                 .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();
             for (var i = 0; i < DateTimes.Count(); i++)
             {
-                //var DateTime0 = Convert.ToDateTime(item);
                 var item = DateTimes[i];
                 var ToAdd = new GroupMessageForListByTimeDto();
                 DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
@@ -265,7 +281,6 @@ namespace CoreWebApi.Data
                 else
                     ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
                 ToAdd.Messages = SentMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList();
-                //ToAdd.Messages.AddRange(ReceivedMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList());
                 Messages.Add(ToAdd);
             }
 
@@ -382,7 +397,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetChatGroups()
         {
-            var ToReturn = await _context.ChatGroups.Where(m => m.CreatedById == _LoggedIn_UserID || m.UserIds.Contains(_LoggedIn_UserID.ToString())).Select(o => new ChatGroupForListDto
+            var ToReturn = await _context.ChatGroups.Where(m => m.UserIds.Contains(_LoggedIn_UserID.ToString())).Select(o => new ChatGroupForListDto //m.CreatedById == _LoggedIn_UserID || 
             {
                 Id = o.Id,
                 GroupName = o.GroupName,
