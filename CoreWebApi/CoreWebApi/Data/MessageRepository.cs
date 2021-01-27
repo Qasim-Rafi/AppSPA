@@ -242,8 +242,8 @@ namespace CoreWebApi.Data
             List<GroupMessageForListByTimeDto> Messages = new List<GroupMessageForListByTimeDto>();
             var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
             var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
-            var SentMessages = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
-            || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID)))
+            var SentMessages = _context.Messages.Where(m => m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
+            || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID))))
                 .Select(o => new GroupMessageForListDto
                 {
                     Id = o.Id,
@@ -256,8 +256,8 @@ namespace CoreWebApi.Data
                     Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
                 }).ToList();
 
-            var DateTimes = _context.Messages.Where(m => (m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
-            || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID)))
+            var DateTimes = _context.Messages.Where(m => m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
+            || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID))))
                 .OrderBy(m => m.CreatedDateTime)
                 .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
             DateTimes = DateTimes.Distinct().ToList();
@@ -290,7 +290,7 @@ namespace CoreWebApi.Data
             List<GroupMessageForListByTimeDto> Messages = new List<GroupMessageForListByTimeDto>();
             var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
             var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
-            var SentMessages = _context.GroupMessages.Where(m => m.GroupId == groupId && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+            var SentMessages = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
             || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
                 .Select(o => new GroupMessageForListDto
                 {
@@ -305,7 +305,7 @@ namespace CoreWebApi.Data
                     GroupId = o.GroupId,
                 }).ToList();
 
-            var DateTimes = _context.GroupMessages.Where(m => m.GroupId == groupId && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+            var DateTimes = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
             || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
                 .OrderBy(m => m.CreatedDateTime)
                 .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();

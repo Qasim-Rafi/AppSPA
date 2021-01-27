@@ -25,6 +25,7 @@ namespace CoreWebApi.Controllers
         ServiceResponse<object> _response;
         private readonly IHubContext<MessageNotificationHub> _hubContext;
         private int _LoggedIn_UserID = 0;
+        //private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
         public MessagesController(IMessageRepository repo, IMapper mapper, IHubContext<MessageNotificationHub> hubContext, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
@@ -41,6 +42,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+            //List<string> ReceiverConnectionids = _connections.GetConnections(model.MessageToUserId.ToString()).ToList<string>();
 
             _response = await _repo.SendMessage(model);
             var userToIds = new List<string>() { model.MessageToUserId.ToString() };
@@ -66,6 +68,7 @@ namespace CoreWebApi.Controllers
                 // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);
 
                 await _hubContext.Clients.All.SendAsync("MessageNotificationAlert", ToReturn);
+                //_hubContext.Clients.Clients(ReceiverConnectionids)
             }
 
             return Ok(_response);
@@ -126,7 +129,6 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetUsersForChat")]
         public async Task<IActionResult> GetUsersForChat()
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
