@@ -9,14 +9,23 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Hubs
 {
-    public class MessageNotificationHub : Hub
-    {       
+    public class ChatHub : Hub
+    {
+        public Task Send(string message)
+        {
+            return Clients.All.SendAsync("Send", message);
+        }
+
+        public override Task OnConnectedAsync()
+        {
+            return base.OnConnectedAsync();
+        }
         //private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
         //public async Task SendMessage(string message)
         //{
         //    //Receive Message
         //    List<string> ReceiverConnectionids = _connections.GetConnections("").ToList<string>();
-          
+
         //}
         //public override async Task OnConnectedAsync()
         //{

@@ -23,10 +23,10 @@ namespace CoreWebApi.Controllers
         private readonly IMessageRepository _repo;
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
-        private readonly IHubContext<MessageNotificationHub> _hubContext;
+        private readonly IHubContext<ChatHub> _hubContext;
         private int _LoggedIn_UserID = 0;
         //private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
-        public MessagesController(IMessageRepository repo, IMapper mapper, IHubContext<MessageNotificationHub> hubContext, IHttpContextAccessor httpContextAccessor)
+        public MessagesController(IMessageRepository repo, IMapper mapper, IHubContext<ChatHub> hubContext, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;

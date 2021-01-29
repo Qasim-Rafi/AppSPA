@@ -203,8 +203,9 @@ namespace CoreWebApi
                
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapHub<MessageNotificationHub>("/notificationHub");
                     endpoints.MapControllers();
+                    endpoints.MapHub<ChatHub>("/notificationHub");
+                    endpoints.MapHub<WebRtcHub>("/rtcHub");
                 });
             }
             catch (Exception ex)
