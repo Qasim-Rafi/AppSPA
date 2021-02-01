@@ -36,6 +36,11 @@ namespace CoreWebApi.Hubs
             await SendUserListUpdate(Clients.Caller, room, true);
             await SendUserListUpdate(Clients.Others, room, false);
         }
+        public async Task SendCallSignalToUser(string userId, string userName,string roomName)
+        {
+
+            await Clients.All.SendAsync("ReceiveCallSignalFromUser", userId, userName,roomName);
+        }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
