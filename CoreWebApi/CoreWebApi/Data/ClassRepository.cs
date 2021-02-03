@@ -192,6 +192,12 @@ namespace CoreWebApi.Data
                 var objToUpdate = _context.ClassSections.Where(m => m.Id == model.Id && m.Active == true).FirstOrDefault();
                 if (objToUpdate != null)
                 {
+                    if (model.NumberOfStudents < objToUpdate.NumberOfStudents)
+                    {
+                        _serviceResponse.Success = false;
+                        _serviceResponse.Message = CustomMessage.NoOfStudentLimitIsLowerNow;
+                        return _serviceResponse;
+                    }
                     objToUpdate.ClassId = model.ClassId;
                     objToUpdate.SectionId = model.SectionId;
                     objToUpdate.Active = model.Active;

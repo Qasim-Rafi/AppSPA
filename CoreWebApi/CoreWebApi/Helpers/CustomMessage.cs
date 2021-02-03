@@ -39,6 +39,8 @@ namespace CoreWebApi.Helpers
         public const string TeacherLectureDuplicate = "Duplicate teacher in same time slot in another class-section found";
         public const string ExpertiesHasRelation = "These experties {0} have associations in time-table. Please remove all assiciations first";
         public const string SubjectNotProvided = "Please fill the empty subject fields";
+        public const string NoOfQuestionIsLowerNow = "Please remove extra questions first then set new number of questions";
+        public const string NoOfStudentLimitIsLowerNow = "Please un-map some students first then set new limit";
     }
     public class BusinessRules
     {
