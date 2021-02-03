@@ -40,6 +40,12 @@ namespace CoreWebApi.Hubs
         {
             await Clients.Others.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName);
         }
+        public async Task CheckRoomUsers(string roomName)
+        {
+            var room = Room.Get(roomName);
+            var userCount = room.Users.Count;
+            await Clients.Others.SendAsync("RoomUsersCount", userCount);
+        }
         //public async Task DeclineCall(int userId, string connectionId)
         //{
         //    await Clients.Client(connectionId).SendAsync("CallDeclinedByReceiver", userId);
