@@ -17,7 +17,7 @@ namespace CoreWebApi.Hubs
             // Perhaps Ice server management.
 
             return new RtcIceServer[] { new RtcIceServer() { Username = "", Credential = "" } };
-        } 
+        }
 
         public async Task Join(string userName, string roomName)
         {
@@ -36,10 +36,10 @@ namespace CoreWebApi.Hubs
             await SendUserListUpdate(Clients.Caller, room, true);
             await SendUserListUpdate(Clients.Others, room, false);
         }
-        public async Task SendCallSignalToUser(string userId, string userName,string roomName)
+        public async Task SendCallSignalToUser(int userId, string userName, string roomName)
         {
 
-            await Clients.All.SendAsync("ReceiveCallSignalFromUser", userId, userName,roomName);
+            await Clients.All.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -85,7 +85,7 @@ namespace CoreWebApi.Hubs
 
         private async Task SendUserListUpdate(IClientProxy to, Room room, bool callTo)
         {
-            await to.SendAsync(callTo ? "callToUserList" : "updateUserList" , room.Name, room.Users);
+            await to.SendAsync(callTo ? "callToUserList" : "updateUserList", room.Name, room.Users);
         }
     }
 }
