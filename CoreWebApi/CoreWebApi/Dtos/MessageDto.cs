@@ -71,7 +71,7 @@ namespace CoreWebApi.Dtos
     }
     public class GroupMessageForListByTimeDto
     {
-        public string TimeToDisplay { get; set; }
+        public string TimeToDisplay { get; set; } = "";
         public List<GroupMessageForListDto> Messages { get; set; } = new List<GroupMessageForListDto>();
     }
     public class SignalRMessageForListDto

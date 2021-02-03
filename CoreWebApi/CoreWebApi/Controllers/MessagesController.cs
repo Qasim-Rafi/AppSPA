@@ -53,16 +53,16 @@ namespace CoreWebApi.Controllers
                 var lastMessage = JsonConvert.DeserializeObject<GroupMessageForListByTimeDto>(lastMessageStr);
                 var ToReturn = new GroupSignalRMessageForListDto
                 {
-                    Id = lastMessage.Messages.Last().Id,
-                    Type = lastMessage.Messages.Last().Type,
+                    Id = lastMessage.Messages[0].Id,
+                    Type = lastMessage.Messages[0].Type,
                     DateTimeToDisplay = lastMessage.TimeToDisplay,
-                    TimeToDisplay = lastMessage.Messages.Last().TimeToDisplay,
-                    Comment = lastMessage.Messages.Last().Comment,
-                    MessageFromUserId = lastMessage.Messages.Last().MessageFromUserId,
-                    MessageFromUser = lastMessage.Messages.Last().MessageFromUser,
-                    MessageToUserIdsStr = lastMessage.Messages.Last().MessageToUserIdsStr,
+                    TimeToDisplay = lastMessage.Messages[0].TimeToDisplay,
+                    Comment = lastMessage.Messages[0].Comment,
+                    MessageFromUserId = lastMessage.Messages[0].MessageFromUserId,
+                    MessageFromUser = lastMessage.Messages[0].MessageFromUser,
+                    MessageToUserIdsStr = lastMessage.Messages[0].MessageToUserIdsStr,
                     GroupId = 0,
-                    //MessageToUser = lastMessage.Messages.Last().MessageToUser,
+                    //MessageToUser = lastMessage.Messages[0].MessageToUser,
                 };
 
                 // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);
@@ -92,16 +92,16 @@ namespace CoreWebApi.Controllers
                 var lastMessage = JsonConvert.DeserializeObject<GroupMessageForListByTimeDto>(lastMessageStr);
                 var ToReturn = new GroupSignalRMessageForListDto
                 {
-                    Id = lastMessage.Messages.Last().Id,
-                    Type = lastMessage.Messages.Last().Type,
+                    Id = lastMessage.Messages[0].Id,
+                    Type = lastMessage.Messages[0].Type,
                     DateTimeToDisplay = lastMessage.TimeToDisplay,
-                    TimeToDisplay = lastMessage.Messages.Last().TimeToDisplay,
-                    Comment = lastMessage.Messages.Last().Comment,
-                    MessageFromUserId = lastMessage.Messages.Last().MessageFromUserId,
-                    MessageFromUser = lastMessage.Messages.Last().MessageFromUser,
-                    MessageToUserIdsStr = lastMessage.Messages.Last().MessageToUserIdsStr,
-                    GroupId = lastMessage.Messages.Last().GroupId,
-                    //MessageToUser = lastMessage.Messages.Last().MessageToUser,
+                    TimeToDisplay = lastMessage.Messages[0].TimeToDisplay,
+                    Comment = lastMessage.Messages[0].Comment,
+                    MessageFromUserId = lastMessage.Messages[0].MessageFromUserId,
+                    MessageFromUser = lastMessage.Messages[0].MessageFromUser,
+                    MessageToUserIdsStr = lastMessage.Messages[0].MessageToUserIdsStr,
+                    GroupId = lastMessage.Messages[0].GroupId,
+                    //MessageToUser = lastMessage.Messages[0].MessageToUser,
                 };
 
                 // List<MessageForListByTimeDto> collection = new List<MessageForListByTimeDto>((IEnumerable<MessageForListByTimeDto>)lastMessage.Data);

@@ -38,8 +38,11 @@ namespace CoreWebApi.Hubs
         }
         public async Task SendCallSignalToUser(int userId, string userName, string roomName)
         {
-
-            await Clients.All.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName);
+            await Clients.Others.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName);
+        }
+        public async Task DeclineCall(int userId, string connectionId)
+        {
+            await Clients.Client(connectionId).SendAsync("CallDeclinedByReceiver", userId);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
