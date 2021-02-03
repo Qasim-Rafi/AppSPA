@@ -44,7 +44,7 @@ namespace CoreWebApi.Hubs
         {
             var room = Room.Get(roomName);
             var userCount = room.Users.Count;
-            await Clients.Others.SendAsync("RoomUsersCount", userCount);
+            await Clients.All.SendAsync("RoomUsersCount", userCount);
         }
         //public async Task DeclineCall(int userId, string connectionId)
         //{
