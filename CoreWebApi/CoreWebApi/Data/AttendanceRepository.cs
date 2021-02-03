@@ -80,7 +80,7 @@ namespace CoreWebApi.Data
                             {
                                 Id = o.attendance.Id,
                                 UserId = o.attendance.UserId,
-                                ClassSectionId = o.attendance.ClassSectionId,
+                                ClassSectionId = Convert.ToInt32(o.attendance.ClassSectionId),
                                 FullName = o.user.FullName,
                                 CreatedDatetime = DateFormat.ToDate(o.attendance.CreatedDatetime.ToString()),
                                 Present = o.attendance.Present,

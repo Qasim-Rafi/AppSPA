@@ -72,6 +72,7 @@ namespace CoreWebApi.Data
         public DbSet<MessageReply> MessageReplies { get; set; }
         public DbSet<ChatGroup> ChatGroups { get; set; }
         public DbSet<GroupMessage> GroupMessages { get; set; }
+        public DbSet<City> Cities { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }
@@ -86,7 +87,7 @@ namespace CoreWebApi.Data
 
             // while adding new migration uncomment below line and then comment it again after...
             // modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
-            // modelBuilder.Ignore<GetSubstituteTeachersDto>();
+             modelBuilder.Ignore<GetSubstituteTeachersDto>();
 
             //
             modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>

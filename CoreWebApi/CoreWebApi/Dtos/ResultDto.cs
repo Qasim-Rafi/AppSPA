@@ -31,7 +31,7 @@ namespace CoreWebApi.Dtos
     public class ClassSectionForResultListDto
     {
         public int ClassSectionId { get; set; }
-        public string Class { get; set; }
+        public string Classs { get; set; }
         public string Section { get; set; }
     }
     public class ExamForResultListDto

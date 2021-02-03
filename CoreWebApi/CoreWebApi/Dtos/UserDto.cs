@@ -34,6 +34,7 @@ namespace CoreWebApi.Dtos
         public string DateofBirth { get; set; }
 
         public int? StateId { get; set; }
+        public int? CityId { get; set; }
         public int? CountryId { get; set; }
         public string OtherState { get; set; }
         //[Required]
@@ -79,6 +80,7 @@ namespace CoreWebApi.Dtos
         [DateValidation(ErrorMessage = "Date of birth is not in correct format")]
         public string DateofBirth { get; set; }
         public int? StateId { get; set; }
+        public int? CityId { get; set; }
         public int? CountryId { get; set; }
         public string OtherState { get; set; }
         //[Required]
@@ -112,6 +114,7 @@ namespace CoreWebApi.Dtos
         public string Gender { get; set; }
         public string DateofBirth { get; set; }
         public int? StateId { get; set; }
+        public int? CityId { get; set; }
         public int? CountryId { get; set; }
         public string StateName { get; set; }
         public string CountryName { get; set; }
@@ -138,6 +141,7 @@ namespace CoreWebApi.Dtos
         public string Gender { get; set; }
         public string DateofBirth { get; set; }
         public int? StateId { get; set; }
+        public int? CityId { get; set; }
         public int? CountryId { get; set; }
         public string StateName { get; set; }
         public string CountryName { get; set; }
@@ -245,7 +249,7 @@ namespace CoreWebApi.Dtos
     }
     public class SearchTutorDto
     {
-        public int StateId { get; set; }
+        public int CityId { get; set; }
         public int GradeId { get; set; }
         public int SubjectId { get; set; }
         public string Gender { get; set; }
@@ -260,6 +264,7 @@ namespace CoreWebApi.Dtos
         public string Gender { get; set; }
         public string DateofBirth { get; set; }
         public int? StateId { get; set; }
+        public int? CityId { get; set; }
         public int? CountryId { get; set; }
         public string StateName { get; set; }
         public string CountryName { get; set; }

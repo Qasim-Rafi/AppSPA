@@ -47,8 +47,9 @@ namespace CoreWebApi.Models
         //[Required]
         public DateTime LastActive { get; set; }
 
-        [StringLength(50, ErrorMessage = "StateId cannot be longer then 50 characters")]
+        //[StringLength(50, ErrorMessage = "StateId cannot be longer then 50 characters")]
         public int? StateId { get; set; }
+        public int? CityId { get; set; }
 
         [StringLength(50, ErrorMessage = "OtherState cannot be longer then 50 characters")]
         public string OtherState { get; set; }
@@ -82,6 +83,10 @@ namespace CoreWebApi.Models
 
         [ForeignKey("StateId")]
         public virtual State State { get; set; }
+        
+
+        [ForeignKey("CityId")]
+        public virtual City City { get; set; }
 
       
 

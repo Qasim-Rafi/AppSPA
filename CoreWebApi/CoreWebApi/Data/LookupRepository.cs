@@ -102,16 +102,32 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetCities(int stateId)
         {
-            //var list = await _context.Cities.Where(m => m.StateId == stateId).ToListAsync();
-            _serviceResponse.Data = null;
+            if (stateId > 0)
+            {
+                var list = await _context.Cities.Where(m => m.StateId == stateId).ToListAsync();
+                _serviceResponse.Data = list;
+            }
+            else
+            {
+                var list = await _context.Cities.ToListAsync();
+                _serviceResponse.Data = list;
+            }
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> GetStates(int countryId)
         {
-            var list = await _context.States.Where(m => m.CountryId == countryId).ToListAsync();
-            _serviceResponse.Data = list;
+            if (countryId > 0)
+            {
+                var list = await _context.States.Where(m => m.CountryId == countryId).ToListAsync();
+                _serviceResponse.Data = list;
+            }
+            else
+            {
+                var list = await _context.States.ToListAsync();
+                _serviceResponse.Data = list;
+            }
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

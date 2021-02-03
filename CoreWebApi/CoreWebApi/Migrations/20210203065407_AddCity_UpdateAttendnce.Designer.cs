@@ -4,14 +4,16 @@ using CoreWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210203065407_AddCity_UpdateAttendnce")]
+    partial class AddCity_UpdateAttendnce
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1598,9 +1600,6 @@ namespace CoreWebApi.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("CityId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CountryId")
                         .HasColumnType("int")
                         .HasMaxLength(50);
@@ -1660,7 +1659,8 @@ namespace CoreWebApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("StateId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasMaxLength(50);
 
                     b.Property<int>("UserTypeId")
                         .HasColumnType("int");
@@ -1671,8 +1671,6 @@ namespace CoreWebApi.Migrations
                         .HasMaxLength(50);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CityId");
 
                     b.HasIndex("CountryId");
 
@@ -2355,11 +2353,6 @@ namespace CoreWebApi.Migrations
 
             modelBuilder.Entity("CoreWebApi.Models.User", b =>
                 {
-                    b.HasOne("CoreWebApi.Models.City", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("CoreWebApi.Models.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId")

@@ -72,6 +72,7 @@ namespace CoreWebApi.Data
                                      Username = user.Username,
                                      CountryId = user.CountryId,
                                      StateId = user.StateId,
+                                     CityId = user.CityId,
                                      CountryName = user.Country.Name,
                                      StateName = user.State.Name,
                                      OtherState = user.OtherState,
@@ -163,7 +164,7 @@ namespace CoreWebApi.Data
             if (id > 0)
             {
                 var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == id && m.SchoolBranchId == _LoggedIn_BranchID)
-                    .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                    .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Include(m => m.City).Select(o => new UserForListDto
                     {
                         Id = o.Id,
                         FullName = o.FullName,
@@ -173,6 +174,7 @@ namespace CoreWebApi.Data
                         Username = o.Username,
                         CountryId = o.CountryId,
                         StateId = o.StateId,
+                        CityId = o.CityId,
                         CountryName = o.Country.Name,
                         StateName = o.State.Name,
                         OtherState = o.OtherState,
@@ -204,7 +206,7 @@ namespace CoreWebApi.Data
 
 
                 var users = await _context.Users.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID)
-                    .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                    .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Include(m => m.City).Select(o => new UserForListDto
                     {
                         Id = o.Id,
                         FullName = o.FullName,
@@ -214,6 +216,7 @@ namespace CoreWebApi.Data
                         Username = o.Username,
                         CountryId = o.CountryId,
                         StateId = o.StateId,
+                        CityId = o.CityId,
                         CountryName = o.Country.Name,
                         StateName = o.State.Name,
                         OtherState = o.OtherState,
@@ -245,7 +248,7 @@ namespace CoreWebApi.Data
         public async Task<IEnumerable<UserForListDto>> GetInActiveUsers()
         {
             var users = await _context.Users.Where(m => m.Active == false && m.SchoolBranchId == _LoggedIn_BranchID)
-                .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Include(m => m.City).Select(o => new UserForListDto
                 {
                     Id = o.Id,
                     FullName = o.FullName,
@@ -255,6 +258,7 @@ namespace CoreWebApi.Data
                     Username = o.Username,
                     CountryId = o.CountryId,
                     StateId = o.StateId,
+                    CityId = o.CityId,
                     CountryName = o.Country.Name,
                     StateName = o.State.Name,
                     OtherState = o.OtherState,
@@ -377,6 +381,7 @@ namespace CoreWebApi.Data
                     DateofBirth = DateOfBirth,
                     LastActive = DateTime.Now,
                     StateId = userDto.StateId,
+                    CityId = userDto.CityId,
                     CountryId = userDto.CountryId,
                     OtherState = userDto.OtherState,
                     Email = userDto.Email,
@@ -540,6 +545,7 @@ namespace CoreWebApi.Data
                     dbUser.Email = user.Email;
                     dbUser.Username = user.Username.ToLower();
                     dbUser.StateId = user.StateId;
+                    dbUser.CityId = user.CityId;
                     dbUser.CountryId = user.CountryId;
                     dbUser.OtherState = user.OtherState;
                     dbUser.DateofBirth = DateOfBirth;
@@ -735,6 +741,7 @@ namespace CoreWebApi.Data
                     dbUser.Email = user.Email;
                     dbUser.Username = user.Username.ToLower();
                     dbUser.StateId = user.StateId;
+                    dbUser.CityId = user.CityId;
                     dbUser.CountryId = user.CountryId;
                     dbUser.OtherState = user.OtherState;
                     dbUser.DateofBirth = DateOfBirth;
@@ -1293,7 +1300,7 @@ namespace CoreWebApi.Data
                                && csU.ClassSectionId == classSectionId
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
-                               select u).Include(m => m.Country).Include(m => m.State).Select(o => new UserForListDto
+                               select u).Include(m => m.Country).Include(m => m.State).Include(m => m.City).Select(o => new UserForListDto
                                {
                                    Id = o.Id,
                                    FullName = o.FullName,
@@ -1303,6 +1310,7 @@ namespace CoreWebApi.Data
                                    Username = o.Username,
                                    CountryId = o.CountryId,
                                    StateId = o.StateId,
+                                   CityId = o.CityId,
                                    CountryName = o.Country.Name,
                                    StateName = o.State.Name,
                                    OtherState = o.OtherState,
@@ -1348,8 +1356,8 @@ namespace CoreWebApi.Data
                                on subAssign.SubjectId equals subject.Id
 
                                where csUser.ClassSection.ClassId == model.GradeId
-                               && user.Gender.ToLower() == model.Gender.ToLower()
-                               && user.StateId == model.StateId
+                               //&& user.Gender.ToLower() == model.Gender.ToLower()
+                               && user.CityId == model.CityId
                                && subject.Id == model.SubjectId
                                && user.Active == true
                                && user.UserTypeId == (int)Enumm.UserType.Tutor
@@ -1363,6 +1371,7 @@ namespace CoreWebApi.Data
                                    Username = o.user.Username,
                                    CountryId = o.user.CountryId,
                                    StateId = o.user.StateId,
+                                   CityId = o.user.CityId,
                                    CountryName = o.user.Country.Name,
                                    StateName = o.user.State.Name,
                                    OtherState = o.user.OtherState,

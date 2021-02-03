@@ -71,7 +71,7 @@ namespace CoreWebApi.Data
                                        select new ClassSectionForResultListDto
                                        {
                                            ClassSectionId = cs.Id,
-                                           Class = cs.Class.Name,
+                                           Classs = cs.Class.Name,
                                            Section = cs.Section.SectionName
                                        }).Distinct().ToListAsync();
 

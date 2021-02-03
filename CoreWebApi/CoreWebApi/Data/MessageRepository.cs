@@ -96,7 +96,7 @@ namespace CoreWebApi.Data
                                                select new ClassSectionForResultListDto
                                                {
                                                    ClassSectionId = cs.Id,
-                                                   Class = cs.Class.Name,
+                                                   Classs = cs.Class.Name,
                                                    Section = cs.Section.SectionName
                                                }).Distinct().ToListAsync();
                     Users = await (from u in _context.Users
@@ -175,7 +175,7 @@ namespace CoreWebApi.Data
                                                select new ClassSectionForResultListDto
                                                {
                                                    ClassSectionId = cs.Id,
-                                                   Class = cs.Class.Name,
+                                                   Classs = cs.Class.Name,
                                                    Section = cs.Section.SectionName
                                                }).Distinct().ToListAsync();
                     Users = (from u in _context.Users
@@ -288,49 +288,89 @@ namespace CoreWebApi.Data
         {
             string UserIdds = string.Join(',', userIds);
             List<GroupMessageForListByTimeDto> Messages = new List<GroupMessageForListByTimeDto>();
-            var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
-            var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
-            var SentMessages = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
-            || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
-                .Select(o => new GroupMessageForListDto
-                {
-                    Id = o.Id,
-                    Time = o.CreatedDateTime,
-                    TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
-                    MessageFromUserId = o.MessageFromUserId,
-                    MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
-                    Comment = o.Comment,
-                    MessageToUserIdsStr = o.MessageToUserIds,
-                    Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2", // 1=Message, 2=Reply
-                    GroupId = o.GroupId,
-                }).ToList();
-
-            var DateTimes = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
-            || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
-                .OrderBy(m => m.CreatedDateTime)
-                .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
-            DateTimes = DateTimes.Distinct().ToList();
-            for (var i = 0; i < DateTimes.Count(); i++)
+            List<UserForDetailedDto> UserToDetails = new List<UserForDetailedDto>();
+            if (!forSignal)
             {
-                var item = DateTimes[i];
-                var ToAdd = new GroupMessageForListByTimeDto();
-                DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
-                if (dt.Date == DateTime.Now.Date)
-                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
-                else if (dt.Date == DateTime.Now.AddDays(-1).Date)
-                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
-                else
-                    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
-                ToAdd.Messages = SentMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList();
-                Messages.Add(ToAdd);
-            }
+                var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
+                UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
+                var SentMessages = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+                || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
+                    .Select(o => new GroupMessageForListDto
+                    {
+                        Id = o.Id,
+                        Time = o.CreatedDateTime,
+                        TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
+                        MessageFromUserId = o.MessageFromUserId,
+                        MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
+                        Comment = o.Comment,
+                        MessageToUserIdsStr = o.MessageToUserIds,
+                        Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2", // 1=Message, 2=Reply
+                        GroupId = o.GroupId,
+                    }).ToList();
 
-            _serviceResponse.Success = true;
-            if (forSignal)
-                _serviceResponse.Data = Messages.LastOrDefault();
-            else
+                var DateTimes = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+                || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
+                    .OrderBy(m => m.CreatedDateTime)
+                    .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
+                DateTimes = DateTimes.Distinct().ToList();
+                for (var i = 0; i < DateTimes.Count(); i++)
+                {
+                    var item = DateTimes[i];
+                    var ToAdd = new GroupMessageForListByTimeDto();
+                    DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
+                    if (dt.Date == DateTime.Now.Date)
+                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
+                    else if (dt.Date == DateTime.Now.AddDays(-1).Date)
+                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
+                    else
+                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
+                    ToAdd.Messages = SentMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList();
+                    Messages.Add(ToAdd);
+                }
+
                 _serviceResponse.Data = new { UserToDetails, Messages };
+            }
+            else
+            {
+                var User = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).FirstOrDefaultAsync();
+                var SingalUserToDetail = User != null ? _mapper.Map<UserForDetailedDto>(User) : new UserForDetailedDto();
+                var SingalSentMessage = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+                || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
+                    .Select(o => new GroupMessageForListDto
+                    {
+                        Id = o.Id,
+                        Time = o.CreatedDateTime,
+                        TimeToDisplay = DateFormat.ToTime(o.CreatedDateTime.TimeOfDay),
+                        MessageFromUserId = o.MessageFromUserId,
+                        MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
+                        Comment = o.Comment,
+                        MessageToUserIdsStr = o.MessageToUserIds,
+                        Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2", // 1=Message, 2=Reply
+                        GroupId = o.GroupId,
+                    }).OrderByDescending(m => m.Id).FirstOrDefault();
 
+                var SingalDateTime = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+                || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
+                    .OrderByDescending(m => m.CreatedDateTime)
+                    .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).FirstOrDefault();
+                //DateTimes = DateTimes.Distinct().ToList();
+
+                //var item = SingalDateTime;
+                var ToAdd = new GroupMessageForListByTimeDto();
+                //DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
+                //if (dt.Date == DateTime.Now.Date)
+                //    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
+                //else if (dt.Date == DateTime.Now.AddDays(-1).Date)
+                //    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
+                //else
+                //    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
+                ToAdd.Messages.Add(SingalSentMessage);
+                Messages.Add(ToAdd);
+
+                _serviceResponse.Data = Messages.FirstOrDefault();
+
+            }
+            _serviceResponse.Success = true;
             return _serviceResponse;
         }
         public async Task<ServiceResponse<object>> SendMessage(MessageForAddDto model)
