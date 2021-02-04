@@ -1,12 +1,14 @@
 ﻿using CoreWebApi.Helpers;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Hubs
 {
     public class WebRtcHub : Hub
     {
+        private static readonly List<Room> RoomsThatAreFull = new List<Room>();
         public string GetConnectionId()
         {
             return Context.ConnectionId;
@@ -37,11 +39,19 @@ namespace CoreWebApi.Hubs
             await SendUserListUpdate(Clients.Others, room, false);
             if (room.Users.Count == 2)
             {
-                await Clients.All.SendAsync("UpdateRoomsThatAreFull", room.Name);
+                RoomsThatAreFull.Add(room);
             }
         }
-        public async Task SendCallSignalToUser(int userId, string userName, string roomName)
+        public async Task CheckRoomIsFull(string roomName)
         {
+            var room = Room.Get(roomName);
+            if (RoomsThatAreFull.Contains(room))
+                await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsFull", true);
+            else
+                await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsFull", false);
+        }
+        public async Task SendCallSignalToUser(int userId, string userName, string roomName)
+        {           
             await Clients.Others.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName);
         }
         public async Task CheckRoomUsers(string roomName)
@@ -78,9 +88,11 @@ namespace CoreWebApi.Hubs
             }
             if (callingUser.CurrentRoom.Users.Count < 2)
             {
-                await Clients.All.SendAsync("UpdateRoomsThatAreFull", callingUser.CurrentRoom.Name);
+                RoomsThatAreFull.Remove(callingUser.CurrentRoom);
             }
+            
             RTCUser.Remove(callingUser);
+            Room.Remove(callingUser.CurrentRoom);
         }
 
         // WebRTC Signal Handler

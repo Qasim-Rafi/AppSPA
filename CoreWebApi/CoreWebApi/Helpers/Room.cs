@@ -14,6 +14,10 @@ namespace CoreWebApi.Helpers
 
         public static int TotalUsers => Rooms.Sum(room => room.Users.Count);
 
+        public static void Remove(Room room)
+        {
+            Rooms.Remove(room);
+        }
         public static Room Get(string name)
         {
             lock (Rooms)
