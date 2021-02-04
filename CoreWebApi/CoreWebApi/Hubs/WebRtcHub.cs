@@ -35,6 +35,10 @@ namespace CoreWebApi.Hubs
 
             await SendUserListUpdate(Clients.Caller, room, true);
             await SendUserListUpdate(Clients.Others, room, false);
+            if (room.Users.Count == 2)
+            {
+                await Clients.All.SendAsync("UpdateRoomsThatAreFull", room.Name);
+            }
         }
         public async Task SendCallSignalToUser(int userId, string userName, string roomName)
         {
@@ -72,7 +76,10 @@ namespace CoreWebApi.Hubs
                 callingUser.CurrentRoom.Users.Remove(callingUser);
                 await SendUserListUpdate(Clients.Others, callingUser.CurrentRoom, false);
             }
-
+            if (callingUser.CurrentRoom.Users.Count < 2)
+            {
+                await Clients.All.SendAsync("UpdateRoomsThatAreFull", callingUser.CurrentRoom.Name);
+            }
             RTCUser.Remove(callingUser);
         }
 
