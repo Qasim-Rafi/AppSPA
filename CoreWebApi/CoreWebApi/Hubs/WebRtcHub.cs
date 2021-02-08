@@ -50,9 +50,9 @@ namespace CoreWebApi.Hubs
             else
                 await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsFull", false);
         }
-        public async Task SendCallSignalToUser(int userId, string userName, string roomName)
-        {           
-            await Clients.Others.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName);
+        public async Task SendCallSignalToUser(int userId, string userName, string roomName, int senderUserId)
+        {
+            await Clients.Others.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName, senderUserId);
         }
         public async Task CheckRoomUsers(string roomName)
         {
@@ -90,7 +90,7 @@ namespace CoreWebApi.Hubs
             {
                 RoomsThatAreFull.Remove(callingUser.CurrentRoom);
             }
-            
+
             RTCUser.Remove(callingUser);
             Room.Remove(callingUser.CurrentRoom);
         }
