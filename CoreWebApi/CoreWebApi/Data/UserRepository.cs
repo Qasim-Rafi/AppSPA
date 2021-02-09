@@ -313,8 +313,7 @@ namespace CoreWebApi.Data
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
-                    // pending task
-                    // add parent account user when adding new student
+                    
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
                     var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student).ToList().LastOrDefault();
                     var HasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:SchoolHaveRegistrationNumbers").Value);
@@ -404,6 +403,33 @@ namespace CoreWebApi.Data
                 await _context.Users.AddAsync(userToCreate);
                 await _context.SaveChangesAsync();
 
+                if (userDto.UserTypeId == (int)Enumm.UserType.Student)
+                {
+                   // create parent account
+                    var parentToCreate = new User
+                    {
+                        FullName = userDto.ParentEmail,
+                        Username = userDto.ParentEmail.Split("@")[0],
+                        UserTypeId = (int)Enumm.UserType.Parent,
+                        CreatedDateTime = DateTime.Now,
+                        Gender = "male",
+                        Active = true,
+                        StateId = userDto.StateId,
+                        CityId = userDto.CityId,
+                        CountryId = userDto.CountryId,
+                        OtherState = userDto.OtherState,
+                        Email = userDto.ParentEmail,
+                        SchoolBranchId = _LoggedIn_BranchID,
+                        Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Parent).FirstOrDefault()?.Name
+                    };
+                   
+                    Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
+                    parentToCreate.PasswordHash = passwordHash;
+                    parentToCreate.PasswordSalt = passwordSalt;
+
+                    await _context.Users.AddAsync(parentToCreate);
+                    await _context.SaveChangesAsync();
+                }
                 if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
                     if (Convert.ToInt32(userDto.LevelFrom) > Convert.ToInt32(userDto.LevelTo))
