@@ -405,11 +405,13 @@ namespace CoreWebApi.Data
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
-                   // create parent account
+                    // create parent account
+                    
                     var parentToCreate = new User
                     {
-                        FullName = userDto.ParentEmail,
-                        Username = userDto.ParentEmail.Split("@")[0],
+                        FullName = userDto.ParentEmail.Split("@")[0],
+                        Username = userDto.ParentEmail.Split("@")[0].ToLower(),
+                        Email = userDto.ParentEmail,
                         UserTypeId = (int)Enumm.UserType.Parent,
                         CreatedDateTime = DateTime.Now,
                         Gender = "male",
@@ -417,8 +419,7 @@ namespace CoreWebApi.Data
                         StateId = userDto.StateId,
                         CityId = userDto.CityId,
                         CountryId = userDto.CountryId,
-                        OtherState = userDto.OtherState,
-                        Email = userDto.ParentEmail,
+                        OtherState = userDto.OtherState,                        
                         SchoolBranchId = _LoggedIn_BranchID,
                         Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Parent).FirstOrDefault()?.Name
                     };

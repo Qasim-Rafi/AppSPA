@@ -22,8 +22,11 @@ namespace CoreWebApi.Dtos
     {
         public int ClassSectionId { get; set; }
         public int SubjectId { get; set; }
+        public string Subject { get; set; }
         public int StudentId { get; set; }
+        public string Student { get; set; }
         public int ReferenceId { get; set; }
+        public string Reference { get; set; }
         public string Remarks { get; set; }
         public double TotalMarks { get; set; }
         public double ObtainedMarks { get; set; }

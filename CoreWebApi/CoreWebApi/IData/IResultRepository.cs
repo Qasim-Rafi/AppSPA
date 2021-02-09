@@ -11,5 +11,6 @@ namespace CoreWebApi.IData
     {
         Task<ServiceResponse<object>> AddResult(List<ResultForAddDto> model);
         Task<ServiceResponse<object>> GetDataForResult();
+        Task<ServiceResponse<object>> GetStudentResult(int id);
     }
 }

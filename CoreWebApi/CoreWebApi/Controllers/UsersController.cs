@@ -76,10 +76,12 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             userForAddDto.Username = userForAddDto.Username.ToLower();
-
+            //userForAddDto.ParentEmail = userForAddDto.ParentEmail.ToLower();
 
             if (await _repo.UserExists(userForAddDto.Username))
                 return BadRequest(new { message = CustomMessage.UserAlreadyExist });
+            if (!string.IsNullOrEmpty(userForAddDto.Email) && userForAddDto.Email.ToLower() == userForAddDto.ParentEmail.ToLower())
+                return BadRequest(new { message = CustomMessage.EmailSameOfParentChild });
 
             var response = await _repo.AddUser(userForAddDto);
 
@@ -311,7 +313,7 @@ namespace CoreWebApi.Controllers
 
 
         // downlaod file/image
-        
+
 
         [HttpPost("UnMapUser")]
         public async Task<IActionResult> UnMapUser(UnMapUserForAddDto model)

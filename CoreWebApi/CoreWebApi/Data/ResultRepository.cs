@@ -40,7 +40,7 @@ namespace CoreWebApi.Data
             var ListToAdd = new List<Result>();
             foreach (var item in model)
             {
-                ListToAdd.Add( new Result
+                ListToAdd.Add(new Result
                 {
                     ClassSectionId = item.ClassSectionId,
                     SubjectId = item.SubjectId,
@@ -54,7 +54,7 @@ namespace CoreWebApi.Data
                     CreatedDateTime = DateTime.Now
                 });
             }
-           
+
             await _context.Results.AddRangeAsync(ListToAdd);
             await _context.SaveChangesAsync();
             _serviceResponse.Message = CustomMessage.Added;
@@ -138,6 +138,36 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
 
+        }
+
+        public async Task<ServiceResponse<object>> GetStudentResult(int id)
+        {
+            if (id > 0)
+            {
+                var result = await (from u in _context.Users
+                                    join r in _context.Results
+                                    on u.Id equals r.StudentId
+
+                                    join s in _context.Subjects
+                                    on r.SubjectId equals s.Id
+
+                                    where r.StudentId == id
+                                    select new ResultForListDto
+                                    {
+                                        StudentId = r.StudentId,
+                                        Student = u.FullName,
+                                        SubjectId = r.SubjectId,
+                                        Subject = s.Name,
+                                        ReferenceId = r.ReferenceId,
+                                        Reference = "",
+                                        ObtainedMarks = r.ObtainedMarks,
+                                        TotalMarks = r.TotalMarks
+                                    }).ToListAsync();
+
+                _serviceResponse.Data = new { result, TotalObtained = result.Select(m => m.ObtainedMarks).Count(), Total = result.Select(m => m.TotalMarks).Count() };
+            }
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
     }
 }

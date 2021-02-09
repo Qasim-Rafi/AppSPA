@@ -52,6 +52,20 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-       
+        [HttpGet("GetStudentResult/{id?}")]
+        public async Task<IActionResult> GetStudentResult(int id = 0)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetStudentResult(id);
+
+            return Ok(_response);
+
+        }
+
     }
 }

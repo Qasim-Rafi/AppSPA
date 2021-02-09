@@ -41,6 +41,7 @@ namespace CoreWebApi.Helpers
         public const string SubjectNotProvided = "Please fill the empty subject fields";
         public const string NoOfQuestionIsLowerNow = "Please remove extra questions first then set new number of questions";
         public const string NoOfStudentLimitIsLowerNow = "Please un-map some students first then set new limit";
+        public const string EmailSameOfParentChild = "Please enter different email address for student and parent";
     }
     public class BusinessRules
     {
