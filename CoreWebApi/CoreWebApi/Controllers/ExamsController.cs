@@ -140,6 +140,16 @@ namespace CoreWebApi.Controllers
             return Ok(createdObj);
 
         }
+        [HttpDelete("DeleteQuestion/{id}")]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }            
+            _response = await _repo.DeleteQuestion(id);
+            return Ok(_response);
+        }
 
         [HttpPost("GetAllQuizResult")]
         public async Task<IActionResult> GetAllQuizResult(QuizResultDto model)

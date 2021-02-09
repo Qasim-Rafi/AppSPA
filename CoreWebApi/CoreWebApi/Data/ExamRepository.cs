@@ -461,13 +461,19 @@ namespace CoreWebApi.Data
 
         }
 
-        public async Task<int> UpdateQuiz(int id, QuizDtoForAdd model)
+        public async Task<ServiceResponse<object>> UpdateQuiz(int id, QuizDtoForAdd model)
         {
             var quiz = _context.Quizzes.Where(m => m.Id == id).FirstOrDefault();
             DateTime QuizDate = DateTime.ParseExact(model.QuizDate, "MM/dd/yyyy", null);
 
             if (quiz != null)
             {
+                if (model.NoOfQuestions < quiz.NoOfQuestions)
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.NoOfQuestionIsLowerNow;
+                    return _serviceResponse;
+                }
                 quiz.QuizDate = QuizDate;
                 quiz.NoOfQuestions = model.NoOfQuestions;
                 quiz.SubjectId = model.SubjectId;
@@ -475,8 +481,12 @@ namespace CoreWebApi.Data
                 //quiz.TeacherName = model.TeacherName;
                 quiz.IsPosted = model.IsPosted;
                 await _context.SaveChangesAsync();
+
             }
-            return quiz.Id;
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Data = quiz.Id;
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> GetAllQuizResult(QuizResultDto model)
@@ -641,6 +651,17 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        
+        public async Task<ServiceResponse<object>> DeleteQuestion(int id)
+        {
+            var question = _context.QuizQuestions.Where(m => m.Id == id).FirstOrDefault();
+            if (question != null)
+            {
+                _context.QuizQuestions.Remove(question);
+                await _context.SaveChangesAsync();
+            }
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Deleted;
+            return _serviceResponse;
+        }
     }
 }
