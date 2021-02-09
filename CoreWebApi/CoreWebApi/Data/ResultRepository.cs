@@ -161,10 +161,17 @@ namespace CoreWebApi.Data
                                         ReferenceId = r.ReferenceId,
                                         Reference = "",
                                         ObtainedMarks = r.ObtainedMarks,
-                                        TotalMarks = r.TotalMarks
+                                        TotalMarks = r.TotalMarks,
+                                        Percentage = r.ObtainedMarks / r.TotalMarks * 100
                                     }).ToListAsync();
 
-                _serviceResponse.Data = new { result, TotalObtained = result.Select(m => m.ObtainedMarks).Count(), Total = result.Select(m => m.TotalMarks).Count() };
+                _serviceResponse.Data = new
+                {
+                    result,
+                    TotalObtained = result.Select(m => m.ObtainedMarks).Sum(),
+                    Total = result.Select(m => m.TotalMarks).Sum(),
+                    TotalPercentage = result.Select(m => m.ObtainedMarks).Sum() / result.Select(m => m.TotalMarks).Sum() * 100,
+                };
             }
             _serviceResponse.Success = true;
             return _serviceResponse;
