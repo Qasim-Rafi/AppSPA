@@ -495,6 +495,9 @@ namespace CoreWebApi.Data
                 item.Result = await (from r in _context.Results
                                      join s in _context.Subjects
                                      on r.SubjectId equals s.Id
+                                    
+                                     join ass in _context.ClassSectionAssignment
+                                     on r.ReferenceId equals ass.Id
 
                                      where r.StudentId == item.Id
                                      select new ResultForListDto
@@ -502,8 +505,8 @@ namespace CoreWebApi.Data
                                          StudentId = r.StudentId,
                                          SubjectId = r.SubjectId,
                                          Subject = s.Name,
-                                         //ReferenceId = r.ReferenceId,
-                                         //Reference = item.ExamName,
+                                         ReferenceId = r.ReferenceId,
+                                         Reference = ass.AssignmentName,
                                          ObtainedMarks = r.ObtainedMarks,
                                          TotalMarks = r.TotalMarks,
                                          Percentage = r.ObtainedMarks / r.TotalMarks * 100

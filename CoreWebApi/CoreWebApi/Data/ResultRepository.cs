@@ -151,7 +151,7 @@ namespace CoreWebApi.Data
                                     join ass in _context.ClassSectionAssignment
                                     on sub.ClassSectionAssignmentId equals ass.Id
 
-                                    where sub.StudentId == id
+                                    where u.Id == id
                                     select new AllStdExamResultListDto
                                     {
                                         ExamId = sub.ClassSectionAssignmentId,
@@ -175,11 +175,12 @@ namespace CoreWebApi.Data
                                              ObtainedMarks = r.ObtainedMarks,
                                              TotalMarks = r.TotalMarks,
                                              Percentage = r.ObtainedMarks / r.TotalMarks * 100
-                                         }).ToListAsync();
-
+                                         }).ToListAsync();                    
+                    
                     item.TotalObtained = item.Result.Select(m => m.ObtainedMarks).Sum();
                     item.Total = item.Result.Select(m => m.TotalMarks).Sum();
                     item.TotalPercentage = item.Result.Select(m => m.ObtainedMarks).Sum() / item.Result.Select(m => m.TotalMarks).Sum() * 100;
+
                 }
 
 
