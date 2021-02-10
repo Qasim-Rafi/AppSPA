@@ -55,4 +55,13 @@ namespace CoreWebApi.Dtos
         public string SubjectName { get; set; }
         public int ClassSectionId { get; set; }
     }
+    public class AllStdExamResultListDto
+    {
+        public int ExamId { get; set; }
+        public string ExamName { get; set; }
+        public List<ResultForListDto> Result { get; set; }
+        public double Total { get; set; }
+        public double TotalObtained { get; set; }
+        public double TotalPercentage { get; set; }
+    }
 }

@@ -144,34 +144,45 @@ namespace CoreWebApi.Data
         {
             if (id > 0)
             {
-                var result = await (from u in _context.Users
-                                    join r in _context.Results
-                                    on u.Id equals r.StudentId
+                var Result = await (from u in _context.Users
+                                    join sub in _context.ClassSectionAssigmentSubmissions
+                                    on u.Id equals sub.StudentId
 
-                                    join s in _context.Subjects
-                                    on r.SubjectId equals s.Id
+                                    join ass in _context.ClassSectionAssignment
+                                    on sub.ClassSectionAssignmentId equals ass.Id
 
-                                    where r.StudentId == id
-                                    select new ResultForListDto
+                                    where u.Id == id
+                                    select new AllStdExamResultListDto
                                     {
-                                        StudentId = r.StudentId,
-                                        Student = u.FullName,
-                                        SubjectId = r.SubjectId,
-                                        Subject = s.Name,
-                                        ReferenceId = r.ReferenceId,
-                                        Reference = "",
-                                        ObtainedMarks = r.ObtainedMarks,
-                                        TotalMarks = r.TotalMarks,
-                                        Percentage = r.ObtainedMarks / r.TotalMarks * 100
+                                        ExamId = sub.ClassSectionAssignmentId,
+                                        ExamName = ass.AssignmentName,
                                     }).ToListAsync();
-
-                _serviceResponse.Data = new
+                foreach (var item in Result)
                 {
-                    result,
-                    TotalObtained = result.Select(m => m.ObtainedMarks).Sum(),
-                    Total = result.Select(m => m.TotalMarks).Sum(),
-                    TotalPercentage = result.Select(m => m.ObtainedMarks).Sum() / result.Select(m => m.TotalMarks).Sum() * 100,
-                };
+                    item.Result = await (from r in _context.Results
+                                          join s in _context.Subjects
+                                          on r.SubjectId equals s.Id
+
+                                          where r.StudentId == id
+                                          select new ResultForListDto
+                                          {
+                                              StudentId = r.StudentId,
+                                              SubjectId = r.SubjectId,
+                                              Subject = s.Name,
+                                              ReferenceId = r.ReferenceId,
+                                              Reference = item.ExamName,
+                                              ObtainedMarks = r.ObtainedMarks,
+                                              TotalMarks = r.TotalMarks,
+                                              Percentage = r.ObtainedMarks / r.TotalMarks * 100
+                                          }).ToListAsync();
+
+                    item.TotalObtained = item.Results.Select(m => m.ObtainedMarks).Sum();
+                    item.Total = item.Results.Select(m => m.TotalMarks).Sum();
+                    item.TotalPercentage = item.Results.Select(m => m.ObtainedMarks).Sum() / item.Results.Select(m => m.TotalMarks).Sum() * 100;
+                }
+
+
+                _serviceResponse.Data = new { Result };
             }
             _serviceResponse.Success = true;
             return _serviceResponse;

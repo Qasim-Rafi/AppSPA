@@ -40,11 +40,11 @@ namespace CoreWebApi.Helpers
             CreateMap<Subject, SubjectDtoForDetail>();
             CreateMap<Subject, SubjectDtoForList>();           
             // assginment
-            CreateMap<Assignment, AssignmentDtoForAdd>();
-            CreateMap<Assignment, AssignmentDtoForEdit>();
-            CreateMap<Assignment, AssignmentDtoForDetail>();
-            CreateMap<Assignment, AssignmentDtoForList>();        
-            CreateMap<Assignment, AssignmentDtoForLookupList>();        
+            CreateMap<ClassSectionAssignment, AssignmentDtoForAdd>();
+            CreateMap<ClassSectionAssignment, AssignmentDtoForEdit>();
+            CreateMap<ClassSectionAssignment, AssignmentDtoForDetail>();
+            CreateMap<ClassSectionAssignment, AssignmentDtoForList>();        
+            CreateMap<ClassSectionAssignment, AssignmentDtoForLookupList>();        
             // attendance
             CreateMap<Attendance, AttendanceDtoForAdd>();
             CreateMap<Attendance, AttendanceDtoForEdit>();

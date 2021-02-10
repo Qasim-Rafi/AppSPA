@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Models
 {
+    // not in use
     public class Assignment
     {
         public int Id { get; set; }
