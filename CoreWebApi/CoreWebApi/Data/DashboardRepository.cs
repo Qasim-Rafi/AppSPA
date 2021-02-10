@@ -540,31 +540,28 @@ namespace CoreWebApi.Data
 
             foreach (var item in Students)
             {
-                var StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                var LastDate = DateTime.Today.Date;
+                string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+                foreach (var month in Months)
+                {
 
-                var DaysCount = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
-                var UserPresentCount = (from u in _context.Users
-                                        join att in _context.Attendances
-                                        on u.Id equals att.UserId
-                                        where u.Id == item.Id
-                                        && att.Present == true
-                                        && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
-                                        select att).ToList().Count();
-                item.ThisMonthAttendancePercentage = GenericFunctions.CalculatePercentage(UserPresentCount, DaysCount);
+                    var StartDateByMonth = new DateTime(DateTime.Now.Year, Array.IndexOf(Months, month) + 1, 1);
+                    var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
+                    var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
+                    var UserPresentCountByMonth = (from u in _context.Users
+                                                   join att in _context.Attendances
+                                                   on u.Id equals att.UserId
+                                                   where u.Id == item.Id
+                                                   && att.Present == true
+                                                   && att.CreatedDatetime.Date >= StartDateByMonth.Date && att.CreatedDatetime.Date <= LastDateByMonth.Date
+                                                   select att).ToList().Count();
+                    item.AttendancePercentage.Add(new ThisMonthAttendancePercentageDto
+                    {
+                        MonthName = month,
+                        Month = (Array.IndexOf(Months, month) + 1),
+                        Percentage = GenericFunctions.CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth)
+                    });
+                }
 
-                var LastMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(-1);
-                var LastMonthLastDate = LastMonthStartDate.AddMonths(1).AddDays(-1);
-
-                var LastMonthDaysCount = GenericFunctions.BusinessDaysUntil(LastMonthStartDate, LastMonthLastDate);
-                var LastMonthUserPresentCount = (from u in _context.Users
-                                                 join att in _context.Attendances
-                                                 on u.Id equals att.UserId
-                                                 where u.Id == item.Id
-                                                 && att.Present == true
-                                                 && att.CreatedDatetime.Date >= LastMonthStartDate.Date && att.CreatedDatetime.Date <= LastMonthLastDate.Date
-                                                 select att).ToList().Count();
-                item.LastMonthAttendancePercentage = GenericFunctions.CalculatePercentage(LastMonthUserPresentCount, LastMonthDaysCount);
             }
 
             _serviceResponse.Data = new { Students, StudentCount = Students.Count(), };

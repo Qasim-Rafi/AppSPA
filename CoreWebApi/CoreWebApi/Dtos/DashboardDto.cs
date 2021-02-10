@@ -67,7 +67,6 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }       
         public string FullName { get; set; }
         public List<PhotoDto> Photos { get; set; }        
-        public decimal ThisMonthAttendancePercentage { get; set; }
-        public decimal LastMonthAttendancePercentage { get; set; }
+        public List<ThisMonthAttendancePercentageDto> AttendancePercentage { get; set; }
     }
 }
