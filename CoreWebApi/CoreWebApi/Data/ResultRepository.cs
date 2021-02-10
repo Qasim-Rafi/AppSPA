@@ -176,9 +176,9 @@ namespace CoreWebApi.Data
                                               Percentage = r.ObtainedMarks / r.TotalMarks * 100
                                           }).ToListAsync();
 
-                    item.TotalObtained = item.Results.Select(m => m.ObtainedMarks).Sum();
-                    item.Total = item.Results.Select(m => m.TotalMarks).Sum();
-                    item.TotalPercentage = item.Results.Select(m => m.ObtainedMarks).Sum() / item.Results.Select(m => m.TotalMarks).Sum() * 100;
+                    item.TotalObtained = item.Result.Select(m => m.ObtainedMarks).Sum();
+                    item.Total = item.Result.Select(m => m.TotalMarks).Sum();
+                    item.TotalPercentage = item.Result.Select(m => m.ObtainedMarks).Sum() / item.Result.Select(m => m.TotalMarks).Sum() * 100;
                 }
 
 
