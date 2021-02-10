@@ -104,5 +104,15 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetParentChilds();
             return Ok(_response);
         }
+        [HttpGet("GetParentChildResult")]
+        public async Task<IActionResult> GetParentChildResult()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetParentChildResult();
+            return Ok(_response);
+        }
     }
 }

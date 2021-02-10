@@ -428,28 +428,34 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetParentChilds()
         {
-            var parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
-            var students = await (from u in _context.Users
-                                  where u.ParentContactNumber == parent.ParentContactNumber
-                                  && u.ParentEmail == parent.ParentEmail
+            var Parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
+            var Students = await (from u in _context.Users
+                                  join csU in _context.ClassSectionUsers
+                                  on u.Id equals csU.UserId
+
+                                  join cs in _context.ClassSections
+                                  on csU.ClassSectionId equals cs.Id
+
+                                  where u.ParentContactNumber == Parent.ParentContactNumber
+                                  && u.ParentEmail == Parent.ParentEmail
                                   && u.Role == Enumm.UserType.Student.ToString()
-                                  select new UserForListDto
+                                  select new ParentChildsForListDto
                                   {
                                       Id = u.Id,
                                       FullName = u.FullName,
                                       DateofBirth = u.DateofBirth != null ? DateFormat.ToDate(u.DateofBirth.ToString()) : "",
                                       Email = u.Email,
                                       Gender = u.Gender,
-                                      Username = u.Username,
                                       CountryId = u.CountryId,
                                       StateId = u.StateId,
                                       CityId = u.CityId,
                                       CountryName = u.Country.Name,
                                       StateName = u.State.Name,
                                       OtherState = u.OtherState,
-                                      Active = u.Active,
                                       UserTypeId = u.UserTypeId,
                                       UserType = u.Usertypes.Name,
+                                      RollNumber = u.RollNumber,
+                                      ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
                                       Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                       {
                                           Id = x.Id,
@@ -458,9 +464,57 @@ namespace CoreWebApi.Data
                                           Url = _File.AppendImagePath(x.Name)
                                       }).ToList(),
                                   }).ToListAsync();
-            var notices = _context.NoticeBoards.Where(m => m.SchoolBranchId == parent.SchoolBranchId).ToList();
+            var Notices = _context.NoticeBoards.Where(m => m.SchoolBranchId == Parent.SchoolBranchId).ToList();
+
+            _serviceResponse.Data = new { Students, StudentCount = Students.Count(), Notices };
             _serviceResponse.Success = true;
-            _serviceResponse.Data = new { students, studentCount = students.Count(), notices };
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetParentChildResult()
+        {
+            var Parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
+            var Students = await (from u in _context.Users
+                                  where u.ParentContactNumber == Parent.ParentContactNumber
+                                  && u.ParentEmail == Parent.ParentEmail
+                                  && u.Role == Enumm.UserType.Student.ToString()
+                                  select new ParentChildResultForListDto
+                                  {
+                                      Id = u.Id,
+                                      FullName = u.FullName,
+                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                      {
+                                          Id = x.Id,
+                                          Name = x.Name,
+                                          Url = _File.AppendImagePath(x.Name)
+                                      }).ToList(),
+                                  }).ToListAsync();
+            foreach (var item in Students)
+            {
+                item.Result = await (from r in _context.Results
+                                     join s in _context.Subjects
+                                     on r.SubjectId equals s.Id
+
+                                     where r.StudentId == item.Id
+                                     select new ResultForListDto
+                                     {
+                                         StudentId = r.StudentId,
+                                         SubjectId = r.SubjectId,
+                                         Subject = s.Name,
+                                         ReferenceId = r.ReferenceId,
+                                         //Reference = item.ExamName,
+                                         ObtainedMarks = r.ObtainedMarks,
+                                         TotalMarks = r.TotalMarks,
+                                         Percentage = r.ObtainedMarks / r.TotalMarks * 100
+                                     }).ToListAsync();
+
+                item.TotalObtained = item.Result.Select(m => m.ObtainedMarks).Sum();
+                item.Total = item.Result.Select(m => m.TotalMarks).Sum();
+                item.TotalPercentage = item.Result.Select(m => m.ObtainedMarks).Sum() / item.Result.Select(m => m.TotalMarks).Sum() * 100;
+            }
+
+            _serviceResponse.Data = new { Students, studentCount = Students.Count(), };
+            _serviceResponse.Success = true;
             return _serviceResponse;
         }
     }
