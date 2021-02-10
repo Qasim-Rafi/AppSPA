@@ -151,7 +151,7 @@ namespace CoreWebApi.Data
                                     join ass in _context.ClassSectionAssignment
                                     on sub.ClassSectionAssignmentId equals ass.Id
 
-                                    where u.Id == id
+                                    where sub.StudentId == id
                                     select new AllStdExamResultListDto
                                     {
                                         ExamId = sub.ClassSectionAssignmentId,
@@ -160,21 +160,22 @@ namespace CoreWebApi.Data
                 foreach (var item in Result)
                 {
                     item.Result = await (from r in _context.Results
-                                          join s in _context.Subjects
-                                          on r.SubjectId equals s.Id
+                                         join s in _context.Subjects
+                                         on r.SubjectId equals s.Id
 
-                                          where r.StudentId == id
-                                          select new ResultForListDto
-                                          {
-                                              StudentId = r.StudentId,
-                                              SubjectId = r.SubjectId,
-                                              Subject = s.Name,
-                                              ReferenceId = r.ReferenceId,
-                                              Reference = item.ExamName,
-                                              ObtainedMarks = r.ObtainedMarks,
-                                              TotalMarks = r.TotalMarks,
-                                              Percentage = r.ObtainedMarks / r.TotalMarks * 100
-                                          }).ToListAsync();
+                                         where r.ReferenceId == item.ExamId
+                                         && r.StudentId == id
+                                         select new ResultForListDto
+                                         {
+                                             StudentId = r.StudentId,
+                                             SubjectId = r.SubjectId,
+                                             Subject = s.Name,
+                                             ReferenceId = r.ReferenceId,
+                                             Reference = item.ExamName,
+                                             ObtainedMarks = r.ObtainedMarks,
+                                             TotalMarks = r.TotalMarks,
+                                             Percentage = r.ObtainedMarks / r.TotalMarks * 100
+                                         }).ToListAsync();
 
                     item.TotalObtained = item.Result.Select(m => m.ObtainedMarks).Sum();
                     item.Total = item.Result.Select(m => m.TotalMarks).Sum();
