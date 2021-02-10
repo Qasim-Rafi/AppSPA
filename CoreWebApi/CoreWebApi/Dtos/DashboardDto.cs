@@ -48,6 +48,7 @@ namespace CoreWebApi.Dtos
         public string UserType { get; set; }
         public string RollNumber { get; set; }
         public string ClassSection { get; set; }
+        public string AdmissionDate { get; set; }
 
         public List<PhotoDto> Photos { get; set; }
     }
@@ -60,5 +61,13 @@ namespace CoreWebApi.Dtos
         public double Total { get; set; }
         public double TotalObtained { get; set; }
         public double TotalPercentage { get; set; }
+    }
+    public class ParentChildAttendanceForListDto
+    {
+        public int Id { get; set; }       
+        public string FullName { get; set; }
+        public List<PhotoDto> Photos { get; set; }        
+        public decimal ThisMonthAttendancePercentage { get; set; }
+        public decimal LastMonthAttendancePercentage { get; set; }
     }
 }

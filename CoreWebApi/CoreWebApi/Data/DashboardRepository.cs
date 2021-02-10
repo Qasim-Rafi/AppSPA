@@ -456,6 +456,7 @@ namespace CoreWebApi.Data
                                       UserType = u.Usertypes.Name,
                                       RollNumber = u.RollNumber,
                                       ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
+                                      AdmissionDate = DateFormat.ToDate(u.CreatedDateTime.ToString()),
                                       Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                       {
                                           Id = x.Id,
@@ -501,7 +502,7 @@ namespace CoreWebApi.Data
                                          StudentId = r.StudentId,
                                          SubjectId = r.SubjectId,
                                          Subject = s.Name,
-                                         ReferenceId = r.ReferenceId,
+                                         //ReferenceId = r.ReferenceId,
                                          //Reference = item.ExamName,
                                          ObtainedMarks = r.ObtainedMarks,
                                          TotalMarks = r.TotalMarks,
@@ -513,7 +514,60 @@ namespace CoreWebApi.Data
                 item.TotalPercentage = item.Result.Select(m => m.ObtainedMarks).Sum() / item.Result.Select(m => m.TotalMarks).Sum() * 100;
             }
 
-            _serviceResponse.Data = new { Students, studentCount = Students.Count(), };
+            _serviceResponse.Data = new { Students, StudentCount = Students.Count(), };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetParentChildAttendance()
+        {
+            var Parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
+            var Students = await (from u in _context.Users
+                                  where u.ParentContactNumber == Parent.ParentContactNumber
+                                  && u.ParentEmail == Parent.ParentEmail
+                                  && u.Role == Enumm.UserType.Student.ToString()
+                                  select new ParentChildAttendanceForListDto
+                                  {
+                                      Id = u.Id,
+                                      FullName = u.FullName,
+                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                      {
+                                          Id = x.Id,
+                                          Name = x.Name,
+                                          Url = _File.AppendImagePath(x.Name)
+                                      }).ToList(),
+                                  }).ToListAsync();
+
+            foreach (var item in Students)
+            {
+                var StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var LastDate = DateTime.Today.Date;
+
+                var DaysCount = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
+                var UserPresentCount = (from u in _context.Users
+                                        join att in _context.Attendances
+                                        on u.Id equals att.UserId
+                                        where u.Id == item.Id
+                                        && att.Present == true
+                                        && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
+                                        select att).ToList().Count();
+                item.ThisMonthAttendancePercentage = GenericFunctions.CalculatePercentage(UserPresentCount, DaysCount);
+
+                var LastMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(-1);
+                var LastMonthLastDate = LastMonthStartDate.AddMonths(1).AddDays(-1);
+
+                var LastMonthDaysCount = GenericFunctions.BusinessDaysUntil(LastMonthStartDate, LastMonthLastDate);
+                var LastMonthUserPresentCount = (from u in _context.Users
+                                                 join att in _context.Attendances
+                                                 on u.Id equals att.UserId
+                                                 where u.Id == item.Id
+                                                 && att.Present == true
+                                                 && att.CreatedDatetime.Date >= LastMonthStartDate.Date && att.CreatedDatetime.Date <= LastMonthLastDate.Date
+                                                 select att).ToList().Count();
+                item.LastMonthAttendancePercentage = GenericFunctions.CalculatePercentage(LastMonthUserPresentCount, LastMonthDaysCount);
+            }
+
+            _serviceResponse.Data = new { Students, StudentCount = Students.Count(), };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
