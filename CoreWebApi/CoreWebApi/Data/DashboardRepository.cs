@@ -426,5 +426,42 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
+        public async Task<ServiceResponse<object>> GetParentChilds()
+        {
+            var parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
+            var students = await (from u in _context.Users
+                                  where u.ParentContactNumber == parent.ParentContactNumber
+                                  && u.ParentEmail == parent.ParentEmail
+                                  && u.Role == Enumm.UserType.Student.ToString()
+                                  select new UserForListDto
+                                  {
+                                      Id = u.Id,
+                                      FullName = u.FullName,
+                                      DateofBirth = u.DateofBirth != null ? DateFormat.ToDate(u.DateofBirth.ToString()) : "",
+                                      Email = u.Email,
+                                      Gender = u.Gender,
+                                      Username = u.Username,
+                                      CountryId = u.CountryId,
+                                      StateId = u.StateId,
+                                      CityId = u.CityId,
+                                      CountryName = u.Country.Name,
+                                      StateName = u.State.Name,
+                                      OtherState = u.OtherState,
+                                      Active = u.Active,
+                                      UserTypeId = u.UserTypeId,
+                                      UserType = u.Usertypes.Name,
+                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                      {
+                                          Id = x.Id,
+                                          Name = x.Name,
+                                          IsPrimary = x.IsPrimary,
+                                          Url = _File.AppendImagePath(x.Name)
+                                      }).ToList(),
+                                  }).ToListAsync();
+            var notices = _context.NoticeBoards.Where(m => m.SchoolBranchId == parent.SchoolBranchId).ToList();
+            _serviceResponse.Success = true;
+            _serviceResponse.Data = new { students, studentCount = students.Count(), notices };
+            return _serviceResponse;
+        }
     }
 }

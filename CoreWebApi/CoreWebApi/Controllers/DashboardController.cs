@@ -94,5 +94,15 @@ namespace CoreWebApi.Controllers
 
 
         }
+        [HttpGet("GetParentChilds")]
+        public async Task<IActionResult> GetParentChilds()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetParentChilds();
+            return Ok(_response);
+        }
     }
 }

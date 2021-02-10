@@ -313,7 +313,7 @@ namespace CoreWebApi.Data
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
-                    
+
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
                     var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student).ToList().LastOrDefault();
                     var HasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:SchoolHaveRegistrationNumbers").Value);
@@ -406,12 +406,14 @@ namespace CoreWebApi.Data
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
                     // create parent account
-                    
+
                     var parentToCreate = new User
                     {
                         FullName = userDto.ParentEmail.Split("@")[0],
                         Username = userDto.ParentEmail.Split("@")[0].ToLower(),
                         Email = userDto.ParentEmail,
+                        ParentEmail = userDto.ParentEmail,
+                        ParentContactNumber = userDto.ParentContactNumber,
                         UserTypeId = (int)Enumm.UserType.Parent,
                         CreatedDateTime = DateTime.Now,
                         Gender = "male",
@@ -419,11 +421,11 @@ namespace CoreWebApi.Data
                         StateId = userDto.StateId,
                         CityId = userDto.CityId,
                         CountryId = userDto.CountryId,
-                        OtherState = userDto.OtherState,                        
+                        OtherState = userDto.OtherState,
                         SchoolBranchId = _LoggedIn_BranchID,
                         Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Parent).FirstOrDefault()?.Name
                     };
-                   
+
                     Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
                     parentToCreate.PasswordHash = passwordHash;
                     parentToCreate.PasswordSalt = passwordSalt;
