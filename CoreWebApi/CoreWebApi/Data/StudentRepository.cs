@@ -58,10 +58,43 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetStudentsForFee()
         {
             string CurrentMonth = DateTime.Now.ToString("MMMM");
-            var PaidStudents = (from fee in _context.StudentFees
-                                where fee.Month == CurrentMonth
-                                && fee.SchoolBranchId == _LoggedIn_BranchID
-                                select fee.StudentId).ToList();
+            var PaidStudents = await (from fee in _context.StudentFees
+                                      join u in _context.Users
+                                      on fee.StudentId equals u.Id
+
+                                      join csU in _context.ClassSectionUsers
+                                      on u.Id equals csU.UserId
+
+                                      join cs in _context.ClassSections
+                                      on csU.ClassSectionId equals cs.Id
+
+                                      where fee.Month == CurrentMonth
+                                      && fee.SchoolBranchId == _LoggedIn_BranchID
+                                      select new StudentForFeeListDto
+                                      {
+                                          Id = u.Id,
+                                          FullName = u.FullName,
+                                          DateofBirth = u.DateofBirth != null ? DateFormat.ToDate(u.DateofBirth.ToString()) : "",
+                                          Email = u.Email,
+                                          Gender = u.Gender,
+                                          CountryId = u.CountryId,
+                                          StateId = u.StateId,
+                                          CityId = u.CityId,
+                                          CountryName = u.Country.Name,
+                                          StateName = u.State.Name,
+                                          OtherState = u.OtherState,
+                                          RollNumber = u.RollNumber,
+                                          ClassSectionId = cs.Id,
+                                          ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
+                                          Paid = fee.Paid,
+                                          Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).Select(x => new PhotoDto
+                                          {
+                                              Id = x.Id,
+                                              Name = x.Name,
+                                              IsPrimary = x.IsPrimary,
+                                              Url = _fileRepo.AppendImagePath(x.Name)
+                                          }).ToList(),
+                                      }).ToListAsync();
 
             var UnPaidStudents = await (from u in _context.Users
                                         join csU in _context.ClassSectionUsers
@@ -72,7 +105,7 @@ namespace CoreWebApi.Data
 
                                         where u.Role == Enumm.UserType.Student.ToString()
                                         && u.SchoolBranchId == _LoggedIn_BranchID
-                                        && !PaidStudents.Contains(u.Id)
+                                        && !PaidStudents.Select(m => m.Id).Contains(u.Id)
                                         select new StudentForFeeListDto
                                         {
                                             Id = u.Id,
@@ -89,6 +122,7 @@ namespace CoreWebApi.Data
                                             RollNumber = u.RollNumber,
                                             ClassSectionId = cs.Id,
                                             ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
+                                            Paid = false,
                                             Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).Select(x => new PhotoDto
                                             {
                                                 Id = x.Id,
@@ -98,7 +132,7 @@ namespace CoreWebApi.Data
                                             }).ToList(),
                                         }).ToListAsync();
 
-            _serviceResponse.Data = new { UnPaidStudents, StudentCount = UnPaidStudents.Count(), };
+            _serviceResponse.Data = new { UnPaidStudents, UnPaidStudentCount = UnPaidStudents.Count(), PaidStudents, PaidStudentCount = PaidStudents.Count() };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
