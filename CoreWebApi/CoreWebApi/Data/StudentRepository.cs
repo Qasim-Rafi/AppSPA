@@ -4,6 +4,7 @@ using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,8 @@ namespace CoreWebApi.Data
         private string _LoggedIn_UserRole = "";
         private readonly IMapper _mapper;
         ServiceResponse<object> _serviceResponse;
-        public StudentRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        private readonly IFilesRepository _fileRepo;
+        public StudentRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository file)
         {
             _context = context;
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
@@ -30,6 +32,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
             _mapper = mapper;
             _serviceResponse = new ServiceResponse<object>();
+            _fileRepo = file;
         }
 
         public async Task<ServiceResponse<object>> AddFee(StudentFeeDtoForAdd model)
@@ -43,6 +46,7 @@ namespace CoreWebApi.Data
                 Month = DateTime.Now.ToString("MMMM"),
                 CreatedDateTime = DateTime.Now,
                 CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
             };
             await _context.StudentFees.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
@@ -51,9 +55,62 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public Task<ServiceResponse<object>> GetFee()
+        public async Task<ServiceResponse<object>> GetStudentsForFee()
         {
-            throw new NotImplementedException();
+            string CurrentMonth = DateTime.Now.ToString("MMMM");
+            var PaidStudents = (from fee in _context.StudentFees
+                                where fee.Month == CurrentMonth
+                                && fee.SchoolBranchId == _LoggedIn_BranchID
+                                select fee.StudentId).ToList();
+
+            var UnPaidStudents = await (from u in _context.Users
+                                        join csU in _context.ClassSectionUsers
+                                        on u.Id equals csU.UserId
+
+                                        join cs in _context.ClassSections
+                                        on csU.ClassSectionId equals cs.Id
+
+                                        where u.Role == Enumm.UserType.Student.ToString()
+                                        && u.SchoolBranchId == _LoggedIn_BranchID
+                                        && !PaidStudents.Contains(u.Id)
+                                        select new StudentForFeeListDto
+                                        {
+                                            Id = u.Id,
+                                            FullName = u.FullName,
+                                            DateofBirth = u.DateofBirth != null ? DateFormat.ToDate(u.DateofBirth.ToString()) : "",
+                                            Email = u.Email,
+                                            Gender = u.Gender,
+                                            CountryId = u.CountryId,
+                                            StateId = u.StateId,
+                                            CityId = u.CityId,
+                                            CountryName = u.Country.Name,
+                                            StateName = u.State.Name,
+                                            OtherState = u.OtherState,
+                                            RollNumber = u.RollNumber,
+                                            ClassSectionId = cs.Id,
+                                            ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
+                                            Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).Select(x => new PhotoDto
+                                            {
+                                                Id = x.Id,
+                                                Name = x.Name,
+                                                IsPrimary = x.IsPrimary,
+                                                Url = _fileRepo.AppendImagePath(x.Name)
+                                            }).ToList(),
+                                        }).ToListAsync();
+
+            _serviceResponse.Data = new { UnPaidStudents, StudentCount = UnPaidStudents.Count(), };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<bool> PaidAlready(string month, int studentId)
+        {
+            bool isPaid = false;
+            if (await _context.StudentFees.AnyAsync(x => x.StudentId == studentId && x.Month == month))
+            {
+                isPaid = true;
+            }
+
+            return isPaid;
         }
     }
 }

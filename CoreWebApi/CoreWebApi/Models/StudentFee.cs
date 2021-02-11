@@ -17,10 +17,13 @@ namespace CoreWebApi.Models
         public bool Paid { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
+        public int SchoolBranchId { get; set; }
 
         [ForeignKey("StudentId")]
         public virtual User Student { get; set; }
         [ForeignKey("ClassSectionId")]
-        public virtual ClassSection ClassSection { get; set; }
+        public virtual ClassSection ClassSection { get; set; }       
+        [ForeignKey("SchoolBranchId")]
+        public virtual SchoolBranch SchoolBranch { get; set; }
     }
 }

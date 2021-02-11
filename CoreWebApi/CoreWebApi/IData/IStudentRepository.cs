@@ -9,7 +9,8 @@ namespace CoreWebApi.IData
 {
     public interface IStudentRepository
     {
+        Task<bool> PaidAlready(string month, int studentId);
         Task<ServiceResponse<object>> AddFee(StudentFeeDtoForAdd model);
-        Task<ServiceResponse<object>> GetFee();
+        Task<ServiceResponse<object>> GetStudentsForFee();
     }
 }

@@ -37,21 +37,22 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            if (await _repo.PaidAlready(DateTime.Now.ToString("MMM"), model.StudentId))
+                return BadRequest(new { message = CustomMessage.FeeAlreadyPaid });
             _response = await _repo.AddFee(model);
 
             return Ok(_response);
 
         }
-        [HttpGet("GetFee")]
-        public async Task<IActionResult> GetFee()
+        [HttpGet("GetStudentsForFee")]
+        public async Task<IActionResult> GetStudentsForFee()
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GetFee();
+            _response = await _repo.GetStudentsForFee();
 
             return Ok(_response);
 

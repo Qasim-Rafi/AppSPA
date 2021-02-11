@@ -71,6 +71,7 @@ namespace CoreWebApi
                 services.AddScoped<ITeacherRepository, TeacherRepository>();
                 services.AddScoped<IMessageRepository, MessageRepository>();
                 services.AddScoped<IResultRepository, ResultRepository>();
+                services.AddScoped<IStudentRepository, StudentRepository>();
 
 
 
