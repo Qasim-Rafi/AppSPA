@@ -43,6 +43,7 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public string ClassSection { get; set; }
         public bool Paid { get; set; }
+        public int FeeId { get; set; }
         public List<PhotoDto> Photos { get; set; }
     }
 }

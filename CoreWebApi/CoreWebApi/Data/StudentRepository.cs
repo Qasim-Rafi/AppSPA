@@ -40,7 +40,7 @@ namespace CoreWebApi.Data
             if (model.Id > 0)
             {
                 var objToUpdate = await _context.StudentFees.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
-                objToUpdate.Paid = false;
+                objToUpdate.Paid = model.Paid;
                 _context.StudentFees.Update(objToUpdate);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
@@ -100,6 +100,7 @@ namespace CoreWebApi.Data
                                           ClassSectionId = cs.Id,
                                           ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
                                           Paid = fee.Paid,
+                                          FeeId = fee.Id,
                                           Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).Select(x => new PhotoDto
                                           {
                                               Id = x.Id,
