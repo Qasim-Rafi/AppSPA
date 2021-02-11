@@ -495,7 +495,7 @@ namespace CoreWebApi.Data
                 item.Result = await (from r in _context.Results
                                      join s in _context.Subjects
                                      on r.SubjectId equals s.Id
-                                    
+
                                      join ass in _context.ClassSectionAssignment
                                      on r.ReferenceId equals ass.Id
 
@@ -567,6 +567,54 @@ namespace CoreWebApi.Data
 
             }
 
+            _serviceResponse.Data = new { Students, StudentCount = Students.Count(), };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetParentChildFee()
+        {
+            var Parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
+            var Students = await (from u in _context.Users
+                                  where u.ParentContactNumber == Parent.ParentContactNumber
+                                  && u.ParentEmail == Parent.ParentEmail
+                                  && u.Role == Enumm.UserType.Student.ToString()
+                                  select new ParentChildFeeForListDto
+                                  {
+                                      Id = u.Id,
+                                      FullName = u.FullName,
+                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                      {
+                                          Id = x.Id,
+                                          Name = x.Name,
+                                          Url = _File.AppendImagePath(x.Name)
+                                      }).ToList(),
+                                  }).ToListAsync();
+
+            foreach (var item in Students)
+            {
+                item.Fees = await (from u in _context.Users
+                                   join fee in _context.StudentFees
+                                   on u.Id equals fee.StudentId
+
+                                   join csU in _context.ClassSectionUsers
+                                   on u.Id equals csU.UserId
+
+                                   join cs in _context.ClassSections
+                                   on csU.ClassSectionId equals cs.Id
+
+                                   where fee.StudentId == item.Id
+                                   select new StudentFeeDtoForList
+                                   {
+                                       StudentId = fee.StudentId,
+                                       Student = u.FullName,
+                                       ClassSectionId = cs.Id,
+                                       ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
+                                       Month = fee.Month,
+                                       Paid = fee.Paid,
+                                       Remarks = fee.Remarks,
+                                   }).ToListAsync();
+            }
             _serviceResponse.Data = new { Students, StudentCount = Students.Count(), };
             _serviceResponse.Success = true;
             return _serviceResponse;

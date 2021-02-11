@@ -69,4 +69,11 @@ namespace CoreWebApi.Dtos
         public List<PhotoDto> Photos { get; set; }
         public List<ThisMonthAttendancePercentageDto> AttendancePercentage { get; set; } = new List<ThisMonthAttendancePercentageDto>();
     }
+    public class ParentChildFeeForListDto
+    {
+        public int Id { get; set; }       
+        public string FullName { get; set; }
+        public List<PhotoDto> Photos { get; set; }
+        public List<StudentFeeDtoForList> Fees { get; set; } = new List<StudentFeeDtoForList>();
+    }
 }

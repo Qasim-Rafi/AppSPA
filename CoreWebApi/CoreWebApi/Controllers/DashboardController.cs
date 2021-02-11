@@ -124,5 +124,15 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetParentChildAttendance();
             return Ok(_response);
         }
+        [HttpGet("GetParentChildFee")]
+        public async Task<IActionResult> GetParentChildFee()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetParentChildFee();
+            return Ok(_response);
+        }
     }
 }
