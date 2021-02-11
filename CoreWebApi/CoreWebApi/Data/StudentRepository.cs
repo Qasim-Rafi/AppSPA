@@ -37,22 +37,35 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddFee(StudentFeeDtoForAdd model)
         {
-            var ToAdd = new StudentFee
+            if (model.Id > 0)
             {
-                StudentId = model.StudentId,
-                ClassSectionId = model.ClassSectionId,
-                Remarks = model.Remarks,
-                Paid = model.Paid,
-                Month = DateTime.Now.ToString("MMMM"),
-                CreatedDateTime = DateTime.Now,
-                CreatedById = _LoggedIn_UserID,
-                SchoolBranchId = _LoggedIn_BranchID,
-            };
-            await _context.StudentFees.AddAsync(ToAdd);
-            await _context.SaveChangesAsync();
-            _serviceResponse.Success = true;
-            _serviceResponse.Message = CustomMessage.Added;
-            return _serviceResponse;
+                var objToUpdate = await _context.StudentFees.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+                objToUpdate.Paid = false;
+                _context.StudentFees.Update(objToUpdate);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
+                return _serviceResponse;
+            }
+            else
+            {
+                var ToAdd = new StudentFee
+                {
+                    StudentId = model.StudentId,
+                    ClassSectionId = model.ClassSectionId,
+                    Remarks = model.Remarks,
+                    Paid = model.Paid,
+                    Month = DateTime.Now.ToString("MMMM"),
+                    CreatedDateTime = DateTime.Now,
+                    CreatedById = _LoggedIn_UserID,
+                    SchoolBranchId = _LoggedIn_BranchID,
+                };
+                await _context.StudentFees.AddAsync(ToAdd);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Added;
+                return _serviceResponse;
+            }
         }
 
         public async Task<ServiceResponse<object>> GetStudentsForFee()

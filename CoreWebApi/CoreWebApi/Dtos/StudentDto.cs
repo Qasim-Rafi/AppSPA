@@ -10,6 +10,7 @@ namespace CoreWebApi.Dtos
     }
     public class StudentFeeDtoForAdd
     {
+        public int Id { get; set; }
         public int StudentId { get; set; }
         public int ClassSectionId { get; set; }
         public string Remarks { get; set; }
