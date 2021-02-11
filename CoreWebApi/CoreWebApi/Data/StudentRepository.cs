@@ -40,12 +40,13 @@ namespace CoreWebApi.Data
             if (model.Id > 0)
             {
                 var objToUpdate = await _context.StudentFees.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
-                objToUpdate.Paid = model.Paid;
-                _context.StudentFees.Update(objToUpdate);
-                await _context.SaveChangesAsync();
-                _serviceResponse.Success = true;
-                _serviceResponse.Message = CustomMessage.Updated;
-                return _serviceResponse;
+                if (objToUpdate != null)
+                {
+                    _context.StudentFees.Remove(objToUpdate);
+                    await _context.SaveChangesAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Message = CustomMessage.Deleted;
+                }
             }
             else
             {
@@ -64,8 +65,8 @@ namespace CoreWebApi.Data
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
-                return _serviceResponse;
             }
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse<object>> GetStudentsForFee()
