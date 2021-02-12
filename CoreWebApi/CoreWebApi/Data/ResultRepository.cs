@@ -93,10 +93,11 @@ namespace CoreWebApi.Data
                                join ass in _context.ClassSectionAssignment
                                on u.Id equals ass.CreatedById
 
-                               //join assSub in _context.ClassSectionAssigmentSubmissions
-                               //on ass.Id equals assSub.ClassSectionAssignmentId      
+                               join assSub in _context.ClassSectionAssigmentSubmissions
+                               on ass.Id equals assSub.ClassSectionAssignmentId
 
                                where u.Id == _LoggedIn_UserID
+                               //&& ass.DueDateTime.Value.Date <= DateTime.Now.Date
                                select new ExamForResultListDto
                                {
                                    RefId = ass.Id,
@@ -174,13 +175,12 @@ namespace CoreWebApi.Data
                                              Reference = item.ExamName,
                                              ObtainedMarks = r.ObtainedMarks,
                                              TotalMarks = r.TotalMarks,
-                                             Percentage = r.ObtainedMarks / r.TotalMarks * 100
-                                         }).ToListAsync();                    
-                    
+                                             Percentage = GenericFunctions.CalculatePercentage(r.ObtainedMarks, r.TotalMarks)
+                                         }).ToListAsync();
+
                     item.TotalObtained = item.Result.Select(m => m.ObtainedMarks).Sum();
                     item.Total = item.Result.Select(m => m.TotalMarks).Sum();
-                    item.TotalPercentage = item.Result.Select(m => m.ObtainedMarks).Sum() / item.Result.Select(m => m.TotalMarks).Sum() * 100;
-
+                    item.TotalPercentage = GenericFunctions.CalculatePercentage(item.Result.Select(m => m.ObtainedMarks).Sum(), item.Result.Select(m => m.TotalMarks).Sum());
                 }
 
 

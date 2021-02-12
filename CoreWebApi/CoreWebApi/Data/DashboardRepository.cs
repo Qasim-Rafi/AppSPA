@@ -253,7 +253,7 @@ namespace CoreWebApi.Data
                     LoggedUserAttendanceByMonthPercentage.Add(new ThisMonthAttendancePercentageDto
                     {
                         MonthName = month,
-                        Month = (Array.IndexOf(Months, month) + 1),
+                        Month = Array.IndexOf(Months, month) + 1,
                         Percentage = GenericFunctions.CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth)
                     });
                 }
@@ -457,7 +457,7 @@ namespace CoreWebApi.Data
                                       RollNumber = u.RollNumber,
                                       ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
                                       AdmissionDate = DateFormat.ToDate(u.CreatedDateTime.ToString()),
-                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).Select(x => new PhotoDto
                                       {
                                           Id = x.Id,
                                           Name = x.Name,
@@ -476,6 +476,12 @@ namespace CoreWebApi.Data
         {
             var Parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             var Students = await (from u in _context.Users
+                                  join csU in _context.ClassSectionUsers
+                                  on u.Id equals csU.UserId
+
+                                  join cs in _context.ClassSections
+                                  on csU.ClassSectionId equals cs.Id
+
                                   where u.ParentContactNumber == Parent.ParentContactNumber
                                   && u.ParentEmail == Parent.ParentEmail
                                   && u.Role == Enumm.UserType.Student.ToString()
@@ -483,7 +489,10 @@ namespace CoreWebApi.Data
                                   {
                                       Id = u.Id,
                                       FullName = u.FullName,
-                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                      TeacherName = _context.ClassSectionUsers.FirstOrDefault(m => m.ClassSectionId == cs.Id && m.UserTypeId == (int)Enumm.UserType.Teacher).User.FullName,
+                                      ClassSectionId = cs.Id,
+                                      ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
+                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).Select(x => new PhotoDto
                                       {
                                           Id = x.Id,
                                           Name = x.Name,
@@ -499,7 +508,11 @@ namespace CoreWebApi.Data
                                      join ass in _context.ClassSectionAssignment
                                      on r.ReferenceId equals ass.Id
 
+                                     join sub in _context.ClassSectionAssigmentSubmissions
+                                     on ass.Id equals sub.ClassSectionAssignmentId
+
                                      where r.StudentId == item.Id
+                                     && sub.StudentId == item.Id
                                      select new ResultForListDto
                                      {
                                          StudentId = r.StudentId,
@@ -509,12 +522,12 @@ namespace CoreWebApi.Data
                                          Reference = ass.AssignmentName,
                                          ObtainedMarks = r.ObtainedMarks,
                                          TotalMarks = r.TotalMarks,
-                                         Percentage = r.ObtainedMarks / r.TotalMarks * 100
+                                         Percentage = GenericFunctions.CalculatePercentage(r.ObtainedMarks, r.TotalMarks)
                                      }).ToListAsync();
 
                 item.TotalObtained = item.Result.Select(m => m.ObtainedMarks).Sum();
                 item.Total = item.Result.Select(m => m.TotalMarks).Sum();
-                item.TotalPercentage = item.Result.Select(m => m.ObtainedMarks).Sum() / item.Result.Select(m => m.TotalMarks).Sum() * 100;
+                item.TotalPercentage = item.Result.Count() > 0 ? GenericFunctions.CalculatePercentage(item.Result.Select(m => m.ObtainedMarks).Sum(), item.Result.Select(m => m.TotalMarks).Sum()) : 0;
             }
 
             _serviceResponse.Data = new { Students, StudentCount = Students.Count(), };
@@ -526,6 +539,12 @@ namespace CoreWebApi.Data
         {
             var Parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             var Students = await (from u in _context.Users
+                                  join csU in _context.ClassSectionUsers
+                                  on u.Id equals csU.UserId
+
+                                  join cs in _context.ClassSections
+                                  on csU.ClassSectionId equals cs.Id
+
                                   where u.ParentContactNumber == Parent.ParentContactNumber
                                   && u.ParentEmail == Parent.ParentEmail
                                   && u.Role == Enumm.UserType.Student.ToString()
@@ -533,7 +552,10 @@ namespace CoreWebApi.Data
                                   {
                                       Id = u.Id,
                                       FullName = u.FullName,
-                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                      TeacherName = _context.ClassSectionUsers.FirstOrDefault(m => m.ClassSectionId == cs.Id && m.UserTypeId == (int)Enumm.UserType.Teacher).User.FullName,
+                                      ClassSectionId = cs.Id,
+                                      ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
+                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).Select(x => new PhotoDto
                                       {
                                           Id = x.Id,
                                           Name = x.Name,
@@ -576,6 +598,12 @@ namespace CoreWebApi.Data
         {
             var Parent = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             var Students = await (from u in _context.Users
+                                  join csU in _context.ClassSectionUsers
+                                  on u.Id equals csU.UserId
+
+                                  join cs in _context.ClassSections
+                                  on csU.ClassSectionId equals cs.Id
+
                                   where u.ParentContactNumber == Parent.ParentContactNumber
                                   && u.ParentEmail == Parent.ParentEmail
                                   && u.Role == Enumm.UserType.Student.ToString()
@@ -583,7 +611,10 @@ namespace CoreWebApi.Data
                                   {
                                       Id = u.Id,
                                       FullName = u.FullName,
-                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                      TeacherName = _context.ClassSectionUsers.FirstOrDefault(m => m.ClassSectionId == cs.Id && m.UserTypeId == (int)Enumm.UserType.Teacher).User.FullName,
+                                      ClassSectionId = cs.Id,
+                                      ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
+                                      Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).Select(x => new PhotoDto
                                       {
                                           Id = x.Id,
                                           Name = x.Name,

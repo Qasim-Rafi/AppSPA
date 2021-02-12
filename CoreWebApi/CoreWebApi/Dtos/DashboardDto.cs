@@ -56,16 +56,22 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }       
         public string FullName { get; set; }
+        public string TeacherName { get; set; }
+        public int ClassSectionId { get; set; }
+        public string ClassSection { get; set; }
         public List<PhotoDto> Photos { get; set; }
         public List<ResultForListDto> Result { get; set; }
         public double Total { get; set; }
         public double TotalObtained { get; set; }
-        public double TotalPercentage { get; set; }
+        public decimal TotalPercentage { get; set; }
     }
     public class ParentChildAttendanceForListDto
     {
         public int Id { get; set; }       
         public string FullName { get; set; }
+        public string TeacherName { get; set; }
+        public int ClassSectionId { get; set; }
+        public string ClassSection { get; set; }
         public List<PhotoDto> Photos { get; set; }
         public List<ThisMonthAttendancePercentageDto> AttendancePercentage { get; set; } = new List<ThisMonthAttendancePercentageDto>();
     }
@@ -73,6 +79,9 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }       
         public string FullName { get; set; }
+        public string TeacherName { get; set; }
+        public int ClassSectionId { get; set; }
+        public string ClassSection { get; set; }
         public List<PhotoDto> Photos { get; set; }
         public List<StudentFeeDtoForList> Fees { get; set; } = new List<StudentFeeDtoForList>();
     }

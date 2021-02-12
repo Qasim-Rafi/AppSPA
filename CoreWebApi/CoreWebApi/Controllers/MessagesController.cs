@@ -196,5 +196,19 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("SendTextMessage")]
+        public async Task<IActionResult> SendTextMessage()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.SendTextMessage();
+
+            return Ok(_response);
+
+        }
     }
 }

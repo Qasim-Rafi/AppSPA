@@ -93,7 +93,7 @@ namespace CoreWebApi.Data
                                       && !ids.Contains(csAssign.Id)
                                       && subject.Active == true
                                       && classSection.Active == true
-                                      && csAssign.IsPosted == true
+                                      //&& csAssign.IsPosted == true
                                       && csAssign.DueDateTime.Value.Date >= DateTime.Now.Date
                                       orderby csAssign.Id descending
                                       select csAssign).Select(o => new AssignmentDtoForList

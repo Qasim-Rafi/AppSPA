@@ -18,5 +18,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> SendReply(ReplyForAddDto model);
         Task<ServiceResponse<object>> AddChatGroup(ChatGroupForAddDto model);
         Task<ServiceResponse<object>> GetChatGroups();
+        Task<ServiceResponse<object>> SendTextMessage();
     }
 }

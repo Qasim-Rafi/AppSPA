@@ -30,7 +30,7 @@ namespace CoreWebApi.Dtos
         public string Remarks { get; set; }
         public double TotalMarks { get; set; }
         public double ObtainedMarks { get; set; }
-        public double Percentage { get; set; }
+        public decimal Percentage { get; set; }
     }
     public class ClassSectionForResultListDto
     {
@@ -62,6 +62,6 @@ namespace CoreWebApi.Dtos
         public List<ResultForListDto> Result { get; set; }
         public double Total { get; set; }
         public double TotalObtained { get; set; }
-        public double TotalPercentage { get; set; }
+        public decimal TotalPercentage { get; set; }
     }
 }

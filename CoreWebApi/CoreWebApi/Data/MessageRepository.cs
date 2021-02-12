@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -518,5 +519,58 @@ namespace CoreWebApi.Data
             _serviceResponse.Data = ToReturn;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> SendTextMessage()
+        {
+            string MyUsername = "923328316624"; //Your Username At Sendpk.com 
+            string MyPassword = "123456"; //Your Password At Sendpk.com 
+            string toNumber = "923328316624"; //Recepient cell phone number with country code 
+            string Masking = "Hacker"; //Your Company Brand Name 
+            string MessageText = "hello paa g. Ki hal a";
+            string jsonResponse = SendSMS(Masking, toNumber, MessageText, MyUsername, MyPassword);
+            Console.Write(jsonResponse);
+            //Console.Read(); //to keep console window open if trying in visual studio 
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+        public static string SendSMS(string Masking, string toNumber, string MessageText, string MyUsername, string MyPassword)
+        {
+            String URI = "http://sendpk.com" +
+            "/api/sms.php?" +
+            "username=" + MyUsername +
+            "&password=" + MyPassword +
+            "&sender=" + Masking +
+            "&mobile=" + toNumber +
+            "&message=" + Uri.UnescapeDataString(MessageText); // Visual Studio 10-15 
+            //"//&message=" + System.Net.WebUtility.UrlEncode(MessageText);// Visual Studio 12 
+            try
+            {
+                WebRequest req = WebRequest.Create(URI);
+                WebResponse resp = req.GetResponse();
+                var sr = new System.IO.StreamReader(resp.GetResponseStream());
+                return sr.ReadToEnd().Trim();
+            }
+            catch (WebException ex)
+            {
+                var httpWebResponse = ex.Response as HttpWebResponse;
+                if (httpWebResponse != null)
+                {
+                    switch (httpWebResponse.StatusCode)
+                    {
+                        case HttpStatusCode.NotFound:
+                            return "404:URL not found :" + URI;
+                            break;
+                        case HttpStatusCode.BadRequest:
+                            return "400:Bad Request";
+                            break;
+                        default:
+                            return httpWebResponse.StatusCode.ToString();
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
+

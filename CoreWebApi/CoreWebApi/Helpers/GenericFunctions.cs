@@ -62,6 +62,10 @@ namespace CoreWebApi.Helpers
         {
             return decimal.Round((decimal)count / total * 100);
         }
+        public static decimal CalculatePercentage(double first, double second)
+        {
+            return decimal.Round(Convert.ToDecimal(first / second * 100));
+        }
         public static string CheckDate(string date)
         {
             if (!string.IsNullOrEmpty(date))
