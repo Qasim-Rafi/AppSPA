@@ -68,7 +68,7 @@ namespace CoreWebApi.Hubs
         public async Task CheckUserExistInGroup(int groupId, int userId)
         {
             var exist = _context.ChatGroups.Any(m => m.Id == groupId && m.UserIds.Contains(userId.ToString()));
-            await Clients.All.SendAsync("UserExistInGroup", exist);
+            await Clients.Caller.SendAsync("UserExistInGroup", exist);
         }
         public async Task CheckRoomUsers(string roomName)
         {
