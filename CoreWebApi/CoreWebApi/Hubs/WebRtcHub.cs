@@ -10,11 +10,11 @@ namespace CoreWebApi.Hubs
 {
     public class WebRtcHub : Hub
     {
-        private readonly DataContext _context;
-        public WebRtcHub(DataContext context)
-        {
-            _context = context;
-        }
+        //private readonly DataContext _context;
+        //public WebRtcHub(DataContext context)
+        //{
+        //    _context = context;
+        //}
         private static readonly List<Room> RoomsThatAreFull = new List<Room>();
         public string GetConnectionId()
         {
@@ -65,11 +65,11 @@ namespace CoreWebApi.Hubs
         {
             await Clients.Others.SendAsync("ReceiveCallSignalFromGroup", userIds, userName, roomName, senderUserId, groupId);
         }
-        public async Task CheckUserExistInGroup(int groupId, int userId)
-        {
-            var exist = _context.ChatGroups.Any(m => m.Id == groupId && m.UserIds.Contains(userId.ToString()));
-            await Clients.Caller.SendAsync("UserExistInGroup", exist);
-        }
+        //public async Task CheckUserExistInGroup(int groupId, int userId)
+        //{
+        //    var exist = _context.ChatGroups.Any(m => m.Id == groupId && m.UserIds.Contains(userId.ToString()));
+        //    await Clients.Caller.SendAsync("UserExistInGroup", exist);
+        //}
         public async Task CheckRoomUsers(string roomName)
         {
             var room = Room.Get(roomName);
