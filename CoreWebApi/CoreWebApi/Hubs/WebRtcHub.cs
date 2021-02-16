@@ -1,13 +1,20 @@
-﻿using CoreWebApi.Helpers;
+﻿using CoreWebApi.Data;
+using CoreWebApi.Helpers;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Hubs
 {
     public class WebRtcHub : Hub
     {
+        private readonly DataContext _context;
+        public WebRtcHub(DataContext context)
+        {
+            _context = context;
+        }
         private static readonly List<Room> RoomsThatAreFull = new List<Room>();
         public string GetConnectionId()
         {
@@ -54,17 +61,22 @@ namespace CoreWebApi.Hubs
         {
             await Clients.Others.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName, senderUserId);
         }
+        public async Task SendCallSignalToGroup(string userIds, string userName, string roomName, int senderUserId, int groupId)
+        {
+            await Clients.Others.SendAsync("ReceiveCallSignalFromGroup", userIds, userName, roomName, senderUserId, groupId);
+        }
+        public async Task CheckUserExistInGroup(int groupId, int userId)
+        {
+            var exist = _context.ChatGroups.Any(m => m.Id == groupId && m.UserIds.Contains(userId.ToString()));
+            await Clients.All.SendAsync("UserExistInGroup", exist);
+        }
         public async Task CheckRoomUsers(string roomName)
         {
             var room = Room.Get(roomName);
             var userCount = room.Users.Count;
             await Clients.All.SendAsync("RoomUsersCount", userCount);
         }
-        //public async Task DeclineCall(int userId, string connectionId)
-        //{
-        //    await Clients.Client(connectionId).SendAsync("CallDeclinedByReceiver", userId);
-        //}
-
+       
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await HangUp();
