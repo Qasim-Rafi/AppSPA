@@ -163,8 +163,8 @@ namespace CoreWebApi.Data
             foreach (var EmptySlot in EmptyTimeSlots)
             {
                 EmptySlot.SubstituteTeachers = await (from u in _context.Users
-                                                      //join att in _context.Attendances
-                                                      //on u.Id equals att.UserId
+                                                          //join att in _context.Attendances
+                                                          //on u.Id equals att.UserId
 
                                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
                                                       //&& att.Absent == false
@@ -474,6 +474,7 @@ namespace CoreWebApi.Data
                                        //|| (maincs != null && maincs.Active == true)
                                        //&& (mainu != null && mainu.Id == _LoggedIn_UserID)
                                        && l.Day == item
+                                       orderby l.StartTime, l.EndTime
                                        select new TeacherWeekTimeTableForListDto
                                        {
                                            Id = main.Id,
