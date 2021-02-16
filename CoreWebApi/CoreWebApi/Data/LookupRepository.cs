@@ -274,8 +274,8 @@ namespace CoreWebApi.Data
             }
 
             var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
-            var SelectOption = new SubjectDtoForList { Id = 0, Name = "Select Subject" };
-            ToReturn.Insert(0, SelectOption);
+            //var SelectOption = new SubjectDtoForList { Id = 0, Name = "Select Subject" };
+            //ToReturn.Insert(0, SelectOption);
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -313,8 +313,8 @@ namespace CoreWebApi.Data
                                select u).Distinct().ToListAsync();
             }
             var list = _mapper.Map<List<UserForListDto>>(users);
-            var SelectOption = new UserForListDto { Id = 0, FullName = "Select Teacher" };
-            list.Insert(0, SelectOption);
+            //var SelectOption = new UserForListDto { Id = 0, FullName = "Select Teacher" };
+            //list.Insert(0, SelectOption);
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
