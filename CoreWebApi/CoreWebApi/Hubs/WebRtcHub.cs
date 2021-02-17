@@ -51,8 +51,7 @@ namespace CoreWebApi.Hubs
         }
         public async Task CheckRoomIsFull(string roomName)
         {
-            var room = Room.Get(roomName);
-            if (RoomsThatAreFull.Contains(room))
+            if (RoomsThatAreFull.Select(m => m.Name).Contains(roomName))
                 await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsFull", true);
             else
                 await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsFull", false);
@@ -76,7 +75,7 @@ namespace CoreWebApi.Hubs
             var userCount = room.Users.Count;
             await Clients.All.SendAsync("RoomUsersCount", userCount);
         }
-       
+
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await HangUp();
