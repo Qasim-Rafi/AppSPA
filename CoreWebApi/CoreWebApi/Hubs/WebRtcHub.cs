@@ -45,7 +45,7 @@ namespace CoreWebApi.Hubs
 
             await SendUserListUpdate(Clients.Caller, room, true);
             await SendUserListUpdate(Clients.Others, room, false);
-            if (RoomsThatAreActive.Any(x => x.Name != room.Name))
+            if (!RoomsThatAreActive.Any(x => x.Name == room.Name))
             {
                 RoomsThatAreActive.Add(room);
             }
