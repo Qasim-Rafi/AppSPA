@@ -105,6 +105,7 @@ namespace CoreWebApi.Dtos
     {
         public List<int> UserIds { get; set; }
         public string Names { get; set; }
+        public string UserName { get; set; }
         public string Description { get; set; }
         public List<PhotoDto> Photos { get; set; }
     }

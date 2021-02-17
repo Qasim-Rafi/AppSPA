@@ -61,6 +61,7 @@ namespace CoreWebApi.Data
                              {
                                  UserIds = new List<int>() { u.Id },
                                  Names = u.FullName,
+                                 UserName = u.Username,
                                  Description = cs.Class.Name + " " + cs.Section.SectionName,
                                  Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                  {
@@ -78,6 +79,7 @@ namespace CoreWebApi.Data
                                     {
                                         UserIds = new List<int>() { u.Id },
                                         Names = u.FullName,
+                                        UserName = u.Username,
                                         Description = "",
                                         Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                         {
@@ -113,6 +115,7 @@ namespace CoreWebApi.Data
                                    {
                                        UserIds = new List<int>() { u.Id },
                                        Names = u.FullName,
+                                       UserName = u.Username,
                                        Description = cs.Class.Name + " " + cs.Section.SectionName,
                                        Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                        {
@@ -137,6 +140,7 @@ namespace CoreWebApi.Data
                                     {
                                         UserIds = new List<int>() { u.Id },
                                         Names = u.FullName,
+                                        UserName = u.Username,
                                         Description = cs.Class.Name + " " + cs.Section.SectionName,
                                         Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                         {
@@ -153,6 +157,7 @@ namespace CoreWebApi.Data
                                     {
                                         UserIds = new List<int>() { u.Id },
                                         Names = u.FullName,
+                                        UserName = u.Username,
                                         Description = "",
                                         Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                         {
@@ -193,6 +198,7 @@ namespace CoreWebApi.Data
                              {
                                  UserIds = new List<int>() { u.Id },
                                  Names = u.FullName,
+                                 UserName = u.Username,
                                  Description = cs.Class.Name + " " + cs.Section.SectionName,
                                  Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                  {
@@ -216,6 +222,7 @@ namespace CoreWebApi.Data
                                     select new ChatUserForListDto
                                     {
                                         UserIds = new List<int>() { u.Id },
+                                        UserName = u.Username,
                                         Names = u.FullName,
                                         Description = cs.Class.Name + " " + cs.Section.SectionName,
                                         Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto

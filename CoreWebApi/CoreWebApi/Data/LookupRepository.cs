@@ -39,11 +39,11 @@ namespace CoreWebApi.Data
             var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
             if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
             {
-                list = await _context.Class.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).ToListAsync();
+                list = await _context.Class.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).OrderBy(m => m.Name).ToListAsync();
             }
             else
             {
-                list = await _context.Class.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
+                list = await _context.Class.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderBy(m => m.Name).ToListAsync();
             }
             var ToReturn = _mapper.Map<List<ClassDtoForList>>(list);
             _serviceResponse.Data = ToReturn;
@@ -68,7 +68,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetCountries()
         {
-            var list = await _context.Countries.ToListAsync();
+            var list = await _context.Countries.OrderBy(m => m.Name).ToListAsync();
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -104,7 +104,7 @@ namespace CoreWebApi.Data
         {
             if (stateId > 0)
             {
-                var list = await _context.Cities.Where(m => m.StateId == stateId).ToListAsync();
+                var list = await _context.Cities.Where(m => m.StateId == stateId).OrderBy(m => m.Name).ToListAsync();
                 _serviceResponse.Data = list;
             }
             else
@@ -120,7 +120,7 @@ namespace CoreWebApi.Data
         {
             if (countryId > 0)
             {
-                var list = await _context.States.Where(m => m.CountryId == countryId).ToListAsync();
+                var list = await _context.States.Where(m => m.CountryId == countryId).OrderBy(m => m.Name).ToListAsync();
                 _serviceResponse.Data = list;
             }
             else
@@ -138,11 +138,11 @@ namespace CoreWebApi.Data
             var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
             if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
             {
-                list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).ToListAsync();
+                list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).OrderBy(m => m.Name).ToListAsync();
             }
             else
             {
-                list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
+                list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderBy(m => m.Name).ToListAsync();
             }
             var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
 
@@ -157,6 +157,7 @@ namespace CoreWebApi.Data
                                where u.UserTypeId == (int)Enumm.UserType.Teacher
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
+                               orderby u.FullName
                                select u).ToListAsync();
             var list = _mapper.Map<List<UserForListDto>>(users);
 
@@ -175,6 +176,7 @@ namespace CoreWebApi.Data
                                && u.UserTypeId == (int)Enumm.UserType.Student
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
+                               orderby u.FullName
                                select u).ToListAsync();
             var list = _mapper.Map<List<UserForListDto>>(users);
 
@@ -199,6 +201,7 @@ namespace CoreWebApi.Data
                         where b.Active == true
                         && b.RegistrationNumber != "20000000"
                         && b.Active == true
+                        orderby b.BranchName
                         select b).ToList();
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
@@ -299,6 +302,7 @@ namespace CoreWebApi.Data
                                && u.SchoolBranchId == _LoggedIn_BranchID
                                && exp.FromToLevels.Contains(className)
                                && exp.SubjectId == subjectId
+                               orderby u.FullName
                                select u).Distinct().ToListAsync();
             }
             else
@@ -310,6 +314,7 @@ namespace CoreWebApi.Data
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
                                && exp.FromToLevels.Contains(className)
+                               orderby u.FullName
                                select u).Distinct().ToListAsync();
             }
             var list = _mapper.Map<List<UserForListDto>>(users);
