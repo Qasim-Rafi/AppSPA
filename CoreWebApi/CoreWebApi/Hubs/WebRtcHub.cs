@@ -16,6 +16,7 @@ namespace CoreWebApi.Hubs
         //    _context = context;
         //}
         private static readonly List<Room> RoomsThatAreFull = new List<Room>();
+        private static readonly List<Room> RoomsThatAreActive = new List<Room>();
         public string GetConnectionId()
         {
             return Context.ConnectionId;
@@ -44,6 +45,7 @@ namespace CoreWebApi.Hubs
 
             await SendUserListUpdate(Clients.Caller, room, true);
             await SendUserListUpdate(Clients.Others, room, false);
+            RoomsThatAreActive.Add(room);
             if (room.Users.Count == 2)
             {
                 RoomsThatAreFull.Add(room);
@@ -55,6 +57,13 @@ namespace CoreWebApi.Hubs
                 await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsFull", true);
             else
                 await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsFull", false);
+        }
+        public async Task CheckRoomIsActive(string roomName)
+        {
+            if (RoomsThatAreActive.Select(m => m.Name).Contains(roomName))
+                await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsActive", true);
+            else
+                await Clients.Client(Context.ConnectionId).SendAsync("CheckRoomIsActive", false);
         }
         public async Task SendCallSignalToUser(int userId, string userName, string roomName, int senderUserId)
         {
@@ -100,6 +109,10 @@ namespace CoreWebApi.Hubs
             if (callingUser.CurrentRoom.Users.Count < 2)
             {
                 RoomsThatAreFull.Remove(callingUser.CurrentRoom);
+            }
+            if (callingUser.CurrentRoom.Users.Count == 0)
+            {
+                RoomsThatAreActive.Remove(callingUser.CurrentRoom);
             }
 
             RTCUser.Remove(callingUser);
