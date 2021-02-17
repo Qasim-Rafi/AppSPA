@@ -49,7 +49,7 @@ namespace CoreWebApi.Hubs
             {
                 RoomsThatAreActive.Add(room);
             }
-            if (room.Users.Count == 2)
+            if (room.Users.Count() == 2)
             {
                 RoomsThatAreFull.Add(room);
             }
@@ -84,7 +84,7 @@ namespace CoreWebApi.Hubs
         public async Task CheckRoomUsers(string roomName)
         {
             var room = Room.Get(roomName);
-            var userCount = room.Users.Count;
+            var userCount = room.Users.Count();
             await Clients.All.SendAsync("RoomUsersCount", userCount);
         }
 
@@ -109,16 +109,17 @@ namespace CoreWebApi.Hubs
                 callingUser.CurrentRoom.Users.Remove(callingUser);
                 await SendUserListUpdate(Clients.Others, callingUser.CurrentRoom, false);
             }
-            if (callingUser.CurrentRoom.Users.Count < 2)
+            if (callingUser.CurrentRoom.Users.Count() < 2)
             {
                 RoomsThatAreFull.Remove(callingUser.CurrentRoom);
             }
-            if (callingUser.CurrentRoom.Users.Count == 0)
+            if (callingUser.CurrentRoom.Users.Count() == 0)
             {
                 RoomsThatAreActive.Remove(callingUser.CurrentRoom);
                 Room.Remove(callingUser.CurrentRoom);
             }
-            RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault().Remove(callingUser);
+            if (RoomsThatAreActive.Count() > 0)
+                RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault().Remove(callingUser);
             RTCUser.Remove(callingUser);
         }
 
