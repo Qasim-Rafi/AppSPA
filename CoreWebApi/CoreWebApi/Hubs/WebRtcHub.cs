@@ -116,10 +116,10 @@ namespace CoreWebApi.Hubs
             if (callingUser.CurrentRoom.Users.Count == 0)
             {
                 RoomsThatAreActive.Remove(callingUser.CurrentRoom);
+                Room.Remove(callingUser.CurrentRoom);
             }
-
+            RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault().Remove(callingUser);
             RTCUser.Remove(callingUser);
-            Room.Remove(callingUser.CurrentRoom);
         }
 
         // WebRTC Signal Handler
