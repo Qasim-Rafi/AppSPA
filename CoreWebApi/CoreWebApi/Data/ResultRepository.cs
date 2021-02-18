@@ -102,7 +102,7 @@ namespace CoreWebApi.Data
                                {
                                    RefId = ass.Id,
                                    RefName = ass.AssignmentName,
-                               }).ToListAsync();
+                               }).Distinct().ToListAsync();
 
             //Exams.AddRange(await (from u in _context.Users
             //                      join q in _context.Quizzes
