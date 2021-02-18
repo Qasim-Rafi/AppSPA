@@ -72,9 +72,9 @@ namespace CoreWebApi.Hubs
         {
             await Clients.Others.SendAsync("ReceiveCallSignalFromUser", userId, userName, roomName, senderUserId);
         }
-        public async Task SendCallSignalToGroup(string userIds, string userName, string roomName, int senderUserId, int groupId)
+        public async Task SendCallSignalToGroup(string userIds, string userName, string roomName, int senderUserId, int groupId, string receiverNames)
         {
-            await Clients.Others.SendAsync("ReceiveCallSignalFromGroup", userIds, userName, roomName, senderUserId, groupId);
+            await Clients.Others.SendAsync("ReceiveCallSignalFromGroup", userIds, userName, roomName, senderUserId, groupId, receiverNames);
         }
         //public async Task CheckUserExistInGroup(int groupId, int userId)
         //{

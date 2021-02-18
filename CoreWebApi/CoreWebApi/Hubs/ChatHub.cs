@@ -10,14 +10,9 @@ using System.Threading.Tasks;
 namespace CoreWebApi.Hubs
 {
     public class ChatHub : Hub
-    {       
+    {
         //private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
-        //public async Task SendMessage(string message)
-        //{
-        //    //Receive Message
-        //    List<string> ReceiverConnectionids = _connections.GetConnections("").ToList<string>();
-
-        //}
+       
         //public override async Task OnConnectedAsync()
         //{
         //    var httpContext = Context.GetHttpContext();
