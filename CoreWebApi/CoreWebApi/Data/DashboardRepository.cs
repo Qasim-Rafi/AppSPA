@@ -624,27 +624,33 @@ namespace CoreWebApi.Data
 
             foreach (var item in Students)
             {
-                item.Fees = await (from u in _context.Users
-                                   join fee in _context.StudentFees
-                                   on u.Id equals fee.StudentId
+                item.Fees.AllMonthPaidStatus = await (from u in _context.Users
+                                                      join fee in _context.StudentFees
+                                                      on u.Id equals fee.StudentId
 
-                                   join csU in _context.ClassSectionUsers
-                                   on u.Id equals csU.UserId
+                                                      join csU in _context.ClassSectionUsers
+                                                      on u.Id equals csU.UserId
 
-                                   join cs in _context.ClassSections
-                                   on csU.ClassSectionId equals cs.Id
+                                                      join cs in _context.ClassSections
+                                                      on csU.ClassSectionId equals cs.Id
 
-                                   where fee.StudentId == item.Id
-                                   select new StudentFeeDtoForList
-                                   {
-                                       StudentId = fee.StudentId,
-                                       Student = u.FullName,
-                                       ClassSectionId = cs.Id,
-                                       ClassSection = cs.Class.Name + " " + cs.Section.SectionName,
-                                       Month = fee.Month,
-                                       Paid = fee.Paid,
-                                       Remarks = fee.Remarks,
-                                   }).ToListAsync();
+                                                      where fee.StudentId == item.Id
+                                                      select new StudentFeeDtoForList
+                                                      {
+                                                          StudentId = fee.StudentId,
+                                                          Student = u.FullName,
+                                                          ClassSectionId = cs.Id,
+                                                          ClassSection = cs.Class != null && cs.Section != null ? cs.Class.Name + " " + cs.Section.SectionName : "",
+                                                          Month = fee.Month,
+                                                          Paid = fee.Paid,
+                                                          Remarks = fee.Remarks,
+                                                      }).ToListAsync();
+                string CurrentMonth = DateTime.Now.ToString("MMMM");
+                var currentMonthFee = item.Fees.AllMonthPaidStatus.Where(m => m.Month == CurrentMonth).FirstOrDefault();
+                if (currentMonthFee != null)
+                    item.Fees.CurrentMonthPaidStatus = true;
+                else
+                    item.Fees.CurrentMonthPaidStatus = false;
             }
             _serviceResponse.Data = new { Students, StudentCount = Students.Count(), };
             _serviceResponse.Success = true;

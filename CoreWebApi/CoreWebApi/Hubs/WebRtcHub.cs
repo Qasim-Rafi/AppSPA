@@ -119,7 +119,13 @@ namespace CoreWebApi.Hubs
                 Room.Remove(callingUser.CurrentRoom);
             }
             if (RoomsThatAreActive.Count() > 0)
-                RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault().Remove(callingUser);
+            {
+                var toRemove = RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault();
+                if (toRemove != null)
+                {
+                    toRemove.Remove(callingUser);
+                }
+            }
             RTCUser.Remove(callingUser);
         }
 

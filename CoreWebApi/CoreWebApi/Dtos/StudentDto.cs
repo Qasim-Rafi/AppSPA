@@ -16,6 +16,11 @@ namespace CoreWebApi.Dtos
         public string Remarks { get; set; }
         public bool Paid { get; set; }
     }
+    public class CurrentMonthStudentFeeDtoForList
+    {
+        public bool CurrentMonthPaidStatus { get; set; }
+        public List<StudentFeeDtoForList> AllMonthPaidStatus{ get; set; } = new List<StudentFeeDtoForList>();
+    }
     public class StudentFeeDtoForList
     {
         public int StudentId { get; set; }

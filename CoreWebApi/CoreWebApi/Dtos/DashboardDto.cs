@@ -83,6 +83,6 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public string ClassSection { get; set; }
         public List<PhotoDto> Photos { get; set; }
-        public List<StudentFeeDtoForList> Fees { get; set; } = new List<StudentFeeDtoForList>();
+        public CurrentMonthStudentFeeDtoForList Fees { get; set; } = new CurrentMonthStudentFeeDtoForList();
     }
 }
