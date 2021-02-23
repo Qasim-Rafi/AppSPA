@@ -520,5 +520,23 @@ namespace CoreWebApi.Data
             }
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> AddRequisitionRequest(RequisitionForAddDto model)
+        {
+            var toCreate = new Requisition
+            {
+                RequestById = _LoggedIn_UserID,
+                RequestComment = model.RequestComment,
+                RequestDateTime = DateTime.Now,
+                Status = Enumm.RequisitionStatus.Pending,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.Requisitions.AddAsync(toCreate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

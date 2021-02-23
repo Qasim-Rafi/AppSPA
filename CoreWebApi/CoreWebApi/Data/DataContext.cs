@@ -74,6 +74,7 @@ namespace CoreWebApi.Data
         public DbSet<GroupMessage> GroupMessages { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<StudentFee> StudentFees { get; set; }
+        public DbSet<Requisition> Requisitions { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }

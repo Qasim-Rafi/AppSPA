@@ -121,5 +121,16 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("AddRequisitionRequest")]
+        public async Task<IActionResult> AddRequisitionRequest(RequisitionForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.AddRequisitionRequest(model);
+            return Ok(_response);
+
+        }
     }
 }

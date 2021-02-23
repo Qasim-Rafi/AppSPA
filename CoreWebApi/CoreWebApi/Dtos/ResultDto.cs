@@ -48,6 +48,11 @@ namespace CoreWebApi.Dtos
         public int StudentId { get; set; }
         public string StudentName { get; set; }
         public int ClassSectionId { get; set; }
+        public int ReferenceId { get; set; } = 0;
+        public double TotalMarks { get; set; } = 0;
+        public double ObtainedMarks { get; set; } = 0;
+        public string Remarks { get; set; } = "";
+        public int SubjectId { get; set; } = 0;
     }
     public class SubjectForResultListDto
     {
