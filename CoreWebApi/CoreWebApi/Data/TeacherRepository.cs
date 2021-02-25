@@ -445,6 +445,7 @@ namespace CoreWebApi.Data
         {
             var weekDays = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
             List<TeacherTimeTableForListDto> ToReturn = new List<TeacherTimeTableForListDto>();
+            List<TeacherWeekTimeTableForListDto> AllTimeTables = new List<TeacherWeekTimeTableForListDto>();
             foreach (var item in weekDays)
             {
 
@@ -496,6 +497,7 @@ namespace CoreWebApi.Data
                                            IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
                                        }).ToListAsync()
                 };
+                AllTimeTables.AddRange(ToAdd.TimeTable);
                 if (ToAdd.TimeTable.Count() > 0)
                     ToReturn.Add(ToAdd);
             }
