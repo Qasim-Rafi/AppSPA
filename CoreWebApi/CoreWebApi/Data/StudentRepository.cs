@@ -161,5 +161,10 @@ namespace CoreWebApi.Data
 
             return isPaid;
         }
+
+        public Task<ServiceResponse<object>> GetStudentTimeTable()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

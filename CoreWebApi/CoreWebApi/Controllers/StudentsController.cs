@@ -57,5 +57,15 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetStudentTimeTable")]
+        public async Task<IActionResult> GetStudentTimeTable()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetStudentTimeTable();
+            return Ok(_response);
+        }
     }
 }

@@ -12,5 +12,6 @@ namespace CoreWebApi.IData
         Task<bool> PaidAlready(string month, int studentId);
         Task<ServiceResponse<object>> AddFee(StudentFeeDtoForAdd model);
         Task<ServiceResponse<object>> GetStudentsForFee();
+        Task<ServiceResponse<object>> GetStudentTimeTable();
     }
 }
