@@ -162,9 +162,70 @@ namespace CoreWebApi.Data
             return isPaid;
         }
 
-        public Task<ServiceResponse<object>> GetStudentTimeTable()
+        public async Task<ServiceResponse<object>> GetStudentTimeTable()
         {
-            throw new NotImplementedException();
+            var weekDays = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            List<TeacherTimeTableForListDto> ToReturn = new List<TeacherTimeTableForListDto>();
+            var LoggedInUserClassSection = await _context.ClassSectionUsers.Where(m => m.UserId == _LoggedIn_UserID).FirstOrDefaultAsync();
+            foreach (var item in weekDays)
+            {
+
+                var ToAdd = new TeacherTimeTableForListDto
+                {
+                    Day = item,
+                    TimeTable = await (from l in _context.LectureTiming
+                                       join main in _context.ClassLectureAssignment
+                                       on l.Id equals main.LectureId into newMain
+                                       from main in newMain.DefaultIfEmpty()
+
+                                       join u in _context.Users
+                                       on main.TeacherId equals u.Id into newU
+                                       from mainu in newU.DefaultIfEmpty()
+
+                                       join s in _context.Subjects
+                                       on main.SubjectId equals s.Id into newS
+                                       from mains in newS.DefaultIfEmpty()
+
+                                       join cs in _context.ClassSections
+                                       on main.ClassSectionId equals cs.Id into newCS
+                                       from maincs in newCS.DefaultIfEmpty()
+
+                                       where l.SchoolBranchId == _LoggedIn_BranchID
+                                       //|| (mainu != null && mainu.UserTypeId == (int)Enumm.UserType.Teacher)
+                                       //|| (mains != null && mains.Active == true)
+                                       //|| (maincs != null && maincs.Active == true)
+                                       //&& (mainu != null && mainu.Id == _LoggedIn_UserID)
+                                       && l.Day == item
+                                       && main.ClassSectionId == LoggedInUserClassSection.ClassSectionId
+                                       orderby l.StartTime, l.EndTime
+                                       select new TeacherWeekTimeTableForListDto
+                                       {
+                                           Id = main.Id,
+                                           LectureId = main.LectureId,
+                                           Day = l.Day,
+                                           StartTime = DateFormat.To24HRTime(l.StartTime),
+                                           EndTime = DateFormat.To24HRTime(l.EndTime),
+                                           StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
+                                           EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
+                                           TeacherId = mainu.Id,
+                                           Teacher = mainu.FullName,
+                                           SubjectId = main.SubjectId,
+                                           Subject = mains.Name,
+                                           ClassSectionId = main.ClassSectionId,
+                                           Classs = _context.Class.FirstOrDefault(m => m.Id == maincs.ClassId && m.Active == true).Name,
+                                           Section = _context.Sections.FirstOrDefault(m => m.Id == maincs.SectionId && m.Active == true).SectionName,
+                                           IsBreak = l.IsBreak,
+                                           RowNo = l.RowNo,
+                                           IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
+                                       }).ToListAsync()
+
+                };
+                if (ToAdd.TimeTable.Count() > 0)
+                    ToReturn.Add(ToAdd);
+            }
+            _serviceResponse.Data = new { DaysForPrint = weekDays, TimeTableForPrint = ToReturn.Select(m => m.TimeTable), TimeTable = ToReturn };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
     }
 }

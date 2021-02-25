@@ -139,19 +139,26 @@ namespace CoreWebApi.Dtos
     }
     public class UsefulResourceForAddDto
     {
+        public string Keyword { get; set; }
+        public string VideoId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Link { get; set; }
+        public string Thumbnail { get; set; }
+        public string ResourceType { get; set; }
     }
     public class UsefulResourceForListDto
     {
+        public string VideoId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Link { get; set; }
+        public string Thumbnail { get; set; }
+        public string ResourceType { get; set; }
     }
     public class UsefulResourceTopicWiseForListDto
     {
-        public string Topic { get; set; }
+        public string Keyword { get; set; }
         public List<UsefulResourceForListDto> TopicWiseLinks { get; set; } = new List<UsefulResourceForListDto>();
     }
 }

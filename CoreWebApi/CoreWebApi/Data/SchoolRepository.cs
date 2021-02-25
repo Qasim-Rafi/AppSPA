@@ -984,6 +984,10 @@ namespace CoreWebApi.Data
                 Title = model.Title,
                 Description = model.Description,
                 Link = model.Link,
+                Keyword = model.Keyword,
+                Thumbnail = model.Thumbnail,
+                VideoId = model.VideoId,
+                ResourceType = model.ResourceType,
                 CreatedById = _LoggedIn_UserID
             };
 
@@ -994,18 +998,32 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetUsefulResources()
+        public async Task<ServiceResponse<object>> GetUsefulResources(string resourceType)
         {
-            var Resources = await _context.UsefulResources.Select(p => new UsefulResourceForListDto
+            if (string.IsNullOrEmpty(resourceType))
             {
-                Title = p.Title,
-                Description = p.Description,
-                Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link
-            }).ToListAsync();
-
-            _serviceResponse.Data = Resources;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
+                var Resources = await _context.UsefulResources.Select(p => new UsefulResourceForListDto
+                {
+                    Title = p.Title,
+                    Description = p.Description,
+                    Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link
+                }).ToListAsync();
+                _serviceResponse.Data = Resources;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            else
+            {
+                var Resources = await _context.UsefulResources.Where(m => m.ResourceType == resourceType).Select(p => new UsefulResourceForListDto
+                {
+                    Title = p.Title,
+                    Description = p.Description,
+                    Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link
+                }).ToListAsync();
+                _serviceResponse.Data = Resources;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
         }
     }
 }

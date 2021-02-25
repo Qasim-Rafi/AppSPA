@@ -444,11 +444,10 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetTeacherTimeTable()
         {
             var weekDays = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-            List<TeacherTimeTableForListDto> ToReturn = new List<TeacherTimeTableForListDto>();
-            List<TeacherWeekTimeTableForListDto> AllTimeTables = new List<TeacherWeekTimeTableForListDto>();
+            List<TeacherTimeSlotsForListDto> TimeSlots = new List<TeacherTimeSlotsForListDto>();
+            List<TeacherWeekTimeTableForListDto> TimeTable = new List<TeacherWeekTimeTableForListDto>();
             foreach (var item in weekDays)
             {
-
                 var ToAdd = new TeacherTimeTableForListDto
                 {
                     Day = item,
@@ -497,16 +496,27 @@ namespace CoreWebApi.Data
                                            IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
                                        }).ToListAsync()
                 };
-                AllTimeTables.AddRange(ToAdd.TimeTable);
-                if (ToAdd.TimeTable.Count() > 0)
-                    ToReturn.Add(ToAdd);
+                TimeTable.AddRange(ToAdd.TimeTable);                
+                //var EndTimings = ToAdd.TimeTable.Select(m => m.EndTime).ToList();
+                //for (int i = 0; i < StartTimings.Count(); i++)
+                //{
+                //    TimeSlots.Add(new TeacherTimeSlotsForListDto
+                //    {
+                //        StartTime = StartTimings[i],
+                //        EndTime = EndTimings[i]
+                //    });
+                //}
             }
+            TimeSlots = TimeTable.Select(o => new TeacherTimeSlotsForListDto
+            {
+                StartTime = o.StartTime,
+                EndTime = o.EndTime
+            }).Distinct().ToList();
             _serviceResponse.Data = new
             {
-                DaysForPrint = weekDays,
-                TimeTableForPrint = ToReturn.Select(m => m.TimeTable),
-                TimeTable = ToReturn,
-                AllTimeTableForPrint = AllTimeTables
+                Days = weekDays,
+                TimeSlots,
+                TimeTable
             };
             _serviceResponse.Success = true;
             return _serviceResponse;

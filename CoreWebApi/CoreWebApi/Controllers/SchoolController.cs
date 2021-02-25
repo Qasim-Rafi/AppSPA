@@ -337,14 +337,14 @@ namespace CoreWebApi.Controllers
             _response = await _repo.AddUsefulResources(model);
             return Ok(_response);
         }
-        [HttpGet("GetUsefulResources")]
-        public async Task<IActionResult> GetUsefulResources()
+        [HttpGet("GetUsefulResources/{resourceType?}")]
+        public async Task<IActionResult> GetUsefulResources(string resourceType = "")
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.GetUsefulResources();
+            _response = await _repo.GetUsefulResources(resourceType);
             return Ok(_response);
         }
 
