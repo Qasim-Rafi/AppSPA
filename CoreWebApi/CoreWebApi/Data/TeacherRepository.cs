@@ -501,7 +501,13 @@ namespace CoreWebApi.Data
                 if (ToAdd.TimeTable.Count() > 0)
                     ToReturn.Add(ToAdd);
             }
-            _serviceResponse.Data = new { DaysForPrint = weekDays, TimeTableForPrint = ToReturn.Select(m => m.TimeTable), TimeTable = ToReturn };
+            _serviceResponse.Data = new
+            {
+                DaysForPrint = weekDays,
+                TimeTableForPrint = ToReturn.Select(m => m.TimeTable),
+                TimeTable = ToReturn,
+                AllTimeTableForPrint = AllTimeTables
+            };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
