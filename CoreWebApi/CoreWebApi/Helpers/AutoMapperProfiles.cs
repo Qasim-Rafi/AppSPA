@@ -38,26 +38,34 @@ namespace CoreWebApi.Helpers
             CreateMap<Subject, SubjectDtoForAdd>();
             CreateMap<Subject, SubjectDtoForEdit>();
             CreateMap<Subject, SubjectDtoForDetail>();
-            CreateMap<Subject, SubjectDtoForList>();           
+            CreateMap<Subject, SubjectDtoForList>();
             // assginment
             CreateMap<ClassSectionAssignment, AssignmentDtoForAdd>();
             CreateMap<ClassSectionAssignment, AssignmentDtoForEdit>();
             CreateMap<ClassSectionAssignment, AssignmentDtoForDetail>();
-            CreateMap<ClassSectionAssignment, AssignmentDtoForList>();        
-            CreateMap<ClassSectionAssignment, AssignmentDtoForLookupList>();        
+            CreateMap<ClassSectionAssignment, AssignmentDtoForList>();
+            CreateMap<ClassSectionAssignment, AssignmentDtoForLookupList>();
             // attendance
             CreateMap<Attendance, AttendanceDtoForAdd>();
             CreateMap<Attendance, AttendanceDtoForEdit>();
             CreateMap<Attendance, AttendanceDtoForDetail>();
-            CreateMap<Attendance, AttendanceDtoForList>();   
+            CreateMap<Attendance, AttendanceDtoForList>();
             // leave
             CreateMap<Leave, LeaveDtoForAdd>();
             CreateMap<Leave, LeaveDtoForEdit>();
             CreateMap<Leave, LeaveDtoForDetail>();
             CreateMap<Leave, LeaveDtoForList>();
             // noticeboard
-            CreateMap<NoticeBoard, NoticeBoardForListDto>();            
-           
+            CreateMap<NoticeBoard, NoticeBoardForListDto>();
+            // subject content
+            CreateMap<SubjectContent, SubjectContentDtoForAdd>();
+            CreateMap<SubjectContent, SubjectContentDtoForEdit>();
+            CreateMap<SubjectContent, SubjectContentDtoForDetail>();
+            // subject content details
+            CreateMap<SubjectContentDetail, SubjectContentDetailDtoForAdd>();
+            CreateMap<SubjectContentDetail, SubjectContentDetailDtoForEdit>();
+            CreateMap<SubjectContentDetail, SubjectContentDetailDtoForDetail>();
+
         }
     }
 }

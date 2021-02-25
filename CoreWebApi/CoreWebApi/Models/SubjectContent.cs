@@ -10,15 +10,17 @@ namespace CoreWebApi.Models
     public class SubjectContent
     {
         public int Id { get; set; }
-        public int SubjectAssignmentId { get; set; }
+        public int ClassId { get; set; }
+        public int SubjectId { get; set; }
         [StringLength(200)]
         public string Heading { get; set; }
         public int ContentOrder { get; set; }
         public bool Active { get; set; }
         public DateTime CreatedDateTime { get; set; }
 
-        [ForeignKey("SubjectAssignmentId")]
-        public virtual SubjectAssignment SubjectAssignment { get; set; }
-
+        [ForeignKey("SubjectId")]
+        public virtual Subject Subject { get; set; }
+        [ForeignKey("ClassId")]
+        public virtual Class Class { get; set; }
     }
 }

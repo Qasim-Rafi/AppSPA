@@ -325,6 +325,25 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
+        public async Task<ServiceResponse<object>> GetSubjectsByClass(int classId)
+        {
+            List<Subject> list = new List<Subject>();
 
+            list = await (from s in _context.Subjects
+                          join sAssign in _context.SubjectAssignments
+                          on s.Id equals sAssign.SubjectId
+                          join cs in _context.ClassSections
+                          on sAssign.ClassId equals cs.ClassId
+                          where cs.ClassId == classId
+                          && s.SchoolBranchId == _LoggedIn_BranchID
+                          && s.Active == true
+                          select s).ToListAsync();
+
+            var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
+           
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

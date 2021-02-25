@@ -1002,7 +1002,7 @@ namespace CoreWebApi.Data
         {
             if (string.IsNullOrEmpty(resourceType))
             {
-                var Resources = await _context.UsefulResources.Select(p => new UsefulResourceForListDto
+                var Resources = await _context.UsefulResources.Where(m => string.IsNullOrEmpty(m.ResourceType)).Select(p => new UsefulResourceForListDto
                 {
                     Title = p.Title,
                     Description = p.Description,
@@ -1014,11 +1014,17 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var Resources = await _context.UsefulResources.Where(m => m.ResourceType == resourceType).Select(p => new UsefulResourceForListDto
+                var Resources = await _context.UsefulResources.Where(m => m.ResourceType == resourceType).Select(p => new UsefulResourceTopicWiseForListDto
                 {
-                    Title = p.Title,
-                    Description = p.Description,
-                    Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link
+                    Keyword = p.Keyword,
+                    TopicWiseLinks = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.Keyword == p.Keyword).Select(o => new UsefulResourceForListDto
+                    {
+                        VideoId = o.VideoId,
+                        Thumbnail = o.Thumbnail,
+                        Title = o.Title,
+                        Description = o.Description,
+
+                    }).ToList(),
                 }).ToListAsync();
                 _serviceResponse.Data = Resources;
                 _serviceResponse.Success = true;

@@ -91,7 +91,7 @@ namespace CoreWebApi.Data
                                      ClassName = c.Name,
                                      SchoolId = ass.SchoolBranchId,
                                      SchoolName = sch.BranchName,
-                                     TableOfContent = ass.TableOfContent,
+                                     //TableOfContent = ass.TableOfContent,
                                  }).FirstOrDefaultAsync();
 
             if (subject != null)
@@ -137,7 +137,7 @@ namespace CoreWebApi.Data
                                 ClassName = c.Name,
                                 SchoolBranchId = sch.Id,
                                 SchoolName = sch.BranchName,
-                                TableOfContent = ass.TableOfContent,
+                                //TableOfContent = ass.TableOfContent,
                             }).Distinct().ToList().Select(o => new AssignSubjectDtoForList
                             {
                                 Id = _context.SubjectAssignments.FirstOrDefault(m => m.ClassId == o.ClassId).Id,
@@ -145,7 +145,7 @@ namespace CoreWebApi.Data
                                 ClassName = o.ClassName,
                                 SchoolId = o.SchoolBranchId,
                                 SchoolName = o.SchoolName,
-                                TableOfContent = o.TableOfContent,
+                                //TableOfContent = o.TableOfContent,
                             }).ToList();
 
 
@@ -363,15 +363,35 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> GetSubjectContents(int AssignedSubjectId)
+        public async Task<ServiceResponse<object>> GetAllSubjectContent(int subjectId)
         {
-            var ToReturn = await _context.SubjectContents.Where(m => m.SubjectAssignmentId == AssignedSubjectId).ToListAsync();
+            var ToReturn = await _context.SubjectContents
+                .Select(o => new SubjectContentOneDtoForList
+                {
+                    ClassId = o.ClassId,
+                    Class = o.Class.Name,
+                    Subjects = _context.SubjectContents.Where(m => m.ClassId == o.ClassId).Select(p => new SubjectContentTwoDtoForList
+                    {
+                        SubjectId = p.SubjectId,
+                        Subject = p.Subject.Name,
+                        Contents = _context.SubjectContents.Where(m => m.SubjectId == p.SubjectId).Select(q => new SubjectContentThreeDtoForList
+                        {
+                            Heading = q.Heading,
+                            ContentOrder = q.ContentOrder,
+                            ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == q.Id).Select(r => new SubjectContentDetailDtoForList
+                            {
+                                DetailHeading = r.Heading,
+                                DetailOrder = r.Order,
+                            }).ToList()
+                        }).ToList()
+                    }).ToList()
+                }).ToListAsync();
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetSubjectContent(int id)
+        public async Task<ServiceResponse<object>> GetSubjectContentById(int id)
         {
             var ToReturn = await _context.SubjectContents.Where(m => m.Id == id).FirstOrDefaultAsync();
             _serviceResponse.Data = ToReturn;
@@ -390,7 +410,8 @@ namespace CoreWebApi.Data
                     Active = true,
                     ContentOrder = item.ContentOrder,
                     CreatedDateTime = DateTime.Now,
-                    SubjectAssignmentId = item.SubjectAssignmentId
+                    SubjectId = item.SubjectId,
+                    ClassId = item.ClassId
                 });
             }
 
@@ -402,9 +423,64 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public Task<ServiceResponse<object>> EditSubjectContent(int id, SubjectContentDtoForEdit subject)
+        public async Task<ServiceResponse<object>> UpdateSubjectContent(SubjectContentDtoForEdit model)
         {
-            throw new NotImplementedException();
+            var toUpdate = _context.SubjectContents.Where(m => m.Id == model.Id).FirstOrDefault();
+            toUpdate.Heading = model.Heading;
+            toUpdate.ContentOrder = model.ContentOrder;
+            toUpdate.SubjectId = model.SubjectId;
+            toUpdate.ClassId = model.ClassId;
+
+            _context.SubjectContents.Update(toUpdate);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Updated;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> AddSubjectContentDetails(List<SubjectContentDetailDtoForAdd> model)
+        {
+            var ListToAdd = new List<SubjectContentDetail>();
+            foreach (var item in model)
+            {
+                ListToAdd.Add(new SubjectContentDetail
+                {
+                    Heading = item.Heading,
+                    Active = true,
+                    Order = item.Order,
+                    CreatedDateTime = DateTime.Now,
+                    SubjectContentId = item.SubjectContentId
+                });
+            }
+
+            await _context.SubjectContentDetails.AddRangeAsync(ListToAdd);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetSubjectContentDetailById(int id)
+        {
+            var ToReturn = await _context.SubjectContentDetails.Where(m => m.Id == id).FirstOrDefaultAsync();
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> UpdateSubjectContentDetail(SubjectContentDetailDtoForEdit model)
+        {
+            var toUpdate = _context.SubjectContentDetails.Where(m => m.Id == model.Id).FirstOrDefault();
+            toUpdate.Heading = model.Heading;
+            toUpdate.Order = model.Order;
+            toUpdate.SubjectContentId = model.SubjectContentId;
+
+            _context.SubjectContentDetails.Update(toUpdate);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Updated;
+            return _serviceResponse;
         }
     }
 }

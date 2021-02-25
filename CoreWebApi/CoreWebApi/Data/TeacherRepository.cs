@@ -444,6 +444,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetTeacherTimeTable()
         {
             var weekDays = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            List<string> Days = new List<string>();
             List<TeacherTimeSlotsForListDto> TimeSlots = new List<TeacherTimeSlotsForListDto>();
             List<TeacherWeekTimeTableForListDto> TimeTable = new List<TeacherWeekTimeTableForListDto>();
             foreach (var item in weekDays)
@@ -496,25 +497,23 @@ namespace CoreWebApi.Data
                                            IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
                                        }).ToListAsync()
                 };
-                TimeTable.AddRange(ToAdd.TimeTable);                
-                //var EndTimings = ToAdd.TimeTable.Select(m => m.EndTime).ToList();
-                //for (int i = 0; i < StartTimings.Count(); i++)
-                //{
-                //    TimeSlots.Add(new TeacherTimeSlotsForListDto
-                //    {
-                //        StartTime = StartTimings[i],
-                //        EndTime = EndTimings[i]
-                //    });
-                //}
+                TimeTable.AddRange(ToAdd.TimeTable);
+                if (item == "Monday")
+                {
+                    TimeSlots = TimeTable.Select(o => new TeacherTimeSlotsForListDto
+                    {
+                        StartTime = o.StartTime,
+                        EndTime = o.EndTime
+                    }).ToList();
+                }
+                              
             }
-            TimeSlots = TimeTable.Select(o => new TeacherTimeSlotsForListDto
-            {
-                StartTime = o.StartTime,
-                EndTime = o.EndTime
-            }).Distinct().ToList();
+            Days = TimeTable.Select(o => o.Day).Distinct().ToList();
+            //Days = Days.OrderBy(i => weekDays.IndexOf(i.ToString())).ToList();
+
             _serviceResponse.Data = new
             {
-                Days = weekDays,
+                Days,
                 TimeSlots,
                 TimeTable
             };

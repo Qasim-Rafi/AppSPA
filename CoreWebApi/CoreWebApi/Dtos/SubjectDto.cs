@@ -91,37 +91,87 @@ namespace CoreWebApi.Dtos
     }
     public class SubjectContentDtoForAdd
     {
-        public int SubjectAssignmentId { get; set; }
+        [Required] 
+        public int ClassId { get; set; }
+        [Required] 
+        public int SubjectId { get; set; }
         [Required]
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Heading { get; set; }
-        [Required]
+        //[Required]
         public int ContentOrder { get; set; }
     }
     public class SubjectContentDtoForEdit
     {
         public int Id { get; set; }
-        public int SubjectAssignmentId { get; set; }
+        public int ClassId { get; set; }
+        public int SubjectId { get; set; }
         [Required]
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Heading { get; set; }
-        [Required]
         public int ContentOrder { get; set; }
     }
-    public class SubjectContentDtoForList
+    public class SubjectContentOneDtoForList
     {
-        public int Id { get; set; }
-        public int SubjectAssignmentId { get; set; }
-        public string SubjectName { get; set; }
+        public int ClassId { get; set; }
+        public string Class { get; set; }        
+        public List<SubjectContentTwoDtoForList> Subjects = new List<SubjectContentTwoDtoForList>();
+    }
+    public class SubjectContentTwoDtoForList
+    {
+        public int SubjectId { get; set; }
+        public string Subject { get; set; }        
+        public List<SubjectContentThreeDtoForList> Contents = new List<SubjectContentThreeDtoForList>();
+    }
+    public class SubjectContentThreeDtoForList
+    {
+        public int SubjectContentId { get; set; }
         public string Heading { get; set; }
         public int ContentOrder { get; set; }
+        public List<SubjectContentDetailDtoForList> ContentDetails = new List<SubjectContentDetailDtoForList>();
     }
     public class SubjectContentDtoForDetail
     {
         public int Id { get; set; }
-        public int SubjectAssignmentId { get; set; }
-        public string SubjectName { get; set; }
+        public int ClassId { get; set; }
+        public string Class { get; set; }
+        public int SubjectId { get; set; }
+        public string Subject { get; set; }
         public string Heading { get; set; }
         public int ContentOrder { get; set; }
+    }
+    public class SubjectContentDetailDtoForAdd
+    {
+        [Required]
+        public int SubjectContentId { get; set; }
+        [Required]
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
+        public string Heading { get; set; }
+        public int Order { get; set; }
+    }
+    public class SubjectContentDetailDtoForEdit
+    {
+        public int Id { get; set; }
+        public int SubjectContentId { get; set; }
+        [Required]
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
+        public string Heading { get; set; }
+        public int Order { get; set; }
+    }
+    public class SubjectContentDetailDtoForList
+    {
+        public int Id { get; set; }
+        //public int SubjectContentId { get; set; }       
+        //public string SubjectContent { get; set; }       
+        public string DetailHeading { get; set; }
+        public int DetailOrder { get; set; }
+    }
+    public class SubjectContentDetailDtoForDetail
+    {
+        public int Id { get; set; }
+        public int SubjectContentId { get; set; }
+        public string SubjectContent { get; set; }
+        public string Heading { get; set; }
+        public int Order { get; set; }
     }
 }
