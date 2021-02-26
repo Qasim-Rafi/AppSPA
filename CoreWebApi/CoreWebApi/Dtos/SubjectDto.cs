@@ -148,6 +148,7 @@ namespace CoreWebApi.Dtos
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Heading { get; set; }
         public int Order { get; set; }
+        public string Duration { get; set; }
     }
     public class SubjectContentDetailDtoForEdit
     {
@@ -157,12 +158,14 @@ namespace CoreWebApi.Dtos
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Heading { get; set; }
         public int Order { get; set; }
+        public string Duration { get; set; }
     }
     public class SubjectContentDetailDtoForList
     {
         public int SubjectContentDetailId { get; set; }              
         public string DetailHeading { get; set; }
         public int DetailOrder { get; set; }
+        public string Duration { get; set; }
     }
     public class SubjectContentDetailDtoForDetail
     {
@@ -171,5 +174,6 @@ namespace CoreWebApi.Dtos
         public string SubjectContent { get; set; }
         public string Heading { get; set; }
         public int Order { get; set; }
+        public string Duration { get; set; }
     }
 }

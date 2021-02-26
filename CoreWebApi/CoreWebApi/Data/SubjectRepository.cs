@@ -445,7 +445,7 @@ namespace CoreWebApi.Data
                         SubjectContentId = q.Id,
                         Heading = q.Heading,
                         ContentOrder = q.ContentOrder,
-                    }).Distinct().ToList();
+                    }).ToList();
                     for (int three = 0; three < itemTwo.Contents.Count(); three++)
                     {
                         var itemThree = itemTwo.Contents[three];
@@ -464,7 +464,7 @@ namespace CoreWebApi.Data
         }
 
         public async Task<ServiceResponse<object>> GetSubjectContentById(int id)
-        {
+        {            
             var ToReturn = await _context.SubjectContents.Where(m => m.Id == id).FirstOrDefaultAsync();
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
@@ -521,7 +521,8 @@ namespace CoreWebApi.Data
                     Active = true,
                     Order = item.Order,
                     CreatedDateTime = DateTime.Now,
-                    SubjectContentId = item.SubjectContentId
+                    SubjectContentId = item.SubjectContentId,
+                    Duration = item.Duration,
                 });
             }
 
@@ -547,11 +548,38 @@ namespace CoreWebApi.Data
             toUpdate.Heading = model.Heading;
             toUpdate.Order = model.Order;
             toUpdate.SubjectContentId = model.SubjectContentId;
+            toUpdate.Duration = model.Duration;
 
             _context.SubjectContentDetails.Update(toUpdate);
             await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Updated;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> DeleteSubjectContent(int id)
+        {           
+            var toRemove = _context.SubjectContents.Where(m => m.Id == id).FirstOrDefault();
+            if (toRemove != null)
+            {
+                _context.SubjectContents.Remove(toRemove);
+                await _context.SaveChangesAsync();
+            }
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Deleted;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> DeleteSubjectContentDetail(int id)
+        {
+            var toRemove = _context.SubjectContentDetails.Where(m => m.Id == id).FirstOrDefault();
+            if (toRemove != null)
+            {
+                _context.SubjectContentDetails.Remove(toRemove);
+                await _context.SaveChangesAsync();
+            }
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Deleted;
             return _serviceResponse;
         }
     }

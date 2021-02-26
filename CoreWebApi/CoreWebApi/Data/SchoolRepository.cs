@@ -1013,23 +1013,19 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var Resources = await _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID)
-                    .OrderByDescending(m => m.Id).Select(o => new
+                var ToReturn = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID)
+                    .ToLookup(s => s.Keyword).ToList().Select(o => new UsefulResourceTopicWiseForListDto
                     {
-                        o.Keyword
-                    }).Distinct().ToListAsync();
-                var ToReturn = Resources.Select(p => new UsefulResourceTopicWiseForListDto
-                {
-                    Keyword = p.Keyword,
-                    TopicWiseLinks = _context.UsefulResources.Where(m => m.Keyword == p.Keyword).OrderByDescending(m => m.Id).Select(o => new UsefulResourceForListDto
-                    {
-                        Thumbnail = o.Thumbnail,
-                        Title = o.Title,
-                        Description = o.Description,
-                        Link = o.Link,
-                        ResourceType = o.ResourceType
-                    }).ToList(),
-                }).ToList();
+                        Keyword = o.Key,
+                        TopicWiseLinks = o.Select(o => new UsefulResourceForListDto
+                        {
+                            Thumbnail = o.Thumbnail,
+                            Title = o.Title,
+                            Description = o.Description,
+                            Link = o.Link,
+                            ResourceType = o.ResourceType
+                        }).ToList()
+                    }).ToList();
                 _serviceResponse.Data = ToReturn;
                 _serviceResponse.Success = true;
                 return _serviceResponse;

@@ -126,6 +126,15 @@ namespace CoreWebApi.Data
                     .IsRequired();
             });
             //
+            modelBuilder.Entity("CoreWebApi.Models.SubjectContentDetail", b =>
+            {
+                b.HasOne("CoreWebApi.Models.SubjectContent", "SubjectContent")
+                    .WithMany()
+                    .HasForeignKey("SubjectContentId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+            //
             modelBuilder.Entity<User>()
                 .Property(user => user.Role).HasDefaultValue("Student");
             // composite primary key

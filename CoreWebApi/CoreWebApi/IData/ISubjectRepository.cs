@@ -25,6 +25,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> UpdateSubjectContent(SubjectContentDtoForEdit model);
         Task<ServiceResponse<object>> AddSubjectContentDetails(List<SubjectContentDetailDtoForAdd> model);
         Task<ServiceResponse<object>> GetSubjectContentDetailById(int id);
-            Task<ServiceResponse<object>> UpdateSubjectContentDetail(SubjectContentDetailDtoForEdit model);
-}
+        Task<ServiceResponse<object>> UpdateSubjectContentDetail(SubjectContentDetailDtoForEdit model);
+        Task<ServiceResponse<object>> DeleteSubjectContent(int id);
+        Task<ServiceResponse<object>> DeleteSubjectContentDetail(int id);
+    }
 }

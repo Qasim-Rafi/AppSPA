@@ -197,5 +197,17 @@ namespace CoreWebApi.Controllers
             _response = await _repo.UpdateSubjectContentDetail(model);
             return Ok(_response);
         }
+        [HttpDelete("DeleteSubjectContent/{id}")]
+        public async Task<IActionResult> DeleteSubjectContent(int id)
+        {
+            _response = await _repo.DeleteSubjectContent(id);
+            return Ok(_response);
+        }
+        [HttpDelete("DeleteSubjectContentDetail/{id}")]
+        public async Task<IActionResult> DeleteSubjectContentDetail(int id)
+        {
+            _response = await _repo.DeleteSubjectContentDetail(id);
+            return Ok(_response);
+        }
     }
 }
