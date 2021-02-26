@@ -19,7 +19,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> EditSubject(SubjectDtoForEdit subject);
         Task<ServiceResponse<object>> EditAssignedSubject(int id, AssignSubjectDtoForEdit subject);
         Task<ServiceResponse<object>> ActiveInActiveSubject(int id, bool status);
-        Task<ServiceResponse<object>> GetAllSubjectContent(int AssignedSubjectId);
+        Task<ServiceResponse<object>> GetAllSubjectContent(int classId, int subjectId);
         Task<ServiceResponse<object>> GetSubjectContentById(int id);
         Task<ServiceResponse<object>> AddSubjectContents(List<SubjectContentDtoForAdd> model);
         Task<ServiceResponse<object>> UpdateSubjectContent(SubjectContentDtoForEdit model);

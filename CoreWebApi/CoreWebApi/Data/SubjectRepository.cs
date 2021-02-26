@@ -363,7 +363,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> GetAllSubjectContent(int subjectId)
+        public async Task<ServiceResponse<object>> GetAllSubjectContent(int classId, int subjectId)
         {
             var ToReturn = await _context.SubjectContents
                 .Select(o => new SubjectContentOneDtoForList
@@ -376,10 +376,12 @@ namespace CoreWebApi.Data
                         Subject = p.Subject.Name,
                         Contents = _context.SubjectContents.Where(m => m.SubjectId == p.SubjectId).Select(q => new SubjectContentThreeDtoForList
                         {
+                            SubjectContentId = q.Id,
                             Heading = q.Heading,
                             ContentOrder = q.ContentOrder,
                             ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == q.Id).Select(r => new SubjectContentDetailDtoForList
                             {
+                                SubjectContentDetailId = r.Id,
                                 DetailHeading = r.Heading,
                                 DetailOrder = r.Order,
                             }).ToList()

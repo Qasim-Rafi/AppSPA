@@ -124,10 +124,10 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("GetAllSubjectContent/{subjectId}")]
-        public async Task<IActionResult> GetAllSubjectContent(int subjectId)
+        [HttpGet("GetAllSubjectContent/{classId?}/{subjectId?}")]
+        public async Task<IActionResult> GetAllSubjectContent(int classId = 0, int subjectId = 0)
         {
-            _response = await _repo.GetAllSubjectContent(subjectId);
+            _response = await _repo.GetAllSubjectContent(classId, subjectId);
             return Ok(_response);
 
         }

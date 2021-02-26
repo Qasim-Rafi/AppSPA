@@ -160,9 +160,7 @@ namespace CoreWebApi.Dtos
     }
     public class SubjectContentDetailDtoForList
     {
-        public int Id { get; set; }
-        //public int SubjectContentId { get; set; }       
-        //public string SubjectContent { get; set; }       
+        public int SubjectContentDetailId { get; set; }              
         public string DetailHeading { get; set; }
         public int DetailOrder { get; set; }
     }
