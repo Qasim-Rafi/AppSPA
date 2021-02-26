@@ -337,7 +337,7 @@ namespace CoreWebApi.Data
                           where cs.ClassId == classId
                           && s.SchoolBranchId == _LoggedIn_BranchID
                           && s.Active == true
-                          select s).ToListAsync();
+                          select s).Distinct().ToListAsync();
 
             var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
            

@@ -986,7 +986,6 @@ namespace CoreWebApi.Data
                 Link = model.Link,
                 Keyword = model.Keyword,
                 Thumbnail = model.Thumbnail,
-                VideoId = model.VideoId,
                 ResourceType = model.ResourceType,
                 CreatedById = _LoggedIn_UserID
             };
@@ -1002,7 +1001,7 @@ namespace CoreWebApi.Data
         {
             if (string.IsNullOrEmpty(resourceType))
             {
-                var Resources = await _context.UsefulResources.Where(m => string.IsNullOrEmpty(m.ResourceType)).Select(p => new UsefulResourceForListDto
+                var Resources = await _context.UsefulResources.Where(m => string.IsNullOrEmpty(m.ResourceType)).Select(p => new UsefulResourceForListDto // && m.CreatedById == _LoggedIn_UserID
                 {
                     Title = p.Title,
                     Description = p.Description,
@@ -1014,19 +1013,24 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var Resources = await _context.UsefulResources.Where(m => m.ResourceType == resourceType).Select(p => new UsefulResourceTopicWiseForListDto
+                var Resources = await _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID)
+                    .OrderByDescending(m => m.Id).Select(o => new
+                    {
+                        o.Keyword
+                    }).Distinct().ToListAsync();
+                var ToReturn = Resources.Select(p => new UsefulResourceTopicWiseForListDto
                 {
                     Keyword = p.Keyword,
-                    TopicWiseLinks = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.Keyword == p.Keyword).Select(o => new UsefulResourceForListDto
+                    TopicWiseLinks = _context.UsefulResources.Where(m => m.Keyword == p.Keyword).OrderByDescending(m => m.Id).Select(o => new UsefulResourceForListDto
                     {
-                        VideoId = o.VideoId,
                         Thumbnail = o.Thumbnail,
                         Title = o.Title,
                         Description = o.Description,
-
+                        Link = o.Link,
+                        ResourceType = o.ResourceType
                     }).ToList(),
-                }).ToListAsync();
-                _serviceResponse.Data = Resources;
+                }).ToList();
+                _serviceResponse.Data = ToReturn;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }

@@ -365,30 +365,100 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetAllSubjectContent(int classId, int subjectId)
         {
-            var ToReturn = await _context.SubjectContents
-                .Select(o => new SubjectContentOneDtoForList
+            //var ToReturn = await _context.SubjectContents
+            //    .Select(o => new SubjectContentOneDtoForList
+            //    {
+            //        ClassId = o.ClassId,
+            //        Class = o.Class.Name,
+            //        Subjects = _context.SubjectContents.Where(m => m.ClassId == o.ClassId).Select(p => new SubjectContentTwoDtoForList
+            //        {
+            //            SubjectId = p.SubjectId,
+            //            Subject = p.Subject.Name,
+            //            Contents = _context.SubjectContents.Where(m => m.SubjectId == p.SubjectId).Select(q => new SubjectContentThreeDtoForList
+            //            {
+            //                SubjectContentId = q.Id,
+            //                Heading = q.Heading,
+            //                ContentOrder = q.ContentOrder,
+            //                ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == q.Id).Select(r => new SubjectContentDetailDtoForList
+            //                {
+            //                    SubjectContentDetailId = r.Id,
+            //                    DetailHeading = r.Heading,
+            //                    DetailOrder = r.Order,
+            //                }).ToList()
+            //            }).ToList()
+            //        }).Distinct().ToList()
+            //    }).Distinct().ToListAsync();
+            //var ToReturn = _context.SubjectContents
+            //    .Select(o => new
+            //    {
+            //        ClassId = o.ClassId,
+            //        Class = o.Class.Name,
+            //    }).Distinct().Select(p => new SubjectContentOneDtoForList
+            //    {
+            //        ClassId = p.ClassId,
+            //        Class = p.Class,
+            //        Subjects = _context.SubjectContents.Where(m => m.ClassId == p.ClassId).Select(p => new
+            //        {
+            //            SubjectId = p.SubjectId,
+            //            Subject = p.Subject.Name,
+            //        }).Distinct().Select(q => new SubjectContentTwoDtoForList
+            //        {
+            //            SubjectId = q.SubjectId,
+            //            Subject = q.Subject,
+            //            Contents = _context.SubjectContents.Where(m => m.SubjectId == q.SubjectId).Select(q => new
+            //            {
+            //                SubjectContentId = q.Id,
+            //                Heading = q.Heading,
+            //                ContentOrder = q.ContentOrder,
+            //            }).Distinct().Select(r => new SubjectContentThreeDtoForList
+            //            {
+            //                SubjectContentId = r.SubjectContentId,
+            //                Heading = r.Heading,
+            //                ContentOrder = r.ContentOrder,
+            //                ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == r.SubjectContentId).Select(s => new SubjectContentDetailDtoForList
+            //                {
+            //                    SubjectContentDetailId = s.Id,
+            //                    DetailHeading = s.Heading,
+            //                    DetailOrder = s.Order,
+            //                }).Distinct().ToList()
+            //            }).ToList()
+            //        }).ToList()
+            //    }).ToList();
+            var ClassList = await _context.SubjectContents.Select(o => new SubjectContentOneDtoForList
+            {
+                ClassId = o.ClassId,
+                Class = o.Class.Name,
+            }).Distinct().ToListAsync();
+            for (int one = 0; one < ClassList.Count(); one++)
+            {
+                var itemOne = ClassList[one];
+                itemOne.Subjects = _context.SubjectContents.Where(m => m.ClassId == itemOne.ClassId).Select(p => new SubjectContentTwoDtoForList
                 {
-                    ClassId = o.ClassId,
-                    Class = o.Class.Name,
-                    Subjects = _context.SubjectContents.Where(m => m.ClassId == o.ClassId).Select(p => new SubjectContentTwoDtoForList
+                    SubjectId = p.SubjectId,
+                    Subject = p.Subject.Name,
+                }).Distinct().ToList();
+                for (int two = 0; two < itemOne.Subjects.Count(); two++)
+                {
+                    var itemTwo = itemOne.Subjects[two];
+                    itemTwo.Contents = _context.SubjectContents.Where(m => m.SubjectId == itemTwo.SubjectId).Select(q => new SubjectContentThreeDtoForList
                     {
-                        SubjectId = p.SubjectId,
-                        Subject = p.Subject.Name,
-                        Contents = _context.SubjectContents.Where(m => m.SubjectId == p.SubjectId).Select(q => new SubjectContentThreeDtoForList
+                        SubjectContentId = q.Id,
+                        Heading = q.Heading,
+                        ContentOrder = q.ContentOrder,
+                    }).Distinct().ToList();
+                    for (int three = 0; three < itemTwo.Contents.Count(); three++)
+                    {
+                        var itemThree = itemTwo.Contents[three];
+                        itemThree.ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == itemThree.SubjectContentId).Select(r => new SubjectContentDetailDtoForList
                         {
-                            SubjectContentId = q.Id,
-                            Heading = q.Heading,
-                            ContentOrder = q.ContentOrder,
-                            ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == q.Id).Select(r => new SubjectContentDetailDtoForList
-                            {
-                                SubjectContentDetailId = r.Id,
-                                DetailHeading = r.Heading,
-                                DetailOrder = r.Order,
-                            }).ToList()
-                        }).ToList()
-                    }).ToList()
-                }).ToListAsync();
-            _serviceResponse.Data = ToReturn;
+                            SubjectContentDetailId = r.Id,
+                            DetailHeading = r.Heading,
+                            DetailOrder = r.Order,
+                        }).ToList();
+                    }
+                }
+            }
+            _serviceResponse.Data = ClassList;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

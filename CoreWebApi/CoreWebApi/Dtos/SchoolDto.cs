@@ -149,7 +149,6 @@ namespace CoreWebApi.Dtos
     }
     public class UsefulResourceForListDto
     {
-        public string VideoId { get; set; } = "";
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
         public string Link { get; set; } = "";
