@@ -500,8 +500,8 @@ namespace CoreWebApi.Data
             var toUpdate = _context.SubjectContents.Where(m => m.Id == model.Id).FirstOrDefault();
             toUpdate.Heading = model.Heading;
             toUpdate.ContentOrder = model.ContentOrder;
-            toUpdate.SubjectId = model.SubjectId;
-            toUpdate.ClassId = model.ClassId;
+            //toUpdate.SubjectId = model.SubjectId;
+            //toUpdate.ClassId = model.ClassId;
 
             _context.SubjectContents.Update(toUpdate);
             await _context.SaveChangesAsync();
@@ -547,7 +547,7 @@ namespace CoreWebApi.Data
             var toUpdate = _context.SubjectContentDetails.Where(m => m.Id == model.Id).FirstOrDefault();
             toUpdate.Heading = model.Heading;
             toUpdate.Order = model.Order;
-            toUpdate.SubjectContentId = model.SubjectContentId;
+            //toUpdate.SubjectContentId = model.SubjectContentId;
             toUpdate.Duration = model.Duration;
 
             _context.SubjectContentDetails.Update(toUpdate);
