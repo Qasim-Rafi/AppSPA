@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using CoreWebApi.Dtos;
@@ -22,35 +23,37 @@ namespace CoreWebApi.Controllers
         private readonly ILeaveRepository _repo;
         private readonly IMapper _mapper;
         ServiceResponse<object> _response;
+        private int _LoggedIn_UserID = 0;
         public LeavesController(ILeaveRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _response = new ServiceResponse<object>();
+            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetLeavees()
+        [HttpGet("GetLeavesForApproval")]
+        public async Task<IActionResult> GetLeavesForApproval()
         {
-            _response = await _repo.GetLeaves();
+            _response = await _repo.GetLeavesForApproval();
             return Ok(_response);
 
         }
-        [HttpGet("{id}")]
+        [HttpGet("GetLeaveById/{id}")]
         public async Task<IActionResult> GetLeave(int id)
         {
             _response = await _repo.GetLeave(id);
             return Ok(_response);
         }
-        [HttpPost("Add")]
+        [HttpPost("AddLeave")]
         public async Task<IActionResult> Post(LeaveDtoForAdd leave)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (await _repo.LeaveExists(Convert.ToInt32(leave.UserId), leave.FromDate, leave.ToDate))
+            if (await _repo.LeaveExists(Convert.ToInt32(_LoggedIn_UserID), leave.FromDate, leave.ToDate))
                 return BadRequest(new { message = CustomMessage.RecordAlreadyExist });
 
             _response = await _repo.AddLeave(leave);
@@ -58,7 +61,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPut("{id}")]
+        [HttpPut("UpdateLeave/{id}")]
         public async Task<IActionResult> Put(int id, LeaveDtoForEdit leave)
         {
             if (!ModelState.IsValid)
@@ -66,6 +69,19 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             _response = await _repo.EditLeave(id, leave);
+
+            return Ok(_response);
+
+        }
+        [HttpPut("ApproveLeave/{leaveId}/{status}")]
+        public async Task<IActionResult> ApproveLeave(int leaveId, string status)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            _response = await _repo.ApproveLeave(leaveId,status);
 
             return Ok(_response);
 

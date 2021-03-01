@@ -345,5 +345,12 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetLeaveTypes()
+        {
+            var list = await _context.LeaveType.OrderBy(m => m.Type).ToListAsync();
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

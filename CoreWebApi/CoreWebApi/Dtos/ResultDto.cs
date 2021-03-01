@@ -68,5 +68,8 @@ namespace CoreWebApi.Dtos
         public double Total { get; set; }
         public double TotalObtained { get; set; }
         public decimal TotalPercentage { get; set; }
+        public double HighestMarks { get; set; }
+        public double LowestMarks { get; set; }
+        public double AverageMarks { get; set; }
     }
 }

@@ -35,6 +35,12 @@ namespace CoreWebApi.Helpers
             public static string Rejected { get; set; } = "Rejected";
             public static string Pending { get; set; } = "Pending";
         }
+        public static class LeaveStatus
+        {
+            public static string Approved { get; set; } = "Approved";
+            public static string Rejected { get; set; } = "Rejected";
+            public static string Pending { get; set; } = "Pending";
+        }
 
     }
 

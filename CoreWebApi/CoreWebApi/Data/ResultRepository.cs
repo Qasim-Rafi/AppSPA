@@ -181,6 +181,34 @@ namespace CoreWebApi.Data
                     item.TotalObtained = item.Result.Select(m => m.ObtainedMarks).Sum();
                     item.Total = item.Result.Select(m => m.TotalMarks).Sum();
                     item.TotalPercentage = GenericFunctions.CalculatePercentage(item.Result.Select(m => m.ObtainedMarks).Sum(), item.Result.Select(m => m.TotalMarks).Sum());
+
+                    item.HighestMarks = await (from r in _context.Results
+                                               join s in _context.Subjects
+                                               on r.SubjectId equals s.Id
+
+                                               where r.ReferenceId == item.ExamId
+                                               select r).MaxAsync(m => m.ObtainedMarks);
+
+                    item.LowestMarks = await (from r in _context.Results
+                                              join s in _context.Subjects
+                                              on r.SubjectId equals s.Id
+
+                                              where r.ReferenceId == item.ExamId
+                                              select r).MinAsync(m => m.ObtainedMarks);
+
+                    var sumOfMarks = await (from r in _context.Results
+                                            join s in _context.Subjects
+                                            on r.SubjectId equals s.Id
+
+                                            where r.ReferenceId == item.ExamId
+                                            select r).SumAsync(m => m.ObtainedMarks);
+                    var countOfMarks = (from r in _context.Results
+                                        join s in _context.Subjects
+                                        on r.SubjectId equals s.Id
+
+                                        where r.ReferenceId == item.ExamId
+                                        select r).Count();
+                    item.AverageMarks = sumOfMarks / countOfMarks;
                 }
 
 

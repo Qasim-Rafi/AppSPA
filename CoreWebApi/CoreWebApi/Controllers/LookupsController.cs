@@ -170,9 +170,15 @@ namespace CoreWebApi.Controllers
         {
             _response = await _repo.GetSubjectsByClass(classId);
 
-
             return Ok(_response);
 
+        }
+        [HttpGet("LeaveTypes")]
+        public async Task<IActionResult> GetLeaveTypes()
+        {
+            _response = await _repo.GetLeaveTypes();
+
+            return Ok(_response);
         }
     }
 }

@@ -30,15 +30,17 @@ namespace CoreWebApi.Data
             _serviceResponse = new ServiceResponse<object>();
             _mapper = mapper;
         }
-        public async Task<bool> LeaveExists(int userId, DateTime FromDate, DateTime ToDate)
+        public async Task<bool> LeaveExists(int userId, string FromDate, string ToDate)
         {
-            if (await _context.Leaves.AnyAsync(x => x.UserId == userId && x.FromDate == FromDate && x.ToDate == ToDate))
+            DateTime DTFromDate = DateTime.ParseExact(FromDate, "MM/dd/yyyy", null);
+            DateTime DTToDate = DateTime.ParseExact(ToDate, "MM/dd/yyyy", null);
+            if (await _context.Leaves.AnyAsync(x => x.UserId == userId && x.FromDate == DTFromDate && x.ToDate == DTToDate))
                 return true;
             return false;
         }
         public async Task<ServiceResponse<object>> GetLeave(int id)
         {
-            var leave = await _context.Leaves.Include(m => m.LeaveType).FirstOrDefaultAsync(u => u.Id == id);
+            var leave = await _context.Leaves.FirstOrDefaultAsync(u => u.Id == id);
             var ToReturn = _mapper.Map<LeaveDtoForDetail>(leave);
 
             _serviceResponse.Data = ToReturn;
@@ -46,26 +48,37 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetLeaves()
+        public async Task<ServiceResponse<object>> GetLeavesForApproval()
         {
-            var leaves = await _context.Leaves.Include(m => m.LeaveType).ToListAsync();
-            var ToReturn = _mapper.Map<IEnumerable<LeaveDtoForList>>(leaves);
+            var ToReturn = await _context.Leaves.Where(m => m.Status == Enumm.LeaveStatus.Pending).Select(o => new LeaveDtoForList
+            {
+                FromDate = DateFormat.ToDate(o.FromDate.ToString()),
+                ToDate = DateFormat.ToDate(o.ToDate.ToString()),
+                Details = o.Details,
+                LeaveTypeId = o.LeaveTypeId,
+                LeaveType = o.LeaveType.Type,
+                UserId = o.UserId,
+                User = o.User.FullName
+            }).ToListAsync();
 
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> AddLeave(LeaveDtoForAdd leave)
+        public async Task<ServiceResponse<object>> AddLeave(LeaveDtoForAdd model)
         {
+            DateTime FromDate = DateTime.ParseExact(model.FromDate, "MM/dd/yyyy", null);
+            DateTime ToDate = DateTime.ParseExact(model.ToDate, "MM/dd/yyyy", null);
             var objToCreate = new Leave
             {
-                Details = leave.Details,
-                FromDate = leave.FromDate,
-                ToDate = leave.ToDate,
-                UserId = Convert.ToInt32(leave.UserId),
-                LeaveTypeId = Convert.ToInt32(leave.LeaveTypeId),
+                Details = model.Details,
+                FromDate = FromDate,
+                ToDate = ToDate,
+                UserId = _LoggedIn_UserID,//Convert.ToInt32(leave.UserId),
+                LeaveTypeId = Convert.ToInt32(model.LeaveTypeId),
                 CreatedDateTime = DateTime.Now,
                 SchoolBranchId = _LoggedIn_UserID,
+                Status = Enumm.LeaveStatus.Pending,
             };
 
             await _context.Leaves.AddAsync(objToCreate);
@@ -75,16 +88,33 @@ namespace CoreWebApi.Data
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> EditLeave(int id, LeaveDtoForEdit leave)
+        public async Task<ServiceResponse<object>> EditLeave(int id, LeaveDtoForEdit model)
         {
-            Leave dbObj = _context.Leaves.FirstOrDefault(s => s.Id.Equals(leave.Id));
+            Leave dbObj = _context.Leaves.FirstOrDefault(s => s.Id.Equals(model.Id));
             if (dbObj != null)
             {
-                dbObj.Details = leave.Details;
-                dbObj.FromDate = leave.FromDate;
-                dbObj.ToDate = leave.ToDate;
-                dbObj.UserId = Convert.ToInt32(leave.UserId);
-                dbObj.LeaveTypeId = Convert.ToInt32(leave.LeaveTypeId);
+                DateTime FromDate = DateTime.ParseExact(model.FromDate, "MM/dd/yyyy", null);
+                DateTime ToDate = DateTime.ParseExact(model.ToDate, "MM/dd/yyyy", null);
+
+                dbObj.Details = model.Details;
+                dbObj.FromDate = FromDate;
+                dbObj.ToDate = ToDate;
+                dbObj.LeaveTypeId = Convert.ToInt32(model.LeaveTypeId);
+                _context.Leaves.Update(dbObj);
+                await _context.SaveChangesAsync();
+            }
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Updated;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> ApproveLeave(int leaveId, string status)
+        {
+            Leave dbObj = _context.Leaves.FirstOrDefault(s => s.Id.Equals(leaveId));
+            if (dbObj != null)
+            {
+                dbObj.Status = status;
+                _context.Leaves.Update(dbObj);
                 await _context.SaveChangesAsync();
             }
             _serviceResponse.Success = true;

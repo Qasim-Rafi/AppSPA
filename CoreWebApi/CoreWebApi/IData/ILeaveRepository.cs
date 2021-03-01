@@ -9,10 +9,11 @@ namespace CoreWebApi.IData
 {
     public interface ILeaveRepository
     {
-        Task<ServiceResponse<object>> GetLeaves();
+        Task<ServiceResponse<object>> GetLeavesForApproval();
         Task<ServiceResponse<object>> GetLeave(int id);
-        Task<bool> LeaveExists(int userId, DateTime FromDate, DateTime ToDate);
-        Task<ServiceResponse<object>> AddLeave(LeaveDtoForAdd Leave);
-        Task<ServiceResponse<object>> EditLeave(int id, LeaveDtoForEdit Leave);
+        Task<bool> LeaveExists(int userId, string FromDate, string ToDate);
+        Task<ServiceResponse<object>> AddLeave(LeaveDtoForAdd model);
+        Task<ServiceResponse<object>> EditLeave(int id, LeaveDtoForEdit model);
+        Task<ServiceResponse<object>> ApproveLeave(int leaveId, string status);
     }
 }

@@ -12,8 +12,6 @@ namespace CoreWebApi.Models
     public class Leave
     {
         public int Id { get; set; }
-      
-        //[Required]
         [StringLength(250, ErrorMessage = "Details cannot be longer then 250 characters")]
         public string Details { get; set; }
         [DateValidation(ErrorMessage = "From Date is not in correct format")]
@@ -22,7 +20,7 @@ namespace CoreWebApi.Models
         public DateTime ToDate { get; set; }
         public int LeaveTypeId { get; set; }
         public int UserId { get; set; }
-        public int LeaveApprovalTypeId { get; set; }
+        public string Status { get; set; }
         public int SchoolBranchId { get; set; }
         public DateTime CreatedDateTime { get; set; }
 
@@ -30,9 +28,7 @@ namespace CoreWebApi.Models
         public virtual User User { get; set; }
         [ForeignKey("LeaveTypeId")]
         public virtual LeaveType LeaveType { get; set; }
-
-        [ForeignKey("LeaveApprovalTypeId")]
-        public virtual LeaveApprovalType LeaveApprovalType { get; set; }
+        
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
     }
