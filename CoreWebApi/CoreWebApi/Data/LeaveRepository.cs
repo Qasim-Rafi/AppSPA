@@ -34,7 +34,7 @@ namespace CoreWebApi.Data
         {
             DateTime DTFromDate = DateTime.ParseExact(FromDate, "MM/dd/yyyy", null);
             DateTime DTToDate = DateTime.ParseExact(ToDate, "MM/dd/yyyy", null);
-            if (await _context.Leaves.AnyAsync(x => x.UserId == userId && x.FromDate == DTFromDate && x.ToDate == DTToDate))
+            if (await _context.Leaves.AnyAsync(x => x.UserId == userId && x.FromDate == DTFromDate || x.ToDate == DTToDate))
                 return true;
             return false;
         }
@@ -58,7 +58,8 @@ namespace CoreWebApi.Data
                 LeaveTypeId = o.LeaveTypeId,
                 LeaveType = o.LeaveType.Type,
                 UserId = o.UserId,
-                User = o.User.FullName
+                User = o.User.FullName,
+                Status = o.Status
             }).ToListAsync();
 
             _serviceResponse.Data = ToReturn;

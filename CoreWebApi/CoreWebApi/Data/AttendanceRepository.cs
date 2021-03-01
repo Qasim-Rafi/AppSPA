@@ -33,28 +33,40 @@ namespace CoreWebApi.Data
         }
         public void OnInIt()
         {
-            var leave = _context.Leaves.Where(m => m.FromDate.Date >= DateTime.Now.Date && m.ToDate.Date <= DateTime.Now.Date).FirstOrDefault();
-            if (leave != null)
-            {
-                var ToAdd = new Attendance
-                {
-                    Present = false,
-                    Absent = true,
-                    Late = false,
-                    Comments = "",
-                    UserId = leave.UserId,
-                    ClassSectionId = 0,
-                    CreatedDatetime = DateTime.Now,
-                    SchoolBranchId = _LoggedIn_BranchID
-                };
+            var leaves = _context.Leaves.Where(m => m.FromDate.Date >= DateTime.Now.Date && m.ToDate.Date <= DateTime.Now.Date && m.Status == Enumm.LeaveStatus.Approved).ToList();
 
-                _context.Attendances.Add(ToAdd);
+            if (leaves.Count() > 0)
+            {
+                List<Attendance> ListToAdd = new List<Attendance>();
+                for (int i = 0; i < leaves.Count(); i++)
+                {
+                    var item = leaves[i];
+
+                    var classSection = _context.ClassSectionUsers.Where(m => m.UserId == item.UserId).FirstOrDefault();
+                    //if (!AttendanceExists(item.UserId, item.FromDate))
+                    //{
+
+                    //}
+                    ListToAdd.Add(new Attendance
+                    {
+                        Present = false,
+                        Absent = true,
+                        Late = false,
+                        Comments = "",
+                        UserId = item.UserId,
+                        ClassSectionId = classSection.ClassSectionId,
+                        CreatedDatetime = DateTime.Now,
+                        SchoolBranchId = _LoggedIn_BranchID
+                    });
+                }
+
+                _context.Attendances.AddRange(ListToAdd);
                 _context.SaveChanges();
             }
         }
-        public async Task<bool> AttendanceExists(int userId)
+        public bool AttendanceExists(int userId, DateTime date)
         {
-            if (await _context.Attendances.AnyAsync(x => x.UserId == userId))
+            if (_context.Attendances.Any(x => x.UserId == userId && x.CreatedDatetime == date))
                 return true;
             return false;
         }

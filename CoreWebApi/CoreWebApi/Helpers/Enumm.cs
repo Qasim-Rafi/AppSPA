@@ -29,17 +29,17 @@ namespace CoreWebApi.Helpers
             Assignment = 1,
             Quiz
         }
-        public static class RequisitionStatus
+        public class RequisitionStatus
         {
-            public static string Approved { get; set; } = "Approved";
-            public static string Rejected { get; set; } = "Rejected";
-            public static string Pending { get; set; } = "Pending";
+            public const string Approved = "Approved";
+            public const string Rejected = "Rejected";
+            public const string Pending = "Pending";
         }
-        public static class LeaveStatus
+        public class LeaveStatus
         {
-            public static string Approved { get; set; } = "Approved";
-            public static string Rejected { get; set; } = "Rejected";
-            public static string Pending { get; set; } = "Pending";
+            public const string Approved = "Approved";
+            public const string Rejected = "Rejected";
+            public const string Pending = "Pending";
         }
 
     }

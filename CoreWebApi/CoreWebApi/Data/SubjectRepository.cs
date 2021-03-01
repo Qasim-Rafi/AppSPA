@@ -440,7 +440,7 @@ namespace CoreWebApi.Data
                 for (int two = 0; two < itemOne.Subjects.Count(); two++)
                 {
                     var itemTwo = itemOne.Subjects[two];
-                    itemTwo.Contents = _context.SubjectContents.Where(m => m.SubjectId == itemTwo.SubjectId).Select(q => new SubjectContentThreeDtoForList
+                    itemTwo.Contents = _context.SubjectContents.Where(m => m.SubjectId == itemTwo.SubjectId && m.ClassId == itemOne.ClassId).Select(q => new SubjectContentThreeDtoForList
                     {
                         SubjectContentId = q.Id,
                         Heading = q.Heading,
@@ -464,7 +464,7 @@ namespace CoreWebApi.Data
         }
 
         public async Task<ServiceResponse<object>> GetSubjectContentById(int id)
-        {            
+        {
             var ToReturn = await _context.SubjectContents.Where(m => m.Id == id).FirstOrDefaultAsync();
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
@@ -558,7 +558,7 @@ namespace CoreWebApi.Data
         }
 
         public async Task<ServiceResponse<object>> DeleteSubjectContent(int id)
-        {           
+        {
             var toRemove = _context.SubjectContents.Where(m => m.Id == id).FirstOrDefault();
             if (toRemove != null)
             {
