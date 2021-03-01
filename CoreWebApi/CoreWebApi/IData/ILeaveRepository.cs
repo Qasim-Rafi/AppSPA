@@ -15,5 +15,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddLeave(LeaveDtoForAdd model);
         Task<ServiceResponse<object>> EditLeave(int id, LeaveDtoForEdit model);
         Task<ServiceResponse<object>> ApproveLeave(int leaveId, string status);
+        Task<ServiceResponse<object>> GetLeaves();
     }
 }

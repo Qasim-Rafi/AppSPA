@@ -38,6 +38,7 @@ namespace CoreWebApi.Dtos
         public string LeaveType { get; set; }
         public int UserId { get; set; }
         public string User { get; set; }
+        public string Status { get; set; }
     }
     public class LeaveDtoForDetail
     {

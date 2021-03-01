@@ -40,6 +40,13 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetLeaves")]
+        public async Task<IActionResult> GetLeaves()
+        {
+            _response = await _repo.GetLeaves();
+            return Ok(_response);
+
+        }
         [HttpGet("GetLeaveById/{id}")]
         public async Task<IActionResult> GetLeave(int id)
         {

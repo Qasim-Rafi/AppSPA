@@ -65,6 +65,24 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetLeaves()
+        {
+            var ToReturn = await _context.Leaves.Where(m => m.UserId == _LoggedIn_UserID).Select(o => new LeaveDtoForList
+            {
+                FromDate = DateFormat.ToDate(o.FromDate.ToString()),
+                ToDate = DateFormat.ToDate(o.ToDate.ToString()),
+                Details = o.Details,
+                LeaveTypeId = o.LeaveTypeId,
+                LeaveType = o.LeaveType.Type,
+                UserId = o.UserId,
+                User = o.User.FullName,
+                Status = o.Status
+            }).ToListAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
         public async Task<ServiceResponse<object>> AddLeave(LeaveDtoForAdd model)
         {
             DateTime FromDate = DateTime.ParseExact(model.FromDate, "MM/dd/yyyy", null);
@@ -77,7 +95,7 @@ namespace CoreWebApi.Data
                 UserId = _LoggedIn_UserID,//Convert.ToInt32(leave.UserId),
                 LeaveTypeId = Convert.ToInt32(model.LeaveTypeId),
                 CreatedDateTime = DateTime.Now,
-                SchoolBranchId = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
                 Status = Enumm.LeaveStatus.Pending,
             };
 
