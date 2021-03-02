@@ -165,11 +165,12 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetStudentTimeTable()
         {
             var weekDays = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-            List<TeacherTimeTableForListDto> ToReturn = new List<TeacherTimeTableForListDto>();
+            List<string> Days = new List<string>();
+            List<TeacherTimeSlotsForListDto> TimeSlots = new List<TeacherTimeSlotsForListDto>();
+            List<TeacherWeekTimeTableForListDto> TimeTable = new List<TeacherWeekTimeTableForListDto>();
             var LoggedInUserClassSection = await _context.ClassSectionUsers.Where(m => m.UserId == _LoggedIn_UserID).FirstOrDefaultAsync();
             foreach (var item in weekDays)
             {
-
                 var ToAdd = new TeacherTimeTableForListDto
                 {
                     Day = item,
@@ -218,14 +219,29 @@ namespace CoreWebApi.Data
                                            RowNo = l.RowNo,
                                            IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
                                        }).ToListAsync()
-
                 };
-                if (ToAdd.TimeTable.Count() > 0)
-                    ToReturn.Add(ToAdd);
+                TimeTable.AddRange(ToAdd.TimeTable);
+                if (item == "Monday")
+                {
+                    TimeSlots = TimeTable.Select(o => new TeacherTimeSlotsForListDto
+                    {
+                        StartTime = o.StartTime,
+                        EndTime = o.EndTime
+                    }).ToList();
+                }
+
             }
-            _serviceResponse.Data = new { DaysForPrint = weekDays, TimeTableForPrint = ToReturn.Select(m => m.TimeTable), TimeTable = ToReturn };
+            Days = TimeTable.Select(o => o.Day).Distinct().ToList();
+
+            _serviceResponse.Data = new
+            {
+                Days,
+                TimeSlots,
+                TimeTable
+            };
             _serviceResponse.Success = true;
             return _serviceResponse;
+
         }
     }
 }
