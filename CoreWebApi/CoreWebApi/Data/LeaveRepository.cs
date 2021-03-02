@@ -54,7 +54,8 @@ namespace CoreWebApi.Data
                                          join l in _context.Leaves
                                          on u.Id equals l.UserId
                                          where u.Role == Enumm.UserType.Student.ToString()
-                                         && l.Status == Enumm.LeaveStatus.Pending
+                                         //&& l.Status == Enumm.LeaveStatus.Pending
+                                         //orderby l.Status.Length descending
                                          select new LeaveDtoForList
                                          {
                                              Id = l.Id,
@@ -71,7 +72,8 @@ namespace CoreWebApi.Data
                                          join l in _context.Leaves
                                          on u.Id equals l.UserId
                                          where u.Role == Enumm.UserType.Teacher.ToString()
-                                         && l.Status == Enumm.LeaveStatus.Pending
+                                         //&& l.Status == Enumm.LeaveStatus.Pending
+                                         //orderby l.Status.Length descending
                                          select new LeaveDtoForList
                                          {
                                              Id = l.Id,
