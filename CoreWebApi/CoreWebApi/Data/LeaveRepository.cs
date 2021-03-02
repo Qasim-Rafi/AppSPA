@@ -50,19 +50,40 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetLeavesForApproval()
         {
-            var ToReturn = await _context.Leaves.Where(m => m.Status == Enumm.LeaveStatus.Pending).Select(o => new LeaveDtoForList
-            {
-                FromDate = DateFormat.ToDate(o.FromDate.ToString()),
-                ToDate = DateFormat.ToDate(o.ToDate.ToString()),
-                Details = o.Details,
-                LeaveTypeId = o.LeaveTypeId,
-                LeaveType = o.LeaveType.Type,
-                UserId = o.UserId,
-                User = o.User.FullName,
-                Status = o.Status
-            }).ToListAsync();
+            var StudentRequests = await (from u in _context.Users
+                                         join l in _context.Leaves
+                                         on u.Id equals l.UserId
+                                         where u.Role == Enumm.UserType.Student.ToString()
+                                         && l.Status == Enumm.LeaveStatus.Pending
+                                         select new LeaveDtoForList
+                                         {
+                                             FromDate = DateFormat.ToDate(l.FromDate.ToString()),
+                                             ToDate = DateFormat.ToDate(l.ToDate.ToString()),
+                                             Details = l.Details,
+                                             LeaveTypeId = l.LeaveTypeId,
+                                             LeaveType = l.LeaveType.Type,
+                                             UserId = l.UserId,
+                                             User = u.FullName,
+                                             Status = l.Status
+                                         }).ToListAsync();
+            var TeacherRequests = await (from u in _context.Users
+                                         join l in _context.Leaves
+                                         on u.Id equals l.UserId
+                                         where u.Role == Enumm.UserType.Teacher.ToString()
+                                         && l.Status == Enumm.LeaveStatus.Pending
+                                         select new LeaveDtoForList
+                                         {
+                                             FromDate = DateFormat.ToDate(l.FromDate.ToString()),
+                                             ToDate = DateFormat.ToDate(l.ToDate.ToString()),
+                                             Details = l.Details,
+                                             LeaveTypeId = l.LeaveTypeId,
+                                             LeaveType = l.LeaveType.Type,
+                                             UserId = l.UserId,
+                                             User = u.FullName,
+                                             Status = l.Status
+                                         }).ToListAsync();
 
-            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Data = new { StudentRequests, TeacherRequests };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
