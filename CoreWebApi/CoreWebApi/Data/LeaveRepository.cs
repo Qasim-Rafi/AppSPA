@@ -34,7 +34,7 @@ namespace CoreWebApi.Data
         {
             DateTime DTFromDate = DateTime.ParseExact(FromDate, "MM/dd/yyyy", null);
             DateTime DTToDate = DateTime.ParseExact(ToDate, "MM/dd/yyyy", null);
-            if (await _context.Leaves.AnyAsync(x => x.UserId == userId && x.FromDate == DTFromDate || x.ToDate == DTToDate))
+            if (await _context.Leaves.AnyAsync(x => x.UserId == userId && (x.FromDate == DTFromDate || x.ToDate == DTToDate)))
                 return true;
             return false;
         }
@@ -148,12 +148,12 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> ApproveLeave(int leaveId, string status)
+        public async Task<ServiceResponse<object>> ApproveLeave(LeaveDtoForApprove model)
         {
-            Leave dbObj = _context.Leaves.FirstOrDefault(s => s.Id.Equals(leaveId));
+            Leave dbObj = _context.Leaves.FirstOrDefault(s => s.Id.Equals(model.LeaveId));
             if (dbObj != null)
             {
-                dbObj.Status = status;
+                dbObj.Status = model.Status;
                 _context.Leaves.Update(dbObj);
                 await _context.SaveChangesAsync();
             }

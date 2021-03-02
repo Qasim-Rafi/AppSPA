@@ -50,4 +50,9 @@ namespace CoreWebApi.Dtos
         public int UserId { get; set; }
         public string User { get; set; }
     }
+    public class LeaveDtoForApprove
+    {
+        public int LeaveId { get; set; }
+        public string Status { get; set; }
+    }
 }

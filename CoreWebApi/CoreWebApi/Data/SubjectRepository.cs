@@ -427,7 +427,7 @@ namespace CoreWebApi.Data
             var ClassList = await _context.SubjectContents.Select(o => new SubjectContentOneDtoForList
             {
                 ClassId = o.ClassId,
-                Class = o.Class.Name,
+                Classs = o.Class.Name,
             }).Distinct().ToListAsync();
             for (int one = 0; one < ClassList.Count(); one++)
             {

@@ -14,7 +14,7 @@ namespace CoreWebApi.IData
         Task<bool> LeaveExists(int userId, string FromDate, string ToDate);
         Task<ServiceResponse<object>> AddLeave(LeaveDtoForAdd model);
         Task<ServiceResponse<object>> EditLeave(int id, LeaveDtoForEdit model);
-        Task<ServiceResponse<object>> ApproveLeave(int leaveId, string status);
+        Task<ServiceResponse<object>> ApproveLeave(LeaveDtoForApprove model);
         Task<ServiceResponse<object>> GetLeaves();
     }
 }

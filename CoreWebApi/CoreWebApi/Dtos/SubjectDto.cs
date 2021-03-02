@@ -114,7 +114,7 @@ namespace CoreWebApi.Dtos
     public class SubjectContentOneDtoForList
     {
         public int ClassId { get; set; }
-        public string Class { get; set; }        
+        public string Classs { get; set; }        
         public List<SubjectContentTwoDtoForList> Subjects = new List<SubjectContentTwoDtoForList>();
     }
     public class SubjectContentTwoDtoForList

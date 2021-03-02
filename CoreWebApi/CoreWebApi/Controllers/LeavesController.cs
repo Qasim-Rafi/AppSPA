@@ -80,15 +80,15 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPut("ApproveLeave/{leaveId}/{status}")]
-        public async Task<IActionResult> ApproveLeave(int leaveId, string status)
+        [HttpPost("ApproveLeave")]
+        public async Task<IActionResult> ApproveLeave(LeaveDtoForApprove model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             
-            _response = await _repo.ApproveLeave(leaveId,status);
+            _response = await _repo.ApproveLeave(model);
 
             return Ok(_response);
 
