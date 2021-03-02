@@ -57,6 +57,7 @@ namespace CoreWebApi.Data
                                          && l.Status == Enumm.LeaveStatus.Pending
                                          select new LeaveDtoForList
                                          {
+                                             Id = l.Id,
                                              FromDate = DateFormat.ToDate(l.FromDate.ToString()),
                                              ToDate = DateFormat.ToDate(l.ToDate.ToString()),
                                              Details = l.Details,
@@ -73,6 +74,7 @@ namespace CoreWebApi.Data
                                          && l.Status == Enumm.LeaveStatus.Pending
                                          select new LeaveDtoForList
                                          {
+                                             Id = l.Id,
                                              FromDate = DateFormat.ToDate(l.FromDate.ToString()),
                                              ToDate = DateFormat.ToDate(l.ToDate.ToString()),
                                              Details = l.Details,
@@ -91,6 +93,7 @@ namespace CoreWebApi.Data
         {
             var ToReturn = await _context.Leaves.Where(m => m.UserId == _LoggedIn_UserID).Select(o => new LeaveDtoForList
             {
+                Id = o.Id,
                 FromDate = DateFormat.ToDate(o.FromDate.ToString()),
                 ToDate = DateFormat.ToDate(o.ToDate.ToString()),
                 Details = o.Details,
