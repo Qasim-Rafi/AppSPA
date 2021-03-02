@@ -54,8 +54,8 @@ namespace CoreWebApi.Data
                                          join l in _context.Leaves
                                          on u.Id equals l.UserId
                                          where u.Role == Enumm.UserType.Student.ToString()
-                                         //&& l.Status == Enumm.LeaveStatus.Pending
-                                         //orderby l.Status.Length descending
+                                         && l.SchoolBranchId == _LoggedIn_BranchID
+                                         orderby l.Status.Length
                                          select new LeaveDtoForList
                                          {
                                              Id = l.Id,
@@ -72,8 +72,8 @@ namespace CoreWebApi.Data
                                          join l in _context.Leaves
                                          on u.Id equals l.UserId
                                          where u.Role == Enumm.UserType.Teacher.ToString()
-                                         //&& l.Status == Enumm.LeaveStatus.Pending
-                                         //orderby l.Status.Length descending
+                                         && l.SchoolBranchId == _LoggedIn_BranchID
+                                         orderby l.Status.Length
                                          select new LeaveDtoForList
                                          {
                                              Id = l.Id,
@@ -104,7 +104,7 @@ namespace CoreWebApi.Data
                 UserId = o.UserId,
                 User = o.User.FullName,
                 Status = o.Status
-            }).ToListAsync();
+            }).OrderByDescending(m => m.Id).ToListAsync();
 
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;

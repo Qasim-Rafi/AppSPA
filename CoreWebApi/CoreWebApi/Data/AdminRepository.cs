@@ -50,7 +50,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetAllRequisitionForApprove()
         {
-            var list = await _context.Requisitions.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Status == Enumm.RequisitionStatus.Pending).Select(o => new RequisitionForListDto
+            var list = await _context.Requisitions.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new RequisitionForListDto //&& m.Status == Enumm.RequisitionStatus.Pending
             {
                 Id = o.Id,
                 RequestById = o.RequestById,
@@ -58,7 +58,7 @@ namespace CoreWebApi.Data
                 RequestComment = o.RequestComment,
                 RequestDateTime = DateFormat.ToDate(o.RequestDateTime.ToString()),
                 Status = o.Status,
-            }).OrderByDescending(m => m.Id).ToListAsync();
+            }).OrderBy(m => m.Status.Length).ToListAsync();
 
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
