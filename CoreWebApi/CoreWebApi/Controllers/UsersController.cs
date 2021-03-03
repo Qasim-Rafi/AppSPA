@@ -80,7 +80,7 @@ namespace CoreWebApi.Controllers
 
             if (await _repo.UserExists(userForAddDto.Username))
                 return BadRequest(new { message = CustomMessage.UserAlreadyExist });
-            if (!string.IsNullOrEmpty(userForAddDto.Email) && userForAddDto.Email.ToLower() == userForAddDto.ParentEmail.ToLower())
+            if (!string.IsNullOrEmpty(userForAddDto.Email) && !string.IsNullOrEmpty(userForAddDto.ParentEmail) && userForAddDto.Email.ToLower() == userForAddDto.ParentEmail.ToLower())
                 return BadRequest(new { message = CustomMessage.EmailSameOfParentChild });
 
             var response = await _repo.AddUser(userForAddDto);

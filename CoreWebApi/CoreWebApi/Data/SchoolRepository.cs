@@ -997,8 +997,9 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetUsefulResources(string resourceType)
+        public async Task<ServiceResponse<object>> GetUsefulResources(int currentPage, string resourceType)
         {
+            int take = 5;
             if (string.IsNullOrEmpty(resourceType))
             {
                 var Resources = await _context.UsefulResources.Where(m => string.IsNullOrEmpty(m.ResourceType)).Select(p => new UsefulResourceForListDto // && m.CreatedById == _LoggedIn_UserID
@@ -1013,19 +1014,44 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var ToReturn = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID)
-                    .ToLookup(s => s.Keyword).ToList().Select(o => new UsefulResourceTopicWiseForListDto
+                List<UsefulResourceTopicWiseForListDto> ToReturn = new List<UsefulResourceTopicWiseForListDto>();
+                if (currentPage > 0)
+                {
+                    var total = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID).Distinct().Count();
+                    var skip = take * (currentPage - 1);
+                    if (skip < total)
                     {
-                        Keyword = o.Key,
-                        TopicWiseLinks = o.Select(o => new UsefulResourceForListDto
+                        ToReturn = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID)
+                        .ToLookup(s => s.Keyword).ToList().Select(o => new UsefulResourceTopicWiseForListDto
                         {
-                            Thumbnail = o.Thumbnail,
-                            Title = o.Title,
-                            Description = o.Description,
-                            Link = o.Link,
-                            ResourceType = o.ResourceType
-                        }).ToList()
-                    }).ToList();
+                            Keyword = o.Key,
+                            TopicWiseLinks = o.Select(o => new UsefulResourceForListDto
+                            {
+                                Thumbnail = o.Thumbnail,
+                                Title = o.Title,
+                                Description = o.Description,
+                                Link = o.Link,
+                                ResourceType = o.ResourceType
+                            }).ToList()
+                        }).Skip(skip).Take(take).ToList();
+                    }
+                }
+                else
+                {
+                    ToReturn = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID)
+                        .ToLookup(s => s.Keyword).ToList().Select(o => new UsefulResourceTopicWiseForListDto
+                        {
+                            Keyword = o.Key,
+                            TopicWiseLinks = o.Select(o => new UsefulResourceForListDto
+                            {
+                                Thumbnail = o.Thumbnail,
+                                Title = o.Title,
+                                Description = o.Description,
+                                Link = o.Link,
+                                ResourceType = o.ResourceType
+                            }).ToList()
+                        }).ToList();
+                }
                 _serviceResponse.Data = ToReturn;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
