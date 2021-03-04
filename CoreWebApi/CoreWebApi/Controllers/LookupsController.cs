@@ -180,5 +180,12 @@ namespace CoreWebApi.Controllers
 
             return Ok(_response);
         }
+        [HttpGet("Employees")]
+        public async Task<IActionResult> GetEmployees()
+        {
+            _response = await _repo.GetEmployees();
+
+            return Ok(_response);
+        }
     }
 }

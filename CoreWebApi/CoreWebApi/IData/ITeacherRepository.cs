@@ -20,5 +20,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetTeacherTimeTable();
         Task<ServiceResponse<object>> GetEmptyTeachers();
         Task<ServiceResponse<object>> AddRequisitionRequest(RequisitionForAddDto model);
+        Task<ServiceResponse<object>> AddInventoryItem(InventoryItemForAddDto model);
+        Task<ServiceResponse<object>> GetInventory();
+        Task<ServiceResponse<object>> PostInventory(int id, bool status);
     }
 }

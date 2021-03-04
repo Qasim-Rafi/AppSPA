@@ -41,6 +41,11 @@ namespace CoreWebApi.Helpers
             public const string Rejected = "Rejected";
             public const string Pending = "Pending";
         }
+        public class InventoryType
+        {
+            public const string Credit = "Credit";
+            public const string Debit = "Debit";
+        }
 
     }
 

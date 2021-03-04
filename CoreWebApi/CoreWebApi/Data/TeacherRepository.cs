@@ -506,7 +506,7 @@ namespace CoreWebApi.Data
                         EndTime = o.EndTime
                     }).ToList();
                 }
-                              
+
             }
             Days = TimeTable.Select(o => o.Day).Distinct().ToList();
             //Days = Days.OrderBy(i => weekDays.IndexOf(i.ToString())).ToList();
@@ -552,6 +552,67 @@ namespace CoreWebApi.Data
             await _context.SaveChangesAsync();
 
             _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> AddInventoryItem(InventoryItemForAddDto model)
+        {
+            var ToAdd = new StaffInventory
+            {
+                Title = model.Title,
+                TransactionType = model.TransactionType,
+                Posted = false,
+                Amount = Convert.ToDouble(model.Amount),
+                CreatedDate = DateTime.Now,
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.StaffInventory.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+            
+            var ToAdd2 = new SchoolCashAccount
+            {
+                UserId = _LoggedIn_UserID,
+                TransactionType = model.TransactionType,
+                Remarks = model.Remarks,
+                Posted = false,
+                Amount = Convert.ToDouble(model.Amount),
+                CreatedDate = DateTime.Now,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.SchoolCashAccount.AddAsync(ToAdd2);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetInventory()
+        {
+            var list = await _context.StaffInventory.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new InventoryItemForListDto
+            {
+                Id = o.Id,
+                Title = o.Title,
+                TransactionType = o.TransactionType,
+                Amount = o.Amount.ToString(),
+                Posted = o.Posted,
+            }).ToListAsync();
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> PostInventory(int id, bool status)
+        {
+            var toUpdate = await _context.StaffInventory.Where(m => m.Id == id).FirstOrDefaultAsync();
+            toUpdate.Posted = status;
+            _context.StaffInventory.Update(toUpdate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Updated;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

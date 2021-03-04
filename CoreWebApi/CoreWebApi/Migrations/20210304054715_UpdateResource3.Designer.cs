@@ -4,14 +4,16 @@ using CoreWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210304054715_UpdateResource3")]
+    partial class UpdateResource3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -450,68 +452,6 @@ namespace CoreWebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DocumentTypes");
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.EmployeeSalary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SchoolBranchId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("SchoolBranchId");
-
-                    b.ToTable("EmployeeSalaries");
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.EmployeeSalaryTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SchoolBranchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UpdatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("SchoolBranchId");
-
-                    b.ToTable("EmployeeSalaryTransactions");
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.Event", b =>
@@ -1278,41 +1218,6 @@ namespace CoreWebApi.Migrations
                     b.ToTable("SchoolBranch");
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.SchoolCashAccount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Posted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SchoolBranchId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TransactionType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SchoolBranchId");
-
-                    b.ToTable("SchoolCashAccount");
-                });
-
             modelBuilder.Entity("CoreWebApi.Models.Section", b =>
                 {
                     b.Property<int>("Id")
@@ -1372,43 +1277,6 @@ namespace CoreWebApi.Migrations
                     b.HasIndex("SchoolBranchId");
 
                     b.ToTable("Sessions");
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.StaffInventory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Posted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("SchoolBranchId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TransactionType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("SchoolBranchId");
-
-                    b.ToTable("StaffInventory");
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.State", b =>
@@ -2133,36 +2001,6 @@ namespace CoreWebApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.EmployeeSalary", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.User", "EmployeeUser")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
-                        .WithMany()
-                        .HasForeignKey("SchoolBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.EmployeeSalaryTransaction", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.User", "EmployeeUser")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
-                        .WithMany()
-                        .HasForeignKey("SchoolBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CoreWebApi.Models.Event", b =>
                 {
                     b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
@@ -2451,15 +2289,6 @@ namespace CoreWebApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoreWebApi.Models.SchoolCashAccount", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
-                        .WithMany()
-                        .HasForeignKey("SchoolBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CoreWebApi.Models.Section", b =>
                 {
                     b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
@@ -2475,21 +2304,6 @@ namespace CoreWebApi.Migrations
                         .WithMany()
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
-                        .WithMany()
-                        .HasForeignKey("SchoolBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.StaffInventory", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
                         .WithMany()

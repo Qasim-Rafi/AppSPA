@@ -57,5 +57,38 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("AddEmployeeSalary")]
+        public async Task<IActionResult> AddEmployeeSalary(SalaryForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.AddEmployeeSalary(model);
+            return Ok(_response);
+
+        }
+        [HttpPut("UpdateEmployeeSalary")]
+        public async Task<IActionResult> UpdateEmployeeSalary(SalaryForUpdateDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateEmployeeSalary(model);
+            return Ok(_response);
+
+        }
+        [HttpGet("GetEmployeeSalary")]
+        public async Task<IActionResult> GetEmployeeSalary()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetEmployeeSalary();
+            return Ok(_response);
+
+        }
     }
 }

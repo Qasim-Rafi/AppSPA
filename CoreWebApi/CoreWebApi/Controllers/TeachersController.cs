@@ -132,5 +132,38 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("AddInventoryItem")]
+        public async Task<IActionResult> AddInventoryItem(InventoryItemForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.AddInventoryItem(model);
+            return Ok(_response);
+
+        }
+        [HttpGet("GetInventory")]
+        public async Task<IActionResult> GetInventory()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetInventory();
+            return Ok(_response);
+
+        }
+        [HttpPut("PostInventory/{id}/{status}")]
+        public async Task<IActionResult> PostInventory(int id, bool status)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.PostInventory(id, status);
+            return Ok(_response);
+
+        }
     }
 }

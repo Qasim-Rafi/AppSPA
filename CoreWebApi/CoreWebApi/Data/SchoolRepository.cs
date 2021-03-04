@@ -987,7 +987,8 @@ namespace CoreWebApi.Data
                 Keyword = model.Keyword,
                 Thumbnail = model.Thumbnail,
                 ResourceType = model.ResourceType,
-                CreatedById = _LoggedIn_UserID
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID
             };
 
             await _context.UsefulResources.AddAsync(ToAdd);
@@ -1002,7 +1003,7 @@ namespace CoreWebApi.Data
             int take = 5;
             if (string.IsNullOrEmpty(resourceType))
             {
-                var Resources = await _context.UsefulResources.Where(m => string.IsNullOrEmpty(m.ResourceType)).Select(p => new UsefulResourceForListDto // && m.CreatedById == _LoggedIn_UserID
+                var Resources = await _context.UsefulResources.Where(m => string.IsNullOrEmpty(m.ResourceType) && m.SchoolBranchId == _LoggedIn_BranchID).Select(p => new UsefulResourceForListDto // && m.CreatedById == _LoggedIn_UserID
                 {
                     Title = p.Title,
                     Description = p.Description,
@@ -1017,11 +1018,11 @@ namespace CoreWebApi.Data
                 List<UsefulResourceTopicWiseForListDto> ToReturn = new List<UsefulResourceTopicWiseForListDto>();
                 if (currentPage > 0)
                 {
-                    var total = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID).Distinct().Count();
+                    var total = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).Distinct().Count();
                     var skip = take * (currentPage - 1);
                     if (skip < total)
                     {
-                        ToReturn = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID)
+                        ToReturn = _context.UsefulResources.Where(m => m.ResourceType == resourceType && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID)
                         .ToLookup(s => s.Keyword).ToList().Select(o => new UsefulResourceTopicWiseForListDto
                         {
                             Keyword = o.Key,

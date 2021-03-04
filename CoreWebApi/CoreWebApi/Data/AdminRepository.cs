@@ -85,5 +85,73 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> AddEmployeeSalary(SalaryForAddDto model)
+        {
+            var ToAdd = new EmployeeSalary
+            {
+                EmployeeId = model.EmployeeId,
+                Amount = Convert.ToDouble(model.Amount),
+                CreatedDate = DateTime.Now,
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.EmployeeSalaries.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+
+            var ToAdd2 = new EmployeeSalaryTransaction
+            {
+                EmployeeId = model.EmployeeId,
+                Amount = Convert.ToDouble(model.Amount),
+                UpdatedDate = DateTime.Now,
+                UpdatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.EmployeeSalaryTransactions.AddAsync(ToAdd2);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> UpdateEmployeeSalary(SalaryForUpdateDto model)
+        {
+            var ObjToUpdate = _context.EmployeeSalaries.FirstOrDefault(s => s.Id.Equals(model.Id));
+            if (ObjToUpdate != null)
+            {
+                ObjToUpdate.EmployeeId = model.EmployeeId;
+                ObjToUpdate.Amount = Convert.ToDouble(model.Amount);
+                _context.EmployeeSalaries.Update(ObjToUpdate);
+                await _context.SaveChangesAsync();
+            }
+            var ToAdd = new EmployeeSalaryTransaction
+            {
+                EmployeeId = model.EmployeeId,
+                Amount = Convert.ToDouble(model.Amount),
+                UpdatedDate = DateTime.Now,
+                UpdatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.EmployeeSalaryTransactions.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetEmployeeSalary()
+        {
+            var list = await _context.EmployeeSalaries.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new SalaryForListDto
+            {
+                Id = o.Id,
+                EmployeeId = o.EmployeeId,
+                Employee = o.EmployeeUser.FullName,                
+                Amount = o.Amount.ToString(),
+            }).ToListAsync();
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

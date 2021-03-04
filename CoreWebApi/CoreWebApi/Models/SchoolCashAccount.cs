@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Models
 {
-    public class UsefulResource
+    public class SchoolCashAccount
     {
         public int Id { get; set; }
-        public string Keyword { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string Link { get; set; }
-        public string Thumbnail { get; set; }
-        public string ResourceType { get; set; }
-        public int CreatedById { get; set; }
+        public int UserId { get; set; }
+        public double Amount { get; set; }
+        public string TransactionType { get; set; }
+        public bool Posted { get; set; }
+        public string Remarks { get; set; }
         public int SchoolBranchId { get; set; }
-
+        public DateTime CreatedDate { get; set; }
+        
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
     }

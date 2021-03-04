@@ -5,8 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CoreWebApi.Models
 {
     public partial class Quizzes
-    {
-       
+    {       
         public int Id { get; set; }
         public DateTime? QuizDate { get; set; }
         //public string TeacherName { get; set; }

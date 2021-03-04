@@ -340,7 +340,7 @@ namespace CoreWebApi.Data
                           select s).Distinct().ToListAsync();
 
             var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
-           
+
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -351,6 +351,25 @@ namespace CoreWebApi.Data
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetEmployees()
+        {
+            var users = await (from u in _context.Users
+                               where u.UserTypeId != (int)Enumm.UserType.Student
+                               && u.UserTypeId != (int)Enumm.UserType.Tutor
+                               && u.UserTypeId != (int)Enumm.UserType.OnlineStudent
+                               && u.UserTypeId != (int)Enumm.UserType.Parent
+                               && u.Active == true
+                               && u.SchoolBranchId == _LoggedIn_BranchID
+                               orderby u.FullName
+                               select u).ToListAsync();
+            var list = _mapper.Map<List<UserForListDto>>(users);
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+
         }
     }
 }

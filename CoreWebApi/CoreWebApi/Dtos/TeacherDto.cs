@@ -132,4 +132,30 @@ namespace CoreWebApi.Dtos
         public int RowNo { get; set; }
         public bool IsFreePeriod { get; set; }
     }
+    public class InventoryItemForAddDto
+    {
+        public string Title { get; set; }
+        public string Amount { get; set; }
+        public string TransactionType { get; set; }
+        public string Remarks { get; set; }
+    }
+    public class InventoryItemForUpdateDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Amount { get; set; }
+        public string TransactionType { get; set; }
+        public bool Posted { get; set; }
+        public string Remarks { get; set; }
+    }
+    public class InventoryItemForListDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Amount { get; set; }
+        public string TransactionType { get; set; }
+        public bool Posted { get; set; }
+        public string Remarks { get; set; }
+    }
+
 }

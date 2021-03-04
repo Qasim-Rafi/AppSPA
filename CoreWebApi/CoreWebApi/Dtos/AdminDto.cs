@@ -31,4 +31,22 @@ namespace CoreWebApi.Dtos
         public string ApproveComment { get; set; }
         public string Status { get; set; }
     }
+    public class SalaryForAddDto
+    {
+        public int EmployeeId { get; set; }
+        public string Amount { get; set; }
+    }
+    public class SalaryForUpdateDto
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public string Amount { get; set; }
+    }
+    public class SalaryForListDto
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public string Employee { get; set; }
+        public string Amount { get; set; }
+    }
 }

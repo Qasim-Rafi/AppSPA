@@ -6,18 +6,19 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Models
 {
-    public class UsefulResource
+    public class StaffInventory
     {
         public int Id { get; set; }
-        public string Keyword { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
-        public string Link { get; set; }
-        public string Thumbnail { get; set; }
-        public string ResourceType { get; set; }
-        public int CreatedById { get; set; }
+        public double Amount { get; set; }
+        public string TransactionType { get; set; }
+        public bool Posted { get; set; }
         public int SchoolBranchId { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public int CreatedById { get; set; }
 
+        [ForeignKey("CreatedById")]
+        public User CreatedByUser { get; set; }
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
     }

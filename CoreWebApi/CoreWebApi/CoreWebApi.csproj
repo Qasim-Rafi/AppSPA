@@ -176,6 +176,10 @@
     <Compile Remove="Migrations\20210125054937_UpdateMessage_AddChatGroup.Designer.cs" />
     <Compile Remove="Migrations\20210203081830_UpdateUser3.cs" />
     <Compile Remove="Migrations\20210203081830_UpdateUser3.Designer.cs" />
+    <Compile Remove="Migrations\20210304075530_AddSalary_Inventory.cs" />
+    <Compile Remove="Migrations\20210304075530_AddSalary_Inventory.Designer.cs" />
+    <Compile Remove="Migrations\20210304100856_AddSalary_Inventory_SchoolCashAccount.cs" />
+    <Compile Remove="Migrations\20210304100856_AddSalary_Inventory_SchoolCashAccount.Designer.cs" />
 
   </ItemGroup>
 

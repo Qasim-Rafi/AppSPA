@@ -75,6 +75,10 @@ namespace CoreWebApi.Data
         public DbSet<City> Cities { get; set; }
         public DbSet<StudentFee> StudentFees { get; set; }
         public DbSet<Requisition> Requisitions { get; set; }
+        public DbSet<EmployeeSalary> EmployeeSalaries { get; set; }
+        public DbSet<EmployeeSalaryTransaction> EmployeeSalaryTransactions { get; set; }
+        public DbSet<StaffInventory> StaffInventory { get; set; }
+        public DbSet<SchoolCashAccount> SchoolCashAccount { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }
