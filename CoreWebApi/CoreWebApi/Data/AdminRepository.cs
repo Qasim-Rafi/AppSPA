@@ -145,11 +145,25 @@ namespace CoreWebApi.Data
             {
                 Id = o.Id,
                 EmployeeId = o.EmployeeId,
-                Employee = o.EmployeeUser.FullName,                
+                Employee = o.EmployeeUser.FullName,
                 Amount = o.Amount.ToString(),
             }).ToListAsync();
 
             _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> GetEmployeeSalaryById(int id)
+        {
+            var ToReturn = await _context.EmployeeSalaries.Where(m => m.Id == id).Select(o => new SalaryForListDto
+            {
+                Id = o.Id,
+                EmployeeId = o.EmployeeId,
+                Employee = o.EmployeeUser.FullName,
+                Amount = o.Amount.ToString(),
+            }).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

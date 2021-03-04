@@ -90,5 +90,16 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetEmployeeSalaryById/{id}")]
+        public async Task<IActionResult> GetEmployeeSalaryById(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetEmployeeSalaryById(id);
+            return Ok(_response);
+
+        }
     }
 }

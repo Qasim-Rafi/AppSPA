@@ -355,11 +355,10 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetEmployees()
         {
+            int[] values = new int[] { (int)Enumm.UserType.Student, (int)Enumm.UserType.Tutor, (int)Enumm.UserType.OnlineStudent, (int)Enumm.UserType.Parent };
+
             var users = await (from u in _context.Users
-                               where u.UserTypeId != (int)Enumm.UserType.Student
-                               && u.UserTypeId != (int)Enumm.UserType.Tutor
-                               && u.UserTypeId != (int)Enumm.UserType.OnlineStudent
-                               && u.UserTypeId != (int)Enumm.UserType.Parent
+                               where !values.Contains(u.UserTypeId)
                                && u.Active == true
                                && u.SchoolBranchId == _LoggedIn_BranchID
                                orderby u.FullName
