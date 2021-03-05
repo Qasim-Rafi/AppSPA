@@ -556,12 +556,11 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> AddInventoryItem(InventoryItemForAddDto model)
+        public async Task<ServiceResponse<object>> AddInventory(InventoryItemForAddDto model)
         {
             var ToAdd = new StaffInventory
             {
                 Title = model.Title,
-                TransactionType = model.TransactionType,
                 Posted = false,
                 Amount = Convert.ToDouble(model.Amount),
                 CreatedDate = DateTime.Now,
@@ -570,7 +569,41 @@ namespace CoreWebApi.Data
             };
             await _context.StaffInventory.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
-            
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetInventory()
+        {
+            var list = await _context.StaffInventory.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new InventoryItemForListDto
+            {
+                Id = o.Id,
+                Title = o.Title,
+                Amount = o.Amount.ToString(),
+                Posted = o.Posted,
+            }).ToListAsync();
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> PostInventory(int id, bool status)
+        {
+            var toUpdate = await _context.StaffInventory.Where(m => m.Id == id).FirstOrDefaultAsync();
+            toUpdate.Posted = status;
+            _context.StaffInventory.Update(toUpdate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> AddInSchoolCashAccount(SchoolCashAccountForAddDto model)
+        {
             var ToAdd2 = new SchoolCashAccount
             {
                 UserId = _LoggedIn_UserID,
@@ -589,13 +622,14 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetInventory()
+        public async Task<ServiceResponse<object>> GetSchoolCashAccount()
         {
-            var list = await _context.StaffInventory.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new InventoryItemForListDto
+            var list = await _context.SchoolCashAccount.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new SchoolCashAccountForListDto
             {
                 Id = o.Id,
-                Title = o.Title,
+                UserId = o.UserId,
                 TransactionType = o.TransactionType,
+                Remarks = o.Remarks,
                 Amount = o.Amount.ToString(),
                 Posted = o.Posted,
             }).ToListAsync();
@@ -605,11 +639,11 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> PostInventory(int id, bool status)
+        public async Task<ServiceResponse<object>> PostSchoolCashAccount(int id, bool status)
         {
-            var toUpdate = await _context.StaffInventory.Where(m => m.Id == id).FirstOrDefaultAsync();
+            var toUpdate = await _context.SchoolCashAccount.Where(m => m.Id == id).FirstOrDefaultAsync();
             toUpdate.Posted = status;
-            _context.StaffInventory.Update(toUpdate);
+            _context.SchoolCashAccount.Update(toUpdate);
             await _context.SaveChangesAsync();
 
             _serviceResponse.Message = CustomMessage.Updated;

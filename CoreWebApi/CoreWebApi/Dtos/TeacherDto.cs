@@ -136,24 +136,43 @@ namespace CoreWebApi.Dtos
     {
         public string Title { get; set; }
         public string Amount { get; set; }
-        public string TransactionType { get; set; }
-        public string Remarks { get; set; }
     }
     public class InventoryItemForUpdateDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
         public string Amount { get; set; }
-        public string TransactionType { get; set; }
         public bool Posted { get; set; }
-        public string Remarks { get; set; }
     }
     public class InventoryItemForListDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
         public string Amount { get; set; }
+        public bool Posted { get; set; }
+    }
+    public class SchoolCashAccountForAddDto
+    {
+        public int UserId { get; set; }
         public string TransactionType { get; set; }
+        public string Amount { get; set; }
+        public string Remarks { get; set; }
+    }
+    public class SchoolCashAccountForUpdateDto
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public string TransactionType { get; set; }
+        public string Amount { get; set; }
+        public bool Posted { get; set; }
+        public string Remarks { get; set; }
+    }
+    public class SchoolCashAccountForListDto
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public string TransactionType { get; set; }
+        public string Amount { get; set; }
         public bool Posted { get; set; }
         public string Remarks { get; set; }
     }

@@ -92,6 +92,7 @@ namespace CoreWebApi.Data
             {
                 EmployeeId = model.EmployeeId,
                 Amount = Convert.ToDouble(model.Amount),
+                Posted = false,
                 CreatedDate = DateTime.Now,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
@@ -164,6 +165,17 @@ namespace CoreWebApi.Data
             }).FirstOrDefaultAsync();
 
             _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> PostSalary(int id, bool status)
+        {
+            var toUpdate = await _context.EmployeeSalaries.Where(m => m.Id == id).FirstOrDefaultAsync();
+            toUpdate.Posted = status;
+            _context.EmployeeSalaries.Update(toUpdate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Updated;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

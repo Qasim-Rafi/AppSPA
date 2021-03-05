@@ -132,14 +132,14 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPost("AddInventoryItem")]
-        public async Task<IActionResult> AddInventoryItem(InventoryItemForAddDto model)
+        [HttpPost("AddInventory")]
+        public async Task<IActionResult> AddInventory(InventoryItemForAddDto model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.AddInventoryItem(model);
+            _response = await _repo.AddInventory(model);
             return Ok(_response);
 
         }
@@ -162,6 +162,39 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             _response = await _repo.PostInventory(id, status);
+            return Ok(_response);
+
+        }
+        [HttpPost("AddInSchoolCashAccount")]
+        public async Task<IActionResult> AddInSchoolCashAccount(SchoolCashAccountForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.AddInSchoolCashAccount(model);
+            return Ok(_response);
+
+        }
+        [HttpGet("GetSchoolCashAccount")]
+        public async Task<IActionResult> GetSchoolCashAccount()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetSchoolCashAccount();
+            return Ok(_response);
+
+        }
+        [HttpPut("PostSchoolCashAccount/{id}/{status}")]
+        public async Task<IActionResult> PostSchoolCashAccount(int id, bool status)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.PostSchoolCashAccount(id, status);
             return Ok(_response);
 
         }
