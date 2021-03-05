@@ -21,10 +21,14 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetEmptyTeachers();
         Task<ServiceResponse<object>> AddRequisitionRequest(RequisitionForAddDto model);
         Task<ServiceResponse<object>> AddInventory(InventoryItemForAddDto model);
+        Task<ServiceResponse<object>> UpdateInventory(InventoryItemForUpdateDto model);
         Task<ServiceResponse<object>> GetInventory();
+        Task<ServiceResponse<object>> GetInventoryById(int id);
         Task<ServiceResponse<object>> PostInventory(InventoryItemForPostDto model);
         Task<ServiceResponse<object>> AddInSchoolCashAccount(SchoolCashAccountForAddDto model);
+        Task<ServiceResponse<object>> UpdateSchoolCashAccount(SchoolCashAccountForUpdateDto model);
         Task<ServiceResponse<object>> GetSchoolCashAccount();
+        Task<ServiceResponse<object>> GetSchoolCashAccountById(int id);
         Task<ServiceResponse<object>> PostSchoolCashAccount(SchoolCashAccountForPostDto model);
     }
 }

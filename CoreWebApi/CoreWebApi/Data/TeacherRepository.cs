@@ -574,6 +574,19 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> UpdateInventory(InventoryItemForUpdateDto model)
+        {
+            var toUpdate = await _context.StaffInventory.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+            toUpdate.Title = model.Title;
+            toUpdate.Amount = Convert.ToDouble(model.Amount);
+
+            _context.StaffInventory.Update(toUpdate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
 
         public async Task<ServiceResponse<object>> GetInventory()
         {
@@ -586,6 +599,21 @@ namespace CoreWebApi.Data
             }).ToListAsync();
 
             _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        
+        public async Task<ServiceResponse<object>> GetInventoryById(int id)
+        {
+            var toReturn = await _context.StaffInventory.Where(m => m.Id == id).Select(o => new InventoryItemForListDto
+            {
+                Id = o.Id,
+                Title = o.Title,
+                Amount = o.Amount.ToString(),
+                Posted = o.Posted,
+            }).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = toReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
@@ -621,7 +649,21 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> UpdateSchoolCashAccount(SchoolCashAccountForUpdateDto model)
+        {
+            var toUpdate = await _context.SchoolCashAccount.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+            toUpdate.UserId = model.UserId;
+            toUpdate.Remarks = model.Remarks;
+            toUpdate.Amount = Convert.ToDouble(model.Amount);
+            toUpdate.TransactionType = model.TransactionType;
 
+            _context.SchoolCashAccount.Update(toUpdate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
         public async Task<ServiceResponse<object>> GetSchoolCashAccount()
         {
             var list = await _context.SchoolCashAccount.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new SchoolCashAccountForListDto
@@ -638,6 +680,22 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetSchoolCashAccountById(int id)
+        {
+            var toReturn = await _context.SchoolCashAccount.Where(m => m.Id == id).Select(o => new SchoolCashAccountForListDto
+            {
+                Id = o.Id,
+                UserId = o.UserId,
+                TransactionType = o.TransactionType,
+                Remarks = o.Remarks,
+                Amount = o.Amount.ToString(),
+                Posted = o.Posted,
+            }).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = toReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
 
         public async Task<ServiceResponse<object>> PostSchoolCashAccount(SchoolCashAccountForPostDto model)
         {
@@ -650,5 +708,6 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
     }
 }

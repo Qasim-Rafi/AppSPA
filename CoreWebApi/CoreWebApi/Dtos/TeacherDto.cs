@@ -142,7 +142,6 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public string Title { get; set; }
         public string Amount { get; set; }
-        public bool Posted { get; set; }
     }
     public class InventoryItemForListDto
     {
@@ -164,7 +163,6 @@ namespace CoreWebApi.Dtos
         public int UserId { get; set; }
         public string TransactionType { get; set; }
         public string Amount { get; set; }
-        public bool Posted { get; set; }
         public string Remarks { get; set; }
     }
     public class SchoolCashAccountForListDto

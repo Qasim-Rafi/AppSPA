@@ -143,6 +143,17 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPut("UpdateInventory")]
+        public async Task<IActionResult> UpdateInventory(InventoryItemForUpdateDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateInventory(model);
+            return Ok(_response);
+
+        }
         [HttpGet("GetInventory")]
         public async Task<IActionResult> GetInventory()
         {
@@ -151,6 +162,17 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             _response = await _repo.GetInventory();
+            return Ok(_response);
+
+        }
+        [HttpGet("GetInventoryById/{id}")]
+        public async Task<IActionResult> GetInventoryById(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetInventoryById(id);
             return Ok(_response);
 
         }
@@ -176,6 +198,17 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPut("UpdateSchoolCashAccount")]
+        public async Task<IActionResult> UpdateSchoolCashAccount(SchoolCashAccountForUpdateDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateSchoolCashAccount(model);
+            return Ok(_response);
+
+        }
         [HttpGet("GetSchoolCashAccount")]
         public async Task<IActionResult> GetSchoolCashAccount()
         {
@@ -184,6 +217,17 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             _response = await _repo.GetSchoolCashAccount();
+            return Ok(_response);
+
+        }
+        [HttpGet("GetSchoolCashAccountById/{id}")]
+        public async Task<IActionResult> GetSchoolCashAccountById(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetSchoolCashAccountById(id);
             return Ok(_response);
 
         }
