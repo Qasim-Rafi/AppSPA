@@ -154,14 +154,14 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPut("PostInventory/{id}/{status}")]
-        public async Task<IActionResult> PostInventory(int id, bool status)
+        [HttpPut("PostInventory")]
+        public async Task<IActionResult> PostInventory(InventoryItemForPostDto model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.PostInventory(id, status);
+            _response = await _repo.PostInventory(model);
             return Ok(_response);
 
         }
@@ -187,14 +187,14 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPut("PostSchoolCashAccount/{id}/{status}")]
-        public async Task<IActionResult> PostSchoolCashAccount(int id, bool status)
+        [HttpPut("PostSchoolCashAccount")]
+        public async Task<IActionResult> PostSchoolCashAccount(SchoolCashAccountForPostDto model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.PostSchoolCashAccount(id, status);
+            _response = await _repo.PostSchoolCashAccount(model);
             return Ok(_response);
 
         }

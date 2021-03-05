@@ -168,10 +168,10 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> PostSalary(int id, bool status)
+        public async Task<ServiceResponse<object>> PostSalary(SalaryForPostDto model)
         {
-            var toUpdate = await _context.EmployeeSalaries.Where(m => m.Id == id).FirstOrDefaultAsync();
-            toUpdate.Posted = status;
+            var toUpdate = await _context.EmployeeSalaries.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+            toUpdate.Posted = model.Posted;
             _context.EmployeeSalaries.Update(toUpdate);
             await _context.SaveChangesAsync();
 

@@ -590,10 +590,10 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> PostInventory(int id, bool status)
+        public async Task<ServiceResponse<object>> PostInventory(InventoryItemForPostDto model)
         {
-            var toUpdate = await _context.StaffInventory.Where(m => m.Id == id).FirstOrDefaultAsync();
-            toUpdate.Posted = status;
+            var toUpdate = await _context.StaffInventory.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+            toUpdate.Posted = model.Posted;
             _context.StaffInventory.Update(toUpdate);
             await _context.SaveChangesAsync();
 
@@ -639,10 +639,10 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> PostSchoolCashAccount(int id, bool status)
+        public async Task<ServiceResponse<object>> PostSchoolCashAccount(SchoolCashAccountForPostDto model)
         {
-            var toUpdate = await _context.SchoolCashAccount.Where(m => m.Id == id).FirstOrDefaultAsync();
-            toUpdate.Posted = status;
+            var toUpdate = await _context.SchoolCashAccount.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+            toUpdate.Posted = model.Posted;
             _context.SchoolCashAccount.Update(toUpdate);
             await _context.SaveChangesAsync();
 

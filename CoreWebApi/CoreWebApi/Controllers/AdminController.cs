@@ -101,14 +101,14 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPut("PostSalary/{id}/{status}")]
-        public async Task<IActionResult> PostSalary(int id, bool status)
+        [HttpPut("PostSalary")]
+        public async Task<IActionResult> PostSalary(SalaryForPostDto model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.PostSalary(id, status);
+            _response = await _repo.PostSalary(model);
             return Ok(_response);
 
         }

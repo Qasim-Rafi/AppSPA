@@ -176,5 +176,15 @@ namespace CoreWebApi.Dtos
         public bool Posted { get; set; }
         public string Remarks { get; set; }
     }
+    public class SchoolCashAccountForPostDto
+    {
+        public int Id { get; set; }
+        public bool Posted { get; set; }     
+    }
+    public class InventoryItemForPostDto
+    {
+        public int Id { get; set; }
+        public bool Posted { get; set; }     
+    }
 
 }
