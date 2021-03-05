@@ -454,6 +454,7 @@ namespace CoreWebApi.Data
                             SubjectContentDetailId = r.Id,
                             DetailHeading = r.Heading,
                             DetailOrder = r.Order,
+                            Duration = r.Duration,
                         }).ToList();
                     }
                 }
