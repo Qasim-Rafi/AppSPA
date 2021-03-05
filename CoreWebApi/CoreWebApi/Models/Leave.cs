@@ -20,6 +20,9 @@ namespace CoreWebApi.Models
         public DateTime ToDate { get; set; }
         public int LeaveTypeId { get; set; }
         public int UserId { get; set; }
+        public int? ApproveById { get; set; }
+        public DateTime? ApproveDateTime { get; set; }
+        public string ApproveComment { get; set; }
         public string Status { get; set; }
         public int SchoolBranchId { get; set; }
         public DateTime CreatedDateTime { get; set; }

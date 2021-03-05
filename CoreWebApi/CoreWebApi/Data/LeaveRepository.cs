@@ -158,7 +158,11 @@ namespace CoreWebApi.Data
             Leave dbObj = _context.Leaves.FirstOrDefault(s => s.Id.Equals(model.LeaveId));
             if (dbObj != null)
             {
+                dbObj.ApproveById = _LoggedIn_UserID;
+                dbObj.ApproveComment = model.ApproveComment;
+                dbObj.ApproveDateTime = DateTime.Now;
                 dbObj.Status = model.Status;
+
                 _context.Leaves.Update(dbObj);
                 await _context.SaveChangesAsync();
             }
