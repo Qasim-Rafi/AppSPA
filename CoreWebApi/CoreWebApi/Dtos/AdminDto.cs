@@ -48,6 +48,7 @@ namespace CoreWebApi.Dtos
         public int EmployeeId { get; set; }
         public string Employee { get; set; }
         public string Amount { get; set; }
+        public bool Posted { get; set; }
     }
     public class SalaryForPostDto
     {

@@ -148,6 +148,7 @@ namespace CoreWebApi.Data
                 EmployeeId = o.EmployeeId,
                 Employee = o.EmployeeUser.FullName,
                 Amount = o.Amount.ToString(),
+                Posted = o.Posted,
             }).ToListAsync();
 
             _serviceResponse.Data = list;
@@ -162,6 +163,7 @@ namespace CoreWebApi.Data
                 EmployeeId = o.EmployeeId,
                 Employee = o.EmployeeUser.FullName,
                 Amount = o.Amount.ToString(),
+                Posted = o.Posted,
             }).FirstOrDefaultAsync();
 
             _serviceResponse.Data = ToReturn;
