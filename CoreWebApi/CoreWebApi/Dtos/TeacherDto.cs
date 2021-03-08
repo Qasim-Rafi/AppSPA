@@ -169,6 +169,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public string User { get; set; }
         public string TransactionType { get; set; }
         public string Amount { get; set; }
         public bool Posted { get; set; }

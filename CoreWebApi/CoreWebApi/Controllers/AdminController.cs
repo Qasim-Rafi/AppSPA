@@ -64,6 +64,9 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+            if (await _repo.SalaryExists(model.EmployeeId))
+                return BadRequest(new { message = "This employee salary is already exist" });
+           
             _response = await _repo.AddEmployeeSalary(model);
             return Ok(_response);
 

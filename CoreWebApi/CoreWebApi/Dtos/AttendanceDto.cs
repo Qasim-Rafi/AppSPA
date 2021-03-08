@@ -14,7 +14,7 @@ namespace CoreWebApi.Dtos
     }
     public class AttendanceDtoForAdd
     {
-        public int ClassSectionId { get; set; }
+        public int? ClassSectionId { get; set; }
         public int UserId { get; set; }
 
         //[Range(typeof(bool), "true", "false", ErrorMessage = "The field must be true of false")]

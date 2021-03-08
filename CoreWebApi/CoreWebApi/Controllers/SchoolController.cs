@@ -337,8 +337,8 @@ namespace CoreWebApi.Controllers
             _response = await _repo.AddUsefulResources(model);
             return Ok(_response);
         }
-        [HttpGet("GetUsefulResources/{currentPage?}/{resourceType?}")]
-        public async Task<IActionResult> GetUsefulResources(int currentPage = 0, string resourceType = "")
+        [HttpGet("GetUsefulResources/{resourceType?}/{currentPage?}")]
+        public async Task<IActionResult> GetUsefulResources(string resourceType = "", int currentPage = 0)
         {
             if (!ModelState.IsValid)
             {

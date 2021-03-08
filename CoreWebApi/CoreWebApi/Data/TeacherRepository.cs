@@ -602,7 +602,7 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-        
+
         public async Task<ServiceResponse<object>> GetInventoryById(int id)
         {
             var toReturn = await _context.StaffInventory.Where(m => m.Id == id).Select(o => new InventoryItemForListDto
@@ -634,7 +634,7 @@ namespace CoreWebApi.Data
         {
             var ToAdd2 = new SchoolCashAccount
             {
-                UserId = _LoggedIn_UserID,
+                UserId = model.UserId,
                 TransactionType = model.TransactionType,
                 Remarks = model.Remarks,
                 Posted = false,
@@ -670,6 +670,7 @@ namespace CoreWebApi.Data
             {
                 Id = o.Id,
                 UserId = o.UserId,
+                User = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
                 TransactionType = o.TransactionType,
                 Remarks = o.Remarks,
                 Amount = o.Amount.ToString(),
@@ -686,6 +687,7 @@ namespace CoreWebApi.Data
             {
                 Id = o.Id,
                 UserId = o.UserId,
+                User = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
                 TransactionType = o.TransactionType,
                 Remarks = o.Remarks,
                 Amount = o.Amount.ToString(),

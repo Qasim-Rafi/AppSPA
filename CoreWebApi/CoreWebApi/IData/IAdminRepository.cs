@@ -12,6 +12,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetAllRequisitionForApprove();
         Task<ServiceResponse<object>> GetAllRequisitionRequest();
         Task<ServiceResponse<object>> ApproveRequisitionRequest(RequisitionForUpdateDto model);
+        Task<bool> SalaryExists(int employeeId);
         Task<ServiceResponse<object>> AddEmployeeSalary(SalaryForAddDto model);
         Task<ServiceResponse<object>> UpdateEmployeeSalary(SalaryForUpdateDto model);
         Task<ServiceResponse<object>> GetEmployeeSalary();

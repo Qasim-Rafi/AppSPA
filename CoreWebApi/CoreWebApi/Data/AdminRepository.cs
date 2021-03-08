@@ -85,9 +85,15 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-
+        public async Task<bool> SalaryExists(int employeeId)
+        {
+            if (await _context.EmployeeSalaries.AnyAsync(x => x.EmployeeId == employeeId))
+                return true;
+            return false;
+        }
         public async Task<ServiceResponse<object>> AddEmployeeSalary(SalaryForAddDto model)
         {
+           
             var ToAdd = new EmployeeSalary
             {
                 EmployeeId = model.EmployeeId,
@@ -122,6 +128,8 @@ namespace CoreWebApi.Data
             {
                 ObjToUpdate.EmployeeId = model.EmployeeId;
                 ObjToUpdate.Amount = Convert.ToDouble(model.Amount);
+                ObjToUpdate.Posted = false;
+
                 _context.EmployeeSalaries.Update(ObjToUpdate);
                 await _context.SaveChangesAsync();
             }
