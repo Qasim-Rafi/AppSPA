@@ -898,6 +898,7 @@ namespace CoreWebApi.Data
 
             var ToAdd = new NoticeBoard
             {
+                Title = model.Title,
                 Description = model.Description,
                 NoticeDate = NoticeDate,
                 CreatedDateTime = DateTime.Now,
@@ -919,7 +920,7 @@ namespace CoreWebApi.Data
                 {
                     Description = GenericFunctions.NotificationDescription(new string[] {
                         "Notice:",
-                        ToAdd.Description,
+                        ToAdd.Title,
                         " On " + ToAdd.NoticeDate.Value.ToShortDateString()
                     }, _LoggedIn_UserName),
                     CreatedById = _LoggedIn_UserID,
@@ -940,6 +941,7 @@ namespace CoreWebApi.Data
         {
             var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new NoticeBoardForListDto
             {
+                Title = o.Title,
                 Description = o.Description,
                 NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString())
             }).ToListAsync();

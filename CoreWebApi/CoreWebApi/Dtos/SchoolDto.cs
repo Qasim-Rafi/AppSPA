@@ -114,17 +114,20 @@ namespace CoreWebApi.Dtos
     }
     public class NoticeBoardForAddDto
     {        
+        public string Title { get; set; }
         public string Description { get; set; }
         public string NoticeDate { get; set; }
     }
     public class NoticeBoardForListDto
     {        
+        public string Title { get; set; }
         public string Description { get; set; }
         public string NoticeDate { get; set; }
     }
     public class NoticeBoardForUpdateDto
     {        
         public int Id { get; set; }
+        public string Title { get; set; }
         public string Description { get; set; }
         public string NoticeDate { get; set; }
     }
