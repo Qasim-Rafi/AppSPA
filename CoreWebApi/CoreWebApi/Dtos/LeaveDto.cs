@@ -50,6 +50,7 @@ namespace CoreWebApi.Dtos
         public string LeaveType { get; set; }
         public int UserId { get; set; }
         public string User { get; set; }
+        public string ApproveComment { get; set; }
     }
     public class LeaveDtoForApprove
     {
