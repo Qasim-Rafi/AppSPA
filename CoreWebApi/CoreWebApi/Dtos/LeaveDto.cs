@@ -51,6 +51,7 @@ namespace CoreWebApi.Dtos
         public int UserId { get; set; }
         public string User { get; set; }
         public string ApproveComment { get; set; }
+        public string Status { get; set; }
     }
     public class LeaveDtoForApprove
     {
