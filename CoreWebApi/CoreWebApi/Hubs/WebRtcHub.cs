@@ -109,7 +109,7 @@ namespace CoreWebApi.Hubs
                 callingUser.CurrentRoom.Users.Remove(callingUser);
                 await SendUserListUpdate(Clients.Others, callingUser.CurrentRoom, false);
             }
-            if (callingUser.CurrentRoom.Users.Count() < 2)
+            if (callingUser.CurrentRoom.Users.Count() == 0)
             {
                 RoomsThatAreFull.Remove(callingUser.CurrentRoom);
             }
