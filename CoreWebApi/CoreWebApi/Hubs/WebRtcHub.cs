@@ -1,6 +1,7 @@
 ﻿using CoreWebApi.Data;
 using CoreWebApi.Helpers;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,16 +77,19 @@ namespace CoreWebApi.Hubs
         {
             await Clients.Others.SendAsync("ReceiveCallSignalFromGroup", userIds, userName, roomName, senderUserId, groupId, receiverNames, groupName);
         }
-        //public async Task CheckUserExistInGroup(int groupId, int userId)
-        //{
-        //    var exist = _context.ChatGroups.Any(m => m.Id == groupId && m.UserIds.Contains(userId.ToString()));
-        //    await Clients.Caller.SendAsync("UserExistInGroup", exist);
-        //}
         public async Task CheckRoomUsers(string roomName)
         {
             var room = Room.Get(roomName);
             var userCount = room.Users.Count();
             await Clients.All.SendAsync("RoomUsersCount", userCount);
+        }
+        public async Task StartScreenSharing(string roomName, int sharedbyUserId)
+        {
+            var room = Room.Get(roomName);
+            var roomUsers = room.Users.ToList();
+            var users = JsonConvert.SerializeObject(roomUsers);
+            room.Users.RemoveAll(m => roomUsers.Select(n => n.UserName).Contains(m.UserName));
+            await Clients.All.SendAsync("ScreenSharingStarted", roomName, sharedbyUserId, users);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -109,15 +113,6 @@ namespace CoreWebApi.Hubs
                 callingUser.CurrentRoom.Users.Remove(callingUser);
                 await SendUserListUpdate(Clients.Others, callingUser.CurrentRoom, false);
             }
-            if (callingUser.CurrentRoom.Users.Count() == 0)
-            {
-                RoomsThatAreFull.Remove(callingUser.CurrentRoom);
-            }
-            if (callingUser.CurrentRoom.Users.Count() == 0)
-            {
-                RoomsThatAreActive.Remove(callingUser.CurrentRoom);
-                Room.Remove(callingUser.CurrentRoom);
-            }
             if (RoomsThatAreActive.Count() > 0)
             {
                 var toRemove = RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault();
@@ -126,6 +121,14 @@ namespace CoreWebApi.Hubs
                     toRemove.Remove(callingUser);
                 }
             }
+
+            if (callingUser.CurrentRoom.Users.Count() == 0)
+            {
+                RoomsThatAreFull.Remove(callingUser.CurrentRoom);
+                RoomsThatAreActive.Remove(callingUser.CurrentRoom);
+                Room.Remove(callingUser.CurrentRoom);
+            }
+            
             RTCUser.Remove(callingUser);
         }
 
