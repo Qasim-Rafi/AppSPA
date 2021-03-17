@@ -1,0 +1,17 @@
+﻿using CoreWebApi.Dtos;
+using CoreWebApi.Models;
+using System.Threading.Tasks;
+
+namespace CoreWebApi.IData
+{
+    public interface ISemesterFeeRepository
+    {
+        Task<bool> SemesterExists(string name);
+        Task<ServiceResponse<object>> AddSemester(SemesterDtoForAdd model);
+        Task<ServiceResponse<object>> UpdateSemester(SemesterDtoForEdit model);
+        Task<ServiceResponse<object>> GetSemester();
+        Task<ServiceResponse<object>> GetSemesterById(int id);
+        Task<ServiceResponse<object>> PostSemester(SemesterDtoForPost model);
+
+    }
+}

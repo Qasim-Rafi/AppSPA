@@ -73,6 +73,7 @@ namespace CoreWebApi
                 services.AddScoped<IResultRepository, ResultRepository>();
                 services.AddScoped<IStudentRepository, StudentRepository>();
                 services.AddScoped<IAdminRepository, AdminRepository>();
+                services.AddScoped<ISemesterFeeRepository, SemesterFeeRepository>();
 
 
 
@@ -93,6 +94,7 @@ namespace CoreWebApi
                 //{
                 //    hubOptions.EnableDetailedErrors = true;
                 //    hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(10);
+                //    //hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(10);
                 //});
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
