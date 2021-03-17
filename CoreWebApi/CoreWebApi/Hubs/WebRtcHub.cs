@@ -86,10 +86,10 @@ namespace CoreWebApi.Hubs
         public async Task StartScreenSharing(string roomName)
         {
             var room = Room.Get(roomName);
-            var roomUsers = room.Users.Where(m => m.ConnectionId != Context.ConnectionId).ToList();
-            var users = JsonConvert.SerializeObject(roomUsers);
+            var roomUser = room.Users.Where(m => m.ConnectionId != Context.ConnectionId).FirstOrDefault();
+            //var users = JsonConvert.SerializeObject(roomUsers);
             //room.Users.RemoveAll(m => roomUsers.Select(n => n.UserName).Contains(m.UserName));
-            await Clients.Others.SendAsync("ScreenSharingStarted", roomName, users);
+            await Clients.Others.SendAsync("ScreenSharingStarted", roomName, roomUser);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
