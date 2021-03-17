@@ -39,13 +39,16 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> AddSemester(SemesterDtoForAdd model)
         {
+            DateTime StartDate = DateTime.ParseExact(model.StartDate, "MM/dd/yyyy", null);
+            DateTime EndDate = DateTime.ParseExact(model.EndDate, "MM/dd/yyyy", null);
+            DateTime DueDate = DateTime.ParseExact(model.DueDate, "MM/dd/yyyy", null);
             var ToAdd = new Semester
             {
                 Name = model.Name,
                 FeeAmount = Convert.ToDouble(model.FeeAmount),
-                StartDate = Convert.ToDateTime(model.StartDate),
-                EndDate = Convert.ToDateTime(model.EndDate),
-                DueDate = Convert.ToDateTime(model.DueDate),
+                StartDate = StartDate,
+                EndDate = EndDate,
+                DueDate = DueDate,
                 LateFeePlentyAmount = Convert.ToInt32(model.LateFeePlentyAmount),
                 LateFeeValidityInDays = Convert.ToInt32(model.LateFeeValidityInDays),
                 Posted = false,
@@ -65,11 +68,15 @@ namespace CoreWebApi.Data
             var ObjToUpdate = _context.Semesters.FirstOrDefault(s => s.Id.Equals(model.Id));
             if (ObjToUpdate != null)
             {
+                DateTime StartDate = DateTime.ParseExact(model.StartDate, "MM/dd/yyyy", null);
+                DateTime EndDate = DateTime.ParseExact(model.EndDate, "MM/dd/yyyy", null);
+                DateTime DueDate = DateTime.ParseExact(model.DueDate, "MM/dd/yyyy", null);
+
                 ObjToUpdate.FeeAmount = Convert.ToDouble(model.FeeAmount);
                 ObjToUpdate.LateFeePlentyAmount = Convert.ToInt32(model.LateFeePlentyAmount);
-                ObjToUpdate.StartDate = Convert.ToDateTime(model.StartDate);
-                ObjToUpdate.EndDate = Convert.ToDateTime(model.EndDate);
-                ObjToUpdate.DueDate = Convert.ToDateTime(model.DueDate);
+                ObjToUpdate.StartDate = StartDate;
+                ObjToUpdate.EndDate = EndDate;
+                ObjToUpdate.DueDate = DueDate;
                 ObjToUpdate.LateFeePlentyAmount = Convert.ToInt32(model.LateFeePlentyAmount);
                 ObjToUpdate.LateFeeValidityInDays = Convert.ToInt32(model.LateFeeValidityInDays);
 
