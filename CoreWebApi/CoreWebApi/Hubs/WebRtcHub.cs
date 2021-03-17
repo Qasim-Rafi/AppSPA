@@ -83,13 +83,13 @@ namespace CoreWebApi.Hubs
             var userCount = room.Users.Count();
             await Clients.All.SendAsync("RoomUsersCount", userCount);
         }
-        public async Task StartScreenSharing(string roomName, int sharedbyUserId)
+        public async Task StartScreenSharing(string roomName)
         {
             var room = Room.Get(roomName);
-            var roomUsers = room.Users.ToList();
+            var roomUsers = room.Users.Where(m => m.ConnectionId != Context.ConnectionId).ToList();
             var users = JsonConvert.SerializeObject(roomUsers);
-            room.Users.RemoveAll(m => roomUsers.Select(n => n.UserName).Contains(m.UserName));
-            await Clients.All.SendAsync("ScreenSharingStarted", roomName, sharedbyUserId, users);
+            //room.Users.RemoveAll(m => roomUsers.Select(n => n.UserName).Contains(m.UserName));
+            await Clients.Others.SendAsync("ScreenSharingStarted", roomName, users);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -128,7 +128,7 @@ namespace CoreWebApi.Hubs
                 RoomsThatAreActive.Remove(callingUser.CurrentRoom);
                 Room.Remove(callingUser.CurrentRoom);
             }
-            
+
             RTCUser.Remove(callingUser);
         }
 

@@ -180,6 +180,8 @@
     <Compile Remove="Migrations\20210304075530_AddSalary_Inventory.Designer.cs" />
     <Compile Remove="Migrations\20210304100856_AddSalary_Inventory_SchoolCashAccount.cs" />
     <Compile Remove="Migrations\20210304100856_AddSalary_Inventory_SchoolCashAccount.Designer.cs" />
+    <Compile Remove="Migrations\20210316120252_testt.cs" />
+    <Compile Remove="Migrations\20210316120252_testt.Designer.cs" />
 
   </ItemGroup>
 

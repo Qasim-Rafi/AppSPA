@@ -634,7 +634,7 @@ namespace CoreWebApi.Data
         {
             var ToAdd2 = new SchoolCashAccount
             {
-                UserId = model.UserId,
+                Title = model.Title,
                 TransactionType = model.TransactionType,
                 Remarks = model.Remarks,
                 Posted = false,
@@ -652,7 +652,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> UpdateSchoolCashAccount(SchoolCashAccountForUpdateDto model)
         {
             var toUpdate = await _context.SchoolCashAccount.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
-            toUpdate.UserId = model.UserId;
+            toUpdate.Title = model.Title;
             toUpdate.Remarks = model.Remarks;
             toUpdate.Amount = Convert.ToDouble(model.Amount);
             toUpdate.TransactionType = model.TransactionType;
@@ -669,8 +669,7 @@ namespace CoreWebApi.Data
             var list = await _context.SchoolCashAccount.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new SchoolCashAccountForListDto
             {
                 Id = o.Id,
-                UserId = o.UserId,
-                User = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
+                Title = o.Title,
                 TransactionType = o.TransactionType,
                 Remarks = o.Remarks,
                 Amount = o.Amount.ToString(),
@@ -686,8 +685,7 @@ namespace CoreWebApi.Data
             var toReturn = await _context.SchoolCashAccount.Where(m => m.Id == id).Select(o => new SchoolCashAccountForListDto
             {
                 Id = o.Id,
-                UserId = o.UserId,
-                User = _context.Users.FirstOrDefault(m => m.Id == o.UserId).FullName,
+                Title = o.Title,
                 TransactionType = o.TransactionType,
                 Remarks = o.Remarks,
                 Amount = o.Amount.ToString(),

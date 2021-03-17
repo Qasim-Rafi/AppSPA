@@ -92,7 +92,7 @@ namespace CoreWebApi
                 //services.AddSignalR(hubOptions =>
                 //{
                 //    hubOptions.EnableDetailedErrors = true;
-                //    hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(10);
+                //    hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(10);
                 //});
 
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
