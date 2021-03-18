@@ -97,5 +97,51 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+
+        [HttpPost("AddSemesterFee")]
+        public async Task<IActionResult> AddSemesterFee(SemesterFeeMappingDtoForAdd model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            _response = await _repo.AddSemesterFee(model);
+            return Ok(_response);
+
+        }
+        [HttpPut("UpdateSemesterFee")]
+        public async Task<IActionResult> UpdateSemesterFee(SemesterFeeMappingDtoForEdit model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateSemesterFee(model);
+            return Ok(_response);
+
+        }
+        [HttpGet("GetSemesterFee")]
+        public async Task<IActionResult> GetSemesterFee()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetSemesterFee();
+            return Ok(_response);
+
+        }
+        [HttpGet("GetSemesterFeeById/{id}")]
+        public async Task<IActionResult> GetSemesterFeeById(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetSemesterFeeById(id);
+            return Ok(_response);
+
+        }
     }
 }

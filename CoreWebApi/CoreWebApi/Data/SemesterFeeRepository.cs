@@ -59,6 +59,17 @@ namespace CoreWebApi.Data
             await _context.Semesters.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
 
+            var ToAdd2 = new SemesterFeeTransaction
+            {
+                SemesterId = ToAdd.Id,
+                Amount = Convert.ToDouble(model.FeeAmount),
+                UpdatedDateTime = DateTime.Now,
+                UpdatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.SemesterFeeTransactions.AddAsync(ToAdd2);
+            await _context.SaveChangesAsync();
+
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
@@ -81,6 +92,19 @@ namespace CoreWebApi.Data
                 ObjToUpdate.LateFeeValidityInDays = Convert.ToInt32(model.LateFeeValidityInDays);
 
                 _context.Semesters.Update(ObjToUpdate);
+                await _context.SaveChangesAsync();
+            }
+            if (ObjToUpdate.FeeAmount.ToString() != model.FeeAmount)
+            {
+                var ToAdd = new SemesterFeeTransaction
+                {
+                    SemesterId = ObjToUpdate.Id,
+                    Amount = Convert.ToDouble(model.FeeAmount),
+                    UpdatedDateTime = DateTime.Now,
+                    UpdatedById = _LoggedIn_UserID,
+                    SchoolBranchId = _LoggedIn_BranchID,
+                };
+                await _context.SemesterFeeTransactions.AddAsync(ToAdd);
                 await _context.SaveChangesAsync();
             }
 
@@ -132,6 +156,83 @@ namespace CoreWebApi.Data
             await _context.SaveChangesAsync();
 
             _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> AddSemesterFee(SemesterFeeMappingDtoForAdd model)
+        {
+
+            var ToAdd = new SemesterFeeMapping
+            {
+                SemesterId = Convert.ToInt32(model.SemesterId),
+                ClassId = Convert.ToInt32(model.ClassId),
+                DiscountInPercentage = Convert.ToInt32(model.DiscountInPercentage),
+                FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount),
+                InstallmentAmount = Convert.ToDouble(model.InstallmentAmount),
+                Posted = false,
+                CreatedDateTime = DateTime.Now,
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.SemesterFeeMappings.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+          
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> UpdateSemesterFee(SemesterFeeMappingDtoForEdit model)
+        {
+            var ObjToUpdate = _context.SemesterFeeMappings.FirstOrDefault(s => s.Id.Equals(model.Id));
+            if (ObjToUpdate != null)
+            {
+
+                ObjToUpdate.SemesterId = Convert.ToInt32(model.SemesterId);
+                ObjToUpdate.ClassId = Convert.ToInt32(model.ClassId);
+                ObjToUpdate.DiscountInPercentage = Convert.ToInt32(model.DiscountInPercentage);
+                ObjToUpdate.FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount);
+                ObjToUpdate.InstallmentAmount = Convert.ToDouble(model.InstallmentAmount);
+
+                _context.SemesterFeeMappings.Update(ObjToUpdate);
+                await _context.SaveChangesAsync();
+            }
+
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> GetSemesterFee()
+        {
+            var list = await _context.SemesterFeeMappings.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new SemesterFeeMappingDtoForList
+            {
+                Id = o.Id,
+                SemesterId = Convert.ToString(o.SemesterId),
+                ClassId = Convert.ToString(o.ClassId),
+                DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
+                InstallmentAmount = Convert.ToString(o.InstallmentAmount),
+                FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
+                Active = o.Active,
+            }).ToListAsync();
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> GetSemesterFeeById(int id)
+        {
+            var ToReturn = await _context.SemesterFeeMappings.Where(m => m.Id == id).Select(o => new SemesterFeeMappingDtoForDetail
+            {
+                Id = o.Id,
+                SemesterId = Convert.ToString(o.SemesterId),
+                ClassId = Convert.ToString(o.ClassId),
+                DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
+                InstallmentAmount = Convert.ToString(o.InstallmentAmount),
+                FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
+                Active = o.Active,
+            }).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

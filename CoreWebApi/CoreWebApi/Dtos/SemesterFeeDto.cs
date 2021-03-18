@@ -21,6 +21,7 @@ namespace CoreWebApi.Dtos
     public class SemesterDtoForEdit
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string FeeAmount { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
@@ -31,6 +32,7 @@ namespace CoreWebApi.Dtos
     public class SemesterDtoForList
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string FeeAmount { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
@@ -43,6 +45,7 @@ namespace CoreWebApi.Dtos
     public class SemesterDtoForDetail
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string FeeAmount { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
@@ -59,48 +62,39 @@ namespace CoreWebApi.Dtos
     }
     public class SemesterFeeMappingDtoForAdd
     {
-        public string Name { get; set; }
-        public double FeeAmount { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime DueDate { get; set; }
-        public int LateFeePlentyAmount { get; set; }
-        public int LateFeeValidityInDays { get; set; }
+        public string ClassId { get; set; }
+        public string SemesterId { get; set; }
+        public string DiscountInPercentage { get; set; }
+        public string FeeAfterDiscount { get; set; }
+        public string InstallmentAmount { get; set; }
     }
     public class SemesterFeeMappingDtoForEdit
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public double FeeAmount { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime DueDate { get; set; }
-        public int LateFeePlentyAmount { get; set; }
-        public int LateFeeValidityInDays { get; set; }
-
+        public string ClassId { get; set; }
+        public string SemesterId { get; set; }
+        public string DiscountInPercentage { get; set; }
+        public string FeeAfterDiscount { get; set; }
+        public string InstallmentAmount { get; set; }
     }
     public class SemesterFeeMappingDtoForList
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public double FeeAmount { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime DueDate { get; set; }
-        public int LateFeePlentyAmount { get; set; }
-        public int LateFeeValidityInDays { get; set; }
+        public string ClassId { get; set; }
+        public string SemesterId { get; set; }
+        public string DiscountInPercentage { get; set; }
+        public string FeeAfterDiscount { get; set; }
+        public string InstallmentAmount { get; set; }
         public bool Active { get; set; }
     }
     public class SemesterFeeMappingDtoForDetail
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public double FeeAmount { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime DueDate { get; set; }
-        public int LateFeePlentyAmount { get; set; }
-        public int LateFeeValidityInDays { get; set; }
+        public string ClassId { get; set; }
+        public string SemesterId { get; set; }
+        public string DiscountInPercentage { get; set; }
+        public string FeeAfterDiscount { get; set; }
+        public string InstallmentAmount { get; set; }
         public bool Active { get; set; }
     }
 }
