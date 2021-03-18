@@ -66,7 +66,7 @@ namespace CoreWebApi.Dtos
         public string SemesterId { get; set; }
         public string DiscountInPercentage { get; set; }
         public string FeeAfterDiscount { get; set; }
-        public string InstallmentAmount { get; set; }
+        public string Installments { get; set; }
     }
     public class SemesterFeeMappingDtoForEdit
     {
@@ -75,7 +75,7 @@ namespace CoreWebApi.Dtos
         public string SemesterId { get; set; }
         public string DiscountInPercentage { get; set; }
         public string FeeAfterDiscount { get; set; }
-        public string InstallmentAmount { get; set; }
+        public string Installments { get; set; }
     }
     public class SemesterFeeMappingDtoForList
     {
@@ -84,7 +84,7 @@ namespace CoreWebApi.Dtos
         public string SemesterId { get; set; }
         public string DiscountInPercentage { get; set; }
         public string FeeAfterDiscount { get; set; }
-        public string InstallmentAmount { get; set; }
+        public string Installments { get; set; }
         public bool Active { get; set; }
     }
     public class SemesterFeeMappingDtoForDetail
@@ -94,7 +94,7 @@ namespace CoreWebApi.Dtos
         public string SemesterId { get; set; }
         public string DiscountInPercentage { get; set; }
         public string FeeAfterDiscount { get; set; }
-        public string InstallmentAmount { get; set; }
+        public string Installments { get; set; }
         public bool Active { get; set; }
     }
 }

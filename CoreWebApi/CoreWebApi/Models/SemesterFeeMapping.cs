@@ -13,7 +13,7 @@ namespace CoreWebApi.Models
         public int SemesterId { get; set; }
         public int DiscountInPercentage { get; set; }
         public double FeeAfterDiscount { get; set; }       
-        public double InstallmentAmount { get; set; }       
+        public int Installments { get; set; }       
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
         public bool Active { get; set; }

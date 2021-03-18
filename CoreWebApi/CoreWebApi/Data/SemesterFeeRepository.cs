@@ -52,6 +52,7 @@ namespace CoreWebApi.Data
                 LateFeePlentyAmount = Convert.ToInt32(model.LateFeePlentyAmount),
                 LateFeeValidityInDays = Convert.ToInt32(model.LateFeeValidityInDays),
                 Posted = false,
+                Active = false,
                 CreatedDateTime = DateTime.Now,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
@@ -124,6 +125,7 @@ namespace CoreWebApi.Data
                 LateFeePlentyAmount = Convert.ToString(o.LateFeePlentyAmount),
                 LateFeeValidityInDays = Convert.ToString(o.LateFeeValidityInDays),
                 Posted = o.Posted,
+                Active = o.Active,
             }).ToListAsync();
 
             _serviceResponse.Data = list;
@@ -142,6 +144,7 @@ namespace CoreWebApi.Data
                 LateFeePlentyAmount = Convert.ToString(o.LateFeePlentyAmount),
                 LateFeeValidityInDays = Convert.ToString(o.LateFeeValidityInDays),
                 Posted = o.Posted,
+                Active = o.Active,
             }).FirstOrDefaultAsync();
 
             _serviceResponse.Data = ToReturn;
@@ -169,7 +172,7 @@ namespace CoreWebApi.Data
                 ClassId = Convert.ToInt32(model.ClassId),
                 DiscountInPercentage = Convert.ToInt32(model.DiscountInPercentage),
                 FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount),
-                InstallmentAmount = Convert.ToDouble(model.InstallmentAmount),
+                Installments = Convert.ToInt32(model.Installments),
                 Posted = false,
                 CreatedDateTime = DateTime.Now,
                 CreatedById = _LoggedIn_UserID,
@@ -192,7 +195,7 @@ namespace CoreWebApi.Data
                 ObjToUpdate.ClassId = Convert.ToInt32(model.ClassId);
                 ObjToUpdate.DiscountInPercentage = Convert.ToInt32(model.DiscountInPercentage);
                 ObjToUpdate.FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount);
-                ObjToUpdate.InstallmentAmount = Convert.ToDouble(model.InstallmentAmount);
+                ObjToUpdate.Installments = Convert.ToInt32(model.Installments);
 
                 _context.SemesterFeeMappings.Update(ObjToUpdate);
                 await _context.SaveChangesAsync();
@@ -210,7 +213,7 @@ namespace CoreWebApi.Data
                 SemesterId = Convert.ToString(o.SemesterId),
                 ClassId = Convert.ToString(o.ClassId),
                 DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
-                InstallmentAmount = Convert.ToString(o.InstallmentAmount),
+                Installments = Convert.ToString(o.Installments),
                 FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
                 Active = o.Active,
             }).ToListAsync();
@@ -227,7 +230,7 @@ namespace CoreWebApi.Data
                 SemesterId = Convert.ToString(o.SemesterId),
                 ClassId = Convert.ToString(o.ClassId),
                 DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
-                InstallmentAmount = Convert.ToString(o.InstallmentAmount),
+                Installments = Convert.ToString(o.Installments),
                 FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
                 Active = o.Active,
             }).FirstOrDefaultAsync();

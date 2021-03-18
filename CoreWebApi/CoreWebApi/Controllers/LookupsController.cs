@@ -187,5 +187,12 @@ namespace CoreWebApi.Controllers
 
             return Ok(_response);
         }
+        [HttpGet("Semesters")]
+        public async Task<IActionResult> GetSemesters()
+        {
+            _response = await _repo.GetSemesters();
+
+            return Ok(_response);
+        }
     }
 }

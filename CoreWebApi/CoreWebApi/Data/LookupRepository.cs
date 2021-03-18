@@ -370,5 +370,20 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
+        public async Task<ServiceResponse<object>> GetSemesters()
+        {
+
+            var users = await (from main in _context.Semesters
+                               where main.Active == true
+                               && main.SchoolBranchId == _LoggedIn_BranchID
+                               orderby main.Name
+                               select main).ToListAsync();
+            var list = _mapper.Map<List<SemesterDtoForList>>(users);
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+
+        }
     }
 }
