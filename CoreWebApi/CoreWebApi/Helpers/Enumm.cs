@@ -29,6 +29,11 @@ namespace CoreWebApi.Helpers
             Assignment = 1,
             Quiz
         }
+        public enum ExamTypes
+        {
+            Annual = 1,
+            Semester
+        }
         public class RequisitionStatus
         {
             public const string Approved = "Approved";

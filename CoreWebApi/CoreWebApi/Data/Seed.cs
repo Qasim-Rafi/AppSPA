@@ -16,25 +16,7 @@ namespace CoreWebApi.Data
     {
 
         private static int schoolBranchId = 0;
-        public static void SeedLeaveTypes(DataContext context)
-        {
-
-            if (!context.LeaveType.Any())
-            {
-
-                var fileData = System.IO.File.ReadAllText("Data/LeaveTypeSeedData.json");
-                var leaveTypes = JsonConvert.DeserializeObject<List<LeaveType>>(fileData);
-
-                foreach (var type in leaveTypes)
-                {
-
-                    context.LeaveType.Add(type);
-                }
-                context.SaveChanges();
-
-            }
-
-        }
+        
         public static void SeedUserTypes(DataContext context)
         {
 
@@ -261,40 +243,52 @@ namespace CoreWebApi.Data
                 //}
 
                 //
-                if (!context.Countries.Any())
-                {
-                    var CountriesJson = JsonConvert.SerializeObject(dataSet.Tables["Countries"]);
-                    var Countries = JsonConvert.DeserializeObject<List<Country>>(CountriesJson);
-                    foreach (var obj in Countries)
-                    {
-                        context.Countries.Add(obj);
-                    }
-                    context.SaveChanges();
-                }
-                //
-                if (!context.States.Any())
-                {
-                    var StatesJson = JsonConvert.SerializeObject(dataSet.Tables["States"]);
-                    var States = JsonConvert.DeserializeObject<List<State>>(StatesJson);
-                    foreach (var (obj, index) in ReturnIndex(States))
-                    {
-                        obj.CountryId = context.Countries.First().Id;
+                //if (!context.Countries.Any())
+                //{
+                //    var CountriesJson = JsonConvert.SerializeObject(dataSet.Tables["Countries"]);
+                //    var Countries = JsonConvert.DeserializeObject<List<Country>>(CountriesJson);
+                //    foreach (var obj in Countries)
+                //    {
+                //        context.Countries.Add(obj);
+                //    }
+                //    context.SaveChanges();
+                //}
+                ////
+                //if (!context.States.Any())
+                //{
+                //    var StatesJson = JsonConvert.SerializeObject(dataSet.Tables["States"]);
+                //    var States = JsonConvert.DeserializeObject<List<State>>(StatesJson);
+                //    foreach (var (obj, index) in ReturnIndex(States))
+                //    {
+                //        obj.CountryId = context.Countries.First().Id;
 
-                        context.States.Add(obj);
-                        if (index == (States.Count - 1))
-                        {
-                            var other = new State
-                            {
-                                Name = "Other",
-                                CountryId = obj.CountryId,
-                            };
-                            context.States.Add(other);
-                        }
+                //        context.States.Add(obj);
+                //        if (index == (States.Count - 1))
+                //        {
+                //            var other = new State
+                //            {
+                //                Name = "Other",
+                //                CountryId = obj.CountryId,
+                //            };
+                //            context.States.Add(other);
+                //        }
 
-                    }
-                    context.SaveChanges();
-                }
+                //    }
+                //    context.SaveChanges();
+                //}
               
+                //
+                if (!context.LeaveType.Any())
+                {
+                    var LeaveTypesJson = JsonConvert.SerializeObject(dataSet.Tables["LeaveTypes"]);
+                    var leaveTypes = JsonConvert.DeserializeObject<List<LeaveType>>(LeaveTypesJson);
+
+                    foreach (var type in leaveTypes)
+                    {
+                        context.LeaveType.Add(type);
+                    }
+                    context.SaveChanges();
+                }
                 //
                 if (!context.QuestionTypes.Any())
                 {
@@ -305,6 +299,17 @@ namespace CoreWebApi.Data
                         obj.schoolBranchId = context.SchoolBranch.First().Id;
 
                         context.QuestionTypes.Add(obj);
+                    }
+                    context.SaveChanges();
+                }
+                //
+                if (!context.ExamTypes.Any())
+                {
+                    var ExamTypesJson = JsonConvert.SerializeObject(dataSet.Tables["ExamTypes"]);
+                    var ExamTypes = JsonConvert.DeserializeObject<List<ExamType>>(ExamTypesJson);
+                    foreach (var obj in ExamTypes)
+                    {                        
+                        context.ExamTypes.Add(obj);
                     }
                     context.SaveChanges();
                 }

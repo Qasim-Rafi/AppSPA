@@ -11,9 +11,9 @@ namespace CoreWebApi.IData
     {
         void Add<T>(T entity) where T : class;
         void Delete<T>(Task entity) where T : class;
-        Task<ServiceResponse<bool>> SaveAll();
-        Task<ServiceResponse<object>> GetUsers(int id);
-        Task<IEnumerable<UserForListDto>> GetInActiveUsers();
+        Task<ServiceResponse<object>> GetLastStudentRegNo();
+        Task<ServiceResponse<object>> GetUsers(int typeId);
+        Task<IEnumerable<UserForListDto>> GetInActiveUsers(int typeId);
 
         Task<ServiceResponse<UserForDetailedDto>> GetUser(GetByIdFlagDto model);
         Task<ServiceResponse<object>> ActiveInActiveUser(int id, bool status);

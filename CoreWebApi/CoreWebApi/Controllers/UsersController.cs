@@ -28,8 +28,7 @@ namespace CoreWebApi.Controllers
         private readonly IWebHostEnvironment _HostEnvironment;
 
         ServiceResponse<object> _response;
-        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context,
-            IHttpContextAccessor httpContextAccessor, IWebHostEnvironment HostEnvironment)
+        public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment HostEnvironment)
             : base(httpContextAccessor)
         {
             _mapper = mapper;
@@ -40,18 +39,18 @@ namespace CoreWebApi.Controllers
             _HostEnvironment = HostEnvironment;
         }
 
-        [HttpGet("GetUsers/{id?}"), Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetUsers(int id = 0)
+        [HttpGet("GetUsers/{typeId?}"), Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUsers(int typeId = 0)
         {
-            _response = await _repo.GetUsers(id);
+            _response = await _repo.GetUsers(typeId);
 
             return Ok(_response);
 
         }
-        [HttpGet("GetInActiveUsers")]
-        public async Task<IActionResult> GetInActiveUsers()
+        [HttpGet("GetInActiveUsers/{typeId?}")]
+        public async Task<IActionResult> GetInActiveUsers(int typeId = 0)
         {
-            var users = await _repo.GetInActiveUsers();
+            var users = await _repo.GetInActiveUsers(typeId);
 
             return Ok(users);
 
@@ -63,6 +62,14 @@ namespace CoreWebApi.Controllers
             ServiceResponse<UserForDetailedDto> user = await _repo.GetUser(model);
             //var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
             return Ok(user);
+        }
+
+        [HttpGet("GetLastStudentRegNo")]
+        public async Task<IActionResult> GetLastStudentRegNo()
+        {
+            _response = await _repo.GetLastStudentRegNo();
+            //var uerToReturn = _mapper.Map<UserForDetailedDto>(user.Data);
+            return Ok(_response);
         }
 
 

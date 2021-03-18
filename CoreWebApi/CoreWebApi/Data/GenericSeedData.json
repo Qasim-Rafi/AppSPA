@@ -72,5 +72,24 @@
     {
       "Name": "Sindh"
     }
+  ],
+  "LeaveTypes": [
+    {
+      "Type": "Half Day"
+    },
+    {
+      "Type": "Sick"
+    },
+    {
+      "Type": "Casual"
+    }
+  ],
+  "ExamTypes": [
+    {
+      "Type": "Annual"
+    },
+    {
+      "Type": "Semester"
+    }
   ]
 }

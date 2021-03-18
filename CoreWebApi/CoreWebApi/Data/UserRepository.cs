@@ -81,6 +81,7 @@ namespace CoreWebApi.Data
                                      Active = user.Active,
                                      RollNumber = user.RollNumber,
                                      MemberSince = DateFormat.ToDate(user.CreatedDateTime.ToString()),
+                                     ParentCNIC = user.ParentCNIC,
                                      ParentEmail = user.ParentEmail,
                                      ParentContactNumber = user.ParentContactNumber,
                                      LevelFrom = _context.TeacherExperties.FirstOrDefault(m => m.TeacherId == user.Id) != null ? _context.TeacherExperties.FirstOrDefault(m => m.TeacherId == user.Id).LevelFrom : 0,
@@ -159,12 +160,12 @@ namespace CoreWebApi.Data
 
         //}
 
-        public async Task<ServiceResponse<object>> GetUsers(int id)
+        public async Task<ServiceResponse<object>> GetUsers(int typeId)
         {
-            if (id > 0)
+            if (typeId > 0)
             {
-                var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == id && m.SchoolBranchId == _LoggedIn_BranchID)
-                    .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Include(m => m.City).Select(o => new UserForListDto
+                var users = await _context.Users.Where(m => m.Active == true && m.UserTypeId == typeId && m.SchoolBranchId == _LoggedIn_BranchID)
+                    .OrderByDescending(m => m.Id).Select(o => new UserForListDto //.Include(m => m.Country).Include(m => m.State).Include(m => m.City)
                     {
                         Id = o.Id,
                         FullName = o.FullName,
@@ -190,23 +191,14 @@ namespace CoreWebApi.Data
                         }).ToList(),
                     }).ToListAsync();
 
-                //foreach (var user in users)
-                //{
-                //    foreach (var item in user?.Photos)
-                //    {
-                //        item.Url = _File.AppendImagePath(item.Url);
-                //    }
-                //}
                 _serviceResponse.Data = users;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
             else
             {
-
-
                 var users = await _context.Users.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID)
-                    .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Include(m => m.City).Select(o => new UserForListDto
+                    .OrderByDescending(m => m.Id).Select(o => new UserForListDto //.Include(m => m.Country).Include(m => m.State).Include(m => m.City)
                     {
                         Id = o.Id,
                         FullName = o.FullName,
@@ -245,10 +237,12 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-        public async Task<IEnumerable<UserForListDto>> GetInActiveUsers()
+        public async Task<IEnumerable<UserForListDto>> GetInActiveUsers(int typeId)
         {
-            var users = await _context.Users.Where(m => m.Active == false && m.SchoolBranchId == _LoggedIn_BranchID)
-                .OrderByDescending(m => m.Id).Include(m => m.Country).Include(m => m.State).Include(m => m.City).Select(o => new UserForListDto
+            if (typeId > 0)
+            {
+                var users = await _context.Users.Where(m => m.Active == false && m.UserTypeId == typeId && m.SchoolBranchId == _LoggedIn_BranchID)
+                .OrderByDescending(m => m.Id).Select(o => new UserForListDto //.Include(m => m.Country).Include(m => m.State).Include(m => m.City)
                 {
                     Id = o.Id,
                     FullName = o.FullName,
@@ -267,7 +261,32 @@ namespace CoreWebApi.Data
                     UserType = o.Usertypes.Name,
                     //Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
                 }).ToListAsync();
-
+                return users;
+            }
+            else
+            {
+                var users = await _context.Users.Where(m => m.Active == false && m.SchoolBranchId == _LoggedIn_BranchID)
+               .OrderByDescending(m => m.Id).Select(o => new UserForListDto //.Include(m => m.Country).Include(m => m.State).Include(m => m.City)
+               {
+                   Id = o.Id,
+                   FullName = o.FullName,
+                   DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
+                   Email = o.Email,
+                   Gender = o.Gender,
+                   Username = o.Username,
+                   CountryId = o.CountryId,
+                   StateId = o.StateId,
+                   CityId = o.CityId,
+                   CountryName = o.Country.Name,
+                   StateName = o.State.Name,
+                   OtherState = o.OtherState,
+                   Active = o.Active,
+                   UserTypeId = o.UserTypeId,
+                   UserType = o.Usertypes.Name,
+                   //Photos = _context.Photos.Where(m => m.UserId == o.Id).OrderByDescending(m => m.Id).ToList()
+               }).ToListAsync();
+                return users;
+            }
             //foreach (var user in users)
             //{
             //    foreach (var item in user?.Photos)
@@ -276,17 +295,15 @@ namespace CoreWebApi.Data
             //    }
             //}
 
-            return users;
 
         }
-        public async Task<ServiceResponse<bool>> SaveAll()
+        public async Task<ServiceResponse<object>> GetLastStudentRegNo()
         {
-            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>
-            {
-                Data = await _context.SaveChangesAsync() > 0
-            };
-            return serviceResponse;
+            User lastUser = _context.Users.ToList().LastOrDefault(m => m.UserTypeId == (int)Enumm.UserType.Student && !string.IsNullOrEmpty(m.RegistrationNumber));
 
+            _serviceResponse.Data = lastUser.RegistrationNumber;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
         }
 
         public async Task<bool> UserExists(string username)
@@ -391,6 +408,7 @@ namespace CoreWebApi.Data
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
+                    userToCreate.ParentCNIC = userDto.ParentCNIC;
                     userToCreate.ParentContactNumber = userDto.ParentContactNumber;
                     userToCreate.ParentEmail = userDto.ParentEmail;
                 }
@@ -407,31 +425,35 @@ namespace CoreWebApi.Data
                 {
                     // create parent account
 
-                    var parentToCreate = new User
+                    if (!_context.Users.Any(m => m.ParentCNIC == userDto.ParentCNIC && m.UserTypeId == (int)Enumm.UserType.Parent))
                     {
-                        FullName = userDto.ParentEmail.Split("@")[0],
-                        Username = userDto.ParentEmail.Split("@")[0].ToLower(),
-                        Email = userDto.ParentEmail,
-                        ParentEmail = userDto.ParentEmail,
-                        ParentContactNumber = userDto.ParentContactNumber,
-                        UserTypeId = (int)Enumm.UserType.Parent,
-                        CreatedDateTime = DateTime.Now,
-                        Gender = "male",
-                        Active = true,
-                        StateId = userDto.StateId,
-                        CityId = userDto.CityId,
-                        CountryId = userDto.CountryId,
-                        OtherState = userDto.OtherState,
-                        SchoolBranchId = _LoggedIn_BranchID,
-                        Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Parent).FirstOrDefault()?.Name
-                    };
+                        var parentToCreate = new User
+                        {
+                            FullName = userDto.ParentEmail.Split("@")[0],
+                            Username = userDto.ParentEmail.Split("@")[0].ToLower(),
+                            Email = userDto.ParentEmail,
+                            ParentCNIC = userDto.ParentCNIC,
+                            ParentEmail = userDto.ParentEmail,
+                            ParentContactNumber = userDto.ParentContactNumber,
+                            UserTypeId = (int)Enumm.UserType.Parent,
+                            CreatedDateTime = DateTime.Now,
+                            Gender = "male",
+                            Active = true,
+                            StateId = userDto.StateId,
+                            CityId = userDto.CityId,
+                            CountryId = userDto.CountryId,
+                            OtherState = userDto.OtherState,
+                            SchoolBranchId = _LoggedIn_BranchID,
+                            Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Parent).FirstOrDefault()?.Name
+                        };
 
-                    Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
-                    parentToCreate.PasswordHash = passwordHash;
-                    parentToCreate.PasswordSalt = passwordSalt;
+                        Seed.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
+                        parentToCreate.PasswordHash = passwordHash;
+                        parentToCreate.PasswordSalt = passwordSalt;
 
-                    await _context.Users.AddAsync(parentToCreate);
-                    await _context.SaveChangesAsync();
+                        await _context.Users.AddAsync(parentToCreate);
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
@@ -579,6 +601,7 @@ namespace CoreWebApi.Data
                     dbUser.OtherState = user.OtherState;
                     dbUser.DateofBirth = DateOfBirth;
                     dbUser.Gender = user.Gender;
+                    dbUser.ParentCNIC = user.ParentCNIC;
                     dbUser.ParentEmail = user.ParentEmail;
                     dbUser.ParentContactNumber = user.ParentContactNumber;
                     dbUser.Active = user.Active;
@@ -775,6 +798,7 @@ namespace CoreWebApi.Data
                     dbUser.OtherState = user.OtherState;
                     dbUser.DateofBirth = DateOfBirth;
                     dbUser.Gender = user.Gender;
+                    dbUser.ParentCNIC = user.ParentCNIC;
                     dbUser.ParentEmail = user.ParentEmail;
                     dbUser.ParentContactNumber = user.ParentContactNumber;
                     dbUser.Active = user.Active;

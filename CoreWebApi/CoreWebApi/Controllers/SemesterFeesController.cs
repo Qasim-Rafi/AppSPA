@@ -38,7 +38,7 @@ namespace CoreWebApi.Controllers
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
         }
 
-       
+
         [HttpPost("AddSemester")]
         public async Task<IActionResult> AddSemester(SemesterDtoForAdd model)
         {
@@ -105,7 +105,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             _response = await _repo.AddSemesterFee(model);
             return Ok(_response);
 
@@ -140,6 +140,17 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             _response = await _repo.GetSemesterFeeById(id);
+            return Ok(_response);
+
+        }
+        [HttpGet("SearchStudentsBySemesterClassId/{semId}/{classId}")]
+        public async Task<IActionResult> SearchStudentsBySemesterClassId(int semId, int classId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.SearchStudentsBySemesterClassId(semId,classId);
             return Ok(_response);
 
         }

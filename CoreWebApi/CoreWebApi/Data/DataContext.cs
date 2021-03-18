@@ -82,6 +82,7 @@ namespace CoreWebApi.Data
         public DbSet<Semester> Semesters { get; set; }
         public DbSet<SemesterFeeMapping> SemesterFeeMappings { get; set; }
         public DbSet<SemesterFeeTransaction> SemesterFeeTransactions { get; set; }
+        public DbSet<ExamType> ExamTypes { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }

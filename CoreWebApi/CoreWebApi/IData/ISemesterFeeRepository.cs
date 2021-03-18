@@ -16,6 +16,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> UpdateSemesterFee(SemesterFeeMappingDtoForEdit model);
         Task<ServiceResponse<object>> GetSemesterFee();
         Task<ServiceResponse<object>> GetSemesterFeeById(int id);
+        Task<ServiceResponse<object>> SearchStudentsBySemesterClassId(int semId, int classId);
 
     }
 }

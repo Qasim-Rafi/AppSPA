@@ -84,6 +84,7 @@ namespace CoreWebApi.Data
                 DateTime EndDate = DateTime.ParseExact(model.EndDate, "MM/dd/yyyy", null);
                 DateTime DueDate = DateTime.ParseExact(model.DueDate, "MM/dd/yyyy", null);
 
+                ObjToUpdate.Name = model.Name;
                 ObjToUpdate.FeeAmount = Convert.ToDouble(model.FeeAmount);
                 ObjToUpdate.LateFeePlentyAmount = Convert.ToInt32(model.LateFeePlentyAmount);
                 ObjToUpdate.StartDate = StartDate;
@@ -118,6 +119,7 @@ namespace CoreWebApi.Data
             var list = await _context.Semesters.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new SemesterDtoForList
             {
                 Id = o.Id,
+                Name = o.Name,
                 FeeAmount = Convert.ToString(o.FeeAmount),
                 StartDate = DateFormat.ToDate(o.StartDate.ToString()),
                 EndDate = DateFormat.ToDate(o.EndDate.ToString()),
@@ -137,6 +139,7 @@ namespace CoreWebApi.Data
             var ToReturn = await _context.Semesters.Where(m => m.Id == id).Select(o => new SemesterDtoForDetail
             {
                 Id = o.Id,
+                Name = o.Name,
                 FeeAmount = Convert.ToString(o.FeeAmount),
                 StartDate = DateFormat.ToDate(o.StartDate.ToString()),
                 EndDate = DateFormat.ToDate(o.EndDate.ToString()),
@@ -180,7 +183,7 @@ namespace CoreWebApi.Data
             };
             await _context.SemesterFeeMappings.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
-          
+
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
@@ -234,6 +237,19 @@ namespace CoreWebApi.Data
                 FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
                 Active = o.Active,
             }).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> SearchStudentsBySemesterClassId(int semId, int classId)
+        {
+            var ToReturn = await (from s in _context.Semesters
+                                  where s.Id == semId
+                                  select s).Select(o => new SemesterFeeMappingDtoForDetail
+                                  {
+                                      Id = o.Id,
+                                  }).ToListAsync();
 
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;

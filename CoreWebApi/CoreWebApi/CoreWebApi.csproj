@@ -182,6 +182,8 @@
     <Compile Remove="Migrations\20210304100856_AddSalary_Inventory_SchoolCashAccount.Designer.cs" />
     <Compile Remove="Migrations\20210316120252_testt.cs" />
     <Compile Remove="Migrations\20210316120252_testt.Designer.cs" />
+    <Compile Remove="Migrations\20210318120557_AddExamType_UpdateScholBranch.cs" />
+    <Compile Remove="Migrations\20210318120557_AddExamType_UpdateScholBranch.Designer.cs" />
 
   </ItemGroup>
 
