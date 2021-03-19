@@ -52,7 +52,7 @@ namespace CoreWebApi.Data
                 LateFeePlentyAmount = Convert.ToInt32(model.LateFeePlentyAmount),
                 LateFeeValidityInDays = Convert.ToInt32(model.LateFeeValidityInDays),
                 Posted = false,
-                Active = false,
+                Active = true,
                 CreatedDateTime = DateTime.Now,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
