@@ -30,5 +30,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetSchoolCashAccount();
         Task<ServiceResponse<object>> GetSchoolCashAccountById(int id);
         Task<ServiceResponse<object>> PostSchoolCashAccount(SchoolCashAccountForPostDto model);
+        Task<ServiceResponse<object>> GetSchoolCashAccountTotals();
     }
 }

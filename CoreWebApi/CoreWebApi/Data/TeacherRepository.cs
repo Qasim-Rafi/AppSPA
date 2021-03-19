@@ -380,7 +380,7 @@ namespace CoreWebApi.Data
                     {
                         var NotExistIds = model.Where(m => !getExperties.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
                         foreach (var item in NotExistIds)
-                        {                           
+                        {
                             ListToAdd.Add(new TeacherExperties
                             {
                                 SubjectId = item.SubjectId,
@@ -830,5 +830,16 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
+        public async Task<ServiceResponse<object>> GetSchoolCashAccountTotals()
+        {
+            var totalDebitAmount = await _context.SchoolCashAccount.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.TransactionType == Enumm.TransactionTypes.Debit.ToString()).SumAsync(m => m.Amount);
+            var totalCreditAmount = await _context.SchoolCashAccount.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.TransactionType == Enumm.TransactionTypes.Credit.ToString()).SumAsync(m => m.Amount);
+            var totalPostedAmount = await _context.SchoolCashAccount.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Posted == true).SumAsync(m => m.Amount);
+            var totalUnPostedAmount = await _context.SchoolCashAccount.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Posted == false).SumAsync(m => m.Amount);
+
+            _serviceResponse.Data = new { totalDebitAmount, totalCreditAmount, totalPostedAmount, totalUnPostedAmount };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

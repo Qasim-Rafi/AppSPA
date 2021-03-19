@@ -242,5 +242,16 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetSchoolCashAccountTotals")]
+        public async Task<IActionResult> GetSchoolCashAccountTotals()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetSchoolCashAccountTotals();
+            return Ok(_response);
+
+        }
     }
 }

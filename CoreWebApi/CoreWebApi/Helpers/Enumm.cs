@@ -34,6 +34,11 @@ namespace CoreWebApi.Helpers
             Annual = 1,
             Semester
         }
+        public enum TransactionTypes
+        {
+            Debit,
+            Credit
+        }
         public class RequisitionStatus
         {
             public const string Approved = "Approved";
@@ -45,12 +50,7 @@ namespace CoreWebApi.Helpers
             public const string Approved = "Approved";
             public const string Rejected = "Rejected";
             public const string Pending = "Pending";
-        }
-        public class InventoryType
-        {
-            public const string Credit = "Credit";
-            public const string Debit = "Debit";
-        }
+        }        
 
     }
 
