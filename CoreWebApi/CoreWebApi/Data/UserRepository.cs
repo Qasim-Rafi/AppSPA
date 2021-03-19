@@ -31,6 +31,7 @@ namespace CoreWebApi.Data
         public int _LoggedIn_BranchID = 0;
         public string _LoggedIn_UserName = "";
         private string _LoggedIn_UserRole = "";
+        private string _LoggedIn_SchoolExamType = "";
         private readonly ITeacherRepository _TeacherRepository;
         public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor, ITeacherRepository TeacherRepository, IConfiguration configuration)
         {
@@ -43,6 +44,7 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _TeacherRepository = TeacherRepository;
             _configuration = configuration;
         }
@@ -457,32 +459,59 @@ namespace CoreWebApi.Data
                 }
                 if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
-                    if (Convert.ToInt32(userDto.LevelFrom) > Convert.ToInt32(userDto.LevelTo))
+                    if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
                     {
-                        serviceResponse.Success = false;
-                        serviceResponse.Message = CustomMessage.LevelFromToCheck;
-                        return serviceResponse;
-                    }
-                    List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
-                    if (userDto.Experties != null && userDto.Experties.Count() > 0 && userDto.Experties[0] != null)
-                    {
-                        foreach (var SubjectId in userDto.Experties)
+                        if (Convert.ToInt32(userDto.LevelFrom) > Convert.ToInt32(userDto.LevelTo))
                         {
-                            expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
-                            {
-                                SubjectId = Convert.ToInt32(SubjectId),
-                                TeacherId = userToCreate.Id,
-                                LevelFrom = Convert.ToInt32(userDto.LevelFrom),
-                                LevelTo = Convert.ToInt32(userDto.LevelTo),
-                            });
+                            serviceResponse.Success = false;
+                            serviceResponse.Message = CustomMessage.LevelFromToCheck;
+                            return serviceResponse;
                         }
-                        var response = await _TeacherRepository.AddExperties(expertiesToAdd, userToCreate.Id);
+                        List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
+                        if (userDto.Experties != null && userDto.Experties.Count() > 0 && userDto.Experties[0] != null)
+                        {
+                            foreach (var SubjectId in userDto.Experties)
+                            {
+                                expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
+                                {
+                                    SubjectId = Convert.ToInt32(SubjectId),
+                                    TeacherId = userToCreate.Id,
+                                    LevelFrom = Convert.ToInt32(userDto.LevelFrom),
+                                    LevelTo = Convert.ToInt32(userDto.LevelTo),
+                                });
+                            }
+                            var response = await _TeacherRepository.AddExperties(expertiesToAdd, userToCreate.Id);
+                        }
+                        else
+                        {
+                            serviceResponse.Message = CustomMessage.ExpertiesRequired;
+                            serviceResponse.Success = false;
+                            return serviceResponse;
+                        }
                     }
                     else
                     {
-                        serviceResponse.Message = CustomMessage.ExpertiesRequired;
-                        serviceResponse.Success = false;
-                        return serviceResponse;
+                        List<TeacherExpertiesDtoForAdd> expertiesToAdd = new List<TeacherExpertiesDtoForAdd>();
+                        if (userDto.Experties != null && userDto.Experties.Count() > 0 && userDto.Experties[0] != null)
+                        {
+                            foreach (var SubjectId in userDto.Experties)
+                            {
+                                expertiesToAdd.Add(new TeacherExpertiesDtoForAdd
+                                {
+                                    SubjectId = Convert.ToInt32(SubjectId),
+                                    TeacherId = userToCreate.Id,
+                                    LevelFrom = Convert.ToInt32(userDto.LevelFrom),
+                                    LevelTo = Convert.ToInt32(userDto.LevelTo),
+                                });
+                            }
+                            var response = await _TeacherRepository.AddExperties(expertiesToAdd, userToCreate.Id);
+                        }
+                        else
+                        {
+                            serviceResponse.Message = CustomMessage.ExpertiesRequired;
+                            serviceResponse.Success = false;
+                            return serviceResponse;
+                        }
                     }
                 }
                 //var createdUser = _mapper.Map<UserForListDto>(userToCreate);

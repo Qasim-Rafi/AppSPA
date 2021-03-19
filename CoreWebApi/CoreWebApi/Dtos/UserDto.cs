@@ -54,7 +54,10 @@ namespace CoreWebApi.Dtos
         public string ParentCNIC { get; set; }
         public string ParentEmail { get; set; }
         public string ParentContactNumber { get; set; }
+        //[Range(0, int.MaxValue, ErrorMessage = "Please enter valid integer Number")]
+        //[RegularExpression("([0-9]+)", ErrorMessage = "Please enter valid integer Number")]
         public string LevelFrom { get; set; }
+        //[RegularExpression("([0-9]+)", ErrorMessage = "Please enter valid integer Number")]
         public string LevelTo { get; set; }
         public List<string> Experties { get; set; }
         //public bool Active { get; set; }

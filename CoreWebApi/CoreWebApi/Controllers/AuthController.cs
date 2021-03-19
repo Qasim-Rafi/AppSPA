@@ -105,7 +105,7 @@ namespace CoreWebApi.Controllers
                 new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
                 new Claim(Enumm.ClaimType.BranchIdentifier.ToString(),userForLoginDto.SchoolName1 > 0 ? userForLoginDto.SchoolName1.ToString() : schoolBranchDetails.branch.Id.ToString()),
                 new Claim(ClaimTypes.Role, userFromRepo.Role),
-                //new Claim(Enumm.ClaimType.UserTypeId.ToString(), userFromRepo.UserTypeId.ToString())
+                new Claim(Enumm.ClaimType.ExamType.ToString(), schoolBranchDetails.schoolExamType.ToString())
             };
 
 

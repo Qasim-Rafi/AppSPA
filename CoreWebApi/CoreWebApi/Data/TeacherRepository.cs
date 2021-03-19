@@ -24,6 +24,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
         private string _LoggedIn_UserRole = "";
+        private string _LoggedIn_SchoolExamType = "";
         private readonly IMapper _mapper;
         ServiceResponse<object> _serviceResponse;
         public TeacherRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper)
@@ -34,6 +35,7 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _mapper = mapper;
             _serviceResponse = new ServiceResponse<object>();
         }
@@ -240,132 +242,251 @@ namespace CoreWebApi.Data
             List<TeacherExperties> ListToAdd = new List<TeacherExperties>();
             List<TeacherExperties> ListToUpdate = new List<TeacherExperties>();
             List<TeacherExpertiesTransaction> TransListToAdd = new List<TeacherExpertiesTransaction>();
-
-            var getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
-            if (model.Count > 0)
+            if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
             {
-                if (getExperties.Count() <= model.Count())
+                var getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
+                if (model.Count > 0)
                 {
-                    var NotExistIds = model.Where(m => !getExperties.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
-                    foreach (var item in NotExistIds)
+                    if (getExperties.Count() <= model.Count())
                     {
-                        var LevelFromName = _context.Class.Where(m => m.Id == item.LevelFrom).FirstOrDefault().Name;
-                        var LevelToName = _context.Class.Where(m => m.Id == item.LevelTo).FirstOrDefault().Name;
-                        if (!string.IsNullOrEmpty(LevelFromName))
-                            LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
-                        if (!string.IsNullOrEmpty(LevelToName))
-                            LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
-                        List<int> NumberList = new List<int>();
-                        for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
+                        var NotExistIds = model.Where(m => !getExperties.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                        foreach (var item in NotExistIds)
                         {
-                            NumberList.Add(i);
+                            var LevelFromName = _context.Class.Where(m => m.Id == item.LevelFrom).FirstOrDefault().Name;
+                            var LevelToName = _context.Class.Where(m => m.Id == item.LevelTo).FirstOrDefault().Name;
+                            if (!string.IsNullOrEmpty(LevelFromName))
+                                LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
+                            if (!string.IsNullOrEmpty(LevelToName))
+                                LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
+                            List<int> NumberList = new List<int>();
+                            for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
+                            {
+                                NumberList.Add(i);
+                            }
+                            var Levels = string.Join(',', NumberList);
+                            ListToAdd.Add(new TeacherExperties
+                            {
+                                SubjectId = item.SubjectId,
+                                TeacherId = teacherId, //item.TeacherId,
+                                LevelFrom = item.LevelFrom,
+                                LevelTo = item.LevelTo,
+                                FromToLevels = Levels,
+                                Active = true,
+                                SchoolBranchId = _LoggedIn_BranchID,
+                                CreatedById = _LoggedIn_UserID,
+                                CreatedDateTime = DateTime.Now,
+                            });
                         }
-                        var Levels = string.Join(',', NumberList);
-                        ListToAdd.Add(new TeacherExperties
-                        {
-                            SubjectId = item.SubjectId,
-                            TeacherId = teacherId, //item.TeacherId,
-                            LevelFrom = item.LevelFrom,
-                            LevelTo = item.LevelTo,
-                            FromToLevels = Levels,
-                            Active = true,
-                            SchoolBranchId = _LoggedIn_BranchID,
-                            CreatedById = _LoggedIn_UserID,
-                            CreatedDateTime = DateTime.Now,
-                        });
                     }
-                }
-                else if (getExperties.Count() > model.Count())
-                {
-                    var NotExistIds = getExperties.Where(m => !model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
-                    if (NotExistIds.Count() > 0)
+                    else if (getExperties.Count() > model.Count())
                     {
-                        _context.TeacherExperties.RemoveRange(NotExistIds);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-                var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
-                foreach (var item in ExistIds)
-                {
-                    if (!string.IsNullOrEmpty(model.LastOrDefault().LevelFrom.ToString()) && !string.IsNullOrEmpty(model.LastOrDefault().LevelTo.ToString()))
-                    {
-                        var LevelFromName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelFrom).FirstOrDefault().Name;
-                        var LevelToName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelTo).FirstOrDefault().Name;
-                        if (!string.IsNullOrEmpty(LevelFromName))
-                            LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
-                        if (!string.IsNullOrEmpty(LevelToName))
-                            LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
-                        List<int> NumberList = new List<int>();
-                        for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
+                        var NotExistIds = getExperties.Where(m => !model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                        if (NotExistIds.Count() > 0)
                         {
-                            NumberList.Add(i);
+                            _context.TeacherExperties.RemoveRange(NotExistIds);
+                            await _context.SaveChangesAsync();
                         }
-                        var Levels = string.Join(',', NumberList);
-                        item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom : 0;
-                        item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo : 0;
-                        item.FromToLevels = Levels;
                     }
-
-                    ListToUpdate.Add(item);
-                }
-            }
-
-            if (ListToAdd.Count() > 0)
-            {
-                await _context.TeacherExperties.AddRangeAsync(ListToAdd);
-                await _context.SaveChangesAsync();
-            }
-            if (ListToUpdate.Count() > 0)
-            {
-                _context.TeacherExperties.UpdateRange(ListToUpdate);
-                await _context.SaveChangesAsync();
-            }
-
-            var getExpertiesTrans = (from ex in _context.TeacherExperties
-                                     join exT in _context.TeacherExpertiesTransactions
-                                     on ex.Id equals exT.TeacherExpertiesId
-                                     where ex.TeacherId == teacherId
-                                     select exT).ToList();
-            getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
-
-            if (getExpertiesTrans.Count() <= getExperties.Count())
-            {
-                var NotExistIds = getExperties.Where(m => !getExpertiesTrans.Select(n => n.TeacherExpertiesId).Contains(m.Id)).ToList();
-                foreach (var item in getExperties)
-                {
-                    TransListToAdd.Add(new TeacherExpertiesTransaction
+                    var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                    foreach (var item in ExistIds)
                     {
-                        TeacherExpertiesId = item.Id,
-                        ActiveStatus = true,
-                        TransactionDate = DateTime.Now,
-                        TransactionById = _LoggedIn_UserID
-                    });
+                        if (!string.IsNullOrEmpty(model.LastOrDefault().LevelFrom.ToString()) && !string.IsNullOrEmpty(model.LastOrDefault().LevelTo.ToString()))
+                        {
+                            var LevelFromName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelFrom).FirstOrDefault().Name;
+                            var LevelToName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelTo).FirstOrDefault().Name;
+                            if (!string.IsNullOrEmpty(LevelFromName))
+                                LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
+                            if (!string.IsNullOrEmpty(LevelToName))
+                                LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
+                            List<int> NumberList = new List<int>();
+                            for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
+                            {
+                                NumberList.Add(i);
+                            }
+                            var Levels = string.Join(',', NumberList);
+                            item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom : 0;
+                            item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo : 0;
+                            item.FromToLevels = Levels;
+                        }
+
+                        ListToUpdate.Add(item);
+                    }
                 }
-            }
-            else if (getExperties.Count() > getExpertiesTrans.Count())
-            {
-                var NotExistIds = getExpertiesTrans.Where(m => !getExperties.Select(n => n.Id).Contains(m.TeacherExpertiesId)).ToList();
-                if (NotExistIds.Count() > 0)
+
+                if (ListToAdd.Count() > 0)
                 {
-                    foreach (var item in NotExistIds)
+                    await _context.TeacherExperties.AddRangeAsync(ListToAdd);
+                    await _context.SaveChangesAsync();
+                }
+                if (ListToUpdate.Count() > 0)
+                {
+                    _context.TeacherExperties.UpdateRange(ListToUpdate);
+                    await _context.SaveChangesAsync();
+                }
+
+                var getExpertiesTrans = (from ex in _context.TeacherExperties
+                                         join exT in _context.TeacherExpertiesTransactions
+                                         on ex.Id equals exT.TeacherExpertiesId
+                                         where ex.TeacherId == teacherId
+                                         select exT).ToList();
+                getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
+
+                if (getExpertiesTrans.Count() <= getExperties.Count())
+                {
+                    var NotExistIds = getExperties.Where(m => !getExpertiesTrans.Select(n => n.TeacherExpertiesId).Contains(m.Id)).ToList();
+                    foreach (var item in getExperties)
                     {
                         TransListToAdd.Add(new TeacherExpertiesTransaction
                         {
                             TeacherExpertiesId = item.Id,
-                            ActiveStatus = false,
+                            ActiveStatus = true,
                             TransactionDate = DateTime.Now,
                             TransactionById = _LoggedIn_UserID
                         });
                     }
-                    //_context.TeacherExpertiesTransactions.RemoveRange(NotExistIds);
-                    //await _context.SaveChangesAsync();
+                }
+                else if (getExperties.Count() > getExpertiesTrans.Count())
+                {
+                    var NotExistIds = getExpertiesTrans.Where(m => !getExperties.Select(n => n.Id).Contains(m.TeacherExpertiesId)).ToList();
+                    if (NotExistIds.Count() > 0)
+                    {
+                        foreach (var item in NotExistIds)
+                        {
+                            TransListToAdd.Add(new TeacherExpertiesTransaction
+                            {
+                                TeacherExpertiesId = item.Id,
+                                ActiveStatus = false,
+                                TransactionDate = DateTime.Now,
+                                TransactionById = _LoggedIn_UserID
+                            });
+                        }
+                        //_context.TeacherExpertiesTransactions.RemoveRange(NotExistIds);
+                        //await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (TransListToAdd.Count() > 0)
+                {
+                    await _context.TeacherExpertiesTransactions.AddRangeAsync(TransListToAdd);
+                    await _context.SaveChangesAsync();
                 }
             }
-
-            if (TransListToAdd.Count() > 0)
+            else
             {
-                await _context.TeacherExpertiesTransactions.AddRangeAsync(TransListToAdd);
-                await _context.SaveChangesAsync();
+                var getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
+                if (model.Count > 0)
+                {
+                    if (getExperties.Count() <= model.Count())
+                    {
+                        var NotExistIds = model.Where(m => !getExperties.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                        foreach (var item in NotExistIds)
+                        {                           
+                            ListToAdd.Add(new TeacherExperties
+                            {
+                                SubjectId = item.SubjectId,
+                                TeacherId = teacherId, //item.TeacherId,
+                                LevelFrom = item.LevelFrom,
+                                LevelTo = item.LevelTo,
+                                FromToLevels = null,
+                                Active = true,
+                                SchoolBranchId = _LoggedIn_BranchID,
+                                CreatedById = _LoggedIn_UserID,
+                                CreatedDateTime = DateTime.Now,
+                            });
+                        }
+                    }
+                    else if (getExperties.Count() > model.Count())
+                    {
+                        var NotExistIds = getExperties.Where(m => !model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                        if (NotExistIds.Count() > 0)
+                        {
+                            _context.TeacherExperties.RemoveRange(NotExistIds);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                    foreach (var item in ExistIds)
+                    {
+                        if (!string.IsNullOrEmpty(model.LastOrDefault().LevelFrom.ToString()) && !string.IsNullOrEmpty(model.LastOrDefault().LevelTo.ToString()))
+                        {
+                            var LevelFromName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelFrom).FirstOrDefault().Name;
+                            var LevelToName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelTo).FirstOrDefault().Name;
+                            if (!string.IsNullOrEmpty(LevelFromName))
+                                LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
+                            if (!string.IsNullOrEmpty(LevelToName))
+                                LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
+                            List<int> NumberList = new List<int>();
+                            for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
+                            {
+                                NumberList.Add(i);
+                            }
+                            var Levels = string.Join(',', NumberList);
+                            item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom : 0;
+                            item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo : 0;
+                            item.FromToLevels = Levels;
+                        }
+
+                        ListToUpdate.Add(item);
+                    }
+                }
+
+                if (ListToAdd.Count() > 0)
+                {
+                    await _context.TeacherExperties.AddRangeAsync(ListToAdd);
+                    await _context.SaveChangesAsync();
+                }
+                if (ListToUpdate.Count() > 0)
+                {
+                    _context.TeacherExperties.UpdateRange(ListToUpdate);
+                    await _context.SaveChangesAsync();
+                }
+
+                var getExpertiesTrans = (from ex in _context.TeacherExperties
+                                         join exT in _context.TeacherExpertiesTransactions
+                                         on ex.Id equals exT.TeacherExpertiesId
+                                         where ex.TeacherId == teacherId
+                                         select exT).ToList();
+                getExperties = _context.TeacherExperties.Where(m => m.TeacherId == teacherId).ToList();
+
+                if (getExpertiesTrans.Count() <= getExperties.Count())
+                {
+                    var NotExistIds = getExperties.Where(m => !getExpertiesTrans.Select(n => n.TeacherExpertiesId).Contains(m.Id)).ToList();
+                    foreach (var item in getExperties)
+                    {
+                        TransListToAdd.Add(new TeacherExpertiesTransaction
+                        {
+                            TeacherExpertiesId = item.Id,
+                            ActiveStatus = true,
+                            TransactionDate = DateTime.Now,
+                            TransactionById = _LoggedIn_UserID
+                        });
+                    }
+                }
+                else if (getExperties.Count() > getExpertiesTrans.Count())
+                {
+                    var NotExistIds = getExpertiesTrans.Where(m => !getExperties.Select(n => n.Id).Contains(m.TeacherExpertiesId)).ToList();
+                    if (NotExistIds.Count() > 0)
+                    {
+                        foreach (var item in NotExistIds)
+                        {
+                            TransListToAdd.Add(new TeacherExpertiesTransaction
+                            {
+                                TeacherExpertiesId = item.Id,
+                                ActiveStatus = false,
+                                TransactionDate = DateTime.Now,
+                                TransactionById = _LoggedIn_UserID
+                            });
+                        }
+                        //_context.TeacherExpertiesTransactions.RemoveRange(NotExistIds);
+                        //await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (TransListToAdd.Count() > 0)
+                {
+                    await _context.TeacherExpertiesTransactions.AddRangeAsync(TransListToAdd);
+                    await _context.SaveChangesAsync();
+                }
             }
             _serviceResponse.Message = CustomMessage.Added;
             _serviceResponse.Success = true;
