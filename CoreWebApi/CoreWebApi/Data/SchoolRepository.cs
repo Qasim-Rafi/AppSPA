@@ -912,6 +912,7 @@ namespace CoreWebApi.Data
             var ToUsers = (from u in _context.Users
                            where u.Role == Enumm.UserType.Student.ToString()
                            || u.Role == Enumm.UserType.Teacher.ToString()
+                           || u.Role == Enumm.UserType.Admin.ToString()
                            && u.SchoolBranchId == _LoggedIn_BranchID
                            select u.Id).ToList();
             foreach (var UserId in ToUsers)
