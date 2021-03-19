@@ -34,7 +34,7 @@ namespace CoreWebApi
                 //    //Seed.SeedUserTypes(context);
                 //    //.SeedUsers(context);
                 //    //Seed.SeedLeaveTypes(context);
-                //    //Seed.SeedGenericData(context);
+                Seed.SeedGenericData(context);
                 //}
             }
 

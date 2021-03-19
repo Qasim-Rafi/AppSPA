@@ -194,5 +194,12 @@ namespace CoreWebApi.Controllers
 
             return Ok(_response);
         }
+        [HttpGet("ExamTypes")]
+        public async Task<IActionResult> GetExamTypes()
+        {
+            _response = await _repo.GetExamTypes();
+
+            return Ok(_response);
+        }
     }
 }

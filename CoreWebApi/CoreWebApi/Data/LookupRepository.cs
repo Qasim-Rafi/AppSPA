@@ -385,5 +385,16 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
+        public async Task<ServiceResponse<object>> GetExamTypes()
+        {
+
+            var list = await (from main in _context.ExamTypes
+                              select main).ToListAsync();
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+
+        }
     }
 }

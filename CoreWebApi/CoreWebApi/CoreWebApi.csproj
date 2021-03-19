@@ -184,6 +184,8 @@
     <Compile Remove="Migrations\20210316120252_testt.Designer.cs" />
     <Compile Remove="Migrations\20210318120557_AddExamType_UpdateScholBranch.cs" />
     <Compile Remove="Migrations\20210318120557_AddExamType_UpdateScholBranch.Designer.cs" />
+    <Compile Remove="Migrations\20210319063828_UpdateTblUser.cs" />
+    <Compile Remove="Migrations\20210319063828_UpdateTblUser.Designer.cs" />
 
   </ItemGroup>
 
