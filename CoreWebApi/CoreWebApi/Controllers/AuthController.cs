@@ -151,6 +151,7 @@ namespace CoreWebApi.Controllers
                 token = tokenHandler.WriteToken(token),
                 classSectionName = GenericFunctions.IsPropertyExist(CSName, "ClassName") && GenericFunctions.IsPropertyExist(CSName, "SectionName") ? CSName.ClassName + " " + CSName.SectionName : "",
                 classSectionId = GenericFunctions.IsPropertyExist(CSName, "ClassSectionId") ? CSName.ClassSectionId : "",
+                schoolExamType = schoolBranchDetails.schoolExamType,
             };
             _response.Success = true;
             return base.Ok(_response);

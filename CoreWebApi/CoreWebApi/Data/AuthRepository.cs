@@ -84,10 +84,10 @@ namespace CoreWebApi.Data
                                            select new
                                            {
                                                school,
+                                               schoolExamType = "Semester",//_context.ExamTypes.FirstOrDefault(m=>m.Id==branch.ExamTypeId).Type,
                                                logo = _fileRepo.AppendMultiDocPath(school.Logo),
                                                branch
-                                           }
-                               ).FirstOrDefaultAsync();
+                                           }).FirstOrDefaultAsync();
                 if (schoolDetails == null)
                     return null;
 
@@ -103,10 +103,10 @@ namespace CoreWebApi.Data
                                            select new
                                            {
                                                school,
+                                               schoolExamType = "Semester",//_context.ExamTypes.FirstOrDefault(m=>m.Id==branch.ExamTypeId).Type,
                                                logo = _fileRepo.AppendMultiDocPath(school.Logo),
                                                branch
-                                           }
-                              ).FirstOrDefaultAsync();
+                                           }).FirstOrDefaultAsync();
                 if (schoolDetails == null)
                     return null;
 
@@ -169,7 +169,7 @@ namespace CoreWebApi.Data
                         if (string.IsNullOrEmpty(schoolAcademy.Logo))
                             schoolAcademy.Logo += dbPath;
                         else
-                            schoolAcademy.Logo = schoolAcademy.Logo + "||" + dbPath;                        
+                            schoolAcademy.Logo = schoolAcademy.Logo + "||" + dbPath;
                     }
                 }
                 _context.SchoolAcademy.Add(schoolAcademy);
