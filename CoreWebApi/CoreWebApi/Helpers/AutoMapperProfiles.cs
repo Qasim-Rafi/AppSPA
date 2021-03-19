@@ -69,6 +69,7 @@ namespace CoreWebApi.Helpers
             CreateMap<Semester, SemesterDtoForAdd>();
             CreateMap<Semester, SemesterDtoForEdit>();
             CreateMap<Semester, SemesterDtoForDetail>();
+            CreateMap<Semester, SemesterDtoForList>();
 
         }
     }
