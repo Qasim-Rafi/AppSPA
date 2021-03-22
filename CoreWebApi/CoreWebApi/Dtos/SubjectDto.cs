@@ -78,8 +78,8 @@ namespace CoreWebApi.Dtos
         [Required]
         public List<int> SubjectIds { get; set; }
         //[Required]
-        public int? ClassId { get; set; }
-        public int? SemesterId { get; set; }
+        public int? ClassId { get; set; } = 0;
+        public int? SemesterId { get; set; } = 0;
         public string TableOfContent { get; set; }
     }
     public class AssignSubjectDtoForEdit
@@ -87,8 +87,8 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         [Required]
         public List<int> SubjectIds { get; set; }
-        public int? ClassId { get; set; }
-        public int? SemesterId { get; set; }
+        public int? ClassId { get; set; } = 0;
+        public int? SemesterId { get; set; } = 0;
         //public string TableOfContent { get; set; }
     }
     public class SubjectContentDtoForAdd

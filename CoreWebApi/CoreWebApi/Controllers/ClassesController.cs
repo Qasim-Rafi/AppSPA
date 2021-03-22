@@ -112,8 +112,10 @@ namespace CoreWebApi.Controllers
                 ClassSectionId = o.Id,
                 SchoolAcademyId = o.SchoolBranchId,
                 SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId && m.Active == true)?.Name,
-                ClassId = o.ClassId.Value,
+                ClassId = Convert.ToInt32(o.ClassId),
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId && m.Active == true)?.Name,
+                SemesterId = Convert.ToInt32(o.SemesterId),
+                SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId)?.Name,
                 SectionId = o.SectionId,
                 SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true)?.SectionName,
                 NumberOfStudents = o.NumberOfStudents,
@@ -153,7 +155,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (await _repo.ClassSectionExists(classSection.SectionId, classSection.ClassId.Value, classSection.SemesterId.Value))
+            if (await _repo.ClassSectionExists(classSection.SectionId, classSection.ClassId, classSection.SemesterId))
                 return BadRequest(new { message = "Class Section Already Exist" });
             _response = await _repo.AddClassSectionMapping(classSection);
 

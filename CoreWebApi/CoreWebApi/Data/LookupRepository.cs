@@ -53,11 +53,25 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetClassSections()
         {
-            var list = await _context.ClassSections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).Select(o => new
+            var list = await _context.ClassSections.Where(m => m.SemesterId == null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).Select(o => new
             {
                 ClassSectionId = o.Id,
                 ClassId = o.ClassId,
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == o.ClassId && m.Active == true).Name : "",
+                SectionId = o.SectionId,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true).SectionName : "",
+            }).ToListAsync();
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> GetSemesterSections()
+        {
+            var list = await _context.ClassSections.Where(m => m.ClassId == null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).Select(o => new
+            {
+                ClassSectionId = o.Id,
+                SemesterId = o.SemesterId,
+                SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId) != null ? _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId).Name : "",
                 SectionId = o.SectionId,
                 SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true).SectionName : "",
             }).ToListAsync();

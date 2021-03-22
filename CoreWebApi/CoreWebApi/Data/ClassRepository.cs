@@ -20,6 +20,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
+        private string _LoggedIn_SchoolExamType = "";
         private readonly IMapper _mapper;
         public ClassRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
@@ -28,6 +29,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _mapper = mapper;
         }
         public async Task<bool> ClassExists(string name)
@@ -180,7 +182,14 @@ namespace CoreWebApi.Data
 
         public async Task<IEnumerable<ClassSection>> GetClassSectionMapping()
         {
-            return await _context.ClassSections.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+            if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString())
+            {
+                return await _context.ClassSections.Where(m => m.ClassId == null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+            }
+            else
+            {
+                return await _context.ClassSections.Where(m => m.SemesterId == null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+            }
 
         }
 
@@ -428,7 +437,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<bool> ClassSectionExists(int sectionId, int classId = 0, int semesterId = 0)
+        public async Task<bool> ClassSectionExists(int sectionId, int? classId, int? semesterId)
         {
             if (classId > 0)
             {
@@ -444,7 +453,7 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<bool> ClassSectionUserExists(int csId, int userId)
+        public async Task<bool> ClassSectionUserExists(int csId, int userId) // for teacher
         {
             var exist = await (from u in _context.Users
                                join csU in _context.ClassSectionUsers

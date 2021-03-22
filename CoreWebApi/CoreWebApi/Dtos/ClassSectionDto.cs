@@ -15,8 +15,8 @@ namespace CoreWebApi.Dtos
         //[Required]
         //public int SchoolAcademyId { get; set; }
         //[Required]
-        public int? ClassId { get; set; }
-        public int? SemesterId { get; set; }
+        public int? ClassId { get; set; } = 0;
+        public int? SemesterId { get; set; } = 0;
         [Required]
         public int SectionId { get; set; }
         [Required]
@@ -28,8 +28,8 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         [Required]
         public int SchoolAcademyId { get; set; }
-        public int? ClassId { get; set; }
-        public int? SemesterId { get; set; }
+        public int? ClassId { get; set; } = 0;
+        public int? SemesterId { get; set; } = 0;
         [Required]
         public int SectionId { get; set; }
         [Required]
@@ -39,6 +39,8 @@ namespace CoreWebApi.Dtos
     public class ClassSectionForListDto
     {
         public int ClassSectionId { get; set; }
+        public int SemesterId { get; set; }
+        public string SemesterName { get; set; }
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public int SectionId { get; set; }
