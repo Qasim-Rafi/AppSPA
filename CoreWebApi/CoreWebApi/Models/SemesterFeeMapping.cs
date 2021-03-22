@@ -9,11 +9,12 @@ namespace CoreWebApi.Models
     public class SemesterFeeMapping
     {
         public int Id { get; set; }
-        public int ClassId { get; set; }
-        public int SemesterId { get; set; }
+        public int StudentId { get; set; }
+        public int? ClassId { get; set; }
+        public int? SemesterId { get; set; }
         public int DiscountInPercentage { get; set; }
-        public double FeeAfterDiscount { get; set; }       
-        public int Installments { get; set; }       
+        public double FeeAfterDiscount { get; set; }
+        public int Installments { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
         public bool Active { get; set; }

@@ -51,6 +51,7 @@ namespace CoreWebApi.Dtos
         //[StringLength(50, ErrorMessage = "Roll Number cannot be longer then 50 characters")]
         public string RegistrationNumber { get; set; }
         //public bool HasRegNumber { get; set; }
+        [StringLength(13)]
         public string ParentCNIC { get; set; }
         public string ParentEmail { get; set; }
         public string ParentContactNumber { get; set; }
@@ -99,6 +100,7 @@ namespace CoreWebApi.Dtos
         public int UserTypeId { get; set; }
         public bool Active { get; set; } = true;
         public string RollNumber { get; set; }
+        [StringLength(13)]
         public string ParentCNIC { get; set; }
         public string ParentEmail { get; set; }
         public string ParentContactNumber { get; set; }

@@ -51,4 +51,29 @@ namespace CoreWebApi.Dtos
         public int FeeId { get; set; }
         public List<PhotoDto> Photos { get; set; }
     }
+    public class FeeVoucherDetailForAddDto
+    {
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
+        public string PaymentTerms { get; set; }
+    }
+    public class FeeVoucherDetailForUpdateDto
+    {
+        public int Id { get; set; }
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
+        public string PaymentTerms { get; set; }
+    }
+    public class FeeVoucherDetailForListDto
+    {
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
+        public string PaymentTerms { get; set; }
+    }
 }

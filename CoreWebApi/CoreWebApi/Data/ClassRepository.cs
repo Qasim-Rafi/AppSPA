@@ -147,6 +147,7 @@ namespace CoreWebApi.Data
                 var objToCreate = new ClassSection
                 {
                     ClassId = classSection.ClassId,
+                    SemesterId = classSection.SemesterId,
                     SectionId = classSection.SectionId,
                     SchoolBranchId = _LoggedIn_BranchID,
                     NumberOfStudents = classSection.NumberOfStudents,
@@ -198,6 +199,7 @@ namespace CoreWebApi.Data
                         return _serviceResponse;
                     }
                     objToUpdate.ClassId = model.ClassId;
+                    objToUpdate.SemesterId = model.SemesterId;
                     objToUpdate.SectionId = model.SectionId;
                     objToUpdate.Active = model.Active;
                     objToUpdate.SchoolBranchId = _LoggedIn_BranchID;
@@ -426,11 +428,20 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<bool> ClassSectionExists(int classId, int sectionId)
+        public async Task<bool> ClassSectionExists(int sectionId, int classId = 0, int semesterId = 0)
         {
-            if (await _context.ClassSections.AnyAsync(x => x.ClassId == classId && x.SectionId == sectionId && x.SchoolBranchId == _LoggedIn_BranchID))
-                return true;
-            return false;
+            if (classId > 0)
+            {
+                if (await _context.ClassSections.AnyAsync(x => x.ClassId == classId && x.SectionId == sectionId && x.SchoolBranchId == _LoggedIn_BranchID))
+                    return true;
+                return false;
+            }
+            else
+            {
+                if (await _context.ClassSections.AnyAsync(x => x.SemesterId == semesterId && x.SectionId == sectionId && x.SchoolBranchId == _LoggedIn_BranchID))
+                    return true;
+                return false;
+            }
         }
 
         public async Task<bool> ClassSectionUserExists(int csId, int userId)

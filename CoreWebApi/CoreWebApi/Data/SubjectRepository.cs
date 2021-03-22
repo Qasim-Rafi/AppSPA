@@ -21,6 +21,7 @@ namespace CoreWebApi.Data
         public int _LoggedIn_UserID = 0;
         public int _LoggedIn_BranchID = 0;
         public string _LoggedIn_UserName = "";
+        private string _LoggedIn_SchoolExamType = "";
         public SubjectRepository(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
@@ -29,6 +30,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
         }
 
 
@@ -73,51 +75,101 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetAssignedSubject(int id)
         {
-
-            var subject = await (from s in _context.Subjects
-                                 join ass in _context.SubjectAssignments
-                                 on s.Id equals ass.SubjectId
-                                 join c in _context.Class
-                                 on ass.ClassId equals c.Id
-                                 join sch in _context.SchoolBranch
-                                 on ass.SchoolBranchId equals sch.Id
-                                 where ass.Id == id
-                                 && s.Active == true
-                                 && s.SchoolBranchId == _LoggedIn_BranchID
-                                 select new AssignSubjectDtoForDetail
-                                 {
-                                     Id = s.Id,
-                                     ClassId = ass.ClassId,
-                                     ClassName = c.Name,
-                                     SchoolId = ass.SchoolBranchId,
-                                     SchoolName = sch.BranchName,
-                                     //TableOfContent = ass.TableOfContent,
-                                 }).FirstOrDefaultAsync();
-
-            if (subject != null)
+            if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
             {
-                var childrens = await (from s in _context.Subjects
-                                       join ass in _context.SubjectAssignments
-                                       on s.Id equals ass.SubjectId
-                                       where ass.ClassId == subject.ClassId
-                                       && s.Active == true
-                                       && s.SchoolBranchId == _LoggedIn_BranchID
-                                       select s).Select(x => new SubjectDtoForDetail
-                                       {
-                                           Id = x.Id,
-                                           Name = x.Name,
-                                       }).ToListAsync();
-                subject.Children.AddRange(childrens);
+                var subject = await (from s in _context.Subjects
+                                     join ass in _context.SubjectAssignments
+                                     on s.Id equals ass.SubjectId
+                                     join c in _context.Class
+                                     on ass.ClassId equals c.Id
+                                     join sch in _context.SchoolBranch
+                                     on ass.SchoolBranchId equals sch.Id
+                                     where ass.Id == id
+                                     && s.Active == true
+                                     && s.SchoolBranchId == _LoggedIn_BranchID
+                                     select new AssignSubjectDtoForDetail
+                                     {
+                                         Id = s.Id,
+                                         ClassId = ass.ClassId.Value,
+                                         ClassName = c.Name,
+                                         SchoolId = ass.SchoolBranchId,
+                                         SchoolName = sch.BranchName,
+                                         //TableOfContent = ass.TableOfContent,
+                                     }).FirstOrDefaultAsync();
 
-                _serviceResponse.Data = subject;
-                _serviceResponse.Success = true;
-                return _serviceResponse;
+                if (subject != null)
+                {
+                    var childrens = await (from s in _context.Subjects
+                                           join ass in _context.SubjectAssignments
+                                           on s.Id equals ass.SubjectId
+                                           where ass.ClassId == subject.ClassId
+                                           && s.Active == true
+                                           && s.SchoolBranchId == _LoggedIn_BranchID
+                                           select s).Select(x => new SubjectDtoForDetail
+                                           {
+                                               Id = x.Id,
+                                               Name = x.Name,
+                                           }).ToListAsync();
+                    subject.Children.AddRange(childrens);
+
+                    _serviceResponse.Data = subject;
+                    _serviceResponse.Success = true;
+                    return _serviceResponse;
+                }
+                else
+                {
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                    _serviceResponse.Success = false;
+                    return _serviceResponse;
+                }
             }
             else
             {
-                _serviceResponse.Message = CustomMessage.RecordNotFound;
-                _serviceResponse.Success = false;
-                return _serviceResponse;
+                var subject = await (from s in _context.Subjects
+                                     join ass in _context.SubjectAssignments
+                                     on s.Id equals ass.SubjectId
+                                     join c in _context.Class
+                                     on ass.ClassId equals c.Id
+                                     join sch in _context.SchoolBranch
+                                     on ass.SchoolBranchId equals sch.Id
+                                     where ass.Id == id
+                                     && s.Active == true
+                                     && s.SchoolBranchId == _LoggedIn_BranchID
+                                     select new AssignSubjectDtoForDetail
+                                     {
+                                         Id = s.Id,
+                                         SemesterId = ass.SemesterId.Value,
+                                         ClassName = c.Name,
+                                         SchoolId = ass.SchoolBranchId,
+                                         SchoolName = sch.BranchName,
+                                         //TableOfContent = ass.TableOfContent,
+                                     }).FirstOrDefaultAsync();
+
+                if (subject != null)
+                {
+                    var childrens = await (from s in _context.Subjects
+                                           join ass in _context.SubjectAssignments
+                                           on s.Id equals ass.SubjectId
+                                           where ass.SemesterId == subject.SemesterId
+                                           && s.Active == true
+                                           && s.SchoolBranchId == _LoggedIn_BranchID
+                                           select s).Select(x => new SubjectDtoForDetail
+                                           {
+                                               Id = x.Id,
+                                               Name = x.Name,
+                                           }).ToListAsync();
+                    subject.Children.AddRange(childrens);
+
+                    _serviceResponse.Data = subject;
+                    _serviceResponse.Success = true;
+                    return _serviceResponse;
+                }
+                else
+                {
+                    _serviceResponse.Message = CustomMessage.RecordNotFound;
+                    _serviceResponse.Success = false;
+                    return _serviceResponse;
+                }
             }
         }
 
@@ -225,6 +277,7 @@ namespace CoreWebApi.Data
                     {
                         SubjectId = SubjectId,
                         ClassId = model.ClassId,
+                        SemesterId = model.SemesterId,
                         SchoolBranchId = _LoggedIn_BranchID,
                         //TableOfContent = model.TableOfContent,
                         CreatedById = _LoggedIn_UserID,
@@ -309,6 +362,7 @@ namespace CoreWebApi.Data
                             {
                                 SubjectId = SubjectId,
                                 ClassId = model.ClassId,
+                                SemesterId = model.SemesterId,
                                 SchoolBranchId = _LoggedIn_BranchID,
                                 //TableOfContent = model.TableOfContent,
                                 CreatedById = _LoggedIn_UserID,

@@ -32,7 +32,6 @@ namespace CoreWebApi.Controllers
         [HttpPost("AddFee")]
         public async Task<IActionResult> AddFee(StudentFeeDtoForAdd model)
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -42,7 +41,6 @@ namespace CoreWebApi.Controllers
             _response = await _repo.AddFee(model);
 
             return Ok(_response);
-
         }
         [HttpGet("GetStudentsForFee")]
         public async Task<IActionResult> GetStudentsForFee()
@@ -67,5 +65,6 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetStudentTimeTable();
             return Ok(_response);
         }
+        
     }
 }

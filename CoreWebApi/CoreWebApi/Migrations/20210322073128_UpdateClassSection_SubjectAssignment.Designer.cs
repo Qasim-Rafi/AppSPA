@@ -4,14 +4,16 @@ using CoreWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreWebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210322073128_UpdateClassSection_SubjectAssignment")]
+    partial class UpdateClassSection_SubjectAssignment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -588,117 +590,6 @@ namespace CoreWebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExamTypes");
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.FeeVoucherDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("BankAccountNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BankAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BankDetails")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BankName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PaymentTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SchoolBranchId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("SchoolBranchId");
-
-                    b.ToTable("FeeVoucherDetails");
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.FeeVoucherRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("BillDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("BillMonth")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BillNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ClassSectionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ConcessionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("FeeAmount")
-                        .HasColumnType("float");
-
-                    b.Property<double>("MiscellaneousCharges")
-                        .HasColumnType("float");
-
-                    b.Property<string>("RegistrationNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SchoolBranchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TotalFee")
-                        .HasColumnType("float");
-
-                    b.Property<int>("VoucherDetailId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassSectionId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("SchoolBranchId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("FeeVoucherRecords");
                 });
 
             modelBuilder.Entity("CoreWebApi.Models.Group", b =>
@@ -1549,7 +1440,7 @@ namespace CoreWebApi.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ClassId")
+                    b.Property<int>("ClassId")
                         .HasColumnType("int");
 
                     b.Property<int>("CreatedById")
@@ -1573,10 +1464,7 @@ namespace CoreWebApi.Migrations
                     b.Property<int>("SchoolBranchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SemesterId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentId")
+                    b.Property<int>("SemesterId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2455,48 +2343,6 @@ namespace CoreWebApi.Migrations
                         .WithMany()
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.FeeVoucherDetail", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
-                        .WithMany()
-                        .HasForeignKey("SchoolBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CoreWebApi.Models.FeeVoucherRecord", b =>
-                {
-                    b.HasOne("CoreWebApi.Models.ClassSection", "ClassSectionObj")
-                        .WithMany()
-                        .HasForeignKey("ClassSectionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.SchoolBranch", "SchoolBranch")
-                        .WithMany()
-                        .HasForeignKey("SchoolBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreWebApi.Models.User", "StudentObj")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

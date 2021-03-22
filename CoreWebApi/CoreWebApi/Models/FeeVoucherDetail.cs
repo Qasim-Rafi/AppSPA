@@ -7,24 +7,23 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Models
 {
-    public class SubjectAssignment
+    public class FeeVoucherDetail
     {
         public int Id { get; set; }
-        public int SubjectId { get; set; }
-        public int? ClassId { get; set; }
-        public int? SemesterId { get; set; }
-        public int SchoolBranchId { get; set; }
-        //public string TableOfContent { get; set; }
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
+        //[DataType(DataType.Html)]
+        public string PaymentTerms { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
+        public bool Active { get; set; }
+        public int SchoolBranchId { get; set; }
 
-        [ForeignKey("SubjectId")]
-        public virtual Subject Subject { get; set; }
-        [ForeignKey("ClassId")]
-        public virtual Class Class { get; set; }
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
         [ForeignKey("CreatedById")]
-        public virtual User User { get; set; }
+        public virtual User CreatedByUser { get; set; }
     }
 }

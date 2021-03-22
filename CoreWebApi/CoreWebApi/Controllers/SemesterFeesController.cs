@@ -154,5 +154,54 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("AddFeeVoucherDetails")]
+        public async Task<IActionResult> AddFeeVoucherDetails(FeeVoucherDetailForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.AddFeeVoucherDetails(model);
+
+            return Ok(_response);
+        }
+        [HttpPut("UpdateFeeVoucherDetails")]
+        public async Task<IActionResult> UpdateFeeVoucherDetails(FeeVoucherDetailForUpdateDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.UpdateFeeVoucherDetails(model);
+
+            return Ok(_response);
+        }
+        [HttpGet("GetFeeVoucherDetails")]
+        public async Task<IActionResult> GetFeeVoucherDetails()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetFeeVoucherDetails();
+
+            return Ok(_response);
+        }
+
+        [HttpGet("GenerateFeeVoucher")]
+        public async Task<IActionResult> GenerateFeeVoucher()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GenerateFeeVoucher();
+
+            return Ok(_response);
+        }
     }
 }

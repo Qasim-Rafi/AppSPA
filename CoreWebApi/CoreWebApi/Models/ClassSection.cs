@@ -9,7 +9,8 @@ namespace CoreWebApi.Models
     public class ClassSection
     {
         public int Id { get; set; }
-        public int ClassId { get; set; }
+        public int? ClassId { get; set; }
+        public int? SemesterId { get; set; }
         public int SectionId { get; set; }
         public int SchoolBranchId { get; set; }
         public int NumberOfStudents { get; set; }

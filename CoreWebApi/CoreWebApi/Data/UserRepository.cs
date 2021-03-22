@@ -1457,7 +1457,7 @@ namespace CoreWebApi.Data
                                    CountryName = o.user.Country.Name,
                                    StateName = o.user.State.Name,
                                    OtherState = o.user.OtherState,
-                                   GradeId = o.csUser.ClassSection.ClassId,
+                                   GradeId = o.csUser.ClassSection.ClassId.Value,
                                    GradeName = _context.Class.FirstOrDefault(m => m.Id == o.csUser.ClassSection.ClassId).Name,
                                    SubjectId = o.subject.Id,
                                    SubjectName = o.subject.Name,

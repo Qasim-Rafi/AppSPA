@@ -83,6 +83,8 @@ namespace CoreWebApi.Data
         public DbSet<SemesterFeeMapping> SemesterFeeMappings { get; set; }
         public DbSet<SemesterFeeTransaction> SemesterFeeTransactions { get; set; }
         public DbSet<ExamType> ExamTypes { get; set; }
+        public DbSet<FeeVoucherDetail> FeeVoucherDetails { get; set; }
+        public DbSet<FeeVoucherRecord> FeeVoucherRecords { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }
@@ -151,9 +153,9 @@ namespace CoreWebApi.Data
                 .HasIndex(p => new { p.LectureId, p.TeacherId })
                 .IsUnique(true);
             // composite primary key
-            modelBuilder.Entity<ClassSection>()
-              .HasIndex(p => new { p.ClassId, p.SectionId, p.SchoolBranchId })
-              .IsUnique(true);
+            //modelBuilder.Entity<ClassSection>()
+            //  .HasIndex(p => new { p.ClassId, p.SectionId, p.SchoolBranchId })
+            //  .IsUnique(true);
             // primary key // composite primary key
             modelBuilder.Entity<ClassSectionUser>()
                 .HasKey(c => new { c.Id });
@@ -166,9 +168,9 @@ namespace CoreWebApi.Data
                .HasIndex(s => new { s.Name, s.SchoolBranchId })
                .IsUnique(true);
             // composite primary key
-            modelBuilder.Entity<SubjectAssignment>()
-               .HasIndex(s => new { s.ClassId, s.SubjectId, s.SchoolBranchId })
-               .IsUnique(true);
+            //modelBuilder.Entity<SubjectAssignment>()
+            //   .HasIndex(s => new { s.ClassId, s.SubjectId, s.SchoolBranchId })
+            //   .IsUnique(true);
             // composite primary key
             modelBuilder.Entity<User>()
                .HasIndex(s => new { s.Username, s.SchoolBranchId })

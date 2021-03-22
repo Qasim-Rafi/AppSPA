@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -173,6 +174,7 @@ namespace CoreWebApi.Data
             {
                 SemesterId = Convert.ToInt32(model.SemesterId),
                 ClassId = Convert.ToInt32(model.ClassId),
+                StudentId = Convert.ToInt32(model.StudentId),
                 DiscountInPercentage = Convert.ToInt32(model.DiscountInPercentage),
                 FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount),
                 Installments = Convert.ToInt32(model.Installments),
@@ -193,9 +195,9 @@ namespace CoreWebApi.Data
             var ObjToUpdate = _context.SemesterFeeMappings.FirstOrDefault(s => s.Id.Equals(model.Id));
             if (ObjToUpdate != null)
             {
-
                 ObjToUpdate.SemesterId = Convert.ToInt32(model.SemesterId);
                 ObjToUpdate.ClassId = Convert.ToInt32(model.ClassId);
+                ObjToUpdate.StudentId = Convert.ToInt32(model.StudentId);
                 ObjToUpdate.DiscountInPercentage = Convert.ToInt32(model.DiscountInPercentage);
                 ObjToUpdate.FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount);
                 ObjToUpdate.Installments = Convert.ToInt32(model.Installments);
@@ -215,6 +217,7 @@ namespace CoreWebApi.Data
                 Id = o.Id,
                 SemesterId = Convert.ToString(o.SemesterId),
                 ClassId = Convert.ToString(o.ClassId),
+                StudentId = Convert.ToString(o.StudentId),
                 DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
                 Installments = Convert.ToString(o.Installments),
                 FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
@@ -231,7 +234,7 @@ namespace CoreWebApi.Data
             {
                 Id = o.Id,
                 SemesterId = Convert.ToString(o.SemesterId),
-                ClassId = Convert.ToString(o.ClassId),
+                StudentId = Convert.ToString(o.StudentId),
                 DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
                 Installments = Convert.ToString(o.Installments),
                 FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
@@ -252,6 +255,118 @@ namespace CoreWebApi.Data
                                   }).ToListAsync();
 
             _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> AddFeeVoucherDetails(FeeVoucherDetailForAddDto model)
+        {
+            var ToAdd = new FeeVoucherDetail
+            {
+                BankAccountNumber = model.BankAccountNumber,
+                BankAddress = model.BankAddress,
+                BankDetails = model.BankDetails,
+                BankName = model.BankName,
+                PaymentTerms = model.PaymentTerms,
+                Active = true,
+                CreatedDateTime = DateTime.Now,
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.FeeVoucherDetails.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> UpdateFeeVoucherDetails(FeeVoucherDetailForUpdateDto model)
+        {
+            var ToUpdate = await _context.FeeVoucherDetails.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+            if (ToUpdate != null)
+            {
+                ToUpdate.BankAccountNumber = model.BankAccountNumber;
+                ToUpdate.BankAddress = model.BankAddress;
+                ToUpdate.BankDetails = model.BankDetails;
+                ToUpdate.BankName = model.BankName;
+                ToUpdate.PaymentTerms = model.PaymentTerms;
+            }
+
+            _context.FeeVoucherDetails.Update(ToUpdate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetFeeVoucherDetails()
+        {
+            var ToReturn = await _context.FeeVoucherDetails.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GenerateFeeVoucher()
+        {
+            var voucherDetails = await _context.FeeVoucherDetails.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+            var students = await (from u in _context.Users
+                                  join csU in _context.ClassSectionUsers
+                                  on u.Id equals csU.UserId
+
+                                  join cs in _context.ClassSections
+                                  on csU.ClassSectionId equals cs.Id
+
+                                  join fee in _context.SemesterFeeMappings
+                                  on u.Id equals fee.StudentId
+
+                                  where u.Role == Enumm.UserType.Student.ToString()
+                                  && u.SchoolBranchId == _LoggedIn_BranchID
+                                  select new { u, cs, fee }).ToListAsync();
+
+            List<FeeVoucherRecord> ListToAdd = new List<FeeVoucherRecord>();
+            for (int i = 0; i < students.Count(); i++)
+            {
+                var item = students[i];
+                var lastVoucherRecord = _context.FeeVoucherRecords.ToList().LastOrDefault();
+                string NewBillNo = "";
+                if (lastVoucherRecord != null)
+                {
+                    string BillNumber = lastVoucherRecord.BillNumber.Substring(8, lastVoucherRecord.BillNumber.Count());
+                    int LastBillNumber = Convert.ToInt32(BillNumber);
+                    int NextBillNumber = ++LastBillNumber;
+                    NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
+                }
+                else
+                {
+                    NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
+                }
+                var ToAdd = new FeeVoucherRecord
+                {
+                    StudentId = item.u.Id,
+                    RegistrationNo = item.u.RegistrationNumber,
+                    VoucherDetailId = voucherDetails.Id,
+                    FeeAmount = item.fee.FeeAfterDiscount,
+                    BillDate = DateTime.Now,
+                    DueDate = DateTime.Now.AddDays(7),
+                    BillMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year,
+                    BillNumber = NewBillNo,
+                    ClassSectionId = item.cs.Id,
+                    ConcessionId = 1,
+                    MiscellaneousCharges = 000,
+                    TotalFee = 000,
+                    Active = true,
+                    CreatedDateTime = DateTime.Now,
+                    CreatedById = _LoggedIn_UserID,
+                    SchoolBranchId = _LoggedIn_BranchID,
+                };
+                ListToAdd.Add(ToAdd);
+            }
+            await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
+            await _context.SaveChangesAsync();
+            _serviceResponse.Data = new { };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

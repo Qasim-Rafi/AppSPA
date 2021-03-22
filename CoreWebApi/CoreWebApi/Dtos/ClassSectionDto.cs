@@ -14,8 +14,9 @@ namespace CoreWebApi.Dtos
     {
         //[Required]
         //public int SchoolAcademyId { get; set; }
-        [Required]
-        public int ClassId { get; set; }
+        //[Required]
+        public int? ClassId { get; set; }
+        public int? SemesterId { get; set; }
         [Required]
         public int SectionId { get; set; }
         [Required]
@@ -27,8 +28,8 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         [Required]
         public int SchoolAcademyId { get; set; }
-        [Required]
-        public int ClassId { get; set; }
+        public int? ClassId { get; set; }
+        public int? SemesterId { get; set; }
         [Required]
         public int SectionId { get; set; }
         [Required]

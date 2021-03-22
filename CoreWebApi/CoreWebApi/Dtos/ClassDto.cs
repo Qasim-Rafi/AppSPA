@@ -14,7 +14,7 @@ namespace CoreWebApi.Dtos
     {
         [Required]
         [StringLength(2, ErrorMessage = "Class Name cannot be longer than 2 characters.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Class Name should be in Number value")]
+        [Range(1, int.MaxValue, ErrorMessage = "Class Name should be a Number value")]
         public string Name { get; set; }
 
     }
@@ -23,7 +23,7 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         [Required]
         [StringLength(2, ErrorMessage = "Class Name cannot be longer than 2 characters.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Class Name should be in Number value")]
+        [Range(1, int.MaxValue, ErrorMessage = "Class Name should be a Number value")]
         public string Name { get; set; }
         public bool Active { get; set; } = true;
 
