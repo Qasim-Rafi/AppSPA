@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CoreWebApi.Models
 {
@@ -14,7 +10,7 @@ namespace CoreWebApi.Models
         public string BankAccountNumber { get; set; }
         public string BankAddress { get; set; }
         public string BankDetails { get; set; }
-        //[DataType(DataType.Html)]
+
         public string PaymentTerms { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }

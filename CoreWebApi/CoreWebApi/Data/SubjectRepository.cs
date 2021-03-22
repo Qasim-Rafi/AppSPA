@@ -175,51 +175,96 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetAssignedSubjects()
         {
-            var subjects = (from ass in _context.SubjectAssignments
-                            join c in _context.Class
-                            on ass.ClassId equals c.Id
-                            join sch in _context.SchoolBranch
-                            on ass.SchoolBranchId equals sch.Id
-                            where ass.SchoolBranchId == _LoggedIn_BranchID
-                            && c.Active == true
-                            && sch.Active == true
-                            select new
-                            {
-                                ClassId = c.Id,
-                                ClassName = c.Name,
-                                SchoolBranchId = sch.Id,
-                                SchoolName = sch.BranchName,
-                                //TableOfContent = ass.TableOfContent,
-                            }).Distinct().ToList().Select(o => new AssignSubjectDtoForList
-                            {
-                                Id = _context.SubjectAssignments.FirstOrDefault(m => m.ClassId == o.ClassId).Id,
-                                ClassId = o.ClassId,
-                                ClassName = o.ClassName,
-                                SchoolId = o.SchoolBranchId,
-                                SchoolName = o.SchoolName,
-                                //TableOfContent = o.TableOfContent,
-                            }).ToList();
-
-
-            foreach (var item in subjects)
+            if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
             {
-                var childrens = await (from s in _context.Subjects
-                                       join ass in _context.SubjectAssignments
-                                       on s.Id equals ass.SubjectId
-                                       where ass.ClassId == item.ClassId
-                                       && s.Active == true
-                                       && s.SchoolBranchId == _LoggedIn_BranchID
-                                       select s).Select(x => new ChipsDto
-                                       {
-                                           Value = x.Id,
-                                           Display = x.Name,
-                                       }).ToListAsync();
-                item.Children.AddRange(childrens);
-            }
-            _serviceResponse.Data = subjects;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
+                var subjects = (from ass in _context.SubjectAssignments
+                                join c in _context.Class
+                                on ass.ClassId equals c.Id
+                                join sch in _context.SchoolBranch
+                                on ass.SchoolBranchId equals sch.Id
+                                where ass.SchoolBranchId == _LoggedIn_BranchID
+                                && c.Active == true
+                                && sch.Active == true
+                                select new
+                                {
+                                    ClassId = c.Id,
+                                    ClassName = c.Name,
+                                    SchoolBranchId = sch.Id,
+                                    SchoolName = sch.BranchName,
+                                }).Distinct().ToList().Select(o => new AssignSubjectDtoForList
+                                {
+                                    Id = _context.SubjectAssignments.FirstOrDefault(m => m.ClassId == o.ClassId) != null ? _context.SubjectAssignments.FirstOrDefault(m => m.ClassId == o.ClassId).Id : 0,
+                                    ClassId = o.ClassId,
+                                    ClassName = o.ClassName,
+                                    SchoolId = o.SchoolBranchId,
+                                    SchoolName = o.SchoolName,
+                                }).ToList();
 
+
+                foreach (var item in subjects)
+                {
+                    var childrens = await (from s in _context.Subjects
+                                           join ass in _context.SubjectAssignments
+                                           on s.Id equals ass.SubjectId
+                                           where ass.ClassId == item.ClassId
+                                           && s.Active == true
+                                           && s.SchoolBranchId == _LoggedIn_BranchID
+                                           select s).Select(x => new ChipsDto
+                                           {
+                                               Value = x.Id,
+                                               Display = x.Name,
+                                           }).ToListAsync();
+                    item.Children.AddRange(childrens);
+                }
+                _serviceResponse.Data = subjects;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            else
+            {
+                var subjects = (from ass in _context.SubjectAssignments
+                                join c in _context.Class
+                                on ass.ClassId equals c.Id
+                                join sch in _context.SchoolBranch
+                                on ass.SchoolBranchId equals sch.Id
+                                where ass.SchoolBranchId == _LoggedIn_BranchID
+                                && c.Active == true
+                                && sch.Active == true
+                                select new
+                                {
+                                    SemesterId = Convert.ToInt32(ass.SemesterId),
+                                    SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == ass.SemesterId) != null ? _context.Semesters.FirstOrDefault(m => m.Id == ass.SemesterId).Name : "",
+                                    SchoolBranchId = sch.Id,
+                                    SchoolName = sch.BranchName,
+                                }).Distinct().ToList().Select(o => new AssignSubjectDtoForList
+                                {
+                                    Id = _context.SubjectAssignments.FirstOrDefault(m => m.SemesterId == o.SemesterId) != null ? _context.SubjectAssignments.FirstOrDefault(m => m.SemesterId == o.SemesterId).Id : 0,
+                                    SemesterId = o.SemesterId,
+                                    SemesterName = o.SemesterName,
+                                    SchoolId = o.SchoolBranchId,
+                                    SchoolName = o.SchoolName,
+                                }).ToList();
+
+
+                foreach (var item in subjects)
+                {
+                    var childrens = await (from s in _context.Subjects
+                                           join ass in _context.SubjectAssignments
+                                           on s.Id equals ass.SubjectId
+                                           where ass.SemesterId == item.SemesterId
+                                           && s.Active == true
+                                           && s.SchoolBranchId == _LoggedIn_BranchID
+                                           select s).Select(x => new ChipsDto
+                                           {
+                                               Value = x.Id,
+                                               Display = x.Name,
+                                           }).ToListAsync();
+                    item.Children.AddRange(childrens);
+                }
+                _serviceResponse.Data = subjects;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
         }
         public async Task<ServiceResponse<object>> AddSubject(SubjectDtoForAdd model)
         {

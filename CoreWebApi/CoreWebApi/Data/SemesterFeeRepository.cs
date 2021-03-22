@@ -366,7 +366,9 @@ namespace CoreWebApi.Data
             }
             await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
             await _context.SaveChangesAsync();
-            _serviceResponse.Data = new { };
+
+            var VoucherList = await _context.FeeVoucherRecords.ToListAsync();
+            _serviceResponse.Data = new { VoucherList };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
