@@ -67,6 +67,7 @@ namespace CoreWebApi.Dtos
         public int ClassId { get; set; }
         public int SemesterId { get; set; }
         public string ClassName { get; set; }
+        public string SemesterName { get; set; }
         public int SchoolId { get; set; }
         public string SchoolName { get; set; }
         public string TableOfContent { get; set; }

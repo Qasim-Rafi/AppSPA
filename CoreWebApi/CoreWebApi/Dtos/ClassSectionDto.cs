@@ -55,6 +55,8 @@ namespace CoreWebApi.Dtos
     public class ClassSectionForDetailsDto
     {
         public int ClassSectionId { get; set; }
+        public int SemesterId { get; set; }
+        public string SemesterName { get; set; }
         public int ClassId { get; set; }
         public string ClassName { get; set; }
         public int SectionId { get; set; }

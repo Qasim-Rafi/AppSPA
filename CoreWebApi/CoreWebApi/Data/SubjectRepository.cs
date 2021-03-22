@@ -90,7 +90,7 @@ namespace CoreWebApi.Data
                                      select new AssignSubjectDtoForDetail
                                      {
                                          Id = s.Id,
-                                         ClassId = ass.ClassId.Value,
+                                         ClassId = Convert.ToInt32(ass.ClassId),
                                          ClassName = c.Name,
                                          SchoolId = ass.SchoolBranchId,
                                          SchoolName = sch.BranchName,
@@ -138,8 +138,8 @@ namespace CoreWebApi.Data
                                      select new AssignSubjectDtoForDetail
                                      {
                                          Id = s.Id,
-                                         SemesterId = ass.SemesterId.Value,
-                                         ClassName = c.Name,
+                                         SemesterId = Convert.ToInt32(ass.SemesterId),
+                                         SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == ass.SemesterId) != null ? _context.Semesters.FirstOrDefault(m => m.Id == ass.SemesterId).Name : "",
                                          SchoolId = ass.SchoolBranchId,
                                          SchoolName = sch.BranchName,
                                          //TableOfContent = ass.TableOfContent,
