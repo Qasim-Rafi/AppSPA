@@ -16,10 +16,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace CoreWebApi.Controllers
 {
-    //[Authorize(Roles = "Admin,Teacher,Student")]
+    //[Authorize]
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class LookupsController : ControllerBase
     {
         private readonly DataContext _context;
@@ -50,6 +50,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [AllowAnonymous]
         [HttpGet("Classes")]
         public async Task<IActionResult> GetClasses()
         {
@@ -77,6 +78,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [AllowAnonymous]
         [HttpGet("Cities/{stateId}")]
         public async Task<IActionResult> Cities(int stateId)
         {
@@ -84,6 +86,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [AllowAnonymous]
         [HttpGet("States/{countryId}")]
         public async Task<IActionResult> GetStates(int countryId)
         {
@@ -91,6 +94,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [AllowAnonymous]
         [HttpGet("Countries")]
         public async Task<IActionResult> GetCountries()
         {

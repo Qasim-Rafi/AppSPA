@@ -220,7 +220,7 @@ namespace CoreWebApi.Data
                 ClassId = Convert.ToString(o.ClassId),
                 ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId) != null ? _context.Class.FirstOrDefault(m => m.Id == o.ClassId).Name : "",
                 StudentId = Convert.ToString(o.StudentId),
-                StudentName=_context.Users.FirstOrDefault(m=>m.Id ==o.StudentId)!=null?_context.Users.FirstOrDefault(m=>m.Id ==o.StudentId).FullName:"",
+                StudentName = _context.Users.FirstOrDefault(m => m.Id == o.StudentId) != null ? _context.Users.FirstOrDefault(m => m.Id == o.StudentId).FullName : "",
                 DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
                 Installments = Convert.ToString(o.Installments),
                 FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
@@ -393,7 +393,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetStudentsBySemester(int id)
         {
-            var ToReturn = await (from u in _context.Users
+            var Students = await (from u in _context.Users
                                   join csU in _context.ClassSectionUsers
                                   on u.Id equals csU.UserId
 
@@ -415,10 +415,15 @@ namespace CoreWebApi.Data
                                       StateName = u.State.Name,
                                       OtherState = u.OtherState,
                                       UserTypeId = u.UserTypeId,
-                                      UserType = u.Usertypes.Name,                                      
+                                      UserType = u.Usertypes.Name,
                                   }).ToListAsync();
-
-            _serviceResponse.Data = ToReturn;
+            var SemesterDetails = await _context.Semesters.Where(m => m.Id == id).Select(o => new
+            {
+                Id = o.Id,
+                Name = o.Name,
+                FeeAmount = Convert.ToString(o.FeeAmount),
+            }).FirstOrDefaultAsync();
+            _serviceResponse.Data = new { Students, SemesterDetails };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
