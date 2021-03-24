@@ -98,62 +98,62 @@ namespace CoreWebApi.Controllers
 
         }
 
-        [HttpPost("AddSemesterFee")]
-        public async Task<IActionResult> AddSemesterFee(SemesterFeeMappingDtoForAdd model)
+        [HttpPost("AddSemesterFeeMapping")]
+        public async Task<IActionResult> AddSemesterFeeMapping(SemesterFeeMappingDtoForAdd model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.AddSemesterFee(model);
+            _response = await _repo.AddSemesterFeeMapping(model);
             return Ok(_response);
 
         }
-        [HttpPut("UpdateSemesterFee")]
-        public async Task<IActionResult> UpdateSemesterFee(SemesterFeeMappingDtoForEdit model)
+        [HttpPut("UpdateSemesterFeeMapping")]
+        public async Task<IActionResult> UpdateSemesterFeeMapping(SemesterFeeMappingDtoForEdit model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.UpdateSemesterFee(model);
+            _response = await _repo.UpdateSemesterFeeMapping(model);
             return Ok(_response);
 
         }
-        [HttpGet("GetSemesterFee")]
-        public async Task<IActionResult> GetSemesterFee()
+        [HttpGet("GetSemesterFeeMapping")]
+        public async Task<IActionResult> GetSemesterFeeMapping()
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.GetSemesterFee();
+            _response = await _repo.GetSemesterFeeMapping();
             return Ok(_response);
 
         }
-        [HttpGet("GetSemesterFeeById/{id}")]
-        public async Task<IActionResult> GetSemesterFeeById(int id)
+        [HttpGet("GetSemesterFeeMappingById/{id}")]
+        public async Task<IActionResult> GetSemesterFeeMappingById(int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _response = await _repo.GetSemesterFeeById(id);
+            _response = await _repo.GetSemesterFeeMappingById(id);
             return Ok(_response);
 
         }
-        [HttpGet("SearchStudentsBySemesterClassId/{semId}/{classId}")]
-        public async Task<IActionResult> SearchStudentsBySemesterClassId(int semId, int classId)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            _response = await _repo.SearchStudentsBySemesterClassId(semId,classId);
-            return Ok(_response);
+        //[HttpGet("SearchStudentsBySemesterClassId/{semId}/{classId}")]
+        //public async Task<IActionResult> SearchStudentsBySemesterClassId(int semId, int classId)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    _response = await _repo.SearchStudentsBySemesterClassId(semId,classId);
+        //    return Ok(_response);
 
-        }
+        //}
         [HttpPost("AddFeeVoucherDetails")]
         public async Task<IActionResult> AddFeeVoucherDetails(FeeVoucherDetailForAddDto model)
         {
