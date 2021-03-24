@@ -378,12 +378,42 @@ namespace CoreWebApi.Data
             await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
             await _context.SaveChangesAsync();
 
-            var VoucherList = await _context.FeeVoucherRecords.Include(m=>m.StudentObj).ToListAsync();
+            var VoucherList = await _context.FeeVoucherRecords.Include(m => m.StudentObj).ToListAsync();
             _serviceResponse.Data = new { VoucherList };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
 
+        public async Task<ServiceResponse<object>> GetStudentsBySemester(int id)
+        {
+            var ToReturn = await (from u in _context.Users
+                                  join csU in _context.ClassSectionUsers
+                                  on u.Id equals csU.UserId
 
+                                  join cs in _context.ClassSections
+                                  on csU.ClassSectionId equals cs.Id
+
+                                  where cs.SemesterId == id
+                                  select new UserForListDto
+                                  {
+                                      Id = u.Id,
+                                      FullName = u.FullName,
+                                      DateofBirth = u.DateofBirth != null ? DateFormat.ToDate(u.DateofBirth.ToString()) : "",
+                                      Email = u.Email,
+                                      Gender = u.Gender,
+                                      CountryId = u.CountryId,
+                                      StateId = u.StateId,
+                                      CityId = u.CityId,
+                                      CountryName = u.Country.Name,
+                                      StateName = u.State.Name,
+                                      OtherState = u.OtherState,
+                                      UserTypeId = u.UserTypeId,
+                                      UserType = u.Usertypes.Name,                                      
+                                  }).ToListAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

@@ -215,5 +215,17 @@ namespace CoreWebApi.Controllers
 
             return Ok(_response);
         }
+        [HttpGet("GetStudentsBySemester/{id}")]
+        public async Task<IActionResult> GetStudentsBySemester(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetStudentsBySemester(id);
+
+            return Ok(_response);
+        }
     }
 }

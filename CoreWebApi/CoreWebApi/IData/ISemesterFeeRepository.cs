@@ -22,6 +22,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetFeeVoucherDetails();
         Task<ServiceResponse<object>> GetFeeVoucherDetailsById(int id);
         Task<ServiceResponse<object>> GenerateFeeVoucher();
+        Task<ServiceResponse<object>> GetStudentsBySemester(int id);
 
     }
 }
