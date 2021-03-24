@@ -407,6 +407,7 @@ namespace CoreWebApi.Data
                                                       where cs.SemesterId == id
                                                       select new StudentBySemesterDtoForList
                                                       {
+                                                          Id = fee.Id,
                                                           StudentId = u.Id.ToString(),
                                                           StudentName = u.FullName,
                                                           SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == id).Name,
@@ -414,7 +415,7 @@ namespace CoreWebApi.Data
                                                           DiscountInPercentage = fee.DiscountInPercentage.ToString(),
                                                           FeeAfterDiscount = fee.FeeAfterDiscount.ToString(),
                                                           Installments = fee.Installments.ToString()
-                                                      }).Where(m => m.StudentId != null).ToListAsync();
+                                                      }).ToListAsync();
 
             var SemesterDetails = await _context.Semesters.Where(m => m.Id == id).Select(o => new
             {
