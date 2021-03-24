@@ -107,4 +107,14 @@ namespace CoreWebApi.Dtos
         public string Installments { get; set; }
         public bool Active { get; set; }
     }
+    public class StudentBySemesterDtoForList
+    {
+        public string StudentId { get; set; }
+        public string StudentName { get; set; }       
+        public string SemesterName { get; set; }
+        public string SemesterFeeAmount { get; set; }
+        public string DiscountInPercentage { get; set; }
+        public string FeeAfterDiscount { get; set; }
+        public string Installments { get; set; }
+    }
 }

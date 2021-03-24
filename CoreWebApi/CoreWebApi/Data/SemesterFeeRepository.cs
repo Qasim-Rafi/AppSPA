@@ -393,37 +393,36 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetStudentsBySemester(int id)
         {
-            var Students = await (from u in _context.Users
-                                  join csU in _context.ClassSectionUsers
-                                  on u.Id equals csU.UserId
+            var StudentsCombinedSemesterFees = await (from u in _context.Users
+                                                      join csU in _context.ClassSectionUsers
+                                                      on u.Id equals csU.UserId
 
-                                  join cs in _context.ClassSections
-                                  on csU.ClassSectionId equals cs.Id
+                                                      join cs in _context.ClassSections
+                                                      on csU.ClassSectionId equals cs.Id
 
-                                  where cs.SemesterId == id
-                                  select new UserForListDto
-                                  {
-                                      Id = u.Id,
-                                      FullName = u.FullName,
-                                      DateofBirth = u.DateofBirth != null ? DateFormat.ToDate(u.DateofBirth.ToString()) : "",
-                                      Email = u.Email,
-                                      Gender = u.Gender,
-                                      CountryId = u.CountryId,
-                                      StateId = u.StateId,
-                                      CityId = u.CityId,
-                                      CountryName = u.Country.Name,
-                                      StateName = u.State.Name,
-                                      OtherState = u.OtherState,
-                                      UserTypeId = u.UserTypeId,
-                                      UserType = u.Usertypes.Name,
-                                  }).ToListAsync();
+                                                      join fee in _context.SemesterFeeMappings
+                                                      on u.Id equals fee.StudentId into newFee
+                                                      from fee in newFee.DefaultIfEmpty()
+
+                                                      where cs.SemesterId == id
+                                                      select new StudentBySemesterDtoForList
+                                                      {
+                                                          StudentId = u.Id.ToString(),
+                                                          StudentName = u.FullName,
+                                                          SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == id).Name,
+                                                          SemesterFeeAmount = _context.Semesters.FirstOrDefault(m => m.Id == id).FeeAmount.ToString(),
+                                                          DiscountInPercentage = fee.DiscountInPercentage.ToString(),
+                                                          FeeAfterDiscount = fee.FeeAfterDiscount.ToString(),
+                                                          Installments = fee.Installments.ToString()
+                                                      }).Where(m => m.StudentId != null).ToListAsync();
+
             var SemesterDetails = await _context.Semesters.Where(m => m.Id == id).Select(o => new
             {
                 Id = o.Id,
                 Name = o.Name,
                 FeeAmount = Convert.ToString(o.FeeAmount),
             }).FirstOrDefaultAsync();
-            _serviceResponse.Data = new { Students, SemesterDetails };
+            _serviceResponse.Data = new { StudentsCombinedSemesterFees, SemesterDetails };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
