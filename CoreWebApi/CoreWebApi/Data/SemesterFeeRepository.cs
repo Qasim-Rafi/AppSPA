@@ -407,7 +407,7 @@ namespace CoreWebApi.Data
                                                       where cs.SemesterId == id
                                                       select new StudentBySemesterDtoForList
                                                       {
-                                                          Id = fee.Id,
+                                                          Id = fee.Id.ToString(),
                                                           StudentId = u.Id.ToString(),
                                                           StudentName = u.FullName,
                                                           SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == id).Name,
