@@ -345,8 +345,7 @@ namespace CoreWebApi.Data
                 string NewBillNo = "";
                 if (lastVoucherRecord != null)
                 {
-                    var length = lastVoucherRecord.BillNumber.Count() - 2;
-                    string BillNumber = lastVoucherRecord.BillNumber.Substring(8, length);
+                    string BillNumber = lastVoucherRecord.BillNumber.Substring(7, 7);
                     int LastBillNumber = Convert.ToInt32(BillNumber);
                     int NextBillNumber = ++LastBillNumber;
                     NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
@@ -379,7 +378,7 @@ namespace CoreWebApi.Data
             await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
             await _context.SaveChangesAsync();
 
-            var VoucherList = await _context.FeeVoucherRecords.ToListAsync();
+            var VoucherList = await _context.FeeVoucherRecords.Include(m=>m.StudentObj).ToListAsync();
             _serviceResponse.Data = new { VoucherList };
             _serviceResponse.Success = true;
             return _serviceResponse;
