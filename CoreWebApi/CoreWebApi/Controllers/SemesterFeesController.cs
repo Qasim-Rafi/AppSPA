@@ -190,6 +190,18 @@ namespace CoreWebApi.Controllers
 
             return Ok(_response);
         }
+        [HttpGet("GetFeeVoucherDetailsById/{id}")]
+        public async Task<IActionResult> GetFeeVoucherDetailsById(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetFeeVoucherDetailsById(id);
+
+            return Ok(_response);
+        }
 
         [HttpGet("GenerateFeeVoucher")]
         public async Task<IActionResult> GenerateFeeVoucher()

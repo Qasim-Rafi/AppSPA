@@ -20,6 +20,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddFeeVoucherDetails(FeeVoucherDetailForAddDto model);
         Task<ServiceResponse<object>> UpdateFeeVoucherDetails(FeeVoucherDetailForUpdateDto model);
         Task<ServiceResponse<object>> GetFeeVoucherDetails();
+        Task<ServiceResponse<object>> GetFeeVoucherDetailsById(int id);
         Task<ServiceResponse<object>> GenerateFeeVoucher();
 
     }

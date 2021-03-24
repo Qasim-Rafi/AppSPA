@@ -308,7 +308,14 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetFeeVoucherDetailsById(int id)
+        {
+            var ToReturn = await _context.FeeVoucherDetails.Where(m => m.Id == id).FirstOrDefaultAsync();
 
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
         public async Task<ServiceResponse<object>> GenerateFeeVoucher()
         {
             var voucherDetails = await _context.FeeVoucherDetails.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
@@ -322,9 +329,13 @@ namespace CoreWebApi.Data
                                   join fee in _context.SemesterFeeMappings
                                   on u.Id equals fee.StudentId
 
+                                  join v in _context.FeeVoucherRecords
+                                  on u.Id equals v.StudentId into newV
+                                  from v in newV.DefaultIfEmpty()
+
                                   where u.Role == Enumm.UserType.Student.ToString()
                                   && u.SchoolBranchId == _LoggedIn_BranchID
-                                  select new { u, cs, fee }).ToListAsync();
+                                  select new { u, cs, fee, v }).Where(m => m.v == null).ToListAsync();
 
             List<FeeVoucherRecord> ListToAdd = new List<FeeVoucherRecord>();
             for (int i = 0; i < students.Count(); i++)
@@ -334,7 +345,8 @@ namespace CoreWebApi.Data
                 string NewBillNo = "";
                 if (lastVoucherRecord != null)
                 {
-                    string BillNumber = lastVoucherRecord.BillNumber.Substring(8, lastVoucherRecord.BillNumber.Count());
+                    var length = lastVoucherRecord.BillNumber.Count() - 2;
+                    string BillNumber = lastVoucherRecord.BillNumber.Substring(8, length);
                     int LastBillNumber = Convert.ToInt32(BillNumber);
                     int NextBillNumber = ++LastBillNumber;
                     NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
@@ -372,5 +384,7 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+
     }
 }
