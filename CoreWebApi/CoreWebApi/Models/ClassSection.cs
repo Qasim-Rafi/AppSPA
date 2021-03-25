@@ -24,6 +24,8 @@ namespace CoreWebApi.Models
         public virtual Class Class { get; set; }
         [ForeignKey("SectionId")]
         public virtual Section Section { get; set; }
+        [ForeignKey("SemesterId")]
+        public virtual Semester SemesterObj { get; set; }
 
     }
 }

@@ -192,6 +192,8 @@
     <Compile Remove="Migrations\20210322083610_UpdateSemFeeMapping_AddFeeVoucherModule.Designer.cs" />
     <Compile Remove="Migrations\20210325082816_test.cs" />
     <Compile Remove="Migrations\20210325082816_test.Designer.cs" />
+    <Compile Remove="Migrations\20210325131753_UpdateCompPKs.cs" />
+    <Compile Remove="Migrations\20210325131753_UpdateCompPKs.Designer.cs" />
 
   </ItemGroup>
 

@@ -100,7 +100,7 @@ namespace CoreWebApi.Data
 
             // while adding new migration uncomment below line and then comment it again after...
             // modelBuilder.Ignore<GetAttendancePercentageByMonthDto>();
-             modelBuilder.Ignore<GetSubstituteTeachersDto>();
+            modelBuilder.Ignore<GetSubstituteTeachersDto>();
 
             //
             modelBuilder.Entity("CoreWebApi.Models.GroupUser", b =>
@@ -149,17 +149,20 @@ namespace CoreWebApi.Data
             modelBuilder.Entity<User>()
                 .Property(user => user.Role).HasDefaultValue("Student");
             // composite primary key
-           
+
             modelBuilder.Entity<ClassLectureAssignment>()
-                .HasIndex(p => new { p.LectureId, p.TeacherId })
+                .HasIndex(p => new { p.LectureId, p.TeacherId, p.ClassSectionId })
                 .IsUnique(true);
             // composite primary key
-            //modelBuilder.Entity<ClassSection>()
-            //  .HasIndex(p => new { p.ClassId, p.SectionId, p.SchoolBranchId })
-            //  .IsUnique(true);
+            modelBuilder.Entity<ClassSection>()
+              .HasIndex(p => new { p.ClassId, p.SectionId, p.SchoolBranchId })
+              .IsUnique(true);
+            modelBuilder.Entity<ClassSection>()
+              .HasIndex(p => new { p.SemesterId, p.SectionId, p.SchoolBranchId })
+              .IsUnique(true);
             // primary key // composite primary key
-            modelBuilder.Entity<ClassSectionUser>()
-                .HasKey(c => new { c.Id });
+            //modelBuilder.Entity<ClassSectionUser>()
+            //    .HasKey(c => new { c.Id });
             modelBuilder.Entity<ClassSectionUser>()
                 .HasIndex(p => new { p.SchoolBranchId, p.UserId })
                 .IsUnique(true);
@@ -169,9 +172,12 @@ namespace CoreWebApi.Data
                .HasIndex(s => new { s.Name, s.SchoolBranchId })
                .IsUnique(true);
             // composite primary key
-            //modelBuilder.Entity<SubjectAssignment>()
-            //   .HasIndex(s => new { s.ClassId, s.SubjectId, s.SchoolBranchId })
-            //   .IsUnique(true);
+            modelBuilder.Entity<SubjectAssignment>()
+               .HasIndex(s => new { s.ClassId, s.SubjectId, s.SchoolBranchId })
+               .IsUnique(true);
+            modelBuilder.Entity<SubjectAssignment>()
+               .HasIndex(s => new { s.SemesterId, s.SubjectId, s.SchoolBranchId })
+               .IsUnique(true);
             // composite primary key
             modelBuilder.Entity<User>()
                .HasIndex(s => new { s.Username, s.SchoolBranchId })
