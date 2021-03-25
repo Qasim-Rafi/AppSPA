@@ -360,6 +360,8 @@ namespace CoreWebApi.Data
                     {
                         NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
                     }
+                    var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+                    var ExtraChargesOfThisMonth = _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Sum(m => m.ExtraChargesAmount);
                     var ToAdd = new FeeVoucherRecord
                     {
                         StudentId = item.u.Id,
@@ -368,12 +370,12 @@ namespace CoreWebApi.Data
                         FeeAmount = item.fee.FeeAfterDiscount,
                         BillDate = DateTime.Now,
                         DueDate = DateTime.Now.AddDays(7),
-                        BillMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year,
+                        BillMonth = voucherDetails.Month,
                         BillNumber = NewBillNo,
                         ClassSectionId = item.cs.Id,
                         ConcessionDetails = item.fee.Remarks,
-                        MiscellaneousCharges = 000,
-                        TotalFee = item.fee.FeeAfterDiscount,
+                        MiscellaneousCharges = ExtraChargesOfThisMonth,
+                        TotalFee = (item.fee.FeeAfterDiscount + ExtraChargesOfThisMonth),
                         Active = true,
                         CreatedDateTime = DateTime.Now,
                         CreatedById = _LoggedIn_UserID,
@@ -386,7 +388,7 @@ namespace CoreWebApi.Data
             }
             var VoucherList = await _context.FeeVoucherRecords.Select(o => new FeeVoucherRecordDtoForList
             {
-                //BankName = o.VoucherDetailObj.BankName,
+                BankName = o.VoucherDetailObj.BankAccountObj.BankName,
                 BillDate = DateFormat.ToDate(o.BillDate.ToString()),
                 BillMonth = o.BillMonth,
                 BillNumber = o.BillNumber,
