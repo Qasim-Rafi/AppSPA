@@ -656,5 +656,14 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> GetStudentFeeVoucher()
+        {
+            var ToReturn = await _context.FeeVoucherRecords.Where(m => m.StudentId == _LoggedIn_UserID).ToListAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

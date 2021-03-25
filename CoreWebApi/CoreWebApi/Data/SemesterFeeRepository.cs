@@ -176,6 +176,7 @@ namespace CoreWebApi.Data
                 ClassId = Convert.ToInt32(model.ClassId),
                 StudentId = Convert.ToInt32(model.StudentId),
                 DiscountInPercentage = Convert.ToInt32(model.DiscountInPercentage),
+                Remarks = model.Remarks,
                 FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount),
                 Installments = Convert.ToInt32(model.Installments),
                 Posted = false,
@@ -201,6 +202,7 @@ namespace CoreWebApi.Data
                 ObjToUpdate.DiscountInPercentage = Convert.ToInt32(model.DiscountInPercentage);
                 ObjToUpdate.FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount);
                 ObjToUpdate.Installments = Convert.ToInt32(model.Installments);
+                ObjToUpdate.Remarks = model.Remarks;
 
                 _context.SemesterFeeMappings.Update(ObjToUpdate);
                 await _context.SaveChangesAsync();
@@ -222,6 +224,7 @@ namespace CoreWebApi.Data
                 StudentId = Convert.ToString(o.StudentId),
                 StudentName = _context.Users.FirstOrDefault(m => m.Id == o.StudentId) != null ? _context.Users.FirstOrDefault(m => m.Id == o.StudentId).FullName : "",
                 DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
+                Remarks = o.Remarks,
                 Installments = Convert.ToString(o.Installments),
                 FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
                 Active = o.Active,
@@ -243,6 +246,7 @@ namespace CoreWebApi.Data
                 StudentId = Convert.ToString(o.StudentId),
                 StudentName = _context.Users.FirstOrDefault(m => m.Id == o.StudentId) != null ? _context.Users.FirstOrDefault(m => m.Id == o.StudentId).FullName : "",
                 DiscountInPercentage = Convert.ToString(o.DiscountInPercentage),
+                Remarks = o.Remarks,
                 Installments = Convert.ToString(o.Installments),
                 FeeAfterDiscount = Convert.ToString(o.FeeAfterDiscount),
                 Active = o.Active,
@@ -321,9 +325,11 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> GenerateFeeVoucher()
+        public async Task<ServiceResponse<object>> GenerateFeeVoucher(int bankAccountId)
         {
-            var voucherDetails = await _context.FeeVoucherDetails.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+            var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+            //var bankDetails = await _context.BankAccounts.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+            var voucherDetailList = await _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             var students = await (from u in _context.Users
                                   join csU in _context.ClassSectionUsers
                                   on u.Id equals csU.UserId
@@ -360,17 +366,17 @@ namespace CoreWebApi.Data
                     {
                         NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
                     }
-                    var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
                     var ExtraChargesOfThisMonth = _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Sum(m => m.ExtraChargesAmount);
                     var ToAdd = new FeeVoucherRecord
                     {
                         StudentId = item.u.Id,
                         RegistrationNo = item.u.RegistrationNumber,
-                        VoucherDetailId = voucherDetails.Id,
+                        VoucherDetailIds = string.Join(',', voucherDetailList.Select(m => m.Id)),
+                        BankAccountId = bankAccountId,
                         FeeAmount = item.fee.FeeAfterDiscount,
                         BillDate = DateTime.Now,
                         DueDate = DateTime.Now.AddDays(7),
-                        BillMonth = voucherDetails.Month,
+                        BillMonth = voucherDetailList.First() != null ? voucherDetailList.First().Month : currentMonth,
                         BillNumber = NewBillNo,
                         ClassSectionId = item.cs.Id,
                         ConcessionDetails = item.fee.Remarks,
@@ -388,7 +394,7 @@ namespace CoreWebApi.Data
             }
             var VoucherList = await _context.FeeVoucherRecords.Select(o => new FeeVoucherRecordDtoForList
             {
-                BankName = o.VoucherDetailObj.BankAccountObj.BankName,
+                BankName = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankName,
                 BillDate = DateFormat.ToDate(o.BillDate.ToString()),
                 BillMonth = o.BillMonth,
                 BillNumber = o.BillNumber,
@@ -402,7 +408,10 @@ namespace CoreWebApi.Data
                 TotalFee = o.TotalFee.ToString()
             }).ToListAsync();
 
-            _serviceResponse.Data = new { VoucherList };
+            _serviceResponse.Data = new
+            {
+                VoucherList
+            };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

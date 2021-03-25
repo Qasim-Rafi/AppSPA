@@ -9,7 +9,8 @@ namespace CoreWebApi.Models
     public class FeeVoucherRecord
     {
         public int Id { get; set; }
-        public int VoucherDetailId { get; set; }
+        public string VoucherDetailIds { get; set; }
+        public int BankAccountId { get; set; }
         public int StudentId { get; set; }
         public string RegistrationNo { get; set; }
         public string BillNumber { get; set; }
@@ -34,7 +35,7 @@ namespace CoreWebApi.Models
         public virtual User StudentObj { get; set; }
         [ForeignKey("ClassSectionId")]
         public virtual ClassSection ClassSectionObj { get; set; }
-        [ForeignKey("VoucherDetailId")]
-        public virtual FeeVoucherDetail VoucherDetailObj { get; set; }
+        //[ForeignKey("VoucherDetailId")]
+        //public virtual FeeVoucherDetail VoucherDetailObj { get; set; }
     }
 }

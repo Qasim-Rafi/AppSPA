@@ -203,15 +203,15 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("GenerateFeeVoucher")]
-        public async Task<IActionResult> GenerateFeeVoucher()
+        [HttpPut("GenerateFeeVoucher/{bankAccountId}")]
+        public async Task<IActionResult> GenerateFeeVoucher(int bankAccountId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _response = await _repo.GenerateFeeVoucher();
+            _response = await _repo.GenerateFeeVoucher(bankAccountId);
 
             return Ok(_response);
         }
