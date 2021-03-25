@@ -134,4 +134,37 @@ namespace CoreWebApi.Dtos
         public string MiscellaneousCharges { get; set; }
         public string TotalFee { get; set; }
     }
+    public class BankAccountForAddDto
+    {
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
+    }
+    public class BankAccountForUpdateDto
+    {
+        public int Id { get; set; }
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
+    }
+    public class BankAccountForListDto
+    {
+        public int Id { get; set; }
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
+        public string Month { get; set; }
+    }
+    public class BankAccountForDetailsDto
+    {
+        public int Id { get; set; }
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
+        public string Month { get; set; }
+    }
 }

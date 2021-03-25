@@ -270,11 +270,10 @@ namespace CoreWebApi.Data
         {
             var ToAdd = new FeeVoucherDetail
             {
-                BankAccountNumber = model.BankAccountNumber,
-                BankAddress = model.BankAddress,
-                BankDetails = model.BankDetails,
-                BankName = model.BankName,
-                PaymentTerms = model.PaymentTerms,
+                ExtraChargesAmount = model.ExtraChargesAmount,
+                ExtraChargesDetails = model.ExtraChargesDetails,
+                BankAccountId = model.BankAccountId,
+                Month = model.Month,
                 Active = true,
                 CreatedDateTime = DateTime.Now,
                 CreatedById = _LoggedIn_UserID,
@@ -292,11 +291,10 @@ namespace CoreWebApi.Data
             var ToUpdate = await _context.FeeVoucherDetails.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
             if (ToUpdate != null)
             {
-                ToUpdate.BankAccountNumber = model.BankAccountNumber;
-                ToUpdate.BankAddress = model.BankAddress;
-                ToUpdate.BankDetails = model.BankDetails;
-                ToUpdate.BankName = model.BankName;
-                ToUpdate.PaymentTerms = model.PaymentTerms;
+                ToUpdate.ExtraChargesAmount = model.ExtraChargesAmount;
+                ToUpdate.ExtraChargesDetails = model.ExtraChargesDetails;
+                ToUpdate.BankAccountId = model.BankAccountId;
+                ToUpdate.Month = model.Month;
             }
 
             _context.FeeVoucherDetails.Update(ToUpdate);
@@ -343,51 +341,52 @@ namespace CoreWebApi.Data
                                   where u.Role == Enumm.UserType.Student.ToString()
                                   && u.SchoolBranchId == _LoggedIn_BranchID
                                   select new { u, cs, fee, v }).Where(m => m.v == null).ToListAsync();
-
-            List<FeeVoucherRecord> ListToAdd = new List<FeeVoucherRecord>();
-            for (int i = 0; i < students.Count(); i++)
+            if (students.Count() > 0)
             {
-                var item = students[i];
-                var lastVoucherRecord = _context.FeeVoucherRecords.ToList().LastOrDefault();
-                string NewBillNo = "";
-                if (lastVoucherRecord != null)
+                List<FeeVoucherRecord> ListToAdd = _context.FeeVoucherRecords.ToList();
+                for (int i = 0; i < students.Count(); i++)
                 {
-                    string BillNumber = lastVoucherRecord.BillNumber.Substring(7, 7);
-                    int LastBillNumber = Convert.ToInt32(BillNumber);
-                    int NextBillNumber = ++LastBillNumber;
-                    NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
+                    var item = students[i];
+                    var lastVoucherRecord = ListToAdd.LastOrDefault();
+                    string NewBillNo = "";
+                    if (lastVoucherRecord != null)
+                    {
+                        string BillNumber = lastVoucherRecord.BillNumber.Substring(7, 7);
+                        int LastBillNumber = Convert.ToInt32(BillNumber);
+                        int NextBillNumber = ++LastBillNumber;
+                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
+                    }
+                    else
+                    {
+                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
+                    }
+                    var ToAdd = new FeeVoucherRecord
+                    {
+                        StudentId = item.u.Id,
+                        RegistrationNo = item.u.RegistrationNumber,
+                        VoucherDetailId = voucherDetails.Id,
+                        FeeAmount = item.fee.FeeAfterDiscount,
+                        BillDate = DateTime.Now,
+                        DueDate = DateTime.Now.AddDays(7),
+                        BillMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year,
+                        BillNumber = NewBillNo,
+                        ClassSectionId = item.cs.Id,
+                        ConcessionDetails = item.fee.Remarks,
+                        MiscellaneousCharges = 000,
+                        TotalFee = item.fee.FeeAfterDiscount,
+                        Active = true,
+                        CreatedDateTime = DateTime.Now,
+                        CreatedById = _LoggedIn_UserID,
+                        SchoolBranchId = _LoggedIn_BranchID,
+                    };
+                    ListToAdd.Add(ToAdd);
                 }
-                else
-                {
-                    NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
-                }
-                var ToAdd = new FeeVoucherRecord
-                {
-                    StudentId = item.u.Id,
-                    RegistrationNo = item.u.RegistrationNumber,
-                    VoucherDetailId = voucherDetails.Id,
-                    FeeAmount = item.fee.FeeAfterDiscount,
-                    BillDate = DateTime.Now,
-                    DueDate = DateTime.Now.AddDays(7),
-                    BillMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year,
-                    BillNumber = NewBillNo,
-                    ClassSectionId = item.cs.Id,
-                    ConcessionDetails = item.fee.Remarks,
-                    MiscellaneousCharges = 000,
-                    TotalFee = item.fee.FeeAfterDiscount,
-                    Active = true,
-                    CreatedDateTime = DateTime.Now,
-                    CreatedById = _LoggedIn_UserID,
-                    SchoolBranchId = _LoggedIn_BranchID,
-                };
-                ListToAdd.Add(ToAdd);
+                await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
+                await _context.SaveChangesAsync();
             }
-            await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
-            await _context.SaveChangesAsync();
-
             var VoucherList = await _context.FeeVoucherRecords.Select(o => new FeeVoucherRecordDtoForList
             {
-                BankName = o.VoucherDetailObj.BankName,
+                //BankName = o.VoucherDetailObj.BankName,
                 BillDate = DateFormat.ToDate(o.BillDate.ToString()),
                 BillMonth = o.BillMonth,
                 BillNumber = o.BillNumber,
@@ -440,6 +439,99 @@ namespace CoreWebApi.Data
             }).FirstOrDefaultAsync();
             _serviceResponse.Data = new { StudentsCombinedSemesterFees, SemesterDetails };
             _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetAllBankAccount()
+        {
+            var ToReturn = await _context.BankAccounts.Where(m => m.Active == true)
+                  .OrderByDescending(m => m.Id).Select(o => new BankAccountForListDto
+                  {
+                      Id = o.Id,
+                      BankName = o.BankName,
+                      BankAccountNumber = o.BankAccountNumber,
+                      BankAddress = o.BankAddress,
+                      BankDetails = o.BankDetails,
+                      Month = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year
+                  }).ToListAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetBankAccountById(int id)
+        {
+            var ToReturn = await _context.BankAccounts.Where(m => m.Id == id)
+                    .OrderByDescending(m => m.Id).Select(o => new BankAccountForListDto
+                    {
+                        Id = o.Id,
+                        BankName = o.BankName,
+                        BankAccountNumber = o.BankAccountNumber,
+                        BankAddress = o.BankAddress,
+                        BankDetails = o.BankDetails,
+                        Month = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year
+                    }).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> AddBankAccount(BankAccountForAddDto model)
+        {
+            var toCreate = new BankAccount
+            {
+                BankName = model.BankName,
+                BankAccountNumber = model.BankAccountNumber,
+                BankAddress = model.BankAddress,
+                BankDetails = model.BankDetails,
+                CreatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+                Active = true,
+                CreatedDateTime = DateTime.Now
+            };
+
+            await _context.BankAccounts.AddAsync(toCreate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> UpdateBankAccount(int id, BankAccountForUpdateDto model)
+        {
+            var objToUpdate = await _context.BankAccounts.FirstOrDefaultAsync(s => s.Id.Equals(id));
+            if (objToUpdate != null)
+            {
+                objToUpdate.BankName = model.BankName;
+                objToUpdate.BankAccountNumber = model.BankAccountNumber;
+                objToUpdate.BankAddress = model.BankAddress;
+                objToUpdate.BankDetails = model.BankDetails;
+
+                _context.BankAccounts.Update(objToUpdate);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
+            }
+            else
+            {
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+            }
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> DeleteBankAccount(int id)
+        {
+            var toUpdate = _context.BankAccounts.Where(m => m.Id == id).FirstOrDefault();
+            if (toUpdate != null)
+            {
+                toUpdate.Active = false;
+                _context.BankAccounts.Update(toUpdate);
+                await _context.SaveChangesAsync();
+            }
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Deleted;
             return _serviceResponse;
         }
     }

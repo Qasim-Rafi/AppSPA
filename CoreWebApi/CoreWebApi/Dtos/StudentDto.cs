@@ -53,27 +53,24 @@ namespace CoreWebApi.Dtos
     }
     public class FeeVoucherDetailForAddDto
     {
-        public string BankName { get; set; }
-        public string BankAccountNumber { get; set; }
-        public string BankAddress { get; set; }
-        public string BankDetails { get; set; }
-        public string PaymentTerms { get; set; }
+        public int BankAccountId { get; set; }
+        public string ExtraChargesDetails { get; set; }
+        public double ExtraChargesAmount { get; set; }
+        public string Month { get; set; }
     }
     public class FeeVoucherDetailForUpdateDto
     {
         public int Id { get; set; }
-        public string BankName { get; set; }
-        public string BankAccountNumber { get; set; }
-        public string BankAddress { get; set; }
-        public string BankDetails { get; set; }
-        public string PaymentTerms { get; set; }
+        public int BankAccountId { get; set; }
+        public string ExtraChargesDetails { get; set; }
+        public double ExtraChargesAmount { get; set; }
+        public string Month { get; set; }
     }
     public class FeeVoucherDetailForListDto
     {
-        public string BankName { get; set; }
-        public string BankAccountNumber { get; set; }
-        public string BankAddress { get; set; }
-        public string BankDetails { get; set; }
-        public string PaymentTerms { get; set; }
+        public int BankAccountId { get; set; }
+        public string ExtraChargesDetails { get; set; }
+        public double ExtraChargesAmount { get; set; }
+        public string Month { get; set; }
     }
 }

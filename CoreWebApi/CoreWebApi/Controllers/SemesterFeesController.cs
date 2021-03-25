@@ -227,5 +227,58 @@ namespace CoreWebApi.Controllers
 
             return Ok(_response);
         }
+
+        [HttpGet("GetAllBankAccount")]
+        public async Task<IActionResult> GetAllBankAccount()
+        {
+            _response = await _repo.GetAllBankAccount();
+            return Ok(_response);
+        }
+
+        [HttpGet("GetBankAccountById/{id}")]
+        public async Task<IActionResult> GetBankAccountById(int id)
+        {
+            _response = await _repo.GetBankAccountById(id);
+            return Ok(_response);
+        }
+
+        [HttpPost("AddBankAccount")]
+        public async Task<IActionResult> AddBankAccount(BankAccountForAddDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.AddBankAccount(model);
+
+            return Ok(_response);
+
+        }
+
+        [HttpPut("UpdateBankAccount/{id}")]
+        public async Task<IActionResult> UpdateBankAccount(int id, BankAccountForUpdateDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.UpdateBankAccount(id, model);
+
+            return Ok(_response);
+
+        }
+        [HttpDelete("DeleteBankAccount/{id}")]
+        public async Task<IActionResult> DeleteBankAccount(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.DeleteBankAccount(id);
+            return Ok(_response);
+        }
     }
 }

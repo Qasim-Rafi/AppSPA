@@ -23,6 +23,10 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetFeeVoucherDetailsById(int id);
         Task<ServiceResponse<object>> GenerateFeeVoucher();
         Task<ServiceResponse<object>> GetStudentsBySemester(int id);
-
+        Task<ServiceResponse<object>> GetAllBankAccount();
+        Task<ServiceResponse<object>> GetBankAccountById(int id);
+        Task<ServiceResponse<object>> AddBankAccount(BankAccountForAddDto model);
+        Task<ServiceResponse<object>> UpdateBankAccount(int id, BankAccountForUpdateDto model);
+        Task<ServiceResponse<object>> DeleteBankAccount(int id);
     }
 }

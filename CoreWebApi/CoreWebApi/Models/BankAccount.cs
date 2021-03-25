@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoreWebApi.Models
 {
-    public class FeeVoucherDetail
+    public class BankAccount
     {
         public int Id { get; set; }
-        public int BankAccountId { get; set; }
-        public string ExtraChargesDetails { get; set; }
-        public double ExtraChargesAmount { get; set; }      
-        public string Month { get; set; }
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
         public bool Active { get; set; }
@@ -19,7 +22,5 @@ namespace CoreWebApi.Models
         public virtual SchoolBranch SchoolBranch { get; set; }
         [ForeignKey("CreatedById")]
         public virtual User CreatedByUser { get; set; }
-        [ForeignKey("BankAccountId")]
-        public virtual BankAccount BankAccountObj { get; set; }
     }
 }
