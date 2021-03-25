@@ -17,7 +17,7 @@ namespace CoreWebApi.Models
         public DateTime DueDate { get; set; }
         public string BillMonth { get; set; }
         public int ClassSectionId { get; set; }
-        public int ConcessionId { get; set; }
+        public string ConcessionDetails { get; set; }
         public double FeeAmount { get; set; }
         public double MiscellaneousCharges { get; set; }
         public double TotalFee { get; set; }
@@ -34,5 +34,7 @@ namespace CoreWebApi.Models
         public virtual User StudentObj { get; set; }
         [ForeignKey("ClassSectionId")]
         public virtual ClassSection ClassSectionObj { get; set; }
+        [ForeignKey("VoucherDetailId")]
+        public virtual FeeVoucherDetail VoucherDetailObj { get; set; }
     }
 }

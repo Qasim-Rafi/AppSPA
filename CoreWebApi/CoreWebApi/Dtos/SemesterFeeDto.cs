@@ -118,4 +118,20 @@ namespace CoreWebApi.Dtos
         public string FeeAfterDiscount { get; set; }
         public string Installments { get; set; }
     }
+    public class FeeVoucherRecordDtoForList
+    {
+        //public int Id { get; set; }     
+        public string BankName { get; set; }
+        public string StudentName { get; set; }
+        public string RegistrationNo { get; set; }
+        public string BillNumber { get; set; }
+        public string BillDate { get; set; }
+        public string DueDate { get; set; }
+        public string BillMonth { get; set; }
+        public string SemesterSection { get; set; }
+        public string ConcessionDetails { get; set; }
+        public string FeeAmount { get; set; }
+        public string MiscellaneousCharges { get; set; }
+        public string TotalFee { get; set; }
+    }
 }

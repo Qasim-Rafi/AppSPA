@@ -372,9 +372,9 @@ namespace CoreWebApi.Data
                     BillMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year,
                     BillNumber = NewBillNo,
                     ClassSectionId = item.cs.Id,
-                    ConcessionId = 1,
+                    ConcessionDetails = item.fee.Remarks,
                     MiscellaneousCharges = 000,
-                    TotalFee = 000,
+                    TotalFee = item.fee.FeeAfterDiscount,
                     Active = true,
                     CreatedDateTime = DateTime.Now,
                     CreatedById = _LoggedIn_UserID,
@@ -385,7 +385,22 @@ namespace CoreWebApi.Data
             await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
             await _context.SaveChangesAsync();
 
-            var VoucherList = await _context.FeeVoucherRecords.Include(m => m.StudentObj).ToListAsync();
+            var VoucherList = await _context.FeeVoucherRecords.Select(o => new FeeVoucherRecordDtoForList
+            {
+                BankName = o.VoucherDetailObj.BankName,
+                BillDate = DateFormat.ToDate(o.BillDate.ToString()),
+                BillMonth = o.BillMonth,
+                BillNumber = o.BillNumber,
+                SemesterSection = _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSectionObj.SemesterId).Name + " " + o.ClassSectionObj.Section.SectionName,
+                ConcessionDetails = o.ConcessionDetails,
+                DueDate = DateFormat.ToDate(o.DueDate.ToString()),
+                FeeAmount = o.FeeAmount.ToString(),
+                MiscellaneousCharges = o.MiscellaneousCharges.ToString(),
+                RegistrationNo = o.RegistrationNo,
+                StudentName = o.StudentObj.FullName,
+                TotalFee = o.TotalFee.ToString()
+            }).ToListAsync();
+
             _serviceResponse.Data = new { VoucherList };
             _serviceResponse.Success = true;
             return _serviceResponse;
