@@ -223,17 +223,17 @@ namespace CoreWebApi.Data
             else
             {
                 var subjects = (from ass in _context.SubjectAssignments
-                                join c in _context.Class
-                                on ass.ClassId equals c.Id
+                                join sem in _context.Semesters
+                                on ass.SemesterId equals sem.Id
                                 join sch in _context.SchoolBranch
                                 on ass.SchoolBranchId equals sch.Id
                                 where ass.SchoolBranchId == _LoggedIn_BranchID
-                                && c.Active == true
+                                && sem.Active == true
                                 && sch.Active == true
                                 select new
                                 {
-                                    SemesterId = Convert.ToInt32(ass.SemesterId),
-                                    SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == ass.SemesterId) != null ? _context.Semesters.FirstOrDefault(m => m.Id == ass.SemesterId).Name : "",
+                                    SemesterId = sem.Id,
+                                    SemesterName = sem.Name,
                                     SchoolBranchId = sch.Id,
                                     SchoolName = sch.BranchName,
                                 }).Distinct().ToList().Select(o => new AssignSubjectDtoForList

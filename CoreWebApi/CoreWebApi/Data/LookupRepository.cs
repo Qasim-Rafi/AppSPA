@@ -64,7 +64,7 @@ namespace CoreWebApi.Data
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;
             return _serviceResponse;
-        }       
+        }
 
         public async Task<ServiceResponse<object>> GetCountries()
         {
@@ -283,6 +283,44 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetSubjectsBySemesterSection(int csId)
+        {
+            List<Subject> list = new List<Subject>();
+            var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
+            if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
+            {
+                list = await (from s in _context.Subjects
+                              join sAssign in _context.SubjectAssignments
+                              on s.Id equals sAssign.SubjectId
+                              join cs in _context.ClassSections
+                              on sAssign.SemesterId equals cs.SemesterId
+                              where cs.Id == csId
+                              && s.SchoolBranchId == branch.Id
+                              && s.Active == true
+                              select s).ToListAsync();
+                //list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).ToListAsync();
+            }
+            else
+            {
+                list = await (from s in _context.Subjects
+                              join sAssign in _context.SubjectAssignments
+                              on s.Id equals sAssign.SubjectId
+                              join cs in _context.ClassSections
+                              on sAssign.SemesterId equals cs.SemesterId
+                              where cs.Id == csId
+                              && s.SchoolBranchId == _LoggedIn_BranchID
+                              && s.Active == true
+                              select s).ToListAsync();
+                //list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
+            }
+
+            var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
+            //var SelectOption = new SubjectDtoForList { Id = 0, Name = "Select Subject" };
+            //ToReturn.Insert(0, SelectOption);
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
 
         public async Task<ServiceResponse<object>> GetTeachersByClassSection(int csId, int subjectId)
         {
@@ -317,6 +355,27 @@ namespace CoreWebApi.Data
                                orderby u.FullName
                                select u).Distinct().ToListAsync();
             }
+            var list = _mapper.Map<List<UserForListDto>>(users);
+            //var SelectOption = new UserForListDto { Id = 0, FullName = "Select Teacher" };
+            //list.Insert(0, SelectOption);
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> GetTeachersBySemesterSection(int csId, int subjectId)
+        {
+            var users = new List<User>();
+
+            users = await (from u in _context.Users
+                           join exp in _context.TeacherExperties
+                           on u.Id equals exp.TeacherId
+                           where u.UserTypeId == (int)Enumm.UserType.Teacher
+                           && u.Active == true
+                           && u.SchoolBranchId == _LoggedIn_BranchID
+                           && exp.SubjectId == subjectId
+                           orderby u.FullName
+                           select u).Distinct().ToListAsync();
+
             var list = _mapper.Map<List<UserForListDto>>(users);
             //var SelectOption = new UserForListDto { Id = 0, FullName = "Select Teacher" };
             //list.Insert(0, SelectOption);
