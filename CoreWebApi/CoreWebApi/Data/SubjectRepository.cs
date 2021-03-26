@@ -525,7 +525,7 @@ namespace CoreWebApi.Data
             //    }).ToList();
             if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
             {
-                var ClassList = await _context.SubjectContents.Select(o => new SubjectContentOneDtoForList
+                var ClassList = await _context.SubjectContents.Where(m => m.ClassId != null).Select(o => new SubjectContentOneDtoForList
                 {
                     ClassId = Convert.ToInt32(o.ClassId),
                     Classs = o.Class.Name,
@@ -566,7 +566,7 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var ClassList = await _context.SubjectContents.Select(o => new SubjectContentOneDtoForList
+                var ClassList = await _context.SubjectContents.Where(m => m.SemesterId != null).Select(o => new SubjectContentOneDtoForList
                 {
                     SemesterId = Convert.ToInt32(o.SemesterId),
                     Semester = o.SemesterObj.Name,
@@ -605,7 +605,7 @@ namespace CoreWebApi.Data
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
-           
+
         }
 
         public async Task<ServiceResponse<object>> GetSubjectContentById(int id)
