@@ -95,8 +95,8 @@ namespace CoreWebApi.Dtos
     }
     public class SubjectContentDtoForAdd
     {
-        public int ClassId { get; set; }
-        public int SemesterId { get; set; }
+        public int? ClassId { get; set; }
+        public int? SemesterId { get; set; }
         [Required] 
         public int SubjectId { get; set; }
         [Required]
@@ -108,8 +108,8 @@ namespace CoreWebApi.Dtos
     public class SubjectContentDtoForEdit
     {
         public int Id { get; set; }
-        public int ClassId { get; set; }
-        public int SemesterId { get; set; }
+        public int? ClassId { get; set; }
+        public int? SemesterId { get; set; }
         public int SubjectId { get; set; }
         [Required]
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]

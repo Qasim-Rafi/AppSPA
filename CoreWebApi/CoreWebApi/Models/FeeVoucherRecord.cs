@@ -11,10 +11,11 @@ namespace CoreWebApi.Models
         public int Id { get; set; }
         public string VoucherDetailIds { get; set; }
         public int BankAccountId { get; set; }
+        public int AnnualOrSemesterId { get; set; }
         public int StudentId { get; set; }
         public string RegistrationNo { get; set; }
         public string BillNumber { get; set; }
-        public DateTime BillDate { get; set; }
+        public DateTime BillGenerationDate { get; set; }
         public DateTime DueDate { get; set; }
         public string BillMonth { get; set; }
         public int ClassSectionId { get; set; }

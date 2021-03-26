@@ -129,7 +129,7 @@ namespace CoreWebApi.Dtos
         public string StudentName { get; set; }
         public string RegistrationNo { get; set; }
         public string BillNumber { get; set; }
-        public string BillDate { get; set; }
+        public string BillGenerationDate { get; set; }
         public string DueDate { get; set; }
         public string BillMonth { get; set; }
         public string SemesterSection { get; set; }
@@ -137,6 +137,15 @@ namespace CoreWebApi.Dtos
         public string FeeAmount { get; set; }
         public string MiscellaneousCharges { get; set; }
         public string TotalFee { get; set; }
+        public string SemesterId { get; set; }
+        public string VoucherDetailIds { get; set; }
+        public List<ExtraChargesForListDto> ExtraCharges { get; set; } = new List<ExtraChargesForListDto>();
+    }
+
+    public class ExtraChargesForListDto
+    {
+        public string ExtraChargesDetails { get; set; }
+        public double ExtraChargesAmount { get; set; }
     }
     public class BankAccountForAddDto
     {

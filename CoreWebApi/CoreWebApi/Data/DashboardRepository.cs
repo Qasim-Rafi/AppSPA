@@ -659,8 +659,34 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetStudentFeeVoucher()
         {
-            var ToReturn = await _context.FeeVoucherRecords.Where(m => m.StudentId == _LoggedIn_UserID).ToListAsync();
-
+            var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+            var ToReturn = await _context.FeeVoucherRecords.Where(m => m.BillMonth == currentMonth && m.StudentId == _LoggedIn_UserID).Select(o => new FeeVoucherRecordDtoForList
+            {
+                BankName = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankName,
+                BillGenerationDate = DateFormat.ToDate(o.BillGenerationDate.ToString()),
+                BillMonth = o.BillMonth,
+                BillNumber = o.BillNumber,
+                SemesterSection = _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSectionObj.SemesterId).Name + " " + o.ClassSectionObj.Section.SectionName,
+                ConcessionDetails = o.ConcessionDetails,
+                DueDate = DateFormat.ToDate(o.DueDate.ToString()),
+                FeeAmount = o.FeeAmount.ToString(),
+                MiscellaneousCharges = o.MiscellaneousCharges.ToString(),
+                RegistrationNo = o.RegistrationNo,
+                StudentName = o.StudentObj.FullName,
+                TotalFee = o.TotalFee.ToString(),
+                SemesterId = o.AnnualOrSemesterId.ToString(),
+                VoucherDetailIds = o.VoucherDetailIds,
+            }).ToListAsync();
+            for (int i = 0; i < ToReturn.Count(); i++)
+            {
+                var item = ToReturn[i];
+                var ids = item.VoucherDetailIds.Split(',');
+                item.ExtraCharges = _context.FeeVoucherDetails.Where(m => ids.Contains(m.Id.ToString())).Select(p => new ExtraChargesForListDto
+                {
+                    ExtraChargesDetails = p.ExtraChargesDetails,
+                    ExtraChargesAmount = p.ExtraChargesAmount,
+                }).ToList();
+            }
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
