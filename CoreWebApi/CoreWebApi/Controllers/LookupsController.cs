@@ -231,5 +231,13 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("SubjectsBySemester/{semesterId}")]
+        public async Task<IActionResult> GetGetSubjectsBySemester(int semesterId)
+        {
+            _response = await _repo.GetSubjectsBySemester(semesterId);
+
+            return Ok(_response);
+
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace CoreWebApi.Models
         public int Id { get; set; }
         public int EmployeeId { get; set; }
         public double Amount { get; set; }
+        public bool Posted { get; set; }
         public int SchoolBranchId { get; set; }
         public DateTime UpdatedDate { get; set; }
         public int UpdatedById { get; set; }

@@ -10,7 +10,8 @@ namespace CoreWebApi.Models
     public class SubjectContent
     {
         public int Id { get; set; }
-        public int ClassId { get; set; }
+        public int? ClassId { get; set; }
+        public int? SemesterId { get; set; }
         public int SubjectId { get; set; }
         [StringLength(200)]
         public string Heading { get; set; }
@@ -22,5 +23,7 @@ namespace CoreWebApi.Models
         public virtual Subject Subject { get; set; }
         [ForeignKey("ClassId")]
         public virtual Class Class { get; set; }
+        [ForeignKey("SemesterId")]
+        public virtual Semester SemesterObj { get; set; }
     }
 }

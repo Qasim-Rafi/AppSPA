@@ -525,8 +525,10 @@ namespace CoreWebApi.Data
             //    }).ToList();
             var ClassList = await _context.SubjectContents.Select(o => new SubjectContentOneDtoForList
             {
-                ClassId = o.ClassId,
+                ClassId = Convert.ToInt32(o.ClassId),
+                SemesterId = Convert.ToInt32(o.SemesterId),
                 Classs = o.Class.Name,
+                Semester = o.SemesterObj.Name,
             }).Distinct().ToListAsync();
             for (int one = 0; one < ClassList.Count(); one++)
             {
@@ -583,7 +585,8 @@ namespace CoreWebApi.Data
                     ContentOrder = item.ContentOrder,
                     CreatedDateTime = DateTime.Now,
                     SubjectId = item.SubjectId,
-                    ClassId = item.ClassId
+                    ClassId = item.ClassId,
+                    SemesterId = item.SemesterId,
                 });
             }
 

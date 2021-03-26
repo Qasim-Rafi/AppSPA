@@ -93,7 +93,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> AddEmployeeSalary(SalaryForAddDto model)
         {
-           
+
             var ToAdd = new EmployeeSalary
             {
                 EmployeeId = model.EmployeeId,
@@ -110,14 +110,16 @@ namespace CoreWebApi.Data
             {
                 EmployeeId = model.EmployeeId,
                 Amount = Convert.ToDouble(model.Amount),
+                Posted = ToAdd.Posted,
                 UpdatedDate = DateTime.Now,
                 UpdatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
             await _context.EmployeeSalaryTransactions.AddAsync(ToAdd2);
             await _context.SaveChangesAsync();
-            _serviceResponse.Success = true;
+
             _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
             return _serviceResponse;
         }
 
@@ -183,6 +185,18 @@ namespace CoreWebApi.Data
             var toUpdate = await _context.EmployeeSalaries.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
             toUpdate.Posted = model.Posted;
             _context.EmployeeSalaries.Update(toUpdate);
+            await _context.SaveChangesAsync();
+
+            var ToAdd2 = new EmployeeSalaryTransaction
+            {
+                EmployeeId = toUpdate.EmployeeId,
+                Amount = toUpdate.Amount,
+                Posted = toUpdate.Posted,
+                UpdatedDate = DateTime.Now,
+                UpdatedById = _LoggedIn_UserID,
+                SchoolBranchId = _LoggedIn_BranchID,
+            };
+            await _context.EmployeeSalaryTransactions.AddAsync(ToAdd2);
             await _context.SaveChangesAsync();
 
             _serviceResponse.Message = CustomMessage.Updated;
