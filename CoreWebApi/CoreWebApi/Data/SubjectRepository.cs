@@ -523,46 +523,89 @@ namespace CoreWebApi.Data
             //            }).ToList()
             //        }).ToList()
             //    }).ToList();
-            var ClassList = await _context.SubjectContents.Select(o => new SubjectContentOneDtoForList
+            if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
             {
-                ClassId = Convert.ToInt32(o.ClassId),
-                SemesterId = Convert.ToInt32(o.SemesterId),
-                Classs = o.Class.Name,
-                Semester = o.SemesterObj.Name,
-            }).Distinct().ToListAsync();
-            for (int one = 0; one < ClassList.Count(); one++)
-            {
-                var itemOne = ClassList[one];
-                itemOne.Subjects = _context.SubjectContents.Where(m => m.ClassId == itemOne.ClassId).Select(p => new SubjectContentTwoDtoForList
+                var ClassList = await _context.SubjectContents.Select(o => new SubjectContentOneDtoForList
                 {
-                    SubjectId = p.SubjectId,
-                    Subject = p.Subject.Name,
-                }).Distinct().ToList();
-                for (int two = 0; two < itemOne.Subjects.Count(); two++)
+                    ClassId = Convert.ToInt32(o.ClassId),
+                    Classs = o.Class.Name,
+                }).Distinct().ToListAsync();
+                for (int one = 0; one < ClassList.Count(); one++)
                 {
-                    var itemTwo = itemOne.Subjects[two];
-                    itemTwo.Contents = _context.SubjectContents.Where(m => m.SubjectId == itemTwo.SubjectId && m.ClassId == itemOne.ClassId).Select(q => new SubjectContentThreeDtoForList
+                    var itemOne = ClassList[one];
+                    itemOne.Subjects = _context.SubjectContents.Where(m => m.ClassId == itemOne.ClassId).Select(p => new SubjectContentTwoDtoForList
                     {
-                        SubjectContentId = q.Id,
-                        Heading = q.Heading,
-                        ContentOrder = q.ContentOrder,
-                    }).ToList();
-                    for (int three = 0; three < itemTwo.Contents.Count(); three++)
+                        SubjectId = p.SubjectId,
+                        Subject = p.Subject.Name,
+                    }).Distinct().ToList();
+                    for (int two = 0; two < itemOne.Subjects.Count(); two++)
                     {
-                        var itemThree = itemTwo.Contents[three];
-                        itemThree.ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == itemThree.SubjectContentId).Select(r => new SubjectContentDetailDtoForList
+                        var itemTwo = itemOne.Subjects[two];
+                        itemTwo.Contents = _context.SubjectContents.Where(m => m.SubjectId == itemTwo.SubjectId && m.ClassId == itemOne.ClassId).Select(q => new SubjectContentThreeDtoForList
                         {
-                            SubjectContentDetailId = r.Id,
-                            DetailHeading = r.Heading,
-                            DetailOrder = r.Order,
-                            Duration = r.Duration,
+                            SubjectContentId = q.Id,
+                            Heading = q.Heading,
+                            ContentOrder = q.ContentOrder,
                         }).ToList();
+                        for (int three = 0; three < itemTwo.Contents.Count(); three++)
+                        {
+                            var itemThree = itemTwo.Contents[three];
+                            itemThree.ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == itemThree.SubjectContentId).Select(r => new SubjectContentDetailDtoForList
+                            {
+                                SubjectContentDetailId = r.Id,
+                                DetailHeading = r.Heading,
+                                DetailOrder = r.Order,
+                                Duration = r.Duration,
+                            }).ToList();
+                        }
                     }
                 }
+                _serviceResponse.Data = ClassList;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
             }
-            _serviceResponse.Data = ClassList;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
+            else
+            {
+                var ClassList = await _context.SubjectContents.Select(o => new SubjectContentOneDtoForList
+                {
+                    SemesterId = Convert.ToInt32(o.SemesterId),
+                    Semester = o.SemesterObj.Name,
+                }).Distinct().ToListAsync();
+                for (int one = 0; one < ClassList.Count(); one++)
+                {
+                    var itemOne = ClassList[one];
+                    itemOne.Subjects = _context.SubjectContents.Where(m => m.SemesterId == itemOne.SemesterId).Select(p => new SubjectContentTwoDtoForList
+                    {
+                        SubjectId = p.SubjectId,
+                        Subject = p.Subject.Name,
+                    }).Distinct().ToList();
+                    for (int two = 0; two < itemOne.Subjects.Count(); two++)
+                    {
+                        var itemTwo = itemOne.Subjects[two];
+                        itemTwo.Contents = _context.SubjectContents.Where(m => m.SubjectId == itemTwo.SubjectId && m.SemesterId == itemOne.SemesterId).Select(q => new SubjectContentThreeDtoForList
+                        {
+                            SubjectContentId = q.Id,
+                            Heading = q.Heading,
+                            ContentOrder = q.ContentOrder,
+                        }).ToList();
+                        for (int three = 0; three < itemTwo.Contents.Count(); three++)
+                        {
+                            var itemThree = itemTwo.Contents[three];
+                            itemThree.ContentDetails = _context.SubjectContentDetails.Where(m => m.SubjectContentId == itemThree.SubjectContentId).Select(r => new SubjectContentDetailDtoForList
+                            {
+                                SubjectContentDetailId = r.Id,
+                                DetailHeading = r.Heading,
+                                DetailOrder = r.Order,
+                                Duration = r.Duration,
+                            }).ToList();
+                        }
+                    }
+                }
+                _serviceResponse.Data = ClassList;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+           
         }
 
         public async Task<ServiceResponse<object>> GetSubjectContentById(int id)

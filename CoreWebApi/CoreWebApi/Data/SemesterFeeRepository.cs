@@ -330,71 +330,143 @@ namespace CoreWebApi.Data
             var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
             //var bankDetails = await _context.BankAccounts.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
             var voucherDetailList = await _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            var students = await (from u in _context.Users
-                                  join csU in _context.ClassSectionUsers
-                                  on u.Id equals csU.UserId
-
-                                  join cs in _context.ClassSections
-                                  on csU.ClassSectionId equals cs.Id
-
-                                  join fee in _context.SemesterFeeMappings
-                                  on u.Id equals fee.StudentId
-
-                                  join v in _context.FeeVoucherRecords
-                                  on u.Id equals v.StudentId into newV
-                                  from v in newV.DefaultIfEmpty()
-
-                                  where u.Role == Enumm.UserType.Student.ToString()
-                                  && u.SchoolBranchId == _LoggedIn_BranchID
-                                  && fee.SemesterId == semesterId
-                                  && cs.SemesterId == semesterId
-                                  select new { u, cs, fee, v }).Where(m => m.v == null).ToListAsync();
-
-            if (students.Count() > 0)
+            if (semesterId > 0)
             {
-                List<FeeVoucherRecord> ListToAdd = _context.FeeVoucherRecords.ToList();
-                for (int i = 0; i < students.Count(); i++)
+                var students = await (from u in _context.Users
+                                      join csU in _context.ClassSectionUsers
+                                      on u.Id equals csU.UserId
+
+                                      join cs in _context.ClassSections
+                                      on csU.ClassSectionId equals cs.Id
+
+                                      join fee in _context.SemesterFeeMappings
+                                      on u.Id equals fee.StudentId
+
+                                      join v in _context.FeeVoucherRecords
+                                      on u.Id equals v.StudentId into newV
+                                      from v in newV.DefaultIfEmpty()
+
+                                      where u.Role == Enumm.UserType.Student.ToString()
+                                      && u.SchoolBranchId == _LoggedIn_BranchID
+                                      && fee.SemesterId == semesterId
+                                      && cs.SemesterId == semesterId
+                                      select new { u, cs, fee, v }).Where(m => m.v == null).ToListAsync();
+
+                if (students.Count() > 0)
                 {
-                    var item = students[i];
-                    var lastVoucherRecord = ListToAdd.LastOrDefault();
-                    string NewBillNo = "";
-                    if (lastVoucherRecord != null)
+                    List<FeeVoucherRecord> ListToAdd = _context.FeeVoucherRecords.ToList();
+                    for (int i = 0; i < students.Count(); i++)
                     {
-                        string BillNumber = lastVoucherRecord.BillNumber.Substring(7, 7);
-                        int LastBillNumber = Convert.ToInt32(BillNumber);
-                        int NextBillNumber = ++LastBillNumber;
-                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
+                        var item = students[i];
+                        var lastVoucherRecord = ListToAdd.LastOrDefault();
+                        string NewBillNo = "";
+                        if (lastVoucherRecord != null)
+                        {
+                            string BillNumber = lastVoucherRecord.BillNumber.Substring(7, 7);
+                            int LastBillNumber = Convert.ToInt32(BillNumber);
+                            int NextBillNumber = ++LastBillNumber;
+                            NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
+                        }
+                        else
+                        {
+                            NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
+                        }
+                        var ExtraChargesOfThisMonth = _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Sum(m => m.ExtraChargesAmount);
+                        var ToAdd = new FeeVoucherRecord
+                        {
+                            StudentId = item.u.Id,
+                            AnnualOrSemesterId = semesterId,
+                            RegistrationNo = item.u.RegistrationNumber,
+                            VoucherDetailIds = string.Join(',', voucherDetailList.Select(m => m.Id)),
+                            BankAccountId = bankAccountId,
+                            FeeAmount = item.fee.FeeAfterDiscount,
+                            BillGenerationDate = DateTime.Now,
+                            DueDate = DateTime.Now.AddDays(7),
+                            BillMonth = currentMonth,
+                            BillNumber = NewBillNo,
+                            ClassSectionId = item.cs.Id,
+                            ConcessionDetails = item.fee.Remarks,
+                            MiscellaneousCharges = ExtraChargesOfThisMonth,
+                            TotalFee = (item.fee.FeeAfterDiscount + ExtraChargesOfThisMonth),
+                            Active = true,
+                            CreatedDateTime = DateTime.Now,
+                            CreatedById = _LoggedIn_UserID,
+                            SchoolBranchId = _LoggedIn_BranchID,
+                        };
+                        ListToAdd.Add(ToAdd);
                     }
-                    else
-                    {
-                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
-                    }
-                    var ExtraChargesOfThisMonth = _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Sum(m => m.ExtraChargesAmount);
-                    var ToAdd = new FeeVoucherRecord
-                    {
-                        StudentId = item.u.Id,
-                        AnnualOrSemesterId = semesterId,
-                        RegistrationNo = item.u.RegistrationNumber,
-                        VoucherDetailIds = string.Join(',', voucherDetailList.Select(m => m.Id)),
-                        BankAccountId = bankAccountId,
-                        FeeAmount = item.fee.FeeAfterDiscount,
-                        BillGenerationDate = DateTime.Now,
-                        DueDate = DateTime.Now.AddDays(7),
-                        BillMonth = currentMonth,
-                        BillNumber = NewBillNo,
-                        ClassSectionId = item.cs.Id,
-                        ConcessionDetails = item.fee.Remarks,
-                        MiscellaneousCharges = ExtraChargesOfThisMonth,
-                        TotalFee = (item.fee.FeeAfterDiscount + ExtraChargesOfThisMonth),
-                        Active = true,
-                        CreatedDateTime = DateTime.Now,
-                        CreatedById = _LoggedIn_UserID,
-                        SchoolBranchId = _LoggedIn_BranchID,
-                    };
-                    ListToAdd.Add(ToAdd);
+                    await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
+                    await _context.SaveChangesAsync();
                 }
-                await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
-                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var students = await (from u in _context.Users
+                                      join csU in _context.ClassSectionUsers
+                                      on u.Id equals csU.UserId
+
+                                      join cs in _context.ClassSections
+                                      on csU.ClassSectionId equals cs.Id
+
+                                      join fee in _context.SemesterFeeMappings
+                                      on u.Id equals fee.StudentId
+
+                                      join v in _context.FeeVoucherRecords
+                                      on u.Id equals v.StudentId into newV
+                                      from v in newV.DefaultIfEmpty()
+
+                                      where u.Role == Enumm.UserType.Student.ToString()
+                                      && u.SchoolBranchId == _LoggedIn_BranchID
+                                      && fee.SemesterId == semesterId
+                                      //&& cs.SemesterId == semesterId
+                                      select new { u, cs, fee, v }).Where(m => m.v == null).ToListAsync();
+
+                if (students.Count() > 0)
+                {
+                    List<FeeVoucherRecord> ListToAdd = _context.FeeVoucherRecords.ToList();
+                    for (int i = 0; i < students.Count(); i++)
+                    {
+                        var item = students[i];
+                        var lastVoucherRecord = ListToAdd.LastOrDefault();
+                        string NewBillNo = "";
+                        if (lastVoucherRecord != null)
+                        {
+                            string BillNumber = lastVoucherRecord.BillNumber.Substring(7, 7);
+                            int LastBillNumber = Convert.ToInt32(BillNumber);
+                            int NextBillNumber = ++LastBillNumber;
+                            NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
+                        }
+                        else
+                        {
+                            NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
+                        }
+                        var ExtraChargesOfThisMonth = _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Sum(m => m.ExtraChargesAmount);
+                        var ToAdd = new FeeVoucherRecord
+                        {
+                            StudentId = item.u.Id,
+                            AnnualOrSemesterId = semesterId,
+                            RegistrationNo = item.u.RegistrationNumber,
+                            VoucherDetailIds = string.Join(',', voucherDetailList.Select(m => m.Id)),
+                            BankAccountId = bankAccountId,
+                            FeeAmount = item.fee.FeeAfterDiscount,
+                            BillGenerationDate = DateTime.Now,
+                            DueDate = DateTime.Now.AddDays(7),
+                            BillMonth = currentMonth,
+                            BillNumber = NewBillNo,
+                            ClassSectionId = item.cs.Id,
+                            ConcessionDetails = item.fee.Remarks,
+                            MiscellaneousCharges = ExtraChargesOfThisMonth,
+                            TotalFee = (item.fee.FeeAfterDiscount + ExtraChargesOfThisMonth),
+                            Active = true,
+                            CreatedDateTime = DateTime.Now,
+                            CreatedById = _LoggedIn_UserID,
+                            SchoolBranchId = _LoggedIn_BranchID,
+                        };
+                        ListToAdd.Add(ToAdd);
+                    }
+                    await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
+                    await _context.SaveChangesAsync();
+                }
             }
             var VoucherList = await _context.FeeVoucherRecords.Select(o => new FeeVoucherRecordDtoForList
             {
