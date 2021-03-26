@@ -662,7 +662,11 @@ namespace CoreWebApi.Data
             var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
             var ToReturn = await _context.FeeVoucherRecords.Where(m => m.BillMonth == currentMonth && m.StudentId == _LoggedIn_UserID).Select(o => new FeeVoucherRecordDtoForList
             {
+                Id = o.Id,
                 BankName = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankName,
+                BankAccountNumber = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankAccountNumber,
+                BankAddress = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankAddress,
+                BankDetails = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankDetails,
                 BillGenerationDate = DateFormat.ToDate(o.BillGenerationDate.ToString()),
                 BillMonth = o.BillMonth,
                 BillNumber = o.BillNumber,
@@ -674,8 +678,9 @@ namespace CoreWebApi.Data
                 RegistrationNo = o.RegistrationNo,
                 StudentName = o.StudentObj.FullName,
                 TotalFee = o.TotalFee.ToString(),
-                SemesterId = o.AnnualOrSemesterId.ToString(),
                 VoucherDetailIds = o.VoucherDetailIds,
+                SemesterId = o.AnnualOrSemesterId.ToString(),
+                SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.AnnualOrSemesterId).Name
             }).ToListAsync();
             for (int i = 0; i < ToReturn.Count(); i++)
             {

@@ -124,8 +124,11 @@ namespace CoreWebApi.Dtos
     }
     public class FeeVoucherRecordDtoForList
     {
-        //public int Id { get; set; }     
+        public int Id { get; set; }     
         public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAddress { get; set; }
+        public string BankDetails { get; set; }
         public string StudentName { get; set; }
         public string RegistrationNo { get; set; }
         public string BillNumber { get; set; }
@@ -138,6 +141,7 @@ namespace CoreWebApi.Dtos
         public string MiscellaneousCharges { get; set; }
         public string TotalFee { get; set; }
         public string SemesterId { get; set; }
+        public string SemesterName { get; set; }
         public string VoucherDetailIds { get; set; }
         public List<ExtraChargesForListDto> ExtraCharges { get; set; } = new List<ExtraChargesForListDto>();
     }

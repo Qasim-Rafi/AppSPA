@@ -28,5 +28,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddBankAccount(BankAccountForAddDto model);
         Task<ServiceResponse<object>> UpdateBankAccount(int id, BankAccountForUpdateDto model);
         Task<ServiceResponse<object>> DeleteBankAccount(int id);
+        Task<ServiceResponse<object>> GetGeneratedFeeVouchers();
+        Task<ServiceResponse<object>> GetGeneratedFeeVoucherById(int id);
     }
 }

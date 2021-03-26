@@ -328,8 +328,9 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GenerateFeeVoucher(int bankAccountId, int semesterId)
         {
             var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
-            //var bankDetails = await _context.BankAccounts.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+
             var voucherDetailList = await _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var CurrentMonthVoucherStdIds = await _context.FeeVoucherRecords.Where(m => m.BillMonth == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StudentId).ToListAsync();
 
             var students = await (from u in _context.Users
                                   join csU in _context.ClassSectionUsers
@@ -341,15 +342,16 @@ namespace CoreWebApi.Data
                                   join fee in _context.SemesterFeeMappings
                                   on u.Id equals fee.StudentId
 
-                                  join v in _context.FeeVoucherRecords
-                                  on u.Id equals v.StudentId into newV
-                                  from v in newV.DefaultIfEmpty()
+                                  //join v in _context.FeeVoucherRecords
+                                  //on u.Id equals v.StudentId into newV
+                                  //from v in newV.DefaultIfEmpty()
 
                                   where u.Role == Enumm.UserType.Student.ToString()
                                   && u.SchoolBranchId == _LoggedIn_BranchID
                                   && fee.SemesterId == semesterId
                                   && cs.SemesterId == semesterId
-                                  select new { u, cs, fee, v }).Where(m => m.v == null).ToListAsync();
+                                  && !CurrentMonthVoucherStdIds.Contains(u.Id)
+                                  select new { u, cs, fee }).ToListAsync();
 
             if (students.Count() > 0)
             {
@@ -398,24 +400,8 @@ namespace CoreWebApi.Data
                 await _context.SaveChangesAsync();
             }
 
-            var VoucherList = await _context.FeeVoucherRecords.Select(o => new FeeVoucherRecordDtoForList
-            {
-                BankName = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankName,
-                BillGenerationDate = DateFormat.ToDate(o.BillGenerationDate.ToString()),
-                BillMonth = o.BillMonth,
-                BillNumber = o.BillNumber,
-                SemesterSection = _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSectionObj.SemesterId).Name + " " + o.ClassSectionObj.Section.SectionName,
-                ConcessionDetails = o.ConcessionDetails,
-                DueDate = DateFormat.ToDate(o.DueDate.ToString()),
-                FeeAmount = o.FeeAmount.ToString(),
-                MiscellaneousCharges = o.MiscellaneousCharges.ToString(),
-                RegistrationNo = o.RegistrationNo,
-                StudentName = o.StudentObj.FullName,
-                TotalFee = o.TotalFee.ToString(),
-                SemesterId = o.AnnualOrSemesterId.ToString(),
-            }).ToListAsync();
 
-            _serviceResponse.Data = new { VoucherList };
+            //_serviceResponse.Data = new { VoucherList };
             _serviceResponse.Message = string.Format(CustomMessage.FeeVouchersGenerated, _context.Semesters.FirstOrDefault(m => m.Id == semesterId).Name);
             _serviceResponse.Success = true;
             return _serviceResponse;
@@ -548,6 +534,73 @@ namespace CoreWebApi.Data
             }
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Deleted;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetGeneratedFeeVouchers()
+        {
+            var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+
+            var ToReturn = await _context.FeeVoucherRecords.Where(m => m.BillMonth == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new FeeVoucherRecordDtoForList
+            {
+                Id = o.Id,
+                BankName = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankName,
+                BankAccountNumber = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankAccountNumber,
+                BankAddress = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankAddress,
+                BankDetails = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankDetails,
+                BillGenerationDate = DateFormat.ToDate(o.BillGenerationDate.ToString()),
+                BillMonth = o.BillMonth,
+                BillNumber = o.BillNumber,
+                SemesterSection = _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSectionObj.SemesterId).Name + " " + o.ClassSectionObj.Section.SectionName,
+                ConcessionDetails = o.ConcessionDetails,
+                DueDate = DateFormat.ToDate(o.DueDate.ToString()),
+                FeeAmount = o.FeeAmount.ToString(),
+                MiscellaneousCharges = o.MiscellaneousCharges.ToString(),
+                RegistrationNo = o.RegistrationNo,
+                StudentName = o.StudentObj.FullName,
+                TotalFee = o.TotalFee.ToString(),
+                SemesterId = o.AnnualOrSemesterId.ToString(),
+                SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.AnnualOrSemesterId).Name
+            }).ToListAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> GetGeneratedFeeVoucherById(int id)
+        {
+            var ToReturn = await _context.FeeVoucherRecords.Where(m => m.Id == id).Select(o => new FeeVoucherRecordDtoForList
+            {
+                Id = o.Id,
+                BankName = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankName,
+                BankAccountNumber = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankAccountNumber,
+                BankAddress = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankAddress,
+                BankDetails = _context.BankAccounts.FirstOrDefault(m => m.Id == o.BankAccountId).BankDetails,
+                BillGenerationDate = DateFormat.ToDate(o.BillGenerationDate.ToString()),
+                BillMonth = o.BillMonth,
+                BillNumber = o.BillNumber,
+                SemesterSection = _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSectionObj.SemesterId).Name + " " + o.ClassSectionObj.Section.SectionName,
+                ConcessionDetails = o.ConcessionDetails,
+                DueDate = DateFormat.ToDate(o.DueDate.ToString()),
+                FeeAmount = o.FeeAmount.ToString(),
+                MiscellaneousCharges = o.MiscellaneousCharges.ToString(),
+                RegistrationNo = o.RegistrationNo,
+                StudentName = o.StudentObj.FullName,
+                TotalFee = o.TotalFee.ToString(),
+                SemesterId = o.AnnualOrSemesterId.ToString(),
+                SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.AnnualOrSemesterId).Name,
+                VoucherDetailIds = o.VoucherDetailIds,
+            }).FirstOrDefaultAsync();
+
+            var ids = ToReturn.VoucherDetailIds.Split(',');
+            ToReturn.ExtraCharges = _context.FeeVoucherDetails.Where(m => ids.Contains(m.Id.ToString())).Select(p => new ExtraChargesForListDto
+            {
+                ExtraChargesDetails = p.ExtraChargesDetails,
+                ExtraChargesAmount = p.ExtraChargesAmount,
+            }).ToList();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
             return _serviceResponse;
         }
     }

@@ -282,5 +282,29 @@ namespace CoreWebApi.Controllers
             _response = await _repo.DeleteBankAccount(id);
             return Ok(_response);
         }
+        [HttpGet("GetGeneratedFeeVouchers")]
+        public async Task<IActionResult> GetGeneratedFeeVouchers()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetGeneratedFeeVouchers();
+
+            return Ok(_response);
+        }
+        [HttpGet("GetGeneratedFeeVoucherById/{id}")]
+        public async Task<IActionResult> GetGeneratedFeeVoucherById(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.GetGeneratedFeeVoucherById(id);
+
+            return Ok(_response);
+        }
     }
 }
