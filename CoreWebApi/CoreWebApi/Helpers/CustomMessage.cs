@@ -43,6 +43,7 @@ namespace CoreWebApi.Helpers
         public const string NoOfStudentLimitIsLowerNow = "Please un-map some students first then set new limit";
         public const string EmailSameOfParentChild = "Please enter different email address for student and parent";
         public const string FeeAlreadyPaid = "Fee already paid of this student";
+        public const string FeeVouchersGenerated = "Fee vouchers of {0} generated successfully";
     }
     public class BusinessRules
     {

@@ -128,8 +128,8 @@ namespace CoreWebApi.Data
                 var subject = await (from s in _context.Subjects
                                      join ass in _context.SubjectAssignments
                                      on s.Id equals ass.SubjectId
-                                     join c in _context.Class
-                                     on ass.ClassId equals c.Id
+                                     join sem in _context.Semesters
+                                     on ass.SemesterId equals sem.Id
                                      join sch in _context.SchoolBranch
                                      on ass.SchoolBranchId equals sch.Id
                                      where ass.Id == id
@@ -138,8 +138,8 @@ namespace CoreWebApi.Data
                                      select new AssignSubjectDtoForDetail
                                      {
                                          Id = s.Id,
-                                         SemesterId = Convert.ToInt32(ass.SemesterId),
-                                         SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == ass.SemesterId) != null ? _context.Semesters.FirstOrDefault(m => m.Id == ass.SemesterId).Name : "",
+                                         SemesterId = sem.Id,
+                                         SemesterName = sem.Name,
                                          SchoolId = ass.SchoolBranchId,
                                          SchoolName = sch.BranchName,
                                          //TableOfContent = ass.TableOfContent,

@@ -205,8 +205,8 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
 
-        [HttpPut("GenerateFeeVoucher/{bankAccountId}/{semesterId?}")]
-        public async Task<IActionResult> GenerateFeeVoucher(int bankAccountId, int semesterId = 0)
+        [HttpPut("GenerateFeeVoucher/{bankAccountId}/{semesterId}")]
+        public async Task<IActionResult> GenerateFeeVoucher(int bankAccountId, int semesterId)
         {
             if (!ModelState.IsValid)
             {

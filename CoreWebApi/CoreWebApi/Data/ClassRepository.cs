@@ -184,11 +184,11 @@ namespace CoreWebApi.Data
         {
             if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString())
             {
-                return await _context.ClassSections.Where(m => m.ClassId == null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+                return await _context.ClassSections.Where(m => m.SemesterId != null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
             }
             else
             {
-                return await _context.ClassSections.Where(m => m.SemesterId == null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+                return await _context.ClassSections.Where(m => m.ClassId != null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
             }
 
         }
@@ -211,7 +211,7 @@ namespace CoreWebApi.Data
                     objToUpdate.SemesterId = model.SemesterId;
                     objToUpdate.SectionId = model.SectionId;
                     objToUpdate.Active = model.Active;
-                    objToUpdate.SchoolBranchId = _LoggedIn_BranchID;
+                    //objToUpdate.SchoolBranchId = _LoggedIn_BranchID;
                     objToUpdate.NumberOfStudents = model.NumberOfStudents;
 
                     await _context.SaveChangesAsync();
