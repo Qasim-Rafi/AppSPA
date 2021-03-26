@@ -394,7 +394,8 @@ namespace CoreWebApi.Data
             {
                 if (model.SubjectIds.Count() > 0)
                 {
-                    var ToRemove = _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList();
+                    List<SubjectAssignment> ToRemove = model.ClassId != null ? _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList()
+                        : _context.SubjectAssignments.Where(s => s.SemesterId.Equals(model.SemesterId)).ToList();
                     if (ToRemove.Count() > 0)
                     {
                         _context.SubjectAssignments.RemoveRange(ToRemove);
