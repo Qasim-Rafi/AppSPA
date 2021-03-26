@@ -124,8 +124,9 @@ namespace CoreWebApi.Data
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
                                        ClassSectionId = main.ClassSectionId,
-                                       Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
-                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                       Semester = _context.Semesters.FirstOrDefault(m => m.Id == cs.SemesterId && m.Active == true) != null ? _context.Semesters.FirstOrDefault(m => m.Id == cs.SemesterId && m.Active == true).Name : "",
+                                       Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
+                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
                                        IsBreak = l.IsBreak,
                                        RowNo = l.RowNo
                                    }).ToListAsync(); //.Where(m => m.Teacher != null)
@@ -202,8 +203,9 @@ namespace CoreWebApi.Data
                                            SubjectId = main.SubjectId,
                                            Subject = s.Name,
                                            ClassSectionId = main.ClassSectionId,
-                                           Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
-                                           Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                           Semester = _context.Semesters.FirstOrDefault(m => m.Id == cs.SemesterId && m.Active == true) != null ? _context.Semesters.FirstOrDefault(m => m.Id == cs.SemesterId && m.Active == true).Name : "",
+                                           Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
+                                           Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
                                            IsBreak = l.IsBreak,
                                            RowNo = l.RowNo
                                        }).ToListAsync(); //.Where(m => m.Teacher != null)
@@ -283,8 +285,9 @@ namespace CoreWebApi.Data
                                        SubjectId = main.SubjectId,
                                        Subject = s.Name,
                                        ClassSectionId = main.ClassSectionId,
-                                       Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name,
-                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName,
+                                       Semester = _context.Semesters.FirstOrDefault(m => m.Id == cs.SemesterId && m.Active == true) != null ? _context.Semesters.FirstOrDefault(m => m.Id == cs.SemesterId && m.Active == true).Name : "",
+                                       Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
+                                       Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
                                        //IsBreak = l.IsBreak
                                    }).FirstOrDefaultAsync();
             if (TimeTable != null)
@@ -679,8 +682,6 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-
-
 
         public async Task<ServiceResponse<object>> UpdateEvents(List<EventDayAssignmentForAddDto> model)
         {

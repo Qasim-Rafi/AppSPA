@@ -56,6 +56,7 @@ namespace CoreWebApi.Dtos
         public int SubjectId { get; set; }
         public string Subject { get; set; }
         public int ClassSectionId { get; set; }
+        public string Semester { get; set; }
         public string Classs { get; set; }
         public string Section { get; set; }
         public bool IsBreak { get; set; }
