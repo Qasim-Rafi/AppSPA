@@ -681,14 +681,18 @@ namespace CoreWebApi.Data
                 VoucherDetailIds = o.VoucherDetailIds,
                 SemesterId = o.AnnualOrSemesterId.ToString(),
                 SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.AnnualOrSemesterId).Name
-            }).FirstOrDefaultAsync();
+            }).ToListAsync();
 
-            var ids = ToReturn.VoucherDetailIds.Split(',');
-            ToReturn.ExtraCharges = _context.FeeVoucherDetails.Where(m => ids.Contains(m.Id.ToString())).Select(p => new ExtraChargesForListDto
+            for (int i = 0; i < ToReturn.Count(); i++)
             {
-                ExtraChargesDetails = p.ExtraChargesDetails,
-                ExtraChargesAmount = p.ExtraChargesAmount,
-            }).ToList();
+                var item = ToReturn[i];
+                var ids = item.VoucherDetailIds.Split(',');
+                item.ExtraCharges = _context.FeeVoucherDetails.Where(m => ids.Contains(m.Id.ToString())).Select(p => new ExtraChargesForListDto
+                {
+                    ExtraChargesDetails = p.ExtraChargesDetails,
+                    ExtraChargesAmount = p.ExtraChargesAmount,
+                }).ToList();
+            }
 
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
