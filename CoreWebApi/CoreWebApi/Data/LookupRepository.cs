@@ -487,14 +487,12 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> GetTeacherSemestersAndSubjectsBySemester(int semesterId)
+        public async Task<ServiceResponse<object>> GetTeacherSemestersAndSubjectsBySemester(int semesterSectionId)
         {
-            if (semesterId > 0)
+            if (semesterSectionId > 0)
             {
                 var list = await (from main in _context.ClassLectureAssignment
-                                  join cs in _context.ClassSections
-                                  on main.ClassSectionId equals cs.Id
-                                  where cs.SemesterId == semesterId
+                                  where main.ClassSectionId == semesterSectionId
                                   select new
                                   {
                                       SubjectId = main.SubjectId,
