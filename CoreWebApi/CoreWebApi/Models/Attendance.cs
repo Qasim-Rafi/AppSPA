@@ -11,6 +11,7 @@ namespace CoreWebApi.Models
         public int Id { get; set; }
         //public int ClassSectionUserAssignmentId { get; set; }
         public int? ClassSectionId { get; set; }
+        public int? SubjectId { get; set; }
         public int UserId { get; set; }
         public bool Present { get; set; }
         public bool Absent { get; set; }
@@ -24,5 +25,9 @@ namespace CoreWebApi.Models
         //public virtual ClassSection ClassSection { get; set; }
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
+        [ForeignKey("ClassSectionId")]
+        public virtual ClassSection ClassSection { get; set; }
+        [ForeignKey("SubjectId")]
+        public virtual Subject Subject { get; set; }
     }
 }

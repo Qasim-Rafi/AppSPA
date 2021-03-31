@@ -15,6 +15,7 @@ namespace CoreWebApi.Dtos
     public class AttendanceDtoForAdd
     {
         public int? ClassSectionId { get; set; }
+        public int? SubjectId { get; set; }
         public int UserId { get; set; }
 
         //[Range(typeof(bool), "true", "false", ErrorMessage = "The field must be true of false")]
@@ -40,6 +41,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public int ClassSectionId { get; set; }
+        public int SubjectId { get; set; }
         public string FullName { get; set; }
         public int UserId { get; set; }
         public bool Present { get; set; }
@@ -61,6 +63,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public int ClassSectionId { get; set; }
+        public int SubjectId { get; set; }
         public string FullName { get; set; }
         public int UserId { get; set; }
         public bool Present { get; set; }
@@ -82,6 +85,7 @@ namespace CoreWebApi.Dtos
     {
         public int typeId { get; set; }
         public int? classSectionId { get; set; }
+        public int subjectId { get; set; }
         public string date { get; set; }
     }
     public class ThisMonthAttendancePercentageDto

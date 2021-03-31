@@ -21,6 +21,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
+        private string _LoggedIn_SchoolExamType = "";
         private readonly IMapper _mapper;
         public AttendanceRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
@@ -29,6 +30,7 @@ namespace CoreWebApi.Data
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _mapper = mapper;
         }
         public void OnInIt()
@@ -93,6 +95,7 @@ namespace CoreWebApi.Data
                                 Id = o.attendance.Id,
                                 UserId = o.attendance.UserId,
                                 ClassSectionId = Convert.ToInt32(o.attendance.ClassSectionId),
+                                SubjectId = Convert.ToInt32(o.attendance.SubjectId),
                                 FullName = o.user.FullName,
                                 CreatedDatetime = DateFormat.ToDate(o.attendance.CreatedDatetime.ToString()),
                                 Present = o.attendance.Present,
@@ -113,6 +116,7 @@ namespace CoreWebApi.Data
             {
                 UserId = o.UserId,
                 ClassSectionId = o.ClassSectionId,
+                SubjectId = o.SubjectId,
                 FullName = o.FullName,
                 CreatedDatetime = "",
                 Present = false,
@@ -160,6 +164,8 @@ namespace CoreWebApi.Data
                     attendanceExist.Comments = attendance.Comments;
                     attendanceExist.UserId = attendance.UserId;
                     attendanceExist.ClassSectionId = attendance.ClassSectionId;
+                    if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString())
+                        attendanceExist.SubjectId = attendance.SubjectId;
 
                     await _context.SaveChangesAsync();
                 }
@@ -176,6 +182,8 @@ namespace CoreWebApi.Data
                         CreatedDatetime = DateTime.Now,
                         SchoolBranchId = _LoggedIn_BranchID
                     };
+                    if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString())
+                        objToCreate.SubjectId = attendance.SubjectId;
 
                     await _context.Attendances.AddAsync(objToCreate);
                     await _context.SaveChangesAsync();
