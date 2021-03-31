@@ -54,7 +54,7 @@ namespace CoreWebApi.Models
         [StringLength(50, ErrorMessage = "OtherState cannot be longer then 50 characters")]
         public string OtherState { get; set; }
 
-        [StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
+        //[StringLength(50, ErrorMessage = "Country cannot be longer then 50 characters")]
         public int? CountryId { get; set; }
         [Required] 
         public int UserTypeId { get; set; }
@@ -63,7 +63,7 @@ namespace CoreWebApi.Models
         [StringLength(50, ErrorMessage = "Roll Number cannot be longer then 50 characters")]
         public string RollNumber { get; set; }
         public string RegistrationNumber { get; set; }
-        [StringLength(13)]
+        [StringLength(15)]
         public string ParentCNIC { get; set; }
         public string ParentEmail { get; set; }
         public string ParentContactNumber { get; set; }

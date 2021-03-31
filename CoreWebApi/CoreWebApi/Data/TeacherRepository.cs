@@ -5,7 +5,6 @@ using CoreWebApi.IData;
 using CoreWebApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,13 +19,13 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         private readonly IWebHostEnvironment _HostEnvironment;
-        private int _LoggedIn_UserID = 0;
-        private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = "";
-        private string _LoggedIn_UserRole = "";
-        private string _LoggedIn_SchoolExamType = "";
+        private readonly int _LoggedIn_UserID = 0;
+        private readonly int _LoggedIn_BranchID = 0;
+        private readonly string _LoggedIn_UserName = "";
+        private readonly string _LoggedIn_UserRole = "";
+        private readonly string _LoggedIn_SchoolExamType = "";
         private readonly IMapper _mapper;
-        ServiceResponse<object> _serviceResponse;
+        readonly ServiceResponse<object> _serviceResponse;
         public TeacherRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _context = context;
@@ -568,8 +567,9 @@ namespace CoreWebApi.Data
             List<string> Days = new List<string>();
             List<TeacherTimeSlotsForListDto> TimeSlots = new List<TeacherTimeSlotsForListDto>();
             List<TeacherWeekTimeTableForListDto> TimeTable = new List<TeacherWeekTimeTableForListDto>();
-            foreach (var item in weekDays)
+            for (int i = 0; i < weekDays.Count; i++)
             {
+                string item = weekDays[i];
                 var ToAdd = new TeacherTimeTableForListDto
                 {
                     Day = item,
@@ -608,11 +608,13 @@ namespace CoreWebApi.Data
                                            EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
                                            TeacherId = mainu.Id,
                                            Teacher = mainu.FullName,
-                                           SubjectId = main.SubjectId,
-                                           Subject = mains.Name,
-                                           ClassSectionId = main.ClassSectionId,
-                                           Classs = _context.Class.FirstOrDefault(m => m.Id == maincs.ClassId && m.Active == true).Name,
-                                           Section = _context.Sections.FirstOrDefault(m => m.Id == maincs.SectionId && m.Active == true).SectionName,
+                                           SubjectId = mainu.Id == _LoggedIn_UserID ? main.SubjectId : 0,
+                                           Subject = mainu.Id == _LoggedIn_UserID ? mains.Name : "",
+                                           ClassSectionId = mainu.Id == _LoggedIn_UserID ? main.ClassSectionId : 0,
+                                           Classs = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString()
+                                                    ? mainu.Id == _LoggedIn_UserID && maincs.ClassId != null ? _context.Class.FirstOrDefault(m => m.Id == maincs.ClassId && m.Active == true).Name : ""
+                                                    : mainu.Id == _LoggedIn_UserID && maincs.SemesterId != null ? _context.Semesters.FirstOrDefault(m => m.Id == maincs.SemesterId && m.Active == true).Name : "",
+                                           Section = mainu.Id == _LoggedIn_UserID ? _context.Sections.FirstOrDefault(m => m.Id == maincs.SectionId && m.Active == true).SectionName : "",
                                            IsBreak = l.IsBreak,
                                            RowNo = l.RowNo,
                                            IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
@@ -641,7 +643,7 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-
+       
         public async Task<ServiceResponse<object>> CheckExpertiesBeforeDelete(List<int> model)
         {
             var ToReturn = new List<string>();

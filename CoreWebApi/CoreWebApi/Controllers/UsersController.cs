@@ -343,5 +343,12 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetUsersForSemesterAttendance/{subjectId}/{semesterSectionId}")]
+        public async Task<IActionResult> GetUsersForSemesterAttendance(int subjectId, int semesterSectionId)
+        {
+            _response = await _repo.GetUsersForSemesterAttendance(subjectId, semesterSectionId);
+            return Ok(_response);
+
+        }
     }
 }

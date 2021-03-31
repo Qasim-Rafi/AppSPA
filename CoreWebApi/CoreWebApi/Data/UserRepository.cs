@@ -942,6 +942,46 @@ namespace CoreWebApi.Data
             }
         }
 
+        public async Task<ServiceResponse<object>> GetUsersForSemesterAttendance(int subjectId, int semesterSectionId)
+        {
+            var today = DateTime.Now;
+            var thisMonth = new DateTime(today.Year, today.Month, 1);
+            var users = await (from csU in _context.ClassSectionUsers
+                               join cla in _context.ClassLectureAssignment
+                               on csU.ClassSectionId equals cla.ClassSectionId
+
+                               join u in _context.Users
+                               on csU.UserId equals u.Id
+
+                               where cla.ClassSectionId == semesterSectionId
+                               && cla.SubjectId == subjectId
+                               && csU.SchoolBranchId == _LoggedIn_BranchID
+                               select u).Select(o => new UserByTypeListDto
+                               {
+                                   UserId = o.Id,
+                                   FullName = o.FullName,
+                                   Present = false,
+                                   Absent = false,
+                                   Late = false,
+                                   Comments = "",
+                                   UserTypeId = o.UserTypeId,
+                                   ClassSectionId = _context.ClassSectionUsers.Where(m => m.UserId == o.Id).FirstOrDefault().ClassSectionId,
+                                   LeaveCount = _context.Leaves.Where(m => m.UserId == o.Id).Count(),
+                                   AbsentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                   LateCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                   PresentCount = _context.Attendances.Where(m => m.UserId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                   Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                   {
+                                       Id = x.Id,
+                                       Name = x.Name,
+                                       IsPrimary = x.IsPrimary,
+                                       Url = _File.AppendImagePath(x.Name)
+                                   }).ToList(),
+                               }).ToListAsync();
+
+            _serviceResponse.Data = users;
+            return _serviceResponse;
+        }
         public async Task<ServiceResponse<IEnumerable<UserByTypeListDto>>> GetUsersByType(int typeId, int? classSectionId)
         {
             ServiceResponse<IEnumerable<UserByTypeListDto>> serviceResponse = new ServiceResponse<IEnumerable<UserByTypeListDto>>();

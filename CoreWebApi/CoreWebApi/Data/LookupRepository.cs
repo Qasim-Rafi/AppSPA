@@ -487,5 +487,42 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetTeacherSemestersAndSubjectsBySemester(int semesterId)
+        {
+            if (semesterId > 0)
+            {
+                var list = await (from main in _context.ClassLectureAssignment
+                                  join cs in _context.ClassSections
+                                  on main.ClassSectionId equals cs.Id
+                                  where cs.SemesterId == semesterId
+                                  select new
+                                  {
+                                      SubjectId = main.SubjectId,
+                                      SubjectName = main.Subject.Name
+                                  }).ToListAsync();
+
+                _serviceResponse.Data = list;
+            }
+            else
+            {
+                var list = await (from main in _context.ClassLectureAssignment
+                                  join cs in _context.ClassSections
+                                  on main.ClassSectionId equals cs.Id
+                                  where main.TeacherId == _LoggedIn_UserID
+                                  && cs.SchoolBranchId == _LoggedIn_BranchID
+                                  select new
+                                  {
+                                      Id = cs.Id,
+                                      SemesterName = cs.SemesterObj.Name,
+                                      SectionName = cs.Section.SectionName,
+                                  }).ToListAsync();
+
+                _serviceResponse.Data = list;
+            }
+
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
     }
 }
