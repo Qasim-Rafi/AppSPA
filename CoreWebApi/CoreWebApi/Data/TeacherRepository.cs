@@ -567,138 +567,73 @@ namespace CoreWebApi.Data
             List<string> Days = new List<string>();
             List<TeacherTimeSlotsForListDto> TimeSlots = new List<TeacherTimeSlotsForListDto>();
             List<TeacherWeekTimeTableForListDto> TimeTable = new List<TeacherWeekTimeTableForListDto>();
-            if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
+
+            for (int i = 0; i < weekDays.Count; i++)
             {
-                for (int i = 0; i < weekDays.Count; i++)
+                string item = weekDays[i];
+                var ToAdd = new TeacherTimeTableForListDto
                 {
-                    string item = weekDays[i];
-                    var ToAdd = new TeacherTimeTableForListDto
-                    {
-                        Day = item,
-                        TimeTable = await (from l in _context.LectureTiming
-                                           join main in _context.ClassLectureAssignment
-                                           on l.Id equals main.LectureId into newMain
-                                           from main in newMain.DefaultIfEmpty()
+                    Day = item,
+                    TimeTable = await (from l in _context.LectureTiming
+                                       join main in _context.ClassLectureAssignment
+                                       on l.Id equals main.LectureId into newMain
+                                       from main in newMain.DefaultIfEmpty()
 
-                                           join u in _context.Users
-                                           on main.TeacherId equals u.Id into newU
-                                           from mainu in newU.DefaultIfEmpty()
+                                       join u in _context.Users
+                                       on main.TeacherId equals u.Id into newU
+                                       from mainu in newU.DefaultIfEmpty()
 
-                                           join s in _context.Subjects
-                                           on main.SubjectId equals s.Id into newS
-                                           from mains in newS.DefaultIfEmpty()
+                                       join s in _context.Subjects
+                                       on main.SubjectId equals s.Id into newS
+                                       from mains in newS.DefaultIfEmpty()
 
-                                           join cs in _context.ClassSections
-                                           on main.ClassSectionId equals cs.Id into newCS
-                                           from maincs in newCS.DefaultIfEmpty()
+                                       join cs in _context.ClassSections
+                                       on main.ClassSectionId equals cs.Id into newCS
+                                       from maincs in newCS.DefaultIfEmpty()
 
-                                           where l.SchoolBranchId == _LoggedIn_BranchID
-                                           //|| (mainu != null && mainu.UserTypeId == (int)Enumm.UserType.Teacher)
-                                           //|| (mains != null && mains.Active == true)
-                                           //|| (maincs != null && maincs.Active == true)
-                                           //&& (mainu != null && mainu.Id == _LoggedIn_UserID)
-                                           && l.Day == item
-                                           orderby l.StartTime, l.EndTime
-                                           select new TeacherWeekTimeTableForListDto
-                                           {
-                                               Id = main.Id,
-                                               LectureId = main.LectureId,
-                                               Day = l.Day,
-                                               StartTime = DateFormat.To24HRTime(l.StartTime),
-                                               EndTime = DateFormat.To24HRTime(l.EndTime),
-                                               StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
-                                               EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
-                                               TeacherId = mainu.Id,
-                                               Teacher = mainu.FullName,
-                                               SubjectId = main.SubjectId,
-                                               Subject = mains.Name,
-                                               ClassSectionId = main.ClassSectionId,
-                                               Classs = _context.Class.FirstOrDefault(m => m.Id == maincs.ClassId && m.Active == true).Name,
-                                               Section = _context.Sections.FirstOrDefault(m => m.Id == maincs.SectionId && m.Active == true).SectionName,
-                                               IsBreak = l.IsBreak,
-                                               RowNo = l.RowNo,
-                                               IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
-                                           }).ToListAsync()
-                    };
-                    TimeTable.AddRange(ToAdd.TimeTable);
-                    if (item == "Monday")
-                    {
-                        TimeSlots = TimeTable.Select(o => new TeacherTimeSlotsForListDto
-                        {
-                            StartTime = o.StartTime,
-                            EndTime = o.EndTime
-                        }).ToList();
-                    }
-
-                }
-                Days = TimeTable.Select(o => o.Day).Distinct().ToList();
-            }
-            else
-            {
-                for (int i = 0; i < weekDays.Count; i++)
+                                       where l.SchoolBranchId == _LoggedIn_BranchID
+                                       //|| (mainu != null && mainu.UserTypeId == (int)Enumm.UserType.Teacher)
+                                       //|| (mains != null && mains.Active == true)
+                                       //|| (maincs != null && maincs.Active == true)
+                                       //&& main.TeacherId == _LoggedIn_UserID
+                                       && l.Day == item
+                                       orderby l.StartTime, l.EndTime
+                                       select new TeacherWeekTimeTableForListDto
+                                       {
+                                           Id = main.Id,
+                                           LectureId = main.LectureId,
+                                           Day = l.Day,
+                                           StartTime = DateFormat.To24HRTime(l.StartTime),
+                                           EndTime = DateFormat.To24HRTime(l.EndTime),
+                                           StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
+                                           EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
+                                           TeacherId = mainu.Id,
+                                           Teacher = mainu.FullName,
+                                           SubjectId = mainu.Id == _LoggedIn_UserID ? main.SubjectId : 0,
+                                           Subject = mainu.Id == _LoggedIn_UserID ? mains.Name : null,
+                                           ClassSectionId = mainu.Id == _LoggedIn_UserID ? main.ClassSectionId : 0,
+                                           Classs = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString()
+                                                ? mainu.Id == _LoggedIn_UserID ? _context.Class.FirstOrDefault(m => m.Id == maincs.ClassId && m.Active == true).Name : null
+                                                : mainu.Id == _LoggedIn_UserID ? _context.Semesters.FirstOrDefault(m => m.Id == maincs.SemesterId && m.Active == true).Name : null,
+                                           Section = mainu.Id == _LoggedIn_UserID ? _context.Sections.FirstOrDefault(m => m.Id == maincs.SectionId && m.Active == true).SectionName : null,
+                                           IsBreak = l.IsBreak,
+                                           RowNo = l.RowNo,
+                                           IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
+                                       }).ToListAsync()
+                };
+                TimeTable.AddRange(ToAdd.TimeTable.Where(m => m.TeacherId == _LoggedIn_UserID || m.TeacherId == 0));
+                if (item == "Monday")
                 {
-                    string item = weekDays[i];
-                    var ToAdd = new TeacherTimeTableForListDto
+                    TimeSlots = TimeTable.Select(o => new TeacherTimeSlotsForListDto
                     {
-                        Day = item,
-                        TimeTable = await (from l in _context.LectureTiming
-                                           join main in _context.ClassLectureAssignment
-                                           on l.Id equals main.LectureId into newMain
-                                           from main in newMain.DefaultIfEmpty()
-
-                                           join u in _context.Users
-                                           on main.TeacherId equals u.Id into newU
-                                           from mainu in newU.DefaultIfEmpty()
-
-                                           join s in _context.Subjects
-                                           on main.SubjectId equals s.Id into newS
-                                           from mains in newS.DefaultIfEmpty()
-
-                                           join cs in _context.ClassSections
-                                           on main.ClassSectionId equals cs.Id into newCS
-                                           from maincs in newCS.DefaultIfEmpty()
-
-                                           where l.SchoolBranchId == _LoggedIn_BranchID
-                                           //|| (mainu != null && mainu.UserTypeId == (int)Enumm.UserType.Teacher)
-                                           //|| (mains != null && mains.Active == true)
-                                           //|| (maincs != null && maincs.Active == true)
-                                           //&& (mainu != null && mainu.Id == _LoggedIn_UserID)
-                                           && l.Day == item
-                                           orderby l.StartTime, l.EndTime
-                                           select new TeacherWeekTimeTableForListDto
-                                           {
-                                               Id = main.Id,
-                                               LectureId = main.LectureId,
-                                               Day = l.Day,
-                                               StartTime = DateFormat.To24HRTime(l.StartTime),
-                                               EndTime = DateFormat.To24HRTime(l.EndTime),
-                                               StartTimeToDisplay = DateFormat.ToTime(l.StartTime),
-                                               EndTimeToDisplay = DateFormat.ToTime(l.EndTime),
-                                               TeacherId = mainu.Id,
-                                               Teacher = mainu.FullName,
-                                               SubjectId = mainu.Id == _LoggedIn_UserID ? main.SubjectId : 0,
-                                               Subject = mainu.Id == _LoggedIn_UserID ? mains.Name : "",
-                                               ClassSectionId = mainu.Id == _LoggedIn_UserID ? main.ClassSectionId : 0,
-                                               Classs = mainu.Id == _LoggedIn_UserID ? _context.Semesters.FirstOrDefault(m => m.Id == maincs.SemesterId && m.Active == true).Name : "",
-                                               Section = mainu.Id == _LoggedIn_UserID ? _context.Sections.FirstOrDefault(m => m.Id == maincs.SectionId && m.Active == true).SectionName : "",
-                                               IsBreak = l.IsBreak,
-                                               RowNo = l.RowNo,
-                                               IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
-                                           }).ToListAsync()
-                    };
-                    TimeTable.AddRange(ToAdd.TimeTable);
-                    if (item == "Monday")
-                    {
-                        TimeSlots = TimeTable.Select(o => new TeacherTimeSlotsForListDto
-                        {
-                            StartTime = o.StartTime,
-                            EndTime = o.EndTime
-                        }).ToList();
-                    }
-
+                        StartTime = o.StartTime,
+                        EndTime = o.EndTime
+                    }).ToList();
                 }
-                Days = TimeTable.Select(o => o.Day).Distinct().ToList();
+
             }
+            Days = TimeTable.Select(o => o.Day).Distinct().ToList();
+
             //Days = Days.OrderBy(i => weekDays.IndexOf(i.ToString())).ToList();
 
             _serviceResponse.Data = new

@@ -366,11 +366,11 @@ namespace CoreWebApi.Data
                         string BillNumber = lastVoucherRecord.BillNumber.Substring(7, 7);
                         int LastBillNumber = Convert.ToInt32(BillNumber);
                         int NextBillNumber = ++LastBillNumber;
-                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
+                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month:00}{DateTime.Now.Day:00}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
                     }
                     else
                     {
-                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{1:0000000}-{_LoggedIn_BranchID}";
+                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month:00}{DateTime.Now.Day:00}{1:0000000}-{_LoggedIn_BranchID}";
                     }
                     var ExtraChargesOfThisMonth = _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Sum(m => m.ExtraChargesAmount);
                     var ToAdd = new FeeVoucherRecord
@@ -396,7 +396,7 @@ namespace CoreWebApi.Data
                     };
                     ListToAdd.Add(ToAdd);
                 }
-                await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd);
+                await _context.FeeVoucherRecords.AddRangeAsync(ListToAdd.Where(m => m.Id == 0));
                 await _context.SaveChangesAsync();
             }
 

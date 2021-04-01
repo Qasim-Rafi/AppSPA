@@ -151,7 +151,7 @@ namespace CoreWebApi.Data
             // composite primary key
 
             modelBuilder.Entity<ClassLectureAssignment>()
-                .HasIndex(p => new { p.LectureId, p.TeacherId, p.ClassSectionId })
+                .HasIndex(p => new { p.LectureId, p.TeacherId })//, p.ClassSectionId
                 .IsUnique(true);
             // composite primary key
             modelBuilder.Entity<ClassSection>()

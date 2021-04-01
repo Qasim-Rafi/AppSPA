@@ -84,7 +84,7 @@ namespace CoreWebApi.Data
                                            select new
                                            {
                                                school,
-                                               schoolExamType = "Semester",//_context.ExamTypes.FirstOrDefault(m=>m.Id==branch.ExamTypeId).Type,
+                                               schoolExamType = "Semester",//"Annual",//_context.ExamTypes.FirstOrDefault(m=>m.Id==branch.ExamTypeId).Type,
                                                logo = _fileRepo.AppendMultiDocPath(school.Logo),
                                                branch
                                            }).FirstOrDefaultAsync();
