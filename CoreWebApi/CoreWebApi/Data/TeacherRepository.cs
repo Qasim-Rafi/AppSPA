@@ -624,11 +624,23 @@ namespace CoreWebApi.Data
                 TimeTable.AddRange(ToAdd.TimeTable.Where(m => m.TeacherId == _LoggedIn_UserID || m.TeacherId == 0));
                 if (item == "Monday")
                 {
-                    TimeSlots = TimeTable.Select(o => new TeacherTimeSlotsForListDto
+                    //var slots = TimeTable.Select(o => new
+                    //{
+                    //    StartTime = o.StartTime,
+                    //    EndTime = o.EndTime
+                    //}).Distinct().ToList();
+
+                    //TimeSlots = slots.Select(o => new TeacherTimeSlotsForListDto
+                    //{
+                    //    StartTime = o.StartTime,
+                    //    EndTime = o.EndTime
+                    //}).ToList();
+                    TimeSlots = _context.LectureTiming.Select(o => new TeacherTimeSlotsForListDto
                     {
-                        StartTime = o.StartTime,
-                        EndTime = o.EndTime
-                    }).ToList();
+                        StartTime = DateFormat.To24HRTime(o.StartTime),
+                        EndTime = DateFormat.To24HRTime(o.EndTime)
+                    }).Distinct().ToList();
+                    
                 }
 
             }
