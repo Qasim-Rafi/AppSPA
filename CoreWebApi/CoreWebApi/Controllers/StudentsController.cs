@@ -38,7 +38,9 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (await _repo.PaidAlready(DateTime.Now.ToString("MMM"), model.StudentId))
+            string CurrentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+
+            if (await _repo.PaidAlready(CurrentMonth, model.StudentId))
                 return BadRequest(new { message = CustomMessage.FeeAlreadyPaid });
             _response = await _repo.AddFee(model);
 

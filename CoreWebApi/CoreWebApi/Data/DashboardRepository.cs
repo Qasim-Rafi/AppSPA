@@ -645,7 +645,8 @@ namespace CoreWebApi.Data
                                                           Paid = fee.Paid,
                                                           Remarks = fee.Remarks,
                                                       }).ToListAsync();
-                string CurrentMonth = DateTime.Now.ToString("MMMM");
+
+                string CurrentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
                 var currentMonthFee = item.Fees.AllMonthPaidStatus.Where(m => m.Month == CurrentMonth).FirstOrDefault();
                 if (currentMonthFee != null)
                     item.Fees.CurrentMonthPaidStatus = true;

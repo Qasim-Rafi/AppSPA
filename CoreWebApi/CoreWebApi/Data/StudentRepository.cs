@@ -50,19 +50,35 @@ namespace CoreWebApi.Data
             }
             else
             {
+                var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
                 var ToAdd = new StudentFee
                 {
                     StudentId = model.StudentId,
                     ClassSectionId = model.ClassSectionId,
                     Remarks = model.Remarks,
                     Paid = model.Paid,
-                    Month = DateTime.Now.ToString("MMMM"),
+                    Month = currentMonth,
                     CreatedDateTime = DateTime.Now,
                     CreatedById = _LoggedIn_UserID,
                     SchoolBranchId = _LoggedIn_BranchID,
                 };
                 await _context.StudentFees.AddAsync(ToAdd);
                 await _context.SaveChangesAsync();
+
+                var ToUpdateInstallmentPaidStatus = (from sfm in _context.SemesterFeeMappings
+                                                     join fi in _context.FeeInstallments
+                                                     on sfm.Id equals fi.SemesterFeeMappingId
+
+                                                     where sfm.StudentId == ToAdd.StudentId
+                                                     && fi.Paid == false
+
+                                                     orderby fi.Id
+                                                     select fi).FirstOrDefault();
+                ToUpdateInstallmentPaidStatus.PaidMonth = currentMonth;
+                ToUpdateInstallmentPaidStatus.Paid = true;
+                _context.FeeInstallments.Update(ToUpdateInstallmentPaidStatus);
+                await _context.SaveChangesAsync();
+
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
             }
@@ -71,7 +87,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetStudentsForFee()
         {
-            string CurrentMonth = DateTime.Now.ToString("MMMM");
+            string CurrentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
             var PaidStudents = await (from fee in _context.StudentFees
                                       join u in _context.Users
                                       on fee.StudentId equals u.Id
@@ -244,6 +260,6 @@ namespace CoreWebApi.Data
 
         }
 
-       
+
     }
 }

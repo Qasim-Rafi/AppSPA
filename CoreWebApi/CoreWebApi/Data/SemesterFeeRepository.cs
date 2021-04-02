@@ -377,7 +377,7 @@ namespace CoreWebApi.Data
 
             if (students.Count() > 0)
             {
-                List<FeeVoucherRecord> ListToAdd = _context.FeeVoucherRecords.ToList();
+                List<FeeVoucherRecord> ListToAdd = _context.FeeVoucherRecords.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).ToList();
                 for (int i = 0; i < students.Count(); i++)
                 {
                     var item = students[i];
@@ -385,7 +385,7 @@ namespace CoreWebApi.Data
                     string NewBillNo = "";
                     if (lastVoucherRecord != null)
                     {
-                        string BillNumber = lastVoucherRecord.BillNumber.Substring(7, 7);
+                        string BillNumber = lastVoucherRecord.BillNumber.Substring(8, 7);
                         int LastBillNumber = Convert.ToInt32(BillNumber);
                         int NextBillNumber = ++LastBillNumber;
                         NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month:00}{DateTime.Now.Day:00}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
