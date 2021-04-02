@@ -187,6 +187,28 @@ namespace CoreWebApi.Data
             await _context.SemesterFeeMappings.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
 
+            if (ToAdd.Installments > 1)
+            {
+                var installmentAmount = ToAdd.FeeAfterDiscount / ToAdd.Installments;
+                List<FeeInstallment> ListToAdd = new List<FeeInstallment>();
+                for (int i = 0; i < ToAdd.Installments; i++)
+                {
+                    var ToAdd2 = new FeeInstallment
+                    {
+                        SemesterFeeMappingId = ToAdd.Id,
+                        PaidMonth = null,
+                        Amount = installmentAmount,
+                        Paid = false,
+                        Active = true,
+                        CreatedDateTime = DateTime.Now,
+                        CreatedById = _LoggedIn_UserID,
+                        SchoolBranchId = _LoggedIn_BranchID,
+                    };
+                    ListToAdd.Add(ToAdd2);
+                }
+                await _context.FeeInstallments.AddRangeAsync(ListToAdd);
+                await _context.SaveChangesAsync();
+            }
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
@@ -446,7 +468,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetAllBankAccount()
         {
-            var ToReturn = await _context.BankAccounts.Where(m => m.Active == true)
+            var ToReturn = await _context.BankAccounts.Where(m => m.Active == true && m.SchoolBranchId == _LoggedIn_BranchID)
                   .OrderByDescending(m => m.Id).Select(o => new BankAccountForListDto
                   {
                       Id = o.Id,

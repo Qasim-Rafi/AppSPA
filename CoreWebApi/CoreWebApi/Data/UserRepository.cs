@@ -305,18 +305,22 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetLastStudentRegNo()
         {
-            User lastUser = _context.Users.ToList().LastOrDefault(m => m.UserTypeId == (int)Enumm.UserType.Student && !string.IsNullOrEmpty(m.RegistrationNumber));
-
-            _serviceResponse.Data = lastUser.RegistrationNumber;
+            User lastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && !string.IsNullOrEmpty(m.RegistrationNumber) && m.SchoolBranchId == _LoggedIn_BranchID).ToList().LastOrDefault();
+            bool SchoolHasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:SchoolHaveRegistrationNumbers").Value);
+            _serviceResponse.Data = new { lastUser?.RegistrationNumber, SchoolHasRegistrationNumber };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
 
-        public async Task<bool> UserExists(string username)
+        public async Task<bool> UserExists(string username, string regNo)
         {
-            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
             bool isExist = false;
-            if (await _context.Users.AnyAsync(x => x.Username.ToLower() == username.ToLower() && x.SchoolBranchId == _LoggedIn_BranchID))
+
+            if (!string.IsNullOrEmpty(username) && (await _context.Users.AnyAsync(x => x.Username.ToLower() == username.ToLower() && x.SchoolBranchId == _LoggedIn_BranchID)))
+            {
+                isExist = true;
+            }
+            if (!string.IsNullOrEmpty(regNo) && (await _context.Users.AnyAsync(x => x.RegistrationNumber.ToLower() == regNo.ToLower() && x.SchoolBranchId == _LoggedIn_BranchID)))
             {
                 isExist = true;
             }
@@ -336,10 +340,10 @@ namespace CoreWebApi.Data
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
-
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
-                    var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student).ToList().LastOrDefault();
-                    var HasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:SchoolHaveRegistrationNumbers").Value);
+                    var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && m.SchoolBranchId == _LoggedIn_BranchID).LastOrDefault();
+                    bool HasRegistrationNumber = false;
+                    HasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:SchoolHaveRegistrationNumbers").Value);
                     if (HasRegistrationNumber)
                     {
                         NewRegNo = userDto.RegistrationNumber;
@@ -977,7 +981,7 @@ namespace CoreWebApi.Data
                                        IsPrimary = x.IsPrimary,
                                        Url = _File.AppendImagePath(x.Name)
                                    }).ToList(),
-                               }).ToListAsync();
+                               }).Distinct().ToListAsync();
 
             _serviceResponse.Data = users;
             return _serviceResponse;

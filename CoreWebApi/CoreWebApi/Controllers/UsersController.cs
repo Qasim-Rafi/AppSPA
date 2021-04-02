@@ -85,7 +85,7 @@ namespace CoreWebApi.Controllers
             userForAddDto.Username = userForAddDto.Username.ToLower();
             //userForAddDto.ParentEmail = userForAddDto.ParentEmail.ToLower();
 
-            if (await _repo.UserExists(userForAddDto.Username))
+            if (await _repo.UserExists(userForAddDto.Username, userForAddDto.RegistrationNumber))
                 return BadRequest(new { message = CustomMessage.UserAlreadyExist });
             if (!string.IsNullOrEmpty(userForAddDto.Email) && !string.IsNullOrEmpty(userForAddDto.ParentEmail) && userForAddDto.Email.ToLower() == userForAddDto.ParentEmail.ToLower())
                 return BadRequest(new { message = CustomMessage.EmailSameOfParentChild });

@@ -106,6 +106,8 @@ namespace CoreWebApi.Dtos
     {
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public string StartTimeToDisplay { get; set; }
+        public string EndTimeToDisplay { get; set; }
     }
     public class TeacherTimeTableForListDto
     {

@@ -16,7 +16,7 @@ namespace CoreWebApi.Helpers
         public const string NewPasswordNotGiven = "New password not provided";
         public const string UnableToAdd = "Unable to add data";
         public const string SomeErrorOccured = "Some error occured";
-        public const string UserAlreadyExist = "User already exist";
+        public const string UserAlreadyExist = "User of this username or registration number already exist";
         public const string RecordAlreadyExist = "Record already exist";
         public const string ChildRecordExist = "Record contains child record(s) in another table. Please remove them first";
         public const string RecordRelationExist = "{0} record contains association in another table. Please remove all associations";

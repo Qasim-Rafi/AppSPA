@@ -497,7 +497,7 @@ namespace CoreWebApi.Data
                                   {
                                       SubjectId = main.SubjectId,
                                       SubjectName = main.Subject.Name
-                                  }).ToListAsync();
+                                  }).Distinct().ToListAsync();
 
                 _serviceResponse.Data = list;
             }
@@ -513,7 +513,7 @@ namespace CoreWebApi.Data
                                       Id = cs.Id,
                                       SemesterName = cs.SemesterObj.Name,
                                       SectionName = cs.Section.SectionName,
-                                  }).ToListAsync();
+                                  }).Distinct().ToListAsync();
 
                 _serviceResponse.Data = list;
             }

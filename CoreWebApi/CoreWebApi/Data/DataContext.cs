@@ -86,6 +86,7 @@ namespace CoreWebApi.Data
         public DbSet<FeeVoucherDetail> FeeVoucherDetails { get; set; }
         public DbSet<FeeVoucherRecord> FeeVoucherRecords { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
+        public DbSet<FeeInstallment> FeeInstallments { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }

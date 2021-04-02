@@ -17,7 +17,7 @@ namespace CoreWebApi.IData
 
         Task<ServiceResponse<UserForDetailedDto>> GetUser(GetByIdFlagDto model);
         Task<ServiceResponse<object>> ActiveInActiveUser(int id, bool status);
-        Task<bool> UserExists(string username);
+        Task<bool> UserExists(string username, string regNo);
         Task<ServiceResponse<UserForListDto>> AddUser(UserForAddDto user);
         Task<ServiceResponse<string>> EditUser(int id, UserForUpdateDto userForAddDto);
         Task<ServiceResponse<string>> UpdateProfile(int id, UserForUpdateDto userForAddDto);

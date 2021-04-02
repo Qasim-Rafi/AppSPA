@@ -403,30 +403,30 @@ namespace CoreWebApi.Data
                             await _context.SaveChangesAsync();
                         }
                     }
-                    var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
-                    foreach (var item in ExistIds)
-                    {
-                        if (!string.IsNullOrEmpty(model.LastOrDefault().LevelFrom.ToString()) && !string.IsNullOrEmpty(model.LastOrDefault().LevelTo.ToString()))
-                        {
-                            var LevelFromName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelFrom).FirstOrDefault().Name;
-                            var LevelToName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelTo).FirstOrDefault().Name;
-                            if (!string.IsNullOrEmpty(LevelFromName))
-                                LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
-                            if (!string.IsNullOrEmpty(LevelToName))
-                                LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
-                            List<int> NumberList = new List<int>();
-                            for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
-                            {
-                                NumberList.Add(i);
-                            }
-                            var Levels = string.Join(',', NumberList);
-                            item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom : 0;
-                            item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo : 0;
-                            item.FromToLevels = Levels;
-                        }
+                    //var ExistIds = getExperties.Where(m => model.Select(n => n.SubjectId).Contains(m.SubjectId)).ToList();
+                    //foreach (var item in ExistIds)
+                    //{
+                    //    if (!string.IsNullOrEmpty(model.LastOrDefault().LevelFrom.ToString()) && !string.IsNullOrEmpty(model.LastOrDefault().LevelTo.ToString()))
+                    //    {
+                    //        var LevelFromName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelFrom).FirstOrDefault().Name;
+                    //        var LevelToName = _context.Class.Where(m => m.Id == model.LastOrDefault().LevelTo).FirstOrDefault().Name;
+                    //        if (!string.IsNullOrEmpty(LevelFromName))
+                    //            LevelFromName = Regex.Replace(LevelFromName, @"[^\d]", "");
+                    //        if (!string.IsNullOrEmpty(LevelToName))
+                    //            LevelToName = Regex.Replace(LevelToName, @"[^\d]", "");
+                    //        List<int> NumberList = new List<int>();
+                    //        for (int i = Convert.ToInt32(LevelFromName); i <= Convert.ToInt32(LevelToName); i++)
+                    //        {
+                    //            NumberList.Add(i);
+                    //        }
+                    //        var Levels = string.Join(',', NumberList);
+                    //        item.LevelFrom = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelFrom : 0;
+                    //        item.LevelTo = model.FirstOrDefault(m => m.TeacherId == teacherId) != null ? model.FirstOrDefault(m => m.TeacherId == teacherId).LevelTo : 0;
+                    //        item.FromToLevels = Levels;
+                    //    }
 
-                        ListToUpdate.Add(item);
-                    }
+                    //    ListToUpdate.Add(item);
+                    //}
                 }
 
                 if (ListToAdd.Count() > 0)
@@ -621,7 +621,7 @@ namespace CoreWebApi.Data
                                            IsFreePeriod = mainu.Id == _LoggedIn_UserID ? false : true
                                        }).ToListAsync()
                 };
-                TimeTable.AddRange(ToAdd.TimeTable.Where(m => m.TeacherId == _LoggedIn_UserID || m.TeacherId == 0));
+                TimeTable.AddRange(ToAdd.TimeTable);//.Where(m => m.TeacherId == _LoggedIn_UserID || m.TeacherId == 0));
                 if (item == "Monday")
                 {
                     //var slots = TimeTable.Select(o => new
@@ -638,7 +638,9 @@ namespace CoreWebApi.Data
                     TimeSlots = _context.LectureTiming.Select(o => new TeacherTimeSlotsForListDto
                     {
                         StartTime = DateFormat.To24HRTime(o.StartTime),
-                        EndTime = DateFormat.To24HRTime(o.EndTime)
+                        EndTime = DateFormat.To24HRTime(o.EndTime),
+                        StartTimeToDisplay = DateFormat.ToTime(o.StartTime),
+                        EndTimeToDisplay = DateFormat.ToTime(o.EndTime),
                     }).Distinct().ToList();
                     
                 }
