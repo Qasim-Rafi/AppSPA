@@ -17,5 +17,6 @@ namespace CoreWebApi.Controllers
         Task<ServiceResponse<object>> GetParentChildAttendance();
         Task<ServiceResponse<object>> GetParentChildFee();
         Task<ServiceResponse<object>> GetStudentFeeVoucher();
+        Task<ServiceResponse<object>> GetThisMonthAttendanceOfSemesterStudent();
     }
 }

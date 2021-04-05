@@ -25,6 +25,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
         private string _LoggedIn_UserRole = "";
+        private string _LoggedIn_SchoolExamType = "";
         private readonly IFilesRepository _File;
         public DashboardRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IFilesRepository file)
         {
@@ -34,6 +35,7 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _File = file;
         }
         public ServiceResponse<object> GetDashboardCounts()
@@ -170,8 +172,9 @@ namespace CoreWebApi.Data
 
                 var onlyStudentNames = StudentMonthWisePercentage.Select(m => m.MonthName);
                 var onlyTeacherNames = TeacherMonthWisePercentage.Select(m => m.MonthName);
-                foreach (var month in Months)
+                for (int i = 0; i < Months.Length; i++)
                 {
+                    string month = Months[i];
                     if (!onlyStudentNames.Contains(month))
                     {
                         StudentMonthWisePercentage.Add(new GetAttendancePercentageByMonthDto
@@ -224,6 +227,7 @@ namespace CoreWebApi.Data
                 var StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 var LastDate = DateTime.Today.Date;
                 var DaysCount = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
+
                 var UserPresentCount = (from u in _context.Users
                                         join att in _context.Attendances
                                         on u.Id equals att.UserId
@@ -236,9 +240,9 @@ namespace CoreWebApi.Data
 
                 var LoggedUserAttendanceByMonthPercentage = new List<ThisMonthAttendancePercentageDto>();
                 string[] Months = new string[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
-                foreach (var month in Months)
+                for (int i = 0; i < Months.Length; i++)
                 {
-
+                    string month = Months[i];
                     var StartDateByMonth = new DateTime(DateTime.Now.Year, (Array.IndexOf(Months, month) + 1), 1);
                     var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
                     var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
@@ -259,6 +263,12 @@ namespace CoreWebApi.Data
                 }
                 _serviceResponse.Data = new { CurrentMonthLoggedUserPercentage, LoggedUserAttendanceByMonthPercentage };
                 _serviceResponse.Success = true;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.UserNotLoggedIn;
+
             }
             return _serviceResponse;
 
@@ -385,13 +395,9 @@ namespace CoreWebApi.Data
         {
             if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
             {
-                if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
+                if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString() && _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
                 {
-                    //var CSIds = await (from cla in _context.ClassLectureAssignment
-                    //                   join cs in _context.ClassSections
-                    //                   on cla.ClassSectionId equals cs.Id
-                    //                   where cla.TeacherId == _LoggedIn_UserID
-                    //                   select cs.Id).Distinct().ToListAsync();
+
                     var CSIds = await (from csUser in _context.ClassSectionUsers
                                        where csUser.UserId == _LoggedIn_UserID
                                        select csUser.ClassSectionId).ToListAsync();
@@ -413,6 +419,37 @@ namespace CoreWebApi.Data
                                                   Url = _File.AppendImagePath(x.Name)
                                               }).ToList()
                                           }).ToListAsync();
+                    _serviceResponse.Success = true;
+                    _serviceResponse.Data = new { Students, StudentCount = Students.Count() };
+                }
+                else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString() && _LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString())
+                {
+                    var CSIds = await (from cla in _context.ClassLectureAssignment
+                                       join cs in _context.ClassSections
+                                       on cla.ClassSectionId equals cs.Id
+                                       where cla.TeacherId == _LoggedIn_UserID
+                                       select cs.Id).Distinct().ToListAsync();
+
+
+                    var Students = (from csId in CSIds
+                                    join csUser in _context.ClassSectionUsers
+                                    on csId equals csUser.ClassSectionId
+                                    join u in _context.Users
+                                    on csUser.UserId equals u.Id
+                                    where u.Role == Enumm.UserType.Student.ToString()
+                                    //&& CSIds.Contains(csUser.ClassSectionId)
+                                    && u.Active == true
+                                    select u).Select(s => new
+                                    {
+                                        Id = s.Id,
+                                        FullName = s.FullName,
+                                        RollNo = s.RollNumber,
+                                        Photos = _context.Photos.Where(m => m.UserId == s.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
+                                        {
+                                            x.Name,
+                                            Url = _File.AppendImagePath(x.Name)
+                                        }).ToList()
+                                    }).ToList();
 
                     _serviceResponse.Success = true;
                     _serviceResponse.Data = new { Students, StudentCount = Students.Count() };
@@ -697,6 +734,65 @@ namespace CoreWebApi.Data
 
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetThisMonthAttendanceOfSemesterStudent()
+        {
+            if (_LoggedIn_UserID != 0)
+            {
+                var StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var LastDate = DateTime.Today.Date;
+                var DaysCount = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
+                var UserPresentCount = (from u in _context.Users
+                                        join att in _context.Attendances
+                                        on u.Id equals att.UserId
+                                        where u.UserTypeId == (int)Enumm.UserType.Student
+                                        && u.Id == _LoggedIn_UserID
+                                        && att.Present == true
+                                        && att.CreatedDatetime.Date >= StartDate.Date && att.CreatedDatetime.Date <= LastDate.Date
+                                        select att).ToList().Count();
+                var CurrentMonthLoggedUserPercentage = GenericFunctions.CalculatePercentage(UserPresentCount, DaysCount);
+
+                var studentSemesters = (from csU in _context.ClassSectionUsers
+                                        join cs in _context.ClassSections
+                                        on csU.ClassSectionId equals cs.Id
+                                        where csU.UserId == _LoggedIn_UserID
+                                        select cs.SemesterId).ToList();
+
+                var studentSubjects = _context.SubjectAssignments.Where(m => studentSemesters.Contains(m.SemesterId)).Select(m => m.SubjectId).Distinct().ToList();
+
+                var LoggedUserAttendanceByMonthPercentage = new List<ThisMonthAttendanceOfSemesterStdDto>();
+                for (int i = 0; i < studentSubjects.Count(); i++)
+                {
+                    int subjectId = studentSubjects[i];
+                    var StartDateByMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                    var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
+                    var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
+                    var UserPresentCountByMonth = (from u in _context.Users
+                                                   join att in _context.Attendances
+                                                   on u.Id equals att.UserId
+                                                   where u.UserTypeId == (int)Enumm.UserType.Student
+                                                   && att.Id == _LoggedIn_UserID
+                                                   && att.Present == true
+                                                   && att.CreatedDatetime.Date >= StartDateByMonth.Date && att.CreatedDatetime.Date <= LastDateByMonth.Date
+                                                   && att.SubjectId == subjectId
+                                                   select att).ToList().Count();
+                    LoggedUserAttendanceByMonthPercentage.Add(new ThisMonthAttendanceOfSemesterStdDto
+                    {
+                        SubjectName = _context.Subjects.FirstOrDefault(m => m.Id == subjectId).Name,
+                        Percentage = GenericFunctions.CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth)
+                    });
+                }
+                _serviceResponse.Data = new { CurrentMonthLoggedUserPercentage, LoggedUserAttendanceByMonthPercentage };
+                _serviceResponse.Success = true;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.UserNotLoggedIn;
+
+            }
             return _serviceResponse;
         }
     }

@@ -64,6 +64,12 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetLoggedUserAttendancePercentage();
             return Ok(_response);
         }
+        [HttpGet("GetThisMonthAttendanceOfSemesterStudent")]
+        public async Task<IActionResult> GetThisMonthAttendanceOfSemesterStudent()
+        {
+            _response = await _repo.GetThisMonthAttendanceOfSemesterStudent();
+            return Ok(_response);
+        }
         [HttpGet("GetNotifications")]
         public async Task<IActionResult> GetNotifications()
         {

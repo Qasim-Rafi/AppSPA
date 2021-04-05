@@ -94,4 +94,9 @@ namespace CoreWebApi.Dtos
         public string MonthName { get; set; } = "";
         public decimal Percentage { get; set; }
     }
+    public class ThisMonthAttendanceOfSemesterStdDto
+    {
+        public string SubjectName { get; set; } = "";
+        public decimal Percentage { get; set; }
+    }
 }
