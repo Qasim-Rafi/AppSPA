@@ -24,6 +24,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
         private string _LoggedIn_UserRole = "";
+        private readonly string _LoggedIn_SchoolExamType = "";
         private readonly IMapper _mapper;
         ServiceResponse<object> _serviceResponse;
         public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository filesRepository)
@@ -34,6 +35,7 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _mapper = mapper;
             _filesRepository = filesRepository;
             _serviceResponse = new ServiceResponse<object>();
@@ -101,7 +103,11 @@ namespace CoreWebApi.Data
                                           Id = o.Id,
                                           AssignmentName = o.AssignmentName,
                                           ClassSectionId = o.ClassSectionId,
-                                          ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
+                                          ClassSection = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString()
+                                          ? (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
+                                            ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : ""
+                                          : (_context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
+                                            ? _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : "",
                                           RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
                                           FileName = SplitValues(o.FileName),
                                           Details = o.Details,
@@ -131,7 +137,11 @@ namespace CoreWebApi.Data
                                           Id = o.Id,
                                           AssignmentName = o.AssignmentName,
                                           ClassSectionId = o.ClassSectionId,
-                                          ClassSection = (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true) != null) ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active == true).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active == true).SectionName : "",
+                                          ClassSection = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString()
+                                          ? (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
+                                            ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : ""
+                                          : (_context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
+                                            ? _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : "",
                                           RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
                                           FileName = SplitValues(o.FileName),
                                           Details = o.Details,

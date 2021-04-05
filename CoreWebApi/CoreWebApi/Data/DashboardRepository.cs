@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -21,11 +20,11 @@ namespace CoreWebApi.Data
     {
         private readonly DataContext _context;
         private readonly ServiceResponse<object> _serviceResponse;
-        private int _LoggedIn_UserID = 0;
-        private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = "";
-        private string _LoggedIn_UserRole = "";
-        private string _LoggedIn_SchoolExamType = "";
+        private readonly int _LoggedIn_UserID = 0;
+        private readonly int _LoggedIn_BranchID = 0;
+        private readonly string _LoggedIn_UserName = "";
+        private readonly string _LoggedIn_UserRole = "";
+        private readonly string _LoggedIn_SchoolExamType = "";
         private readonly IFilesRepository _File;
         public DashboardRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IFilesRepository file)
         {
@@ -757,34 +756,57 @@ namespace CoreWebApi.Data
                 var studentSemesters = (from csU in _context.ClassSectionUsers
                                         join cs in _context.ClassSections
                                         on csU.ClassSectionId equals cs.Id
-                                        where csU.UserId == _LoggedIn_UserID
-                                        select cs.SemesterId).ToList();
 
-                var studentSubjects = _context.SubjectAssignments.Where(m => studentSemesters.Contains(m.SemesterId)).Select(m => m.SubjectId).Distinct().ToList();
+                                        join sem in _context.Semesters
+                                        on cs.SemesterId equals sem.Id
+                                        where csU.UserId == _LoggedIn_UserID
+                                        select new { cs.SemesterId, cs.SemesterObj.Name, sem.StartDate, sem.EndDate }).ToList();
+
+                var SemesterDetails = $"{studentSemesters[0].Name} From {studentSemesters[0].StartDate.ToShortDateString()} To {studentSemesters[0].EndDate.ToShortDateString()}";
+                var studentSubjects = (from l in studentSemesters
+                                       join sa in _context.SubjectAssignments
+                                       on l.SemesterId equals sa.SemesterId
+                                       select new { sa.SubjectId, sa.Subject.Name, l.StartDate, l.EndDate }).Distinct().ToList();
 
                 var LoggedUserAttendanceByMonthPercentage = new List<ThisMonthAttendanceOfSemesterStdDto>();
+                var Start = studentSubjects[0].StartDate;
+                var End = studentSubjects[0].EndDate;
+                End = new DateTime(End.Year, End.Month, DateTime.DaysInMonth(End.Year, End.Month));
+
+                var Months = Enumerable.Range(0, Int32.MaxValue).Select(e => Start.AddMonths(e)).TakeWhile(e => e <= End).Select(e => e.Month).ToArray();
+                decimal allMonthPercentage = 0;
+
                 for (int i = 0; i < studentSubjects.Count(); i++)
                 {
-                    int subjectId = studentSubjects[i];
-                    var StartDateByMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                    var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
-                    var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
-                    var UserPresentCountByMonth = (from u in _context.Users
-                                                   join att in _context.Attendances
-                                                   on u.Id equals att.UserId
-                                                   where u.UserTypeId == (int)Enumm.UserType.Student
-                                                   && att.Id == _LoggedIn_UserID
-                                                   && att.Present == true
-                                                   && att.CreatedDatetime.Date >= StartDateByMonth.Date && att.CreatedDatetime.Date <= LastDateByMonth.Date
-                                                   && att.SubjectId == subjectId
-                                                   select att).ToList().Count();
+                    var item = studentSubjects[i];
+
+                    for (int j = 0; j < Months.Length; j++)
+                    {
+                        var month = Months[j];
+                        var StartDateByMonth = new DateTime(DateTime.Now.Year, month, 1);
+                        var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
+                        var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
+
+                        var UserPresentCountByMonth = (from u in _context.Users
+                                                       join att in _context.Attendances
+                                                       on u.Id equals att.UserId
+                                                       where u.UserTypeId == (int)Enumm.UserType.Student
+                                                       && att.Id == _LoggedIn_UserID
+                                                       && att.Present == true
+                                                       && att.CreatedDatetime.Date >= StartDateByMonth.Date && att.CreatedDatetime.Date <= LastDateByMonth.Date
+                                                       && att.SubjectId == item.SubjectId
+                                                       select att).ToList().Count();
+
+                        allMonthPercentage += GenericFunctions.CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth);
+                    }
+
                     LoggedUserAttendanceByMonthPercentage.Add(new ThisMonthAttendanceOfSemesterStdDto
                     {
-                        SubjectName = _context.Subjects.FirstOrDefault(m => m.Id == subjectId).Name,
-                        Percentage = GenericFunctions.CalculatePercentage(UserPresentCountByMonth, DaysCountByMonth)
+                        SubjectName = item.Name,
+                        Percentage = allMonthPercentage / Months.Length,
                     });
                 }
-                _serviceResponse.Data = new { CurrentMonthLoggedUserPercentage, LoggedUserAttendanceByMonthPercentage };
+                _serviceResponse.Data = new { CurrentMonthLoggedUserPercentage, LoggedUserAttendanceByMonthPercentage, SemesterDetails };
                 _serviceResponse.Success = true;
             }
             else

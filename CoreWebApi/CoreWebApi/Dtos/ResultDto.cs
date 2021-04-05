@@ -36,6 +36,7 @@ namespace CoreWebApi.Dtos
     {
         public int ClassSectionId { get; set; }
         public string Classs { get; set; }
+        public string Semester { get; set; }
         public string Section { get; set; }
     }
     public class ExamForResultListDto

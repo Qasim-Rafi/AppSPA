@@ -21,6 +21,7 @@ namespace CoreWebApi.Data
         private int _LoggedIn_BranchID = 0;
         private string _LoggedIn_UserName = "";
         private string _LoggedIn_UserRole = "";
+        private readonly string _LoggedIn_SchoolExamType = "";
         private readonly IMapper _mapper;
         ServiceResponse<object> _serviceResponse;
         public ResultRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository filesRepository)
@@ -30,6 +31,7 @@ namespace CoreWebApi.Data
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _mapper = mapper;
             _fileRepo = filesRepository;
             _serviceResponse = new ServiceResponse<object>();
@@ -71,7 +73,8 @@ namespace CoreWebApi.Data
                                        select new ClassSectionForResultListDto
                                        {
                                            ClassSectionId = cs.Id,
-                                           Classs = cs.Class.Name,
+                                           Classs = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString() ? cs.Class.Name : null,
+                                           Semester = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString() ? cs.SemesterObj.Name : null,
                                            Section = cs.Section.SectionName
                                        }).Distinct().ToListAsync();
 
