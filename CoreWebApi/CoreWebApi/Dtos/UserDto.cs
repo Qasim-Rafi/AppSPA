@@ -198,13 +198,14 @@ namespace CoreWebApi.Dtos
     public class UserForRegisterDto
     {
         public string SchoolName { get; set; }
+        public string ExamType { get; set; }
         [Required]
         public string Username { get; set; }
         public string FullName { get; set; }
         [Required]
         [StringLength(8, MinimumLength = 4, ErrorMessage = "You must specify password between 4 and 8 characters")]
         public string Password { get; set; }
-        public string Gender { get; set; }
+        public string Gender { get; set; } = "male";
 
         [EmailAddress]
         public string Email { get; set; }

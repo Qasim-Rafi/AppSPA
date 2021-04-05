@@ -84,7 +84,7 @@ namespace CoreWebApi.Data
                                            select new
                                            {
                                                school,
-                                               schoolExamType = "Semester",//"Annual",//_context.ExamTypes.FirstOrDefault(m=>m.Id==branch.ExamTypeId).Type,
+                                               schoolExamType = branch.ExamType,
                                                logo = _fileRepo.AppendMultiDocPath(school.Logo),
                                                branch
                                            }).FirstOrDefaultAsync();
@@ -103,7 +103,7 @@ namespace CoreWebApi.Data
                                            select new
                                            {
                                                school,
-                                               schoolExamType = "Semester",//_context.ExamTypes.FirstOrDefault(m=>m.Id==branch.ExamTypeId).Type,
+                                               schoolExamType = branch.ExamType,
                                                logo = _fileRepo.AppendMultiDocPath(school.Logo),
                                                branch
                                            }).FirstOrDefaultAsync();
@@ -153,8 +153,8 @@ namespace CoreWebApi.Data
                     Name = string.IsNullOrEmpty(model.SchoolName) ? "School-" + (schools.Count() + 1) : model.SchoolName,
                     PrimaryContactPerson = model.Username,
                     SecondaryContactPerson = model.Username,
-                    PrimaryphoneNumber = "0000-0000000",
-                    SecondaryphoneNumber = "0000-0000000",
+                    PrimaryphoneNumber = "---",
+                    SecondaryphoneNumber = "---",
                     Email = model.Email,
                     PrimaryAddress = "---",
                     SecondaryAddress = "---",
@@ -185,7 +185,8 @@ namespace CoreWebApi.Data
                         SchoolAcademyID = schoolAcademyId,
                         CreatedDateTime = DateTime.Now,
                         Active = true,
-                        RegistrationNumber = branches.Count() == 1 ? "10000000" : (Convert.ToInt32(branches.FirstOrDefault().RegistrationNumber) + 1).ToString()
+                        RegistrationNumber = branches.Count() == 1 ? "10000000" : (Convert.ToInt32(branches.FirstOrDefault().RegistrationNumber) + 1).ToString(),
+                        ExamType = model.ExamType,
                     };
 
                     _context.AddRange(schoolBranhes);
@@ -224,7 +225,7 @@ namespace CoreWebApi.Data
                     UserTypeId = (int)Enumm.UserType.Tutor,
                     Email = model.Email,
                     SchoolBranchId = branch.Id,
-                    Gender = "male",
+                    Gender = model.Gender,
                     Active = true,
                     CreatedDateTime = DateTime.Now,
                     Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Tutor).FirstOrDefault()?.Name
@@ -249,7 +250,7 @@ namespace CoreWebApi.Data
                     UserTypeId = (int)Enumm.UserType.OnlineStudent,
                     Email = model.Email,
                     SchoolBranchId = branch.Id,
-                    Gender = "male",
+                    Gender = model.Gender,
                     Active = true,
                     CreatedDateTime = DateTime.Now,
                     Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.OnlineStudent).FirstOrDefault()?.Name

@@ -20,13 +20,12 @@ namespace CoreWebApi.Models
         [StringLength(100, ErrorMessage = "Branch Name cannot be longer than 100 characters.")]
         public string BranchName { get; set; }
         public int SchoolAcademyID { get; set; }
-        //public int ExamTypeId { get; set; }
+        [Required]
+        public string ExamType { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public bool Active { get; set; }
 
         [ForeignKey("SchoolAcademyID")]  
-        public virtual SchoolAcademy SchoolAcademy { get; set; }
-        //[ForeignKey("ExamTypeId")]  
-        //public virtual ExamType ExamType { get; set; }
+        public virtual SchoolAcademy SchoolAcademy { get; set; }       
     }
 }
