@@ -92,20 +92,23 @@ namespace CoreWebApi.Data
                                       ClassSectionId = cla.ClassSectionId,
                                   }).Distinct().ToListAsync();
 
-            var Exams = await (from u in _context.Users
-                               join ass in _context.ClassSectionAssignment
-                               on u.Id equals ass.CreatedById
+            var Exams = (from s in Subjects
+                         join ass in _context.ClassSectionAssignment
+                         on s.SubjectId equals ass.SubjectId
 
-                               join assSub in _context.ClassSectionAssigmentSubmissions
-                               on ass.Id equals assSub.ClassSectionAssignmentId
+                         join u in _context.Users
+                         on ass.CreatedById equals u.Id
 
-                               where u.Id == _LoggedIn_UserID
-                               //&& ass.DueDateTime.Value.Date <= DateTime.Now.Date
-                               select new ExamForResultListDto
-                               {
-                                   RefId = ass.Id,
-                                   RefName = ass.AssignmentName,
-                               }).Distinct().ToListAsync();
+                         join assSub in _context.ClassSectionAssigmentSubmissions
+                         on ass.Id equals assSub.ClassSectionAssignmentId
+
+                         where u.Id == _LoggedIn_UserID
+                         //&& ass.DueDateTime.Value.Date <= DateTime.Now.Date
+                         select new ExamForResultListDto
+                         {
+                             RefId = ass.Id,
+                             RefName = ass.AssignmentName,
+                         }).Distinct().ToList();
 
             //Exams.AddRange(await (from u in _context.Users
             //                      join q in _context.Quizzes
@@ -161,8 +164,9 @@ namespace CoreWebApi.Data
                                         ExamId = sub.ClassSectionAssignmentId,
                                         ExamName = ass.AssignmentName,
                                     }).ToListAsync();
-                foreach (var item in Result)
+                for (int i = 0; i < Result.Count; i++)
                 {
+                    var item = Result[i];
                     item.Result = await (from r in _context.Results
                                          join s in _context.Subjects
                                          on r.SubjectId equals s.Id

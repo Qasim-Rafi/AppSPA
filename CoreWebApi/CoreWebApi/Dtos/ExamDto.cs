@@ -75,6 +75,7 @@ namespace CoreWebApi.Dtos
         public string SubjectName { get; set; }
         public int ClassSectionId { get; set; }      
         public string ClassName { get; set; }
+        public string SemesterName { get; set; }
         public string SectionName { get; set; }
         public int QuestionCount { get; set; }
         public bool IsPosted { get; set; }
@@ -143,6 +144,7 @@ namespace CoreWebApi.Dtos
         public string SubjectName { get; set; }
         public int ClassSectionId { get; set; }
         public string ClassName { get; set; }
+        public string SemesterName { get; set; }
         public string SectionName { get; set; }
         public int QuestionCount { get; set; }
         public double TotalMarks { get; set; }

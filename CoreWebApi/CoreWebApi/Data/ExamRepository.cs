@@ -147,6 +147,7 @@ namespace CoreWebApi.Data
                                               SubjectName = subject.Name,
                                               ClassSectionId = quiz.ClassSectionId,
                                               ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
+                                              SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == classSection.SemesterId).Name,
                                               SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
                                               QuestionCount = _context.QuizQuestions.Where(m => m.QuizId == quiz.Id).Count()
                                           }).FirstOrDefaultAsync();
@@ -223,6 +224,7 @@ namespace CoreWebApi.Data
                                                       SubjectName = subject.Name,
                                                       ClassSectionId = quiz.ClassSectionId,
                                                       ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
+                                                      SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == classSection.SemesterId).Name,
                                                       SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
                                                       QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                                   }).ToListAsync();
@@ -299,6 +301,7 @@ namespace CoreWebApi.Data
                                          SubjectName = subject.Name,
                                          ClassSectionId = quiz.ClassSectionId,
                                          ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId && m.Active == true).Name,
+                                         SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == classSection.SemesterId).Name,
                                          SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId && m.Active == true).SectionName,
                                          QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                          IsSubmitted = _context.QuizSubmissions.Where(m => m.QuizId == quiz.Id && m.UserId == _LoggedIn_UserID).Count() > 0 ? true : false
@@ -329,6 +332,7 @@ namespace CoreWebApi.Data
                                          SubjectName = subject.Name,
                                          ClassSectionId = quiz.ClassSectionId,
                                          ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId && m.Active == true).Name,
+                                         SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == classSection.SemesterId).Name,
                                          SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId && m.Active == true).SectionName,
                                          QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                          IsSubmitted = _context.QuizSubmissions.Where(m => m.QuizId == quiz.Id).Count() > 0 ? true : false
@@ -408,7 +412,7 @@ namespace CoreWebApi.Data
                 {
                     //int ContainCount = TrueAnswers.Where(m => m.Id == Convert.ToInt32(item.AnswerId)).Count();
                     submission.IsCorrect = TrueAnswers.Select(m => m.Id).Contains(Convert.ToInt32(item.AnswerId)) ? true : false;
-                    double set = (_context.QuizQuestions.FirstOrDefault(m => m.QuizId == item.QuizId && m.Id == item.QuestionId).Marks.Value / 2);
+                    double set = _context.QuizQuestions.FirstOrDefault(m => m.QuizId == item.QuizId && m.Id == item.QuestionId).Marks.Value / 2;
                     submission.ResultMarks = submission.IsCorrect == true ? set : 0;
                 }
 
@@ -529,6 +533,7 @@ namespace CoreWebApi.Data
                                                   SubjectName = subject.Name,
                                                   ClassSectionId = quiz.ClassSectionId,
                                                   ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
+                                                  SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == classSection.SemesterId).Name,
                                                   SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
                                                   QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                                   TotalMarks = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Select(m => m.Marks.Value).Sum(),
@@ -613,6 +618,7 @@ namespace CoreWebApi.Data
                                    SubjectName = subject.Name,
                                    ClassSectionId = quiz.ClassSectionId,
                                    ClassName = _context.Class.FirstOrDefault(m => m.Id == classSection.ClassId).Name,
+                                   SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == classSection.SemesterId).Name,
                                    SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
                                    QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                    TotalMarks = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Select(m => m.Marks.Value).Sum(),
