@@ -22,7 +22,7 @@ namespace CoreWebApi.Data
         ServiceResponse<object> _serviceResponse;
         private readonly int _LoggedIn_UserID = 0;
         private readonly int _LoggedIn_BranchID = 0;
-        private readonly string _LoggedIn_UserName = "";
+        private readonly string _LoggedIn_UserRole = "";
         public LookupRepository(DataContext context, IConfiguration configuration, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -31,7 +31,7 @@ namespace CoreWebApi.Data
             _serviceResponse = new ServiceResponse<object>();
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
         public async Task<ServiceResponse<object>> GetClasses()
         {
@@ -489,6 +489,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetTeacherSemestersAndSubjectsBySemester(int semesterSectionId)
         {
+
             if (semesterSectionId > 0)
             {
                 var list = await (from main in _context.ClassLectureAssignment
@@ -503,19 +504,42 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var list = await (from main in _context.ClassLectureAssignment
-                                  join cs in _context.ClassSections
-                                  on main.ClassSectionId equals cs.Id
-                                  where main.TeacherId == _LoggedIn_UserID
-                                  && cs.SchoolBranchId == _LoggedIn_BranchID
-                                  select new
-                                  {
-                                      Id = cs.Id,
-                                      SemesterName = cs.SemesterObj.Name,
-                                      SectionName = cs.Section.SectionName,
-                                  }).Distinct().ToListAsync();
+                if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
+                {
+                    var list = await (from main in _context.ClassLectureAssignment
+                                      join cs in _context.ClassSections
+                                      on main.ClassSectionId equals cs.Id
+                                      where main.TeacherId == _LoggedIn_UserID
+                                      && cs.SchoolBranchId == _LoggedIn_BranchID
+                                      select new
+                                      {
+                                          Id = cs.Id,
+                                          SemesterName = cs.SemesterObj.Name,
+                                          SectionName = cs.Section.SectionName,
+                                      }).Distinct().ToListAsync();
 
-                _serviceResponse.Data = list;
+                    _serviceResponse.Data = list;
+                }
+                else
+                {
+                    var list = await (from main in _context.ClassLectureAssignment
+                                      join cs in _context.ClassSections
+                                      on main.ClassSectionId equals cs.Id
+
+                                      join csU in _context.ClassSectionUsers
+                                      on cs.Id equals csU.ClassSectionId
+
+                                      where csU.UserId == _LoggedIn_UserID
+                                      && cs.SchoolBranchId == _LoggedIn_BranchID
+                                      select new
+                                      {
+                                          Id = cs.Id,
+                                          SemesterName = cs.SemesterObj.Name,
+                                          SectionName = cs.Section.SectionName,
+                                      }).Distinct().ToListAsync();
+
+                    _serviceResponse.Data = list;
+                }
             }
 
             _serviceResponse.Success = true;
