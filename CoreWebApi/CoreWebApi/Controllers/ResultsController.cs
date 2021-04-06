@@ -13,18 +13,14 @@ using Microsoft.AspNetCore.Authorization;
 namespace CoreWebApi.Controllers
 {
     [Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ResultsController : ControllerBase
+    public class ResultsController : BaseController
     {
         private readonly IResultRepository _repo;
         private readonly IMapper _mapper;
-        ServiceResponse<object> _response;
         public ResultsController(IResultRepository repo, IMapper mapper)
         {
             _mapper = mapper;
             _repo = repo;
-            _response = new ServiceResponse<object>();
         }
         [HttpGet("GetDataForResult")]
         public async Task<IActionResult> GetDataForResult()

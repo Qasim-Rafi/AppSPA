@@ -2,7 +2,7 @@
 using CoreWebApi.Models;
 using System.Threading.Tasks;
 
-namespace CoreWebApi.Controllers
+namespace CoreWebApi.Data
 {
     public interface IDashboardRepository
     {

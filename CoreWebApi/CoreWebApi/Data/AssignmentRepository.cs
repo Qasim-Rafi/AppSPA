@@ -15,30 +15,17 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class AssignmentRepository : IAssignmentRepository
+    public class AssignmentRepository : BaseRepository, IAssignmentRepository
     {
-        private readonly DataContext _context;
         private readonly IWebHostEnvironment _HostEnvironment;
         private readonly IFilesRepository _filesRepository;
-        private int _LoggedIn_UserID = 0;
-        private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = "";
-        private string _LoggedIn_UserRole = "";
-        private readonly string _LoggedIn_SchoolExamType = "";
         private readonly IMapper _mapper;
-        ServiceResponse<object> _serviceResponse;
         public AssignmentRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository filesRepository)
+         : base(context, httpContextAccessor)
         {
-            _context = context;
             _HostEnvironment = HostEnvironment;
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
-            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _mapper = mapper;
             _filesRepository = filesRepository;
-            _serviceResponse = new ServiceResponse<object>();
         }
         public async Task<bool> AssignmentExists(string name)
         {

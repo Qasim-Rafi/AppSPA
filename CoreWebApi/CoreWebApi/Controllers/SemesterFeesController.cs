@@ -17,14 +17,11 @@ using Microsoft.AspNetCore.Authorization;
 namespace CoreWebApi.Controllers
 {
     [Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class SemesterFeesController : ControllerBase
+    public class SemesterFeesController : BaseController
     {
         private readonly ISemesterFeeRepository _repo;
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        ServiceResponse<object> _response;
 
         private int _LoggedIn_UserID = 0;
         private int _LoggedIn_BranchID = 0;
@@ -34,7 +31,6 @@ namespace CoreWebApi.Controllers
             _mapper = mapper;
             _repo = repo;
             _context = context;
-            _response = new ServiceResponse<object>();
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
             _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
             _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();

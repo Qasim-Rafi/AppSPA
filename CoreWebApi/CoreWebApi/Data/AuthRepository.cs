@@ -21,24 +21,15 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class AuthRepository : IAuthRepository
+    public class AuthRepository : BaseRepository, IAuthRepository
     {
-        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-        ServiceResponse<object> _serviceResponse;
-        private int _LoggedIn_UserID = 0;
-        private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = "";
         private readonly EmailSettings _emailSettings;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IFilesRepository _fileRepo;
         public AuthRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, EmailSettings emailSettings, IWebHostEnvironment webHostEnvironment, IFilesRepository filesRepository)
+         : base(context, httpContextAccessor)
         {
-            _context = context;
-            _serviceResponse = new ServiceResponse<object>();
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _configuration = configuration;
             _emailSettings = emailSettings;
             _webHostEnvironment = webHostEnvironment;

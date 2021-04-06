@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ReportsController : ControllerBase
+    public class ReportsController : BaseController
     {
     }
 }

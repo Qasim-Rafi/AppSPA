@@ -18,33 +18,20 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : BaseRepository, IUserRepository
     {
 
         protected readonly IConfiguration _configuration;
-        private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _HostEnvironment;
         private readonly IFilesRepository _File;
-        ServiceResponse<object> _serviceResponse;
-        public int _LoggedIn_UserID = 0;
-        public int _LoggedIn_BranchID = 0;
-        public string _LoggedIn_UserName = "";
-        private string _LoggedIn_UserRole = "";
-        private string _LoggedIn_SchoolExamType = "";
         private readonly ITeacherRepository _TeacherRepository;
         public UserRepository(DataContext context, IMapper mapper, IWebHostEnvironment HostEnvironment, IFilesRepository file, IHttpContextAccessor httpContextAccessor, ITeacherRepository TeacherRepository, IConfiguration configuration)
+            : base(context, httpContextAccessor)
         {
-            _context = context;
             _mapper = mapper;
             _HostEnvironment = HostEnvironment;
             _File = file;
-            _serviceResponse = new ServiceResponse<object>();
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
-            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _TeacherRepository = TeacherRepository;
             _configuration = configuration;
         }

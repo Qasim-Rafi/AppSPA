@@ -18,20 +18,16 @@ namespace CoreWebApi.Controllers
 {
     //[Authorize]
     [AllowAnonymous]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class LookupsController : ControllerBase
+    public class LookupsController : BaseController
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly ILookupRepository _repo;
-        ServiceResponse<object> _response;
         public LookupsController(DataContext context, IMapper mapper, ILookupRepository lookupRepository)
         {
             _context = context;
             _mapper = mapper;
             _repo = lookupRepository;
-            _response = new ServiceResponse<object>();
         }
         [HttpGet("UserTypes")]
         public async Task<IActionResult> GetUserTypes()

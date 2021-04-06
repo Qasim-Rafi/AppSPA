@@ -15,21 +15,16 @@ using Microsoft.Extensions.FileProviders;
 
 namespace CoreWebApi.Controllers
 {
-    //[Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
+    //[Authorize(Roles = "Admin,Teacher,Student")]   
     public class AssignmentsController : BaseController
     {
         private readonly IAssignmentRepository _repo;
         private readonly IMapper _mapper;
-        ServiceResponse<object> _response;
         private IFileProvider _fileProvider;
-        public AssignmentsController(IAssignmentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)
-            : base(httpContextAccessor)
+        public AssignmentsController(IAssignmentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)            
         {
             _mapper = mapper;
             _repo = repo;
-            _response = new ServiceResponse<object>();
             _fileProvider = fileProvider;
         }
 

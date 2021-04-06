@@ -10,19 +10,15 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AdminController : ControllerBase
+{   
+    public class AdminController : BaseController
     {
         private readonly IAdminRepository _repo;
         private readonly IMapper _mapper;
-        ServiceResponse<object> _response;
         public AdminController(IAdminRepository repo, IMapper mapper)
         {
             _mapper = mapper;
             _repo = repo;
-            _response = new ServiceResponse<object>();
         }
         [HttpGet("GetAllRequisitionRequest")]
         public async Task<IActionResult> GetAllRequisitionRequest()

@@ -13,21 +13,12 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class LeaveRepository : ILeaveRepository
+    public class LeaveRepository : BaseRepository, ILeaveRepository
     {
-        private readonly DataContext _context;
-        private int _LoggedIn_UserID = 0;
-        private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = "";
-        ServiceResponse<object> _serviceResponse;
         private readonly IMapper _mapper;
         public LeaveRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+         : base(context, httpContextAccessor)
         {
-            _context = context;
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString()).ToString();
-            _serviceResponse = new ServiceResponse<object>();
             _mapper = mapper;
         }
         public async Task<bool> LeaveExists(int userId, string FromDate, string ToDate)

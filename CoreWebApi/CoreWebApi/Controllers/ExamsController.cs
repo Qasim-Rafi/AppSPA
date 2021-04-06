@@ -13,21 +13,15 @@ using System.Threading.Tasks;
 namespace CoreWebApi.Controllers
 {
     //[Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
     public class ExamsController : BaseController
     {
         private readonly IExamRepository _repo;
         private readonly IMapper _mapper;
-        ServiceResponse<object> _response;
 
         public ExamsController(IExamRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
-            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
-            _response = new ServiceResponse<object>();
-
         }
         [HttpGet("GetAllQuiz")]
         public async Task<IActionResult> GetQuizzes()

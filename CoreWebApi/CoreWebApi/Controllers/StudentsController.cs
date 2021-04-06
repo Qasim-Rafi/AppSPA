@@ -15,19 +15,15 @@ using System.Threading.Tasks;
 namespace CoreWebApi.Controllers
 {
     [Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class StudentsController : ControllerBase
+    public class StudentsController : BaseController
     {
         private readonly IStudentRepository _repo;
         private readonly IMapper _mapper;
-        ServiceResponse<object> _response;
         private int _LoggedIn_UserID = 0;
         public StudentsController(IStudentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
-            _response = new ServiceResponse<object>();
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
         }
 

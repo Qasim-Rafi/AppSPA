@@ -26,9 +26,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoreWebApi.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
+{   
     public class AuthController : BaseController
     {
         private readonly IAuthRepository _repo;
@@ -36,16 +34,13 @@ namespace CoreWebApi.Controllers
         private IFileProvider _fileProvider;
         private IUrlHelperFactory _urlHelper;
         private IActionContextAccessor _actionContextAccessor;
-        ServiceResponse<object> _response;
         private readonly DataContext _context;
 
 
         public AuthController(IAuthRepository repo, IConfiguration config, IHttpContextAccessor httpContextAccessor, DataContext context, IUrlHelperFactory urlHelper, IActionContextAccessor actionContextAccessor, IFileProvider fileProvider)
-            : base(httpContextAccessor)
         {
             _config = config;
             _repo = repo;
-            _response = new ServiceResponse<object>();
             _context = context;
             _urlHelper = urlHelper;
             _actionContextAccessor = actionContextAccessor;

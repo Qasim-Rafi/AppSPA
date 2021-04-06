@@ -1,43 +1,29 @@
 using AutoMapper;
-using CoreWebApi.Controllers;
 using CoreWebApi.Data;
+using CoreWebApi.Extensions;
 using CoreWebApi.Helpers;
 using CoreWebApi.Hubs;
-using CoreWebApi.IData;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
-using System.Text;
-using static CoreWebApi.Helpers.GenericFunctions;
 
 namespace CoreWebApi
 {
     public class Startup
     {
-        bool isDev;
+        public IConfiguration Configuration { get; }
         private readonly IWebHostEnvironment _HostEnvironment;
-        public Startup(IConfiguration configuration, IWebHostEnvironment env, IWebHostEnvironment HostEnvironment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment HostEnvironment)
         {
             Configuration = configuration;
-            isDev = env.IsDevelopment();
             _HostEnvironment = HostEnvironment;
         }
 
-
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -46,35 +32,12 @@ namespace CoreWebApi
             {
                 services.AddDistributedMemoryCache();
 
-                services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
                 services.AddControllers().AddNewtonsoftJson();
                 services.AddCors();
                 services.AddAutoMapper(typeof(UserRepository).Assembly);
-                services.AddScoped<IAuthRepository, AuthRepository>();
-                services.AddScoped<IUserRepository, UserRepository>();
-                services.AddScoped<IClassRepository, ClassRepository>();
-                services.AddScoped<ISectionRepository, SectionRepository>();
-                services.AddScoped<ISubjectRepository, SubjectRepository>();
-                services.AddScoped<IAttendanceRepository, AttendanceRepository>();
-                services.AddScoped<ILeaveRepository, LeaveRepository>();
-                services.AddScoped<IAssignmentRepository, AssignmentRepository>();
-                services.AddScoped<IDashboardRepository, DashboardRepository>();
-                services.AddScoped<IExamRepository, ExamRepository>();
-                services.AddScoped<ISchoolRepository, SchoolRepository>();
-                services.AddScoped<ITeacherRepository, TeacherRepository>();
-                services.AddScoped<IMessageRepository, MessageRepository>();
-                services.AddScoped<IResultRepository, ResultRepository>();
-                services.AddScoped<IStudentRepository, StudentRepository>();
-                services.AddScoped<IAdminRepository, AdminRepository>();
-                services.AddScoped<ISemesterFeeRepository, SemesterFeeRepository>();
+                services.AddApplicationServices(Configuration);
+                services.AddIdentityServices(Configuration, _HostEnvironment);
 
-
-
-                services.AddScoped<ILookupRepository, LookupRepository>();
-                services.AddScoped<IFilesRepository, FilesRepository>();
-                services.AddScoped<IEmailRepository, EmailRepository>();
-                services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-                services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
                 var EmailMetadata = Configuration.GetSection("EmailSettings").Get<EmailSettings>();
                 services.AddSingleton(EmailMetadata);
@@ -89,61 +52,6 @@ namespace CoreWebApi
                 //    hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(10);
                 //    //hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(10);
                 //});
-
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(optinos =>
-                    {
-                        optinos.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuerSigningKey = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
-                            .GetBytes(Configuration.GetSection("AppSettings").GetSection("Token").Value)),
-                            ValidateIssuer = false,
-                            ValidateAudience = false
-                        };
-                    });
-
-                if (isDev)
-                {
-                    services.AddSwaggerGen(swagger =>
-                    {
-                        swagger.DocumentFilter<ApplyDocumentVendorExtensions>();
-                        //This is to generate the Default UI of Swagger Documentation  
-                        swagger.SwaggerDoc("v2", new OpenApiInfo
-                        {
-                            Version = "v2",
-                            Title = "LMS Web Api",
-                            Description = "ASP.NET Core 3.1 Web API"
-                        });
-                        // To Enable authorization using Swagger (JWT)  
-                        swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                        {
-                            Name = "Authorization",
-                            Type = SecuritySchemeType.ApiKey,
-                            Scheme = "Bearer",
-                            BearerFormat = "JWT",
-                            In = ParameterLocation.Header,
-                            Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
-                        });
-                        swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
-                        {
-                        {
-                                new OpenApiSecurityScheme
-                                {
-                                    Reference = new OpenApiReference
-                                    {
-                                        Type = ReferenceType.SecurityScheme,
-                                        Id = "Bearer"
-                                    }
-                                },
-                                new string[] {}
-
-                        }
-                        });
-
-                    });
-
-                }
 
 
             }

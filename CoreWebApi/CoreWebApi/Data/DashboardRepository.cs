@@ -16,25 +16,12 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class DashboardRepository : IDashboardRepository
+    public class DashboardRepository : BaseRepository, IDashboardRepository
     {
-        private readonly DataContext _context;
-        private readonly ServiceResponse<object> _serviceResponse;
-        private readonly int _LoggedIn_UserID = 0;
-        private readonly int _LoggedIn_BranchID = 0;
-        private readonly string _LoggedIn_UserName = "";
-        private readonly string _LoggedIn_UserRole = "";
-        private readonly string _LoggedIn_SchoolExamType = "";
         private readonly IFilesRepository _File;
         public DashboardRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IFilesRepository file)
+         : base(context, httpContextAccessor)
         {
-            _context = context;
-            _serviceResponse = new ServiceResponse<object>();
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
-            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _File = file;
         }
         public ServiceResponse<object> GetDashboardCounts()
@@ -769,15 +756,15 @@ namespace CoreWebApi.Data
                                         }).ToList();
 
                 var SemesterDetails = $"{studentSemesters[0].Name} From {studentSemesters[0].StartDate.ToShortDateString()} To {studentSemesters[0].EndDate.ToShortDateString()}";
-                var studentSubjects = (from sa in _context.SubjectAssignments
-                                       where studentSemesters.Select(m => m.SemesterId).Contains(sa.SemesterId)
-                                       select new
-                                       {
-                                           sa.SubjectId,
-                                           sa.Subject.Name,                                           
-                                           //l.StartDate,
-                                           //l.EndDate
-                                       }).Distinct().ToList();
+                var studentSubjects = await (from sa in _context.SubjectAssignments
+                                             where studentSemesters.Select(m => m.SemesterId).Contains(sa.SemesterId)
+                                             select new
+                                             {
+                                                 sa.SubjectId,
+                                                 sa.Subject.Name,
+                                                 //l.StartDate,
+                                                 //l.EndDate
+                                             }).Distinct().ToListAsync();
 
                 var LoggedUserAttendanceByMonthPercentage = new List<ThisMonthAttendanceOfSemesterStdDto>();
                 var Start = studentSemesters[0].StartDate;

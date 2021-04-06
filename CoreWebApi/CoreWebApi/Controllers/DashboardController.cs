@@ -15,21 +15,17 @@ using Microsoft.Extensions.FileProviders;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DashboardController : ControllerBase
+    [Authorize(Roles = "Admin,Teacher,Student")]    
+    public class DashboardController : BaseController
     {
         private readonly IDashboardRepository _repo;
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        ServiceResponse<object> _response;
         public DashboardController(IDashboardRepository repo, IMapper mapper, DataContext context)
         {
             _mapper = mapper;
             _repo = repo;
             _context = context;
-            _response = new ServiceResponse<object>();
         }
 
         [HttpGet("GetDashboardCounts")]

@@ -13,18 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoreWebApi.Controllers
 {
     //[Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class SectionsController : ControllerBase
+    public class SectionsController : BaseController
     {
         private readonly ISectionRepository _repo;
         private readonly IMapper _mapper;
-        ServiceResponse<object> _response;
         public SectionsController(ISectionRepository repo, IMapper mapper)
         {
             _mapper = mapper;
             _repo = repo;
-            _response = new ServiceResponse<object>();
         }
 
         [HttpGet]

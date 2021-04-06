@@ -16,25 +16,19 @@ using Microsoft.AspNetCore.Hosting;
 namespace CoreWebApi.Controllers
 {
     //[Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
+   
     public class AttendanceController : BaseController
     {
         private readonly IAttendanceRepository _repo;
         private readonly IUserRepository _userRepository;
-
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        ServiceResponse<object> _response;
-        public AttendanceController(IAttendanceRepository repo, IMapper mapper, DataContext context, IUserRepository userRepository,
-            IHttpContextAccessor httpContextAccessor)
-            : base(httpContextAccessor)
+        public AttendanceController(IAttendanceRepository repo, IMapper mapper, DataContext context, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _userRepository = userRepository;
             _context = context;
-            _response = new ServiceResponse<object>();
         }
 
         [HttpGet, NonAction] // not in use

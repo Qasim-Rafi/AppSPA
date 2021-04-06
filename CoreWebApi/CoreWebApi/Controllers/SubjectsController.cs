@@ -14,17 +14,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoreWebApi.Controllers
 {
     //[Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
     public class SubjectsController : BaseController
     {
         private readonly ISubjectRepository _repo;
-        ServiceResponse<object> _response;
         public SubjectsController(ISubjectRepository repo, IHttpContextAccessor httpContextAccessor)
-            : base(httpContextAccessor)
         {
             _repo = repo;
-            _response = new ServiceResponse<object>();
         }
 
         [HttpGet("GetSubjects")]

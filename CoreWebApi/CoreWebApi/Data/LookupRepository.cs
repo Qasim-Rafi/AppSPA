@@ -14,24 +14,15 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class LookupRepository : ILookupRepository
+    public class LookupRepository : BaseRepository, ILookupRepository
     {
-        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        ServiceResponse<object> _serviceResponse;
-        private readonly int _LoggedIn_UserID = 0;
-        private readonly int _LoggedIn_BranchID = 0;
-        private readonly string _LoggedIn_UserRole = "";
         public LookupRepository(DataContext context, IConfiguration configuration, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+         : base(context, httpContextAccessor)
         {
-            _context = context;
             _configuration = configuration;
             _mapper = mapper;
-            _serviceResponse = new ServiceResponse<object>();
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
         public async Task<ServiceResponse<object>> GetClasses()
         {

@@ -13,24 +13,13 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class SubjectRepository : ISubjectRepository
+    public class SubjectRepository : BaseRepository, ISubjectRepository
     {
-        private readonly DataContext _context;
-        ServiceResponse<object> _serviceResponse;
         private readonly IMapper _mapper;
-        public int _LoggedIn_UserID = 0;
-        public int _LoggedIn_BranchID = 0;
-        public string _LoggedIn_UserName = "";
-        private string _LoggedIn_SchoolExamType = "";
         public SubjectRepository(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            : base(context, httpContextAccessor)
         {
             _mapper = mapper;
-            _context = context;
-            _serviceResponse = new ServiceResponse<object>();
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
-            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
         }
 
 

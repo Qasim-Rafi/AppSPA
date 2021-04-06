@@ -17,8 +17,6 @@ using System.Threading.Tasks;
 namespace CoreWebApi.Controllers
 {
     [Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
     public class UsersController : BaseController
     {
         private readonly IUserRepository _repo;
@@ -27,15 +25,12 @@ namespace CoreWebApi.Controllers
         private readonly DataContext _context;
         private readonly IWebHostEnvironment _HostEnvironment;
 
-        ServiceResponse<object> _response;
         public UsersController(IUserRepository repo, IMapper mapper, IFilesRepository file, DataContext context, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment HostEnvironment)
-            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
             _File = file;
             _context = context;
-            _response = new ServiceResponse<object>();
             _HostEnvironment = HostEnvironment;
         }
 

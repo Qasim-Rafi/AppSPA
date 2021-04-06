@@ -13,19 +13,14 @@ using System.Threading.Tasks;
 namespace CoreWebApi.Controllers
 {
     [Authorize(Roles = "Admin,Teacher,Student")]
-    [Route("api/[controller]")]
-    [ApiController]
     public class SchoolController : BaseController
     {
         private readonly ISchoolRepository _repo;
         private readonly IMapper _mapper;
-        ServiceResponse<object> _response;
         public SchoolController(ISchoolRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
-            : base(httpContextAccessor)
         {
             _mapper = mapper;
             _repo = repo;
-            _response = new ServiceResponse<object>();
         }
 
         [HttpGet("GetTimeSlots")]

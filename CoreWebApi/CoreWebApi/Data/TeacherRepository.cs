@@ -15,28 +15,15 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class TeacherRepository : ITeacherRepository
+    public class TeacherRepository : BaseRepository, ITeacherRepository
     {
-        private readonly DataContext _context;
         private readonly IWebHostEnvironment _HostEnvironment;
-        private readonly int _LoggedIn_UserID = 0;
-        private readonly int _LoggedIn_BranchID = 0;
-        private readonly string _LoggedIn_UserName = "";
-        private readonly string _LoggedIn_UserRole = "";
-        private readonly string _LoggedIn_SchoolExamType = "";
         private readonly IMapper _mapper;
-        readonly ServiceResponse<object> _serviceResponse;
         public TeacherRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+            : base(context, httpContextAccessor)
         {
-            _context = context;
             _HostEnvironment = HostEnvironment;
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
-            _LoggedIn_UserRole = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-            _LoggedIn_SchoolExamType = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.ExamType.ToString());
             _mapper = mapper;
-            _serviceResponse = new ServiceResponse<object>();
         }
 
         public async Task<ServiceResponse<object>> AddPlanner(PlannerDtoForAdd model)

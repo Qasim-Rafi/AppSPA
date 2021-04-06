@@ -14,21 +14,12 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
 {
-    public class SemesterFeeRepository : ISemesterFeeRepository
+    public class SemesterFeeRepository : BaseRepository, ISemesterFeeRepository
     {
-        private readonly DataContext _context;
-        ServiceResponse<object> _serviceResponse;
-        private int _LoggedIn_UserID = 0;
-        private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = "";
         private readonly IMapper _mapper;
         public SemesterFeeRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+         : base(context, httpContextAccessor)
         {
-            _context = context;
-            _serviceResponse = new ServiceResponse<object>();
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
             _mapper = mapper;
         }
 
