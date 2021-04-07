@@ -75,18 +75,26 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetAllSubjects()
         {
 
-            var subjects = await _context.Subjects.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
-            _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
+            var list = await _context.Subjects.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var Subjects = _mapper.Map<IEnumerable<TutorSubjectDtoForDetail>>(list);
+            var obj2 = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+            var GradeLevels = obj2.GradeLevels.Split(',').ToList();
 
+            _serviceResponse.Data = new { Subjects, GradeLevels };
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
         public async Task<ServiceResponse<object>> GetSubjectById(int id)
         {
-            var subject = await _context.Subjects.FirstOrDefaultAsync(u => u.Id == id);
-            if (subject != null)
+            var obj = await _context.Subjects.FirstOrDefaultAsync(u => u.Id == id);
+            if (obj != null)
             {
-                _serviceResponse.Data = _mapper.Map<SubjectDtoForDetail>(subject);
+                var Subject = _mapper.Map<TutorSubjectDtoForDetail>(obj);
+
+                var obj2 = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+                var GradeLevels = obj2.GradeLevels.Split(',').ToList();
+
+                _serviceResponse.Data = new { Subject, GradeLevels };
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
@@ -97,7 +105,7 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-        public async Task<ServiceResponse<object>> AddSubject(SubjectDtoForAdd model)
+        public async Task<ServiceResponse<object>> AddSubject(TutorSubjectDtoForAdd model)
         {
             try
             {
@@ -107,7 +115,7 @@ namespace CoreWebApi.Data
                 {
                     Name = model.Name,
                     Active = true,
-                    ExpertRank = model.ExpertRank,
+                    ExpertRate = model.ExpertRank,
                     CreatedById = _LoggedIn_UserID,
                     CreatedDateTime = DateTime.Now,
                     SchoolBranchId = _LoggedIn_BranchID,
@@ -115,20 +123,16 @@ namespace CoreWebApi.Data
                 await _context.Subjects.AddAsync(ToAdd);
                 await _context.SaveChangesAsync();
 
-                var ToAdd2 = new TeacherExperties
+                var ToAdd3 = new TutorProfile
                 {
-                    SubjectId = ToAdd.Id,
-                    TeacherId = _LoggedIn_UserID,
-                    LevelFrom = 0,
-                    LevelTo = 0,
-                    FromToLevels = "",
+                    GradeLevels = string.Join(',', model.GradeLevels),
                     Active = true,
                     SchoolBranchId = _LoggedIn_BranchID,
                     CreatedById = _LoggedIn_UserID,
                     CreatedDateTime = DateTime.Now,
                 };
 
-                await _context.TeacherExperties.AddAsync(ToAdd2);
+                await _context.TutorProfiles.AddAsync(ToAdd3);
                 await _context.SaveChangesAsync();
                 _serviceResponse.Message = CustomMessage.Added;
                 _serviceResponse.Success = true;
@@ -150,11 +154,11 @@ namespace CoreWebApi.Data
             }
 
         }
-        public async Task<ServiceResponse<object>> UpdateSubject(SubjectDtoForEdit subject)
+        public async Task<ServiceResponse<object>> UpdateSubject(TutorSubjectDtoForEdit subject)
         {
             try
             {
-                Subject checkExist = _context.Subjects.FirstOrDefault(s => s.Name.ToLower() == subject.Name.ToLower() && s.SchoolBranchId == _LoggedIn_BranchID);
+                Subject checkExist = _context.Subjects.FirstOrDefault(s => s.Name.ToLower() == subject.Name.ToLower() && s.CreatedById == _LoggedIn_UserID && s.SchoolBranchId == _LoggedIn_BranchID);
                 if (checkExist != null && checkExist.Id != subject.Id)
                 {
                     _serviceResponse.Success = false;
@@ -165,7 +169,7 @@ namespace CoreWebApi.Data
                 if (ObjToUpdate != null)
                 {
                     ObjToUpdate.Name = subject.Name;
-                    ObjToUpdate.ExpertRank = subject.ExpertRank;
+                    ObjToUpdate.ExpertRate = subject.ExpertRank;
                     ObjToUpdate.Active = subject.Active;
 
                     _context.Subjects.Update(ObjToUpdate);
@@ -188,6 +192,43 @@ namespace CoreWebApi.Data
             }
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> AddProfile(TutorProfileForAddDto model)
+        {
+            var ToAdd3 = new TutorProfile
+            {
+                About = model.About,
+                AreasToTeach = model.AreasToTeach,
+                CityId = model.CityId,
+                CommunicationSkillRate = model.CommunicationSkillRate,
+                Education = model.Education,
+                LanguageFluencyRate = model.LanguageFluencyRate,
+                WorkExperience = model.WorkExperience,
+                WorkHistory = model.WorkHistory,
+                //GradeLevels = string.Join(',', model.GradeLevels),
+                Active = true,
+                SchoolBranchId = _LoggedIn_BranchID,
+                CreatedById = _LoggedIn_UserID,
+                CreatedDateTime = DateTime.Now,
+            };
+
+            await _context.TutorProfiles.AddAsync(ToAdd3);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetProfile()
+        {
+            var ToReturn = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
 
     }
 }

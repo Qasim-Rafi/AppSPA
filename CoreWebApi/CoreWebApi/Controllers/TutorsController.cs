@@ -5,6 +5,7 @@ using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
@@ -46,7 +47,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
         [HttpPost("AddSubject")]
-        public async Task<IActionResult> AddSubject(SubjectDtoForAdd model)
+        public async Task<IActionResult> AddSubject(TutorSubjectDtoForAdd model)
         {
 
             if (!ModelState.IsValid)
@@ -63,7 +64,7 @@ namespace CoreWebApi.Controllers
         }
         
         [HttpPut("UpdateSubject")]
-        public async Task<IActionResult> UpdateSubject(SubjectDtoForEdit subject)
+        public async Task<IActionResult> UpdateSubject(TutorSubjectDtoForEdit subject)
         {
 
             if (!ModelState.IsValid)
@@ -72,6 +73,27 @@ namespace CoreWebApi.Controllers
             }
             _response = await _repo.UpdateSubject(subject);
             return Ok(_response);
+        }
+        [HttpPost("AddProfile")]
+        public async Task<IActionResult> AddProfile(TutorProfileForAddDto model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.AddProfile(model);
+
+            return Ok(_response);
+
+        }
+        [HttpGet("GetProfile")]
+        public async Task<IActionResult> GetAllGradeLevels()
+        {
+            _response = await _repo.GetProfile();
+            return Ok(_response);
+
         }
     }
 }
