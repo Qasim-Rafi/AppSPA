@@ -32,7 +32,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetGroupUsers();
         Task<ServiceResponse<object>> GetGroupUsersById(int id);
         Task<ServiceResponse<object>> DeleteGroup(int id);
-        Task<ServiceResponse<object>> SearchTutor(SearchTutorDto model);
         Task<ServiceResponse<object>> CheckUserActiveStatus();
         Task<ServiceResponse<object>> GetUsersForSemesterAttendance(int subjectId, int semesterSectionId);
 

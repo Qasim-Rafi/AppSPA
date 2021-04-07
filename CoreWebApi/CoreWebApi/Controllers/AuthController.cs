@@ -133,9 +133,7 @@ namespace CoreWebApi.Controllers
                               SectionName = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
                           }).FirstOrDefault();
             }
-
-            //var session = HttpContext.Session;
-            //session.SetString("LoggedInUserId", claims.FirstOrDefault(x => x.Type.Equals("NameIdentifier")).Value);
+            
             _response.Data = new
             {
                 loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value,

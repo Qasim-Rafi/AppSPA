@@ -186,5 +186,13 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public bool Posted { get; set; }     
     }
+    public class SearchTutorDto
+    {
+        public int CityId { get; set; }
+        public int GradeId { get; set; }
+        public int SubjectId { get; set; }
+        public string Gender { get; set; }
+
+    }
 
 }

@@ -1,5 +1,4 @@
-﻿using CoreWebApi.Controllers;
-using CoreWebApi.Dtos;
+﻿using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
 using CoreWebApi.Models;
@@ -10,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 
@@ -36,7 +34,7 @@ namespace CoreWebApi.Data
             var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
             if (branch.Id == _LoggedIn_BranchID)
             {
-                SubjectCount = _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.CreatedBy == _LoggedIn_UserID).ToList().Count();
+                SubjectCount = _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.CreatedById == _LoggedIn_UserID).ToList().Count();
             }
             else
             {

@@ -51,7 +51,7 @@ namespace CoreWebApi.Data
             var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
             if (branch.Id == _LoggedIn_BranchID)
             {
-                var subjects = await _context.Subjects.Where(m => m.CreatedBy == _LoggedIn_UserID && m.SchoolBranchId == branch.Id).ToListAsync();// m.Active == true &&
+                var subjects = await _context.Subjects.Where(m => m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == branch.Id).ToListAsync();// m.Active == true &&
                 _serviceResponse.Data = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(subjects);
             }
             else
@@ -268,7 +268,7 @@ namespace CoreWebApi.Data
                         Name = subject.Name,
                         Active = true,
                         CreditHours = subject.CreditHours,
-                        CreatedBy = _LoggedIn_UserID,
+                        CreatedById = _LoggedIn_UserID,
                         CreatedDateTime = DateTime.Now,
                         SchoolBranchId = _LoggedIn_BranchID,
                     });

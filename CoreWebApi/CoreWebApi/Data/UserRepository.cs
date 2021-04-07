@@ -398,6 +398,7 @@ namespace CoreWebApi.Data
                     CountryId = userDto.CountryId,
                     OtherState = userDto.OtherState,
                     Email = userDto.Email,
+                    ContactNumber = userDto.ContactNumber,
                     SchoolBranchId = _LoggedIn_BranchID,
                     RollNumber = NewRollNo,
                     Role = _context.UserTypes.Where(m => m.Id == userDto.UserTypeId).FirstOrDefault()?.Name
@@ -1457,53 +1458,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> SearchTutor(SearchTutorDto model)
-        {
-            var users = await (from user in _context.Users
-                               join csUser in _context.ClassSectionUsers
-                               on user.Id equals csUser.UserId
-
-                               join cs in _context.ClassSections
-                               on csUser.ClassSectionId equals cs.Id
-
-                               join subAssign in _context.SubjectAssignments
-                               on cs.ClassId equals subAssign.ClassId
-
-                               join subject in _context.Subjects
-                               on subAssign.SubjectId equals subject.Id
-
-                               where csUser.ClassSection.ClassId == model.GradeId
-                               //&& user.Gender.ToLower() == model.Gender.ToLower()
-                               && user.CityId == model.CityId
-                               && subject.Id == model.SubjectId
-                               && user.Active == true
-                               && user.UserTypeId == (int)Enumm.UserType.Tutor
-                               select new { user, csUser, subject }).Select(o => new TutorForListDto
-                               {
-                                   Id = o.user.Id,
-                                   FullName = o.user.FullName,
-                                   DateofBirth = o.user.DateofBirth != null ? DateFormat.ToDate(o.user.DateofBirth.ToString()) : "",
-                                   Email = o.user.Email,
-                                   Gender = o.user.Gender,
-                                   Username = o.user.Username,
-                                   CountryId = o.user.CountryId,
-                                   StateId = o.user.StateId,
-                                   CityId = o.user.CityId,
-                                   CountryName = o.user.Country.Name,
-                                   StateName = o.user.State.Name,
-                                   OtherState = o.user.OtherState,
-                                   GradeId = o.csUser.ClassSection.ClassId.Value,
-                                   GradeName = _context.Class.FirstOrDefault(m => m.Id == o.csUser.ClassSection.ClassId).Name,
-                                   SubjectId = o.subject.Id,
-                                   SubjectName = o.subject.Name,
-                                   PhotoUrl = _context.Photos.Where(m => m.UserId == o.user.Id && m.IsPrimary == true).FirstOrDefault() != null ? _File.AppendImagePath(_context.Photos.Where(m => m.UserId == o.user.Id && m.IsPrimary == true).FirstOrDefault().Name) : "",
-                               }).ToListAsync();
-
-
-            _serviceResponse.Data = users;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
-        }
+        
 
         public async Task<ServiceResponse<object>> UnMapUser(UnMapUserForAddDto model)
         {

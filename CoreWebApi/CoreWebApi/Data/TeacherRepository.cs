@@ -19,11 +19,13 @@ namespace CoreWebApi.Data
     {
         private readonly IWebHostEnvironment _HostEnvironment;
         private readonly IMapper _mapper;
-        public TeacherRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        private readonly IFilesRepository _File;
+        public TeacherRepository(DataContext context, IWebHostEnvironment HostEnvironment, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository file)
             : base(context, httpContextAccessor)
         {
             _HostEnvironment = HostEnvironment;
             _mapper = mapper;
+            _File = file;
         }
 
         public async Task<ServiceResponse<object>> AddPlanner(PlannerDtoForAdd model)
@@ -629,7 +631,7 @@ namespace CoreWebApi.Data
                         StartTimeToDisplay = DateFormat.ToTime(o.StartTime),
                         EndTimeToDisplay = DateFormat.ToTime(o.EndTime),
                     }).Distinct().ToList();
-                    
+
                 }
 
             }
@@ -846,5 +848,7 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+       
     }
 }

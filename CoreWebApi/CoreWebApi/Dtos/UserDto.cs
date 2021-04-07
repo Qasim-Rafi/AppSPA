@@ -22,6 +22,8 @@ namespace CoreWebApi.Dtos
         [DataType(DataType.EmailAddress)]
         [EmailAddress]
         public string Email { get; set; }
+        [StringLength(15)]
+        public string ContactNumber { get; set; }
         [Required]
         [StringLength(50, ErrorMessage = "FullName cannot be longer then 50 characters")]
         public string FullName { get; set; }
@@ -74,6 +76,8 @@ namespace CoreWebApi.Dtos
         [DataType(DataType.EmailAddress)]
         [EmailAddress]
         public string Email { get; set; }
+        [StringLength(15)]
+        public string ContactNumber { get; set; }
         [Required]
         [StringLength(50, ErrorMessage = "FullName cannot be longer then 50 characters")]
         public string FullName { get; set; }
@@ -117,6 +121,7 @@ namespace CoreWebApi.Dtos
         public string Username { get; set; }
         //public string Password { get; set; }
         public string Email { get; set; }
+        public string ContactNumber { get; set; }
         public string FullName { get; set; }
         public string Gender { get; set; }
         public string DateofBirth { get; set; }
@@ -145,6 +150,7 @@ namespace CoreWebApi.Dtos
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
+        public string ContactNumber { get; set; }
         public string FullName { get; set; }
         public string Gender { get; set; }
         public string DateofBirth { get; set; }
@@ -209,6 +215,8 @@ namespace CoreWebApi.Dtos
 
         [EmailAddress]
         public string Email { get; set; }
+        [StringLength(15)]
+        public string ContactNumber { get; set; }
         public int UserTypeId { get; set; } = 1;
         public string UserTypeSignUp { get; set; }
         public List<IFormFile> files { get; set; }
@@ -257,14 +265,7 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public List<GroupUserListForEditDto> Students { get; set; }
     }
-    public class SearchTutorDto
-    {
-        public int CityId { get; set; }
-        public int GradeId { get; set; }
-        public int SubjectId { get; set; }
-        public string Gender { get; set; }
-
-    }
+    
     public class TutorForListDto
     {
         public int Id { get; set; }

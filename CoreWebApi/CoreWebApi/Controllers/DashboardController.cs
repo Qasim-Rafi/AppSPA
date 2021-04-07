@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using CoreWebApi.Data;
-using CoreWebApi.Dtos;
-using CoreWebApi.Models;
+using CoreWebApi.IData;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
+using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]    
+    [Authorize(Roles = "Admin,Teacher,Student")]
     public class DashboardController : BaseController
     {
         private readonly IDashboardRepository _repo;

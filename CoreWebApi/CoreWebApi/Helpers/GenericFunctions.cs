@@ -98,23 +98,7 @@ namespace CoreWebApi.Helpers
             else
                 return false;
         }
-        public class ApplyDocumentVendorExtensions : IDocumentFilter
-        {
-            public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
-            {
-
-                var pathsToRemove = swaggerDoc.Paths
-                .Where(pathItem => pathItem.Key.Contains("/WeatherForecast")
-                //|| pathItem.Key.Contains("api/Leaves") 
-                || pathItem.Key.Contains("api/Values"))
-                .ToList();
-
-                foreach (var item in pathsToRemove)
-                {
-                    swaggerDoc.Paths.Remove(item.Key);
-                }
-            }
-        }
+        
         private static T GetNext<T>(IEnumerable<T> list, T current)
         {
             try
@@ -138,7 +122,7 @@ namespace CoreWebApi.Helpers
                 return default(T);
             }
         }
-        public static string Description(this Enum value)
+        public static string GetDescription(this Enum value)
         {
             // get attributes  
             var field = value.GetType().GetField(value.ToString());
@@ -155,6 +139,23 @@ namespace CoreWebApi.Helpers
 
             // return description
             return displayAttribute?.Description ?? "Description Not Found";
+        }
+    }
+    public class ApplyDocumentVendorExtensions : IDocumentFilter
+    {
+        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+        {
+
+            var pathsToRemove = swaggerDoc.Paths
+            .Where(pathItem => pathItem.Key.Contains("/WeatherForecast")
+            //|| pathItem.Key.Contains("api/Leaves") 
+            || pathItem.Key.Contains("api/Values"))
+            .ToList();
+
+            foreach (var item in pathsToRemove)
+            {
+                swaggerDoc.Paths.Remove(item.Key);
+            }
         }
     }
 }
