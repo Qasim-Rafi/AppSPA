@@ -12,7 +12,7 @@ namespace CoreWebApi.Dtos
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Name { get; set; }
         public int? CreditHours { get; set; }
-        public int? ExpertRank { get; set; }
+        public int? ExpertRate { get; set; }
         public List<string> GradeLevels { get; set; }
     }
     public class TutorSubjectDtoForEdit
@@ -22,7 +22,7 @@ namespace CoreWebApi.Dtos
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Name { get; set; }
         public int? CreditHours { get; set; }
-        public int? ExpertRank { get; set; }
+        public int? ExpertRate { get; set; }
         public List<string> GradeLevels { get; set; }
         public bool Active { get; set; } = true;
     }
@@ -31,7 +31,7 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public string Name { get; set; }
         public int? CreditHours { get; set; }
-        public int? ExpertRank { get; set; }
+        public int? ExpertRate { get; set; }
         //public List<string> GradeLevels { get; set; }
         public bool Active { get; set; }
     }
@@ -40,7 +40,7 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public string Name { get; set; }
         public int? CreditHours { get; set; }
-        public int? ExpertRank { get; set; }
+        public int? ExpertRate { get; set; }
         //public List<string> GradeLevels { get; set; }
 
         public bool Active { get; set; }

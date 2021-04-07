@@ -115,7 +115,7 @@ namespace CoreWebApi.Data
                 {
                     Name = model.Name,
                     Active = true,
-                    ExpertRate = model.ExpertRank,
+                    ExpertRate = model.ExpertRate,
                     CreatedById = _LoggedIn_UserID,
                     CreatedDateTime = DateTime.Now,
                     SchoolBranchId = _LoggedIn_BranchID,
@@ -169,7 +169,7 @@ namespace CoreWebApi.Data
                 if (ObjToUpdate != null)
                 {
                     ObjToUpdate.Name = subject.Name;
-                    ObjToUpdate.ExpertRate = subject.ExpertRank;
+                    ObjToUpdate.ExpertRate = subject.ExpertRate;
                     ObjToUpdate.Active = subject.Active;
 
                     _context.Subjects.Update(ObjToUpdate);
