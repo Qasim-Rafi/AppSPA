@@ -57,7 +57,13 @@ namespace CoreWebApi.Data
                                    LanguageFluencyRate = pr.LanguageFluencyRate,
                                    WorkExperience = pr.WorkExperience,
                                    WorkHistory = pr.WorkHistory,
-                                   PhotoUrl = _context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).FirstOrDefault() != null ? _File.AppendImagePath(_context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).FirstOrDefault().Name) : "",
+                                   Photos = _context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                   {
+                                       Id = x.Id,
+                                       Name = x.Name,
+                                       IsPrimary = x.IsPrimary,
+                                       Url = _File.AppendImagePath(x.Name)
+                                   }).ToList(),
                                }).ToListAsync();
 
 
@@ -292,7 +298,13 @@ namespace CoreWebApi.Data
                                      LanguageFluencyRate = pr.LanguageFluencyRate,
                                      WorkExperience = pr.WorkExperience,
                                      WorkHistory = pr.WorkHistory,
-                                     PhotoUrl = _context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).FirstOrDefault() != null ? _File.AppendImagePath(_context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).FirstOrDefault().Name) : "",
+                                     Photos = _context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                     {
+                                         Id = x.Id,
+                                         Name = x.Name,
+                                         IsPrimary = x.IsPrimary,
+                                         Url = _File.AppendImagePath(x.Name)
+                                     }).ToList(),
                                  }).FirstOrDefaultAsync();
 
             _serviceResponse.Data = profile;

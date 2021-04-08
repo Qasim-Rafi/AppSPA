@@ -107,7 +107,7 @@ namespace CoreWebApi.Dtos
         public string CityName { get; set; }
         public string GradeLevels { get; set; }
         public string Subjects { get; set; }
-        public string PhotoUrl { get; set; }
+        public List<PhotoDto> Photos { get; set; }
         public string About { get; set; }
         public string Education { get; set; }
         public string WorkHistory { get; set; }
