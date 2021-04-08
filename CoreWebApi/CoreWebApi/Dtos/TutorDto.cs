@@ -71,7 +71,6 @@ namespace CoreWebApi.Dtos
         public int GradeId { get; set; }
         public int SubjectId { get; set; }
         public string Gender { get; set; }
-
     }
     public class TutorProfileForAddDto
     {

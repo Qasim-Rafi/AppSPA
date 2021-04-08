@@ -39,6 +39,8 @@ namespace CoreWebApi.Helpers
             CreateMap<Subject, SubjectDtoForEdit>();
             CreateMap<Subject, SubjectDtoForDetail>();
             CreateMap<Subject, SubjectDtoForList>();
+            CreateMap<Subject, TutorSubjectDtoForDetail>();
+            CreateMap<Subject, TutorSubjectDtoForList>();
             // assginment
             CreateMap<ClassSectionAssignment, AssignmentDtoForAdd>();
             CreateMap<ClassSectionAssignment, AssignmentDtoForEdit>();
