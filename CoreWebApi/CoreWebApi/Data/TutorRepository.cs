@@ -35,7 +35,7 @@ namespace CoreWebApi.Data
                                on user.Id equals subject.CreatedById
 
                                where pr.GradeLevels.Contains(model.Class)
-                               && user.CityId == model.CityId
+                               && pr.CityId == model.CityId
                                && subject.Id == model.SubjectId
                                && user.Active == true
                                && user.UserTypeId == (int)Enumm.UserType.Tutor
