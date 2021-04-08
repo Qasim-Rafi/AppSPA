@@ -25,5 +25,7 @@ namespace CoreWebApi.Models
 
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
+        //[ForeignKey("CityId")]
+        //public virtual City City { get; set; }
     }
 }

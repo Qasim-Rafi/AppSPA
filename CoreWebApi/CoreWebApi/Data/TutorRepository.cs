@@ -74,11 +74,13 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetAllSubjects()
         {
-
             var list = await _context.Subjects.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             var Subjects = _mapper.Map<IEnumerable<TutorSubjectDtoForDetail>>(list);
+
             var obj2 = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
-            var GradeLevels = !string.IsNullOrEmpty(obj2.GradeLevels) ? obj2.GradeLevels.Split(',').ToList() : null;
+            var GradeLevels = new List<string>();
+            if (obj2 != null)
+                GradeLevels = !string.IsNullOrEmpty(obj2.GradeLevels) ? obj2.GradeLevels.Split(',').ToList() : null;
 
             _serviceResponse.Data = new { Subjects, GradeLevels };
             _serviceResponse.Success = true;
@@ -92,7 +94,9 @@ namespace CoreWebApi.Data
                 var Subject = _mapper.Map<TutorSubjectDtoForDetail>(obj);
 
                 var obj2 = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
-                var GradeLevels = !string.IsNullOrEmpty(obj2.GradeLevels) ? obj2.GradeLevels.Split(',').ToList() : null;
+                var GradeLevels = new List<string>();
+                if (obj2 != null)
+                    GradeLevels = !string.IsNullOrEmpty(obj2.GradeLevels) ? obj2.GradeLevels.Split(',').ToList() : null;
 
                 _serviceResponse.Data = new { Subject, GradeLevels };
                 _serviceResponse.Success = true;
@@ -175,6 +179,14 @@ namespace CoreWebApi.Data
                     _context.Subjects.Update(ObjToUpdate);
                     await _context.SaveChangesAsync();
 
+                    var ObjToUpdate2 = _context.TutorProfiles.FirstOrDefault(s => s.CreatedById.Equals(_LoggedIn_UserID));
+                    if (ObjToUpdate2 != null)
+                    {
+                        ObjToUpdate2.GradeLevels = string.Join(',', subject.GradeLevels);
+                        _context.TutorProfiles.Update(ObjToUpdate2);
+                        await _context.SaveChangesAsync();
+                    }
+
                     _serviceResponse.Message = CustomMessage.Updated;
                     _serviceResponse.Success = true;
                 }
@@ -230,6 +242,7 @@ namespace CoreWebApi.Data
                 if (ObjToUpdate != null)
                 {
                     ObjToUpdate.About = model.About;
+                    //ObjToUpdate.GradeLevels = string.Join(',', model.GradeLevels);
                     ObjToUpdate.AreasToTeach = model.AreasToTeach;
                     ObjToUpdate.CityId = model.CityId;
                     ObjToUpdate.CommunicationSkillRate = model.CommunicationSkillRate;
@@ -276,8 +289,8 @@ namespace CoreWebApi.Data
                                      FullName = user.FullName,
                                      Email = user.Email,
                                      Gender = user.Gender,
-                                     CityId = user.CityId,
-                                     CityName = user.City.Name,
+                                     CityId = pr.CityId,
+                                     CityName = _context.Cities.FirstOrDefault(m => m.Id == pr.CityId).Name,
                                      Subjects = string.Join(',', _context.Subjects.Where(m => m.CreatedById == user.Id).Select(m => m.Name)),
                                      About = pr.About,
                                      AreasToTeach = pr.AreasToTeach,
