@@ -85,6 +85,19 @@ namespace CoreWebApi.Dtos
         public int LanguageFluencyRate { get; set; }
         public int CommunicationSkillRate { get; set; }
     }
+    public class TutorProfileForEditDto
+    {
+        public int Id { get; set; }
+        public int CityId { get; set; }
+        public List<string> GradeLevels { get; set; }
+        public string About { get; set; }
+        public string Education { get; set; }
+        public string WorkHistory { get; set; }
+        public string WorkExperience { get; set; }
+        public string AreasToTeach { get; set; }
+        public int LanguageFluencyRate { get; set; }
+        public int CommunicationSkillRate { get; set; }
+    }
     public class TutorProfileForListDto
     {
         public int Id { get; set; }

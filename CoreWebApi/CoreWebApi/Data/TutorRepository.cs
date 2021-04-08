@@ -174,9 +174,11 @@ namespace CoreWebApi.Data
 
                     _context.Subjects.Update(ObjToUpdate);
                     await _context.SaveChangesAsync();
+
+                    _serviceResponse.Message = CustomMessage.Updated;
+                    _serviceResponse.Success = true;
                 }
-                _serviceResponse.Message = CustomMessage.Updated;
-                _serviceResponse.Success = true;
+
             }
             catch (DbUpdateException ex)
             {
@@ -192,6 +194,7 @@ namespace CoreWebApi.Data
             }
             return _serviceResponse;
         }
+
 
         public async Task<ServiceResponse<object>> AddProfile(TutorProfileForAddDto model)
         {
@@ -219,7 +222,44 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> UpdateProfile(TutorProfileForEditDto model)
+        {
+            try
+            {
+                var ObjToUpdate = _context.TutorProfiles.FirstOrDefault(s => s.Id.Equals(model.Id));
+                if (ObjToUpdate != null)
+                {
+                    ObjToUpdate.About = model.About;
+                    ObjToUpdate.AreasToTeach = model.AreasToTeach;
+                    ObjToUpdate.CityId = model.CityId;
+                    ObjToUpdate.CommunicationSkillRate = model.CommunicationSkillRate;
+                    ObjToUpdate.Education = model.Education;
+                    ObjToUpdate.LanguageFluencyRate = model.LanguageFluencyRate;
+                    ObjToUpdate.WorkExperience = model.WorkExperience;
+                    ObjToUpdate.WorkHistory = model.WorkHistory;
 
+                    _context.TutorProfiles.Update(ObjToUpdate);
+                    await _context.SaveChangesAsync();
+
+                    _serviceResponse.Message = CustomMessage.Updated;
+                    _serviceResponse.Success = true;
+                }
+
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException.Message.Contains("Cannot insert duplicate key row"))
+                {
+                    _serviceResponse.Success = false;
+                    _serviceResponse.Message = CustomMessage.SqlDuplicateRecord;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+            return _serviceResponse;
+        }
         public async Task<ServiceResponse<object>> GetProfile()
         {
             var profile = await (from user in _context.Users
@@ -232,7 +272,7 @@ namespace CoreWebApi.Data
                                  && pr.SchoolBranchId == _LoggedIn_BranchID
                                  select new TutorProfileForListDto
                                  {
-                                     Id = user.Id,
+                                     Id = pr.Id,
                                      FullName = user.FullName,
                                      Email = user.Email,
                                      Gender = user.Gender,

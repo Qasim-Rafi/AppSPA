@@ -70,6 +70,13 @@ namespace CoreWebApi.Controllers
             _response = await _repo.UpdateSubject(subject);
             return Ok(_response);
         }
+        [HttpGet("GetProfile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            _response = await _repo.GetProfile();
+            return Ok(_response);
+
+        }
         [HttpPost("AddProfile")]
         public async Task<IActionResult> AddProfile(TutorProfileForAddDto model)
         {
@@ -84,12 +91,17 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("GetProfile")]
-        public async Task<IActionResult> GetProfile()
+        [HttpPut("UpdateProfile")]
+        public async Task<IActionResult> UpdateProfile(TutorProfileForEditDto model)
         {
-            _response = await _repo.GetProfile();
-            return Ok(_response);
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateProfile(model);
+            return Ok(_response);
         }
+       
     }
 }

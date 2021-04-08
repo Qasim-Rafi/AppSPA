@@ -15,6 +15,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> UpdateSubject(TutorSubjectDtoForEdit subject);
         Task<ServiceResponse<object>> GetAllSubjects();
         Task<ServiceResponse<object>> AddProfile(TutorProfileForAddDto model);
+        Task<ServiceResponse<object>> UpdateProfile(TutorProfileForEditDto model);
         Task<ServiceResponse<object>> GetProfile();
 
     }

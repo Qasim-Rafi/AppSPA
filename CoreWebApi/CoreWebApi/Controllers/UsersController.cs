@@ -51,7 +51,7 @@ namespace CoreWebApi.Controllers
 
         }
 
-        [HttpPost("GetUser")]
+        [HttpPost("GetUser"), Authorize(Roles = "Tutor")]
         public async Task<IActionResult> GetUser(GetByIdFlagDto model)
         {
             ServiceResponse<UserForDetailedDto> user = await _repo.GetUser(model);
@@ -125,7 +125,7 @@ namespace CoreWebApi.Controllers
             return Ok(response);
 
         }
-        [HttpPut("UpdateProfile/{id}")]
+        [HttpPut("UpdateProfile/{id}"), Authorize(Roles = "Tutor")]
         public async Task<IActionResult> UpdateProfile(int id, [FromForm] UserForUpdateDto userForUpdateDto)// [FromForm]
         {
 
