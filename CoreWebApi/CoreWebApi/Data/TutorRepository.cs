@@ -78,7 +78,7 @@ namespace CoreWebApi.Data
             var list = await _context.Subjects.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             var Subjects = _mapper.Map<IEnumerable<TutorSubjectDtoForDetail>>(list);
             var obj2 = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
-            var GradeLevels = obj2.GradeLevels.Split(',').ToList();
+            var GradeLevels = !string.IsNullOrEmpty(obj2.GradeLevels) ? obj2.GradeLevels.Split(',').ToList() : null;
 
             _serviceResponse.Data = new { Subjects, GradeLevels };
             _serviceResponse.Success = true;
@@ -92,7 +92,7 @@ namespace CoreWebApi.Data
                 var Subject = _mapper.Map<TutorSubjectDtoForDetail>(obj);
 
                 var obj2 = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
-                var GradeLevels = obj2.GradeLevels.Split(',').ToList();
+                var GradeLevels = !string.IsNullOrEmpty(obj2.GradeLevels) ? obj2.GradeLevels.Split(',').ToList() : null;
 
                 _serviceResponse.Data = new { Subject, GradeLevels };
                 _serviceResponse.Success = true;
