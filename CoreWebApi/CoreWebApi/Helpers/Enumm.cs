@@ -50,8 +50,16 @@ namespace CoreWebApi.Helpers
             public const string Approved = "Approved";
             public const string Rejected = "Rejected";
             public const string Pending = "Pending";
-        }        
+        }
 
     }
-
+    public static class AppRoles
+    {
+        public const string All = "SuperAdmin, Admin, Teacher, Student, Parent, Tutor, OnlineStudent";
+        public const string ForSchool = "SuperAdmin, Admin, Teacher, Student, Parent";
+        public const string ForTutorship = "SuperAdmin, Admin, Tutor, OnlineStudent";
+        public const string SuperAdmin_Admin = "SuperAdmin, Admin";
+        public const string Teacher_Student_Parent = "Teacher, Student, Parent";
+        public const string Tutor_OnlineStudent = "Tutor, OnlineStudent";
+    }
 }

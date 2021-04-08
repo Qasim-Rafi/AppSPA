@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]
+    [Authorize(Roles = AppRoles.All)]
     public class UsersController : BaseController
     {
         private readonly IUserRepository _repo;
@@ -51,7 +51,7 @@ namespace CoreWebApi.Controllers
 
         }
 
-        [HttpPost("GetUser"), Authorize(Roles = "Tutor")]
+        [HttpPost("GetUser")]
         public async Task<IActionResult> GetUser(GetByIdFlagDto model)
         {
             ServiceResponse<UserForDetailedDto> user = await _repo.GetUser(model);
@@ -125,7 +125,7 @@ namespace CoreWebApi.Controllers
             return Ok(response);
 
         }
-        [HttpPut("UpdateProfile/{id}"), Authorize(Roles = "Tutor")]
+        [HttpPut("UpdateProfile/{id}")]
         public async Task<IActionResult> UpdateProfile(int id, [FromForm] UserForUpdateDto userForUpdateDto)// [FromForm]
         {
 

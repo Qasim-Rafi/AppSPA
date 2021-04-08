@@ -104,6 +104,7 @@ namespace CoreWebApi.Dtos
         public string Email { get; set; }
         public string FullName { get; set; }
         public string Gender { get; set; }      
+        public int? CityId { get; set; }
         public string CityName { get; set; }
         public string GradeLevels { get; set; }
         public string Subjects { get; set; }

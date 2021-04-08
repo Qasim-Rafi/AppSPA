@@ -276,6 +276,7 @@ namespace CoreWebApi.Data
                                      FullName = user.FullName,
                                      Email = user.Email,
                                      Gender = user.Gender,
+                                     CityId = user.CityId,
                                      CityName = user.City.Name,
                                      Subjects = string.Join(',', _context.Subjects.Where(m => m.CreatedById == user.Id).Select(m => m.Name)),
                                      About = pr.About,
