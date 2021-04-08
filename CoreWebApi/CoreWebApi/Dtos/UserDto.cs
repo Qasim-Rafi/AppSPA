@@ -266,26 +266,7 @@ namespace CoreWebApi.Dtos
         public List<GroupUserListForEditDto> Students { get; set; }
     }
     
-    public class TutorForListDto
-    {
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string FullName { get; set; }
-        public string Gender { get; set; }
-        public string DateofBirth { get; set; }
-        public int? StateId { get; set; }
-        public int? CityId { get; set; }
-        public int? CountryId { get; set; }
-        public string StateName { get; set; }
-        public string CountryName { get; set; }
-        public string OtherState { get; set; }
-        public int GradeId { get; set; }
-        public string GradeName { get; set; }
-        public int SubjectId { get; set; }
-        public string SubjectName { get; set; }
-        public string PhotoUrl { get; set; }
-    }
+   
     public class UnMapUserForAddDto
     {
         public int Id { get; set; }

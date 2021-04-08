@@ -22,17 +22,13 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly DataContext _context;
 
-        private int _LoggedIn_UserID = 0;
-        private int _LoggedIn_BranchID = 0;
-        private string _LoggedIn_UserName = "";
-        public ClassesController(IClassRepository repo, IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
+        
+        public ClassesController(IClassRepository repo, IMapper mapper, DataContext context)
         {
             _mapper = mapper;
             _repo = repo;
             _context = context;
-            _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
-            _LoggedIn_BranchID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.BranchIdentifier.ToString()));
-            _LoggedIn_UserName = httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.Name.ToString())?.ToString();
+           
         }
 
 

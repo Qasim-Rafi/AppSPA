@@ -134,9 +134,9 @@ namespace CoreWebApi.Data
 
                 await _context.TutorProfiles.AddAsync(ToAdd3);
                 await _context.SaveChangesAsync();
+
                 _serviceResponse.Message = CustomMessage.Added;
                 _serviceResponse.Success = true;
-
                 return _serviceResponse;
             }
             catch (DbUpdateException ex)
@@ -222,9 +222,34 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetProfile()
         {
-            var ToReturn = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
+            var profile = await (from user in _context.Users
 
-            _serviceResponse.Data = ToReturn;
+                                 join pr in _context.TutorProfiles
+                                 on user.Id equals pr.CreatedById
+
+                                 where pr.Active == true
+                                 && pr.CreatedById == _LoggedIn_UserID
+                                 && pr.SchoolBranchId == _LoggedIn_BranchID
+                                 select new TutorProfileForListDto
+                                 {
+                                     Id = user.Id,
+                                     FullName = user.FullName,
+                                     Email = user.Email,
+                                     Gender = user.Gender,
+                                     CityName = user.City.Name,
+                                     Subjects = string.Join(',', _context.Subjects.Where(m => m.CreatedById == user.Id).Select(m => m.Name)),
+                                     About = pr.About,
+                                     AreasToTeach = pr.AreasToTeach,
+                                     CommunicationSkillRate = pr.CommunicationSkillRate,
+                                     Education = pr.Education,
+                                     GradeLevels = pr.GradeLevels,
+                                     LanguageFluencyRate = pr.LanguageFluencyRate,
+                                     WorkExperience = pr.WorkExperience,
+                                     WorkHistory = pr.WorkHistory,
+                                     PhotoUrl = _context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).FirstOrDefault() != null ? _File.AppendImagePath(_context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).FirstOrDefault().Name) : "",
+                                 }).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = profile;
             _serviceResponse.Success = true;
             return _serviceResponse;
         }

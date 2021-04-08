@@ -12,15 +12,11 @@ namespace CoreWebApi.Controllers
 {   
     public class TutorsController : BaseController
     {
-        private readonly ITutorRepository _repo;
-        private readonly IMapper _mapper;
-        private readonly DataContext _context;
+        private readonly ITutorRepository _repo;        
         private readonly ISubjectRepository _subjectRepo;
-        public TutorsController(ITutorRepository repo, IMapper mapper, DataContext context, ISubjectRepository subjectRepo)
+        public TutorsController(ITutorRepository repo, ISubjectRepository subjectRepo)
         {
-            _mapper = mapper;
             _repo = repo;
-            _context = context;
             _subjectRepo = subjectRepo;
         }
 
@@ -89,7 +85,7 @@ namespace CoreWebApi.Controllers
 
         }
         [HttpGet("GetProfile")]
-        public async Task<IActionResult> GetAllGradeLevels()
+        public async Task<IActionResult> GetProfile()
         {
             _response = await _repo.GetProfile();
             return Ok(_response);
