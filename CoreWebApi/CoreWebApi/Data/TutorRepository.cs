@@ -28,42 +28,35 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> SearchTutor(SearchTutorDto model)
         {
             var users = await (from user in _context.Users
-                               join csUser in _context.ClassSectionUsers
-                               on user.Id equals csUser.UserId
-
-                               join cs in _context.ClassSections
-                               on csUser.ClassSectionId equals cs.Id
-
-                               join subAssign in _context.SubjectAssignments
-                               on cs.ClassId equals subAssign.ClassId
+                               join pr in _context.TutorProfiles
+                               on user.Id equals pr.CreatedById
 
                                join subject in _context.Subjects
-                               on subAssign.SubjectId equals subject.Id
+                               on user.Id equals subject.CreatedById
 
-                               where csUser.ClassSection.ClassId == model.GradeId
-                               //&& user.Gender.ToLower() == model.Gender.ToLower()
+                               where pr.GradeLevels.Contains(model.Class)
                                && user.CityId == model.CityId
                                && subject.Id == model.SubjectId
                                && user.Active == true
                                && user.UserTypeId == (int)Enumm.UserType.Tutor
-                               select new TutorForListDto
+                               //&& user.Gender.ToLower() == model.Gender.ToLower()
+                               select new TutorProfileForListDto
                                {
-                                   Id = user.Id,
+                                   Id = pr.Id,
                                    FullName = user.FullName,
-                                   DateofBirth = user.DateofBirth != null ? DateFormat.ToDate(user.DateofBirth.ToString()) : "",
                                    Email = user.Email,
                                    Gender = user.Gender,
-                                   Username = user.Username,
-                                   CountryId = user.CountryId,
-                                   StateId = user.StateId,
-                                   CityId = user.CityId,
-                                   CountryName = user.Country.Name,
-                                   StateName = user.State.Name,
-                                   OtherState = user.OtherState,
-                                   GradeId = csUser.ClassSection.ClassId.Value,
-                                   GradeName = _context.Class.FirstOrDefault(m => m.Id == csUser.ClassSection.ClassId).Name,
-                                   SubjectId = subject.Id,
-                                   SubjectName = subject.Name,
+                                   CityId = pr.CityId,
+                                   CityName = _context.Cities.FirstOrDefault(m => m.Id == pr.CityId).Name,
+                                   Subjects = string.Join(',', _context.Subjects.Where(m => m.CreatedById == user.Id).Select(m => m.Name)),
+                                   About = pr.About,
+                                   AreasToTeach = pr.AreasToTeach,
+                                   CommunicationSkillRate = pr.CommunicationSkillRate,
+                                   Education = pr.Education,
+                                   GradeLevels = pr.GradeLevels,
+                                   LanguageFluencyRate = pr.LanguageFluencyRate,
+                                   WorkExperience = pr.WorkExperience,
+                                   WorkHistory = pr.WorkHistory,
                                    PhotoUrl = _context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).FirstOrDefault() != null ? _File.AppendImagePath(_context.Photos.Where(m => m.UserId == user.Id && m.IsPrimary == true).FirstOrDefault().Name) : "",
                                }).ToListAsync();
 
@@ -276,7 +269,6 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> GetProfile()
         {
             var profile = await (from user in _context.Users
-
                                  join pr in _context.TutorProfiles
                                  on user.Id equals pr.CreatedById
 

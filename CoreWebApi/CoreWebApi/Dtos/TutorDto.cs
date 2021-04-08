@@ -68,7 +68,7 @@ namespace CoreWebApi.Dtos
     public class SearchTutorDto
     {
         public int CityId { get; set; }
-        public int GradeId { get; set; }
+        public string Class { get; set; }
         public int SubjectId { get; set; }
         public string Gender { get; set; }
     }
