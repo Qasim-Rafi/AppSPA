@@ -10,5 +10,3 @@ CoreWebApi/.vs/CoreWebApi/config/applicationhost.config
 CoreWebApi/CoreWebApi/SchoolDocuments
 CoreWebApi/CoreWebApi/wwwroot/StaticFiles
 .vs
-bin
-obj
