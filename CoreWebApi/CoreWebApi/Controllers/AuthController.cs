@@ -175,7 +175,7 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userFromRepo = await _repo.ExStudentLogin(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+            var userFromRepo = await _repo.ExStudentLogin(userForLoginDto.Username.ToLower(), userForLoginDto.Password, userForLoginDto.TutorId);
 
             if (userFromRepo == null)
             {
@@ -190,7 +190,7 @@ namespace CoreWebApi.Controllers
                 new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
                 new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
                 new Claim(Enumm.ClaimType.BranchIdentifier.ToString(),userFromRepo.SchoolBranchId.ToString()),
-                new Claim(ClaimTypes.Role, userFromRepo.Role),
+                new Claim(ClaimTypes.Role, userFromRepo.Role)
             };
 
 
@@ -217,7 +217,6 @@ namespace CoreWebApi.Controllers
             _response.Success = true;
             _response.Message = "Login message for new tutor";
             return base.Ok(_response);
-
 
         }
 

@@ -2185,6 +2185,30 @@ namespace CoreWebApi.Migrations
                     b.ToTable("TutorProfiles");
                 });
 
+            modelBuilder.Entity("CoreWebApi.Models.TutorStudentMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedDatetime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TutorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TutorStudentMappings");
+                });
+
             modelBuilder.Entity("CoreWebApi.Models.UploadedLecture", b =>
                 {
                     b.Property<int>("Id")
@@ -2295,7 +2319,6 @@ namespace CoreWebApi.Migrations
                         .HasMaxLength(50);
 
                     b.Property<string>("Gender")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LastActive")

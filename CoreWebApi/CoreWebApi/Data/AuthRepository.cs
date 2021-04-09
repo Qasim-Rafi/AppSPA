@@ -62,7 +62,7 @@ namespace CoreWebApi.Data
             }
 
         }
-        public async Task<User> ExStudentLogin(string username, string password)
+        public async Task<User> ExStudentLogin(string username, string password, int tutorId)
         {
             var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
 
@@ -73,6 +73,19 @@ namespace CoreWebApi.Data
             if (!Seed.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
                 return null;
 
+            var NotExist = await _context.TutorStudentMappings.AnyAsync(m => m.StudentId == user.Id && m.TutorId == tutorId);
+            if (!NotExist)
+            {
+                var ToAdd = new TutorStudentMapping
+                {
+                    StudentId = user.Id,
+                    TutorId = tutorId,
+                    CreatedDatetime = DateTime.Now,
+                    Active = true,
+                };
+                await _context.TutorStudentMappings.AddAsync(ToAdd);
+                await _context.SaveChangesAsync();
+            }
             return user;
         }
         public async Task<object> GetSchoolDetails(string regNo, int branchId)
@@ -280,9 +293,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> ExStudentRegister(ExStudentForRegisterDto model)
         {
-            SchoolBranch branch = null;
-
-            branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
+            SchoolBranch branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
             var userToCreate = new User
             {
                 Username = model.Username,
@@ -305,12 +316,21 @@ namespace CoreWebApi.Data
             await _context.Users.AddAsync(userToCreate);
             await _context.SaveChangesAsync();
 
+            var ToAdd = new TutorStudentMapping
+            {
+                StudentId = userToCreate.Id,
+                TutorId = model.TutorId,
+                CreatedDatetime = DateTime.Now,
+                Active = true,
+            };
+            await _context.TutorStudentMappings.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
 
             _serviceResponse.Success = true;
             _serviceResponse.Message = "Custom message to online student";
             return _serviceResponse;
         }
-       
+
         public async Task<bool> UserExists(string userName, string schoolName)
         {
             if (!string.IsNullOrEmpty(schoolName))

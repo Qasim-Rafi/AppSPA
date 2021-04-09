@@ -40,7 +40,7 @@ namespace CoreWebApi.Models
 
         public int SchoolBranchId { get; set; }
 
-        [Required]
+        //[Required]
         //[DefaultValue("male")]
         public string Gender { get; set; }
         //[Required]
