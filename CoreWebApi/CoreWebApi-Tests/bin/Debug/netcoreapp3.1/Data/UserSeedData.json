@@ -1,0 +1,27 @@
+[
+  {
+    "Username": "Qasim",
+    "Gender": "male",
+    "password": "password"
+  },
+  {
+    "Username": "Ahsan",
+    "Gender": "male",
+    "password": "password"
+  },
+  {
+    "Username": "Luqman",
+    "Gender": "male",
+    "password": "password"
+  },
+  {
+    "Username": "Daniyal",
+    "Gender": "male",
+    "password": "password"
+  },
+  {
+    "Username": "Bilal",
+    "Gender": "male",
+    "password": "password"
+  }
+]

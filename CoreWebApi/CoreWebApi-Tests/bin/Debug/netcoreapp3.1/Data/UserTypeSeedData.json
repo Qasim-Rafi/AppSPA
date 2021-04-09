@@ -1,0 +1,20 @@
+[
+  {
+    "Name": "Admin"
+  },
+  {
+    "Name": "Parent"
+  },
+  {
+    "Name": "Student"
+  },
+  {
+    "Name": "Teacher"
+  },
+  {
+    "Name": "Tutor"
+  },
+  {
+    "Name": "OnlineStudent"
+  }
+]

@@ -189,8 +189,7 @@ namespace CoreWebApi.Dtos
     {
         public string Username { get; set; }
         public string Password { get; set; }
-        public int SchoolName1 { get; set; }
-
+        public int SchoolName1 { get; set; } = 0;
     }
     public class ForgotPasswordDto
     {
@@ -290,5 +289,27 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public bool IsEditable { get; set; }
+    }
+
+    public class ExStudentForRegisterDto
+    {
+        [Required]
+        public string Username { get; set; }
+        public string FullName { get; set; }
+        [Required]
+        [StringLength(8, MinimumLength = 4, ErrorMessage = "You must specify password between 4 and 8 characters")]
+        public string Password { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
+        [StringLength(15)]
+        public string ContactNumber { get; set; }      
+        public int TutorId { get; set; }      
+        public List<IFormFile> files { get; set; }
+    }
+    public class ExStudentForLoginDto
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }        
+        public int TutorId { get; set; } = 0;
     }
 }

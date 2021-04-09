@@ -26,24 +26,20 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoreWebApi.Controllers
-{   
+{
     public class AuthController : BaseController
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
         private IFileProvider _fileProvider;
-        private IUrlHelperFactory _urlHelper;
-        private IActionContextAccessor _actionContextAccessor;
         private readonly DataContext _context;
 
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IHttpContextAccessor httpContextAccessor, DataContext context, IUrlHelperFactory urlHelper, IActionContextAccessor actionContextAccessor, IFileProvider fileProvider)
+        public AuthController(IAuthRepository repo, IConfiguration config, DataContext context, IFileProvider fileProvider)
         {
             _config = config;
             _repo = repo;
             _context = context;
-            _urlHelper = urlHelper;
-            _actionContextAccessor = actionContextAccessor;
             _fileProvider = fileProvider;
         }
 
@@ -66,6 +62,25 @@ namespace CoreWebApi.Controllers
             var regNo = _config.GetSection("AppSettings:SchoolRegistrationNo").Value;
 
             _response = await _repo.Register(userForRegisterDto, regNo);
+
+            return Ok(_response);
+
+        }
+        [HttpPost("ExStudentRegister")]
+        public async Task<IActionResult> ExStudentRegister(ExStudentForRegisterDto userForRegisterDto)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            // validate request;
+            userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
+
+            if (await _repo.UserExists(userForRegisterDto.Username, ""))
+                return BadRequest(new { message = CustomMessage.UserAlreadyExist });
+
+            _response = await _repo.ExStudentRegister(userForRegisterDto);
 
             return Ok(_response);
 
@@ -133,7 +148,7 @@ namespace CoreWebApi.Controllers
                               SectionName = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
                           }).FirstOrDefault();
             }
-            
+
             _response.Data = new
             {
                 loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value,
@@ -151,6 +166,61 @@ namespace CoreWebApi.Controllers
 
 
         }
+        [HttpPost("ExStudentLogin")]
+        public async Task<IActionResult> ExStudentLogin(ExStudentForLoginDto userForLoginDto)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userFromRepo = await _repo.ExStudentLogin(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+
+            if (userFromRepo == null)
+            {
+                _response.Success = false;
+                _response.Message = CustomMessage.UserUnAuthorized;
+                return Ok(_response);
+            }
+
+
+            Claim[] claims = new[]
+            {
+                new Claim(Enumm.ClaimType.NameIdentifier.ToString(), userFromRepo.Id.ToString()),
+                new Claim(Enumm.ClaimType.Name.ToString(), userFromRepo.Username),
+                new Claim(Enumm.ClaimType.BranchIdentifier.ToString(),userFromRepo.SchoolBranchId.ToString()),
+                new Claim(ClaimTypes.Role, userFromRepo.Role),
+            };
+
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(5),
+                SigningCredentials = creds
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var NameIdentifier = Convert.ToInt32(claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value);
+            var Role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value;
+
+            _response.Data = new
+            {
+                loggedInUserId = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.NameIdentifier.ToString())).Value,
+                loggedInUserName = claims.FirstOrDefault(x => x.Type.Equals(Enumm.ClaimType.Name.ToString())).Value,
+                role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role.ToString())).Value,
+                token = tokenHandler.WriteToken(token),
+            };
+            _response.Success = true;
+            _response.Message = "Login message for new tutor";
+            return base.Ok(_response);
+
+
+        }
+
 
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)

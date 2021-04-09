@@ -1,0 +1,95 @@
+{
+  "Classes": [
+    {
+      "Name": "9"
+    },
+    {
+      "Name": "10"
+    },
+    {
+      "Name": "11"
+    },
+    {
+      "Name": "12"
+    }
+  ],
+  "Sections": [
+    {
+      "SectionName": "A"
+    },
+    {
+      "SectionName": "B"
+    },
+    {
+      "SectionName": "C"
+    }
+  ],
+  "Subjects": [
+    {
+      "Name": "Physics"
+    },
+    {
+      "Name": "Math"
+    },
+    {
+      "Name": "Computer"
+    }
+  ],
+  "SchoolAcademies": [
+    {
+      "Name": "Lahore School"
+    },
+    {
+      "Name": "Quetta School"
+    }
+  ],
+  "QuestionTypes": [
+    {
+      "Type": "MCQs Single"
+    },
+    {
+      "Type": "MCQs Multiple"
+    },
+    {
+      "Type": "Subjective"
+    }
+  ],
+  "Countries": [
+    {
+      "Name": "Pakistan"
+    }
+  ],
+  "States": [
+    {
+      "Name": "Balochistan"
+    },
+    {
+      "Name": "Khyber Pakhtunkhwa"
+    },
+    {
+      "Name": "Punjab"
+    },
+    {
+      "Name": "Sindh"
+    }
+  ],
+  "LeaveTypes": [
+    {
+      "Type": "Half Day"
+    },
+    {
+      "Type": "Sick"
+    },
+    {
+      "Type": "Casual"
+    }
+  ],
+  "ExamTypes": [
+    {
+      "Type": "Annual"
+    },
+    {
+      "Type": "Semester"
+    }
+  ]
+}

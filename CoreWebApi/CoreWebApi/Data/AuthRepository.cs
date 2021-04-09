@@ -15,8 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Data
@@ -63,6 +61,19 @@ namespace CoreWebApi.Data
                 return user;
             }
 
+        }
+        public async Task<User> ExStudentLogin(string username, string password)
+        {
+            var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower() && x.Active == true && x.SchoolBranchId == branch.Id);
+            if (user == null)
+                return null;
+
+            if (!Seed.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                return null;
+
+            return user;
         }
         public async Task<object> GetSchoolDetails(string regNo, int branchId)
         {
@@ -267,21 +278,39 @@ namespace CoreWebApi.Data
 
 
         }
+        public async Task<ServiceResponse<object>> ExStudentRegister(ExStudentForRegisterDto model)
+        {
+            SchoolBranch branch = null;
 
-        //private void CreatePasswordHash(string password,out byte[] passwordHash, out byte[] passwordSalt)
-        //{
-        //    byte[] key= new Byte[64];
-        //    using (HMACSHA512 hmac = new HMACSHA512(key))
-        //    {
-        //        passwordSalt = hmac.Key;
-        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
+            var userToCreate = new User
+            {
+                Username = model.Username,
+                FullName = model.Username,
+                UserTypeId = (int)Enumm.UserType.OnlineStudent,
+                Email = model.Email,
+                ContactNumber = model.ContactNumber,
+                SchoolBranchId = branch.Id,
+                //Gender = model.Gender,
+                Active = true,
+                CreatedDateTime = DateTime.Now,
+                Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.OnlineStudent).FirstOrDefault()?.Name
+            };
+            byte[] passwordHash, passwordSalt;
+            Seed.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
+
+            userToCreate.PasswordHash = passwordHash;
+            userToCreate.PasswordSalt = passwordSalt;
+
+            await _context.Users.AddAsync(userToCreate);
+            await _context.SaveChangesAsync();
 
 
-        //       // var hmac = System.Security.Cryptography.HMACSHA512()
-        //    }
-
-        //}
-
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = "Custom message to online student";
+            return _serviceResponse;
+        }
+       
         public async Task<bool> UserExists(string userName, string schoolName)
         {
             if (!string.IsNullOrEmpty(schoolName))
@@ -299,12 +328,6 @@ namespace CoreWebApi.Data
         {
             try
             {
-                //string contentRootPath = _HostEnvironment.ContentRootPath;
-
-
-                var pathToSave = "http://localhost:8000/images";
-
-
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.File.FileName);
                 //var fullPath = Path.Combine(pathToSave);
                 //var dbPath = Path.Combine(pathToSave, fileName); //you can add this path to a list and then return all dbPaths to the client if require
