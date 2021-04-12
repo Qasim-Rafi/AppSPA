@@ -3,49 +3,37 @@ using CoreWebApi.Data;
 using CoreWebApi.Dtos;
 using CoreWebApi.Helpers;
 using CoreWebApi.IData;
-using CoreWebApi.Models;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using MimeKit;
-using MimeKit.Text;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Xunit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using Xunit;
 
 namespace CoreWebApi_Tests
 {
     public class AuthControllerTest
     {
-        AuthController _controller;
-        IAuthRepository _repo;
-        IConfiguration configuration;
-        DataContext context;
-        IHttpContextAccessor httpContextAccessor;
-        EmailSettings emailSettings;
-        IWebHostEnvironment webHostEnvironment;
-        IFilesRepository filesRepository;
-        IFileProvider fileProvider;
-        public AuthControllerTest()
+        readonly AuthController _controller;
+        readonly IAuthRepository _repo;
+        private readonly IConfiguration _config;
+        private IFileProvider _fileProvider;
+        private readonly DataContext _context;
+
+        public AuthControllerTest(IAuthRepository repo, IConfiguration config, DataContext context, IFileProvider fileProvider)
         {
-           // _repo = new AuthRepositoryFake(context, httpContextAccessor, configuration, emailSettings, webHostEnvironment, filesRepository);
-           _controller = new AuthController(_repo, configuration, context, fileProvider);
+            _config = config;
+            _repo = repo;
+            _context = context;
+            _fileProvider = fileProvider; 
+            _controller = new AuthController(_repo, _config, _context, _fileProvider);
         }
 
         [Fact]
         public void Login_WhenCalled_ReturnsOkResult()
         {
             // Arrange
-            var nameMissingItem = new UserForLoginDto()
+            var obj = new UserForLoginDto()
             {
                 Username = "Username",
                 Password = "123",
@@ -53,7 +41,7 @@ namespace CoreWebApi_Tests
             };
 
             // Act
-            var okResult = _controller.Login(nameMissingItem);
+            var okResult = _controller.Login(obj);
 
             // Assert
             Assert.IsType<OkObjectResult>(okResult.Result);
@@ -74,6 +62,24 @@ namespace CoreWebApi_Tests
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(badResponse);
+        }
+        [Fact]
+        public void Login_WhenCalled_ReturnsRightObject()
+        {
+            // Arrange
+            var obj = new UserForLoginDto()
+            {
+                Username = "Username",
+                Password = "123",
+                SchoolName1 = 213
+            };
+
+            // Act
+            var okResult = _controller.Login(obj).Result as OkObjectResult;
+            dynamic response = okResult.Value;
+
+            // Assert
+            Assert.True(response.Success);
         }
     }
 }

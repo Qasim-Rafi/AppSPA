@@ -25,7 +25,7 @@ namespace CoreWebApi.Data
 
         public async Task<bool> SubjectExists(string name)
         {
-            if (await _context.Subjects.AnyAsync(x => x.Name.ToLower() == name.ToLower() && x.SchoolBranchId == _LoggedIn_BranchID))
+            if (await _context.Subjects.AnyAsync(x => x.Name.ToLower() == name.ToLower() && x.CreatedById == _LoggedIn_UserID && x.SchoolBranchId == _LoggedIn_BranchID))
                 return true;
             return false;
         }
