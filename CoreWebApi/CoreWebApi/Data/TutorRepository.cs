@@ -209,26 +209,43 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddProfile(TutorProfileForAddDto model)
         {
-            var ToAdd3 = new TutorProfile
+            var ToUpdate = await _context.TutorProfiles.Where(m => m.CreatedById == _LoggedIn_UserID).FirstOrDefaultAsync();
+            if (ToUpdate != null)
             {
-                About = model.About,
-                AreasToTeach = model.AreasToTeach,
-                CityId = model.CityId,
-                CommunicationSkillRate = model.CommunicationSkillRate,
-                Education = model.Education,
-                LanguageFluencyRate = model.LanguageFluencyRate,
-                WorkExperience = model.WorkExperience,
-                WorkHistory = model.WorkHistory,
-                //GradeLevels = string.Join(',', model.GradeLevels),
-                Active = true,
-                SchoolBranchId = _LoggedIn_BranchID,
-                CreatedById = _LoggedIn_UserID,
-                CreatedDateTime = DateTime.Now,
-            };
+                ToUpdate.About = model.About;
+                ToUpdate.AreasToTeach = model.AreasToTeach;
+                ToUpdate.CityId = model.CityId;
+                ToUpdate.CommunicationSkillRate = model.CommunicationSkillRate;
+                ToUpdate.Education = model.Education;
+                ToUpdate.LanguageFluencyRate = model.LanguageFluencyRate;
+                ToUpdate.WorkExperience = model.WorkExperience;
+                ToUpdate.WorkHistory = model.WorkHistory;
 
-            await _context.TutorProfiles.AddAsync(ToAdd3);
-            await _context.SaveChangesAsync();
+                _context.TutorProfiles.Update(ToUpdate);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var ToAdd = new TutorProfile
+                {
+                    About = model.About,
+                    AreasToTeach = model.AreasToTeach,
+                    CityId = model.CityId,
+                    CommunicationSkillRate = model.CommunicationSkillRate,
+                    Education = model.Education,
+                    LanguageFluencyRate = model.LanguageFluencyRate,
+                    WorkExperience = model.WorkExperience,
+                    WorkHistory = model.WorkHistory,
+                    //GradeLevels = string.Join(',', model.GradeLevels),
+                    Active = true,
+                    SchoolBranchId = _LoggedIn_BranchID,
+                    CreatedById = _LoggedIn_UserID,
+                    CreatedDateTime = DateTime.Now,
+                };
 
+                await _context.TutorProfiles.AddAsync(ToAdd);
+                await _context.SaveChangesAsync();
+            }
             _serviceResponse.Message = CustomMessage.Added;
             _serviceResponse.Success = true;
             return _serviceResponse;

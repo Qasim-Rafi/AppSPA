@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi_Tests
 {
-    public class AuthRepositoryFake : BaseRepository//, IAuthRepository
+    public class AuthRepositoryFake : BaseRepository, IAuthRepository
     {
         private readonly IConfiguration _configuration;
         private readonly EmailSettings _emailSettings;
@@ -392,6 +392,16 @@ namespace CoreWebApi_Tests
                 _serviceResponse.Success = false;
                 return _serviceResponse;
             }
+        }
+
+        public Task<User> ExStudentLogin(string username, string password, int tutorId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceResponse<object>> ExStudentRegister(ExStudentForRegisterDto model)
+        {
+            throw new NotImplementedException();
         }
     }
 }
