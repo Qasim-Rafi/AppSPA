@@ -37,11 +37,12 @@ namespace CoreWebApi_Tests
         IFileProvider fileProvider;
         public AuthControllerTest()
         {
-            //_repo = new AuthRepositoryFake(context, httpContextAccessor, configuration, emailSettings, webHostEnvironment, filesRepository);
-           // _controller = new AuthController(_repo, configuration, httpContextAccessor, context, fileProvider);
+           // _repo = new AuthRepositoryFake(context, httpContextAccessor, configuration, emailSettings, webHostEnvironment, filesRepository);
+           _controller = new AuthController(_repo, configuration, context, fileProvider);
         }
+
         [Fact]
-        public void Add_InvalidObjectPassed_ReturnsBadRequest()
+        public void Login_WhenCalled_ReturnsOkResult()
         {
             // Arrange
             var nameMissingItem = new UserForLoginDto()
@@ -50,7 +51,23 @@ namespace CoreWebApi_Tests
                 Password = "123",
                 SchoolName1 = 213
             };
-            _controller.ModelState.AddModelError("Name", "Required");
+
+            // Act
+            var okResult = _controller.Login(nameMissingItem);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(okResult.Result);
+        }
+        [Fact]
+        public void Login_InvalidObjectPassed_ReturnsBadRequest()
+        {
+            // Arrange
+            var nameMissingItem = new UserForLoginDto()
+            {
+                Username = "Username",
+                SchoolName1 = 123
+            };
+            _controller.ModelState.AddModelError("Password", "Required");
 
             // Act
             var badResponse = _controller.Login(nameMissingItem);

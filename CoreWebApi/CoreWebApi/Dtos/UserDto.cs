@@ -187,7 +187,9 @@ namespace CoreWebApi.Dtos
     }
     public class UserForLoginDto
     {
+        [Required]
         public string Username { get; set; }
+        [Required]
         public string Password { get; set; }
         public int SchoolName1 { get; set; } = 0;
     }
