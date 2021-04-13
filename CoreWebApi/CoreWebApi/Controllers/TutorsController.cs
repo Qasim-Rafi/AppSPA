@@ -120,6 +120,17 @@ namespace CoreWebApi.Controllers
 
             return Ok(_response);
         }
+        [HttpPut("UpdateSubjectContent")]
+        public async Task<IActionResult> UpdateSubjectContent(TutorSubjectContentDtoForEdit model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateSubjectContent(model);
+            return Ok(_response);
+        }
         [HttpPost("AddSubjectContentDetails")]
         public async Task<IActionResult> AddSubjectContentDetails(List<TutorSubjectContentDetailDtoForAdd> model)
         {
@@ -135,6 +146,17 @@ namespace CoreWebApi.Controllers
 
             return Ok(_response);
 
+        }
+        [HttpPut("UpdateSubjectContentDetail")]
+        public async Task<IActionResult> UpdateSubjectContentDetail(TutorSubjectContentDetailDtoForEdit model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateSubjectContentDetail(model);
+            return Ok(_response);
         }
     }
 }

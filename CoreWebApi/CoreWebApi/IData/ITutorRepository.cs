@@ -20,6 +20,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddSubjectContents(List<TutorSubjectContentDtoForAdd> model);
         Task<ServiceResponse<object>> AddSubjectContentDetails(List<TutorSubjectContentDetailDtoForAdd> model);
         Task<ServiceResponse<object>> GetAllSubjectContent(string tutorClassName = "", int subjectId = 0);
+        Task<ServiceResponse<object>> UpdateSubjectContent(TutorSubjectContentDtoForEdit model);
+        Task<ServiceResponse<object>> UpdateSubjectContentDetail(TutorSubjectContentDetailDtoForEdit model);
 
     }
 }
