@@ -116,4 +116,70 @@ namespace CoreWebApi.Dtos
         public int LanguageFluencyRate { get; set; }
         public int CommunicationSkillRate { get; set; }
     }
+    public class TutorSubjectContentDtoForAdd
+    {
+        public string TutorClassName { get; set; }
+        [Required]
+        public int SubjectId { get; set; }
+        [Required]
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
+        public string Heading { get; set; }
+        //[Required]
+        public int ContentOrder { get; set; }
+    }
+    public class TutorSubjectContentDtoForEdit
+    {
+        public int Id { get; set; }
+        public string TutorClassName { get; set; }
+        public int SubjectId { get; set; }
+        [Required]
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
+        public string Heading { get; set; }
+        public int ContentOrder { get; set; }
+    }
+    public class TutorSubjectContentDetailDtoForAdd
+    {
+        [Required]
+        public int SubjectContentId { get; set; }
+        [Required]
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
+        public string Heading { get; set; }
+        public int Order { get; set; }
+        public string Duration { get; set; }
+    }
+    public class TutorSubjectContentDetailDtoForEdit
+    {
+        public int Id { get; set; }
+        public int SubjectContentId { get; set; }
+        [Required]
+        [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
+        public string Heading { get; set; }
+        public int Order { get; set; }
+        public string Duration { get; set; }
+    }
+    public class TutorSubjectContentDetailDtoForList
+    {
+        public int SubjectContentDetailId { get; set; }
+        public string DetailHeading { get; set; }
+        public int DetailOrder { get; set; }
+        public string Duration { get; set; }
+    }
+    public class TutorSubjectContentOneDtoForList
+    {       
+        public string TutorClassName { get; set; }
+        public List<TutorSubjectContentTwoDtoForList> Subjects = new List<TutorSubjectContentTwoDtoForList>();
+    }
+    public class TutorSubjectContentTwoDtoForList
+    {
+        public int SubjectId { get; set; }
+        public string Subject { get; set; }
+        public List<TutorSubjectContentThreeDtoForList> Contents = new List<TutorSubjectContentThreeDtoForList>();
+    }
+    public class TutorSubjectContentThreeDtoForList
+    {
+        public int SubjectContentId { get; set; }
+        public string Heading { get; set; }
+        public int ContentOrder { get; set; }
+        public List<TutorSubjectContentDetailDtoForList> ContentDetails = new List<TutorSubjectContentDetailDtoForList>();
+    }
 }

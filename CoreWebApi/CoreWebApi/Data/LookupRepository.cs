@@ -537,5 +537,16 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
+        public async Task<ServiceResponse<object>> GetTutorClassesAndSubjects()
+        {
+            var Obj = await _context.TutorProfiles.Where(m => m.CreatedById == _LoggedIn_UserID).FirstOrDefaultAsync();
+            var Classes = Obj.GradeLevels.Split(',').ToList();
+            var ListObj = await _context.Subjects.Where(m => m.CreatedById == _LoggedIn_UserID).ToListAsync();
+            var Subjects = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(ListObj);
+
+            _serviceResponse.Data = new { Classes, Subjects };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

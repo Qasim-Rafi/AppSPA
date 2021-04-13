@@ -102,6 +102,39 @@ namespace CoreWebApi.Controllers
             _response = await _repo.UpdateProfile(model);
             return Ok(_response);
         }
-       
+        [HttpGet("GetAllSubjectContent/{tutorClassName?}/{subjectId?}")]
+        public async Task<IActionResult> GetAllSubjectContent(string tutorClassName = "", int subjectId = 0)
+        {
+            _response = await _repo.GetAllSubjectContent(tutorClassName, subjectId);
+            return Ok(_response);
+
+        }
+        [HttpPost("AddSubjectContents")]
+        public async Task<IActionResult> AddSubjectContents(List<TutorSubjectContentDtoForAdd> model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }            
+            _response = await _repo.AddSubjectContents(model);
+
+            return Ok(_response);
+        }
+        [HttpPost("AddSubjectContentDetails")]
+        public async Task<IActionResult> AddSubjectContentDetails(List<TutorSubjectContentDetailDtoForAdd> model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            //if (await _repo.SubjectExists(subject.Name))
+            //    return BadRequest(new { message = "Subject Already Exist" });
+
+            _response = await _repo.AddSubjectContentDetails(model);
+
+            return Ok(_response);
+
+        }
     }
 }

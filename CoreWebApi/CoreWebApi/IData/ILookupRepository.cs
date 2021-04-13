@@ -35,5 +35,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetTeachersBySemesterSection(int csId, int subjectId);
         Task<ServiceResponse<object>> GetSubjectsBySemester(int semesterId);
         Task<ServiceResponse<object>> GetTeacherSemestersAndSubjectsBySemester(int semesterSectionId);
+        Task<ServiceResponse<object>> GetTutorClassesAndSubjects();
     }
 }

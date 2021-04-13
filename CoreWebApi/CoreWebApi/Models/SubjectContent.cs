@@ -10,6 +10,7 @@ namespace CoreWebApi.Models
     public class SubjectContent
     {
         public int Id { get; set; }
+        public string TutorClassName { get; set; }
         public int? ClassId { get; set; }
         public int? SemesterId { get; set; }
         public int SubjectId { get; set; }

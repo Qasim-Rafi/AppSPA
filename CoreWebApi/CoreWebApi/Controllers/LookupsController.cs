@@ -243,5 +243,11 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetTutorClassesAndSubjects")]
+        public async Task<IActionResult> GetTutorClassesAndSubjects()
+        {
+            _response = await _repo.GetTutorClassesAndSubjects();
+            return Ok(_response);
+        }
     }
 }
