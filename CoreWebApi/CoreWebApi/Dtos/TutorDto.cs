@@ -182,4 +182,45 @@ namespace CoreWebApi.Dtos
         public int ContentOrder { get; set; }
         public List<TutorSubjectContentDetailDtoForList> ContentDetails = new List<TutorSubjectContentDetailDtoForList>();
     }
+    public class TutorUserForAddInGroupDto
+    {
+        public int Id { get; set; }
+        public string GroupName { get; set; }
+        public string GroupTime { get; set; }
+        public string GroupLectureTime { get; set; }
+        public string TutorClassName { get; set; }
+        public int SubjectId { get; set; }
+        public List<int> UserIds { get; set; } = new List<int>();
+    }
+    public class TutorGroupUserListDto
+    {
+        public int Value { get; set; }
+        public string Display { get; set; }
+    }
+    public class TutorGroupListDto
+    {
+        public int Id { get; set; }
+        public string GroupName { get; set; }
+        public string GroupTime { get; set; }
+        public string GroupLectureTime { get; set; }
+        public string TutorClassName { get; set; }
+        public int SubjectId { get; set; }
+        public string SubjectName { get; set; }
+        public List<TutorGroupUserListDto> Children { get; set; } = new List<TutorGroupUserListDto>();
+    }
+    public class TutorGroupUserListForEditDto
+    {
+        public int Id { get; set; }
+        public string FullName { get; set; }
+    }
+    public class TutorGroupListForEditDto
+    {
+        public int Id { get; set; }
+        public string GroupName { get; set; }
+        public string GroupTime { get; set; }
+        public string GroupLectureTime { get; set; }
+        public string TutorClassName { get; set; }
+        public int SubjectId { get; set; }
+        public List<TutorGroupUserListForEditDto> Students { get; set; } = new List<TutorGroupUserListForEditDto>();
+    }
 }

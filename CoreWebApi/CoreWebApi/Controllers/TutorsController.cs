@@ -9,10 +9,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
-{   
+{
     public class TutorsController : BaseController
     {
-        private readonly ITutorRepository _repo;        
+        private readonly ITutorRepository _repo;
         private readonly ISubjectRepository _subjectRepo;
         public TutorsController(ITutorRepository repo, ISubjectRepository subjectRepo)
         {
@@ -58,7 +58,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        
+
         [HttpPut("UpdateSubject")]
         public async Task<IActionResult> UpdateSubject(TutorSubjectDtoForEdit subject)
         {
@@ -115,7 +115,7 @@ namespace CoreWebApi.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }            
+            }
             _response = await _repo.AddSubjectContents(model);
 
             return Ok(_response);
@@ -158,5 +158,38 @@ namespace CoreWebApi.Controllers
             _response = await _repo.UpdateSubjectContentDetail(model);
             return Ok(_response);
         }
+
+        [HttpPost("AddGroupUsers")]
+        public async Task<IActionResult> AddUsersInGroup(TutorUserForAddInGroupDto model)
+        {
+            _response = await _repo.AddUsersInGroup(model);
+            return Ok(_response);
+        }
+        [HttpPut("UpdateGroupUsers")]
+        public async Task<IActionResult> UpdateGroupUsers(TutorUserForAddInGroupDto model)
+        {
+            _response = await _repo.UpdateUsersInGroup(model);
+            return Ok(_response);
+        }
+
+        [HttpGet("GetGroupUsers")]
+        public async Task<IActionResult> GetGroupUsers()
+        {
+            _response = await _repo.GetGroupUsers();
+            return Ok(_response);
+        }
+        [HttpGet("GetGroupUsersById/{id}")]
+        public async Task<IActionResult> GetGroupUsersById(int id)
+        {
+            _response = await _repo.GetGroupUsersById(id);
+            return Ok(_response);
+        }
+        [HttpDelete("DeleteGroup/{id}")]
+        public async Task<IActionResult> DeleteGroup(int id)
+        {
+            _response = await _repo.DeleteGroup(id);
+            return Ok(_response);
+        }
+
     }
 }

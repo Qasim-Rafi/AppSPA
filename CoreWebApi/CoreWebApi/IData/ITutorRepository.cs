@@ -22,6 +22,11 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetAllSubjectContent(string tutorClassName = "", int subjectId = 0);
         Task<ServiceResponse<object>> UpdateSubjectContent(TutorSubjectContentDtoForEdit model);
         Task<ServiceResponse<object>> UpdateSubjectContentDetail(TutorSubjectContentDetailDtoForEdit model);
+        Task<ServiceResponse<object>> AddUsersInGroup(TutorUserForAddInGroupDto model);
+        Task<ServiceResponse<object>> UpdateUsersInGroup(TutorUserForAddInGroupDto model);
+        Task<ServiceResponse<object>> GetGroupUsers();
+        Task<ServiceResponse<object>> GetGroupUsersById(int id);
+        Task<ServiceResponse<object>> DeleteGroup(int id);
 
     }
 }

@@ -223,16 +223,12 @@ namespace CoreWebApi.Dtos
         public List<IFormFile> files { get; set; }
     }
 
-    public class UserForAddInGroupDto : BaseDto
-    {
-        public UserForAddInGroupDto()
-        {
-            UserIds = new List<int>();
-        }
+    public class UserForAddInGroupDto
+    {       
         public int? Id { get; set; }
         public int ClassSectionId { get; set; }
         public string GroupName { get; set; }
-        public List<int> UserIds { get; set; }
+        public List<int> UserIds { get; set; } = new List<int>();
         public bool? Active { get; set; } = true;
     }
     public class GroupUserListDto
@@ -241,14 +237,10 @@ namespace CoreWebApi.Dtos
         public string Display { get; set; }
     }
     public class GroupListDto
-    {
-        public GroupListDto()
-        {
-            Children = new List<GroupUserListDto>();
-        }
+    {       
         public int Id { get; set; }
         public string GroupName { get; set; }
-        public List<GroupUserListDto> Children { get; set; }
+        public List<GroupUserListDto> Children { get; set; } = new List<GroupUserListDto>();
     }
     public class GroupUserListForEditDto
     {
@@ -256,15 +248,11 @@ namespace CoreWebApi.Dtos
         public string FullName { get; set; }
     }
     public class GroupListForEditDto
-    {
-        public GroupListForEditDto()
-        {
-            Students = new List<GroupUserListForEditDto>();
-        }
+    {        
         public int Id { get; set; }
         public string GroupName { get; set; }
         public int ClassSectionId { get; set; }
-        public List<GroupUserListForEditDto> Students { get; set; }
+        public List<GroupUserListForEditDto> Students { get; set; } = new List<GroupUserListForEditDto>();
     }
     
    

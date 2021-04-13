@@ -445,5 +445,246 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+
+        public async Task<ServiceResponse<object>> AddUsersInGroup(TutorUserForAddInGroupDto model)
+        {
+            var group = new Group
+            {
+                GroupName = model.GroupName,
+                TutorClassName = model.TutorClassName,
+                SubjectId = model.SubjectId,
+                GroupLectureTime = Convert.ToDateTime(model.GroupLectureTime),
+                Active = true,
+                SchoolBranchId = _LoggedIn_BranchID
+            };
+
+            await _context.Groups.AddAsync(group);
+            await _context.SaveChangesAsync();
+
+            List<GroupUser> listToAdd = new List<GroupUser>();
+            foreach (var item in model.UserIds)
+            {
+                listToAdd.Add(new GroupUser
+                {
+                    GroupId = group.Id,
+                    UserId = item
+                });
+            }
+            await _context.GroupUsers.AddRangeAsync(listToAdd);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Success = true;
+            _serviceResponse.Message = CustomMessage.Added;
+            return _serviceResponse;
+        }
+
+
+        public async Task<ServiceResponse<object>> GetGroupUsers()
+        {
+            List<TutorGroupListDto> groupList = new List<TutorGroupListDto>();
+
+            var result = await (from o in _context.Groups
+                                join od in _context.GroupUsers
+                                on o.Id equals od.GroupId
+
+                                where od.Group.SchoolBranchId == _LoggedIn_BranchID
+                                && od.Group.Active == true
+                                select new
+                                {
+                                    o.Id,
+                                    od.Group
+                                }).Distinct().ToListAsync();
+
+            foreach (var item in result)
+            {
+
+                groupList.Add(new TutorGroupListDto
+                {
+                    Id = item.Id,
+                    GroupName = item.Group.GroupName,
+                });
+
+            }
+
+
+            foreach (var item in groupList)
+            {
+                var user = await _context.Groups.Where(x => x.Id == item.Id).
+                            Join(_context.GroupUsers, g => g.Id,
+                            gu => gu.GroupId, (Group, GroupUser) => new
+                            {
+                                Group = Group,
+                                GroupUser = GroupUser
+                            }).Join(_context.Users, gu => gu.GroupUser.UserId, u => u.Id, (GroupUser, User) => new
+                            {
+                                GroupUser = GroupUser,
+                                User = User
+                            })
+                            .Where(m => m.GroupUser.Group.SchoolBranchId == _LoggedIn_BranchID && m.User.Active == true).Select(p => p).ToListAsync();
+
+                foreach (var item_u in user)
+                {
+                    if (item.Id == item_u.GroupUser.Group.Id)
+                    {
+
+                        item.Children.Add(new TutorGroupUserListDto
+                        {
+                            Display = item_u.User.FullName,
+                            Value = item_u.User.Id
+                        });
+                    }
+
+                }
+            }
+
+            if (groupList.Count > 0)
+            {
+                _serviceResponse.Data = groupList;
+            }
+
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+
+
+        }
+
+        public async Task<ServiceResponse<object>> UpdateUsersInGroup(TutorUserForAddInGroupDto model)
+        {
+            var group = await _context.Groups.Where(m => m.Id == model.Id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).FirstOrDefaultAsync();
+            if (group != null)
+            {
+                group.GroupName = model.GroupName;
+                group.SchoolBranchId = _LoggedIn_BranchID;
+
+                _context.Groups.Update(group);
+                await _context.SaveChangesAsync();
+
+                if (model.UserIds.Count() > 0)
+                {
+                    List<GroupUser> listToDelete = await _context.GroupUsers.Where(m => m.GroupId == model.Id && m.Group.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+                    _context.GroupUsers.RemoveRange(listToDelete);
+                    await _context.SaveChangesAsync();
+
+                    List<GroupUser> listToAdd = new List<GroupUser>();
+                    foreach (var item in model.UserIds)
+                    {
+                        listToAdd.Add(new GroupUser
+                        {
+                            GroupId = group.Id,
+                            UserId = item
+                        });
+                    }
+                    await _context.GroupUsers.AddRangeAsync(listToAdd);
+                    await _context.SaveChangesAsync();
+                }
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
+                return _serviceResponse;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                return _serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<object>> GetGroupUsersById(int id)
+        {
+            List<TutorGroupListForEditDto> groupList = new List<TutorGroupListForEditDto>();
+
+            var result = await (from g in _context.Groups
+                                join gu in _context.GroupUsers
+                                on g.Id equals gu.GroupId
+                                where g.Id == id
+                                && g.SchoolBranchId == _LoggedIn_BranchID
+                                && g.Active == true
+                                select new
+                                {
+                                    g.Id,
+                                    g.GroupName,
+                                    g.TutorClassName,
+                                    g.SubjectId,
+                                    g.GroupLectureTime,
+                                }).FirstOrDefaultAsync();
+
+
+            if (result != null)
+            {
+                groupList.Add(new TutorGroupListForEditDto
+                {
+                    Id = result.Id,
+                    GroupName = result.GroupName,
+                    TutorClassName = result.TutorClassName,
+                    SubjectId = Convert.ToInt32(result.SubjectId),
+                    GroupLectureTime = DateFormat.ToDateTime(result.GroupLectureTime.Value),
+                });
+
+            }
+
+            foreach (var item in groupList)
+            {
+                var user = await (from u in _context.Users
+                                  join gu in _context.GroupUsers
+                                  on u.Id equals gu.UserId
+                                  join g in _context.Groups
+                                  on gu.GroupId equals g.Id
+                                  where g.SchoolBranchId == _LoggedIn_BranchID
+                                  && u.Active == true
+                                  && g.Active == true
+                                  select new
+                                  {
+                                      GroupUser = gu,
+                                      User = u,
+                                      Group = g
+                                  }).ToListAsync();
+
+                foreach (var item_u in user)
+                {
+                    if (item.Id == item_u.GroupUser.Group.Id)
+                    {
+
+                        item.Students.Add(new TutorGroupUserListForEditDto
+                        {
+                            FullName = item_u.User.FullName,
+                            Id = item_u.User.Id
+                        });
+                    }
+
+                }
+            }
+
+
+            if (groupList.Count > 0)
+            {
+                _serviceResponse.Data = groupList;
+            }
+            else
+            {
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+            }
+
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> DeleteGroup(int id)
+        {
+
+            var group = _context.Groups.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).FirstOrDefault();
+            if (group != null)
+            {
+                _context.Groups.Remove(group);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+                return _serviceResponse;
+            }
+        }
     }
 }

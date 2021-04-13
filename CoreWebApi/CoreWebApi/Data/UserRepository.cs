@@ -1313,7 +1313,7 @@ namespace CoreWebApi.Data
                 {
                     Id = result.Id,
                     GroupName = result.GroupName,
-                    ClassSectionId = result.ClassSectionId
+                    ClassSectionId = Convert.ToInt32(result.ClassSectionId)
                 });
 
             }
