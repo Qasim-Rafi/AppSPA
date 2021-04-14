@@ -130,6 +130,13 @@ namespace CoreWebApi.Data
             if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
             {
                 list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).OrderBy(m => m.Name).ToListAsync();
+                for (int i = 0; i < list.Count(); i++)
+                {
+                    var item = list[i];
+                    var count = list.Where(m => m.Name == item.Name).Count();
+                    if (count > 1)
+                        list.Remove(item);
+                }
             }
             else
             {

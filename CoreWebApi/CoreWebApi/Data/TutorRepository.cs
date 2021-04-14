@@ -27,6 +27,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> SearchTutor(SearchTutorDto model)
         {
+            var subjectDetails = await _context.Subjects.FirstOrDefaultAsync(m => m.Id == model.SubjectId);
             var users = await (from user in _context.Users
                                join pr in _context.TutorProfiles
                                on user.Id equals pr.CreatedById
@@ -36,13 +37,13 @@ namespace CoreWebApi.Data
 
                                where pr.GradeLevels.Contains(model.Class)
                                && pr.CityId == model.CityId
-                               && subject.Id == model.SubjectId
+                               && subject.Name == subjectDetails.Name
                                && user.Active == true
                                && user.UserTypeId == (int)Enumm.UserType.Tutor
                                //&& user.Gender.ToLower() == model.Gender.ToLower()
                                select new TutorProfileForListDto
                                {
-                                   Id = pr.Id,
+                                   Id = user.Id,
                                    FullName = user.FullName,
                                    Email = user.Email,
                                    Gender = user.Gender,
@@ -126,18 +127,21 @@ namespace CoreWebApi.Data
                 await _context.Subjects.AddAsync(ToAdd);
                 await _context.SaveChangesAsync();
 
-                var ToAdd3 = new TutorProfile
+                var Exist = await _context.TutorProfiles.AnyAsync(m => m.CreatedById == _LoggedIn_UserID);
+                if (!Exist)
                 {
-                    GradeLevels = string.Join(',', model.GradeLevels),
-                    Active = true,
-                    SchoolBranchId = _LoggedIn_BranchID,
-                    CreatedById = _LoggedIn_UserID,
-                    CreatedDateTime = DateTime.Now,
-                };
+                    var ToAdd3 = new TutorProfile
+                    {
+                        GradeLevels = string.Join(',', model.GradeLevels),
+                        Active = true,
+                        SchoolBranchId = _LoggedIn_BranchID,
+                        CreatedById = _LoggedIn_UserID,
+                        CreatedDateTime = DateTime.Now,
+                    };
 
-                await _context.TutorProfiles.AddAsync(ToAdd3);
-                await _context.SaveChangesAsync();
-
+                    await _context.TutorProfiles.AddAsync(ToAdd3);
+                    await _context.SaveChangesAsync();
+                }
                 _serviceResponse.Message = CustomMessage.Added;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
