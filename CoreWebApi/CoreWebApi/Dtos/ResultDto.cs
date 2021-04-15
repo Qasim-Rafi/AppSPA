@@ -10,10 +10,11 @@ namespace CoreWebApi.Dtos
     }
     public class ResultForAddDto
     {
-        public int ClassSectionId { get; set; }
+        public int? ClassSectionId { get; set; }
         public int SubjectId { get; set; }
         public int StudentId { get; set; }
-        public int ReferenceId { get; set; }
+        public string TutorExamName { get; set; }
+        public int? ReferenceId { get; set; }
         public string Remarks { get; set; }
         public double TotalMarks { get; set; }
         public double ObtainedMarks { get; set; }
@@ -25,6 +26,7 @@ namespace CoreWebApi.Dtos
         public string Subject { get; set; }
         public int StudentId { get; set; }
         public string Student { get; set; }
+        public string TutorExamName { get; set; }
         public int ReferenceId { get; set; }
         public string Reference { get; set; }
         public string Remarks { get; set; }

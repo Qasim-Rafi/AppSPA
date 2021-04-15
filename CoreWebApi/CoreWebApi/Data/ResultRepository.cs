@@ -27,14 +27,16 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> AddResult(List<ResultForAddDto> model)
         {
             var ListToAdd = new List<Result>();
-            foreach (var item in model)
+            for (int i = 0; i < model.Count; i++)
             {
+                ResultForAddDto item = model[i];
                 ListToAdd.Add(new Result
                 {
                     ClassSectionId = item.ClassSectionId,
                     SubjectId = item.SubjectId,
                     StudentId = item.StudentId,
                     ReferenceId = item.ReferenceId,
+                    TutorExamName = item.TutorExamName,
                     Remarks = item.Remarks,
                     ObtainedMarks = item.ObtainedMarks,
                     TotalMarks = item.TotalMarks,
