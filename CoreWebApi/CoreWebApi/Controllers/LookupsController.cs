@@ -249,10 +249,10 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetTutorClassesAndSubjects();
             return Ok(_response);
         }
-        [HttpGet("GetTutorStudents")]
-        public async Task<IActionResult> GetTutorStudents()
+        [HttpGet("GetTutorStudents/{subjectId?}")]
+        public async Task<IActionResult> GetTutorStudents(int subjectId = 0)
         {
-            _response = await _repo.GetTutorStudents();
+            _response = await _repo.GetTutorStudents(subjectId);
             return Ok(_response);
         }
     }

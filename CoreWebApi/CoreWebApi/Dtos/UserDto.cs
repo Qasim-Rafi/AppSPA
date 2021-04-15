@@ -294,6 +294,7 @@ namespace CoreWebApi.Dtos
         [StringLength(15)]
         public string ContactNumber { get; set; }      
         public int TutorId { get; set; }      
+        public int SubjectId { get; set; }      
         public List<IFormFile> files { get; set; }
     }
     public class ExStudentForLoginDto
@@ -301,5 +302,6 @@ namespace CoreWebApi.Dtos
         public string Username { get; set; }
         public string Password { get; set; }        
         public int TutorId { get; set; } = 0;
+        public int SubjectId { get; set; } = 0;
     }
 }

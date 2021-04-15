@@ -539,7 +539,7 @@ namespace CoreWebApi.Data
                                          StudentId = r.StudentId,
                                          SubjectId = r.SubjectId,
                                          Subject = s.Name,
-                                         ReferenceId = r.ReferenceId,
+                                         ReferenceId = r.ReferenceId.Value,
                                          Reference = ass.AssignmentName,
                                          ObtainedMarks = r.ObtainedMarks,
                                          TotalMarks = r.TotalMarks,

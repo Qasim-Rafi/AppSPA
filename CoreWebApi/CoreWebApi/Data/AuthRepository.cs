@@ -62,7 +62,7 @@ namespace CoreWebApi.Data
             }
 
         }
-        public async Task<User> ExStudentLogin(string username, string password, int tutorId)
+        public async Task<User> ExStudentLogin(string username, string password, int tutorId, int subjectId)
         {
             var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
 
@@ -80,6 +80,7 @@ namespace CoreWebApi.Data
                 {
                     StudentId = user.Id,
                     TutorId = tutorId,
+                    SubjectId = subjectId,
                     CreatedDatetime = DateTime.Now,
                     Active = true,
                 };
@@ -320,6 +321,7 @@ namespace CoreWebApi.Data
             {
                 StudentId = userToCreate.Id,
                 TutorId = model.TutorId,
+                SubjectId = model.SubjectId,
                 CreatedDatetime = DateTime.Now,
                 Active = true,
             };

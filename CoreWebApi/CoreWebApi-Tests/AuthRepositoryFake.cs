@@ -394,7 +394,7 @@ namespace CoreWebApi_Tests
             }
         }
 
-        public Task<User> ExStudentLogin(string username, string password, int tutorId)
+        public Task<User> ExStudentLogin(string username, string password, int tutorId, int subjectId)
         {
             throw new NotImplementedException();
         }

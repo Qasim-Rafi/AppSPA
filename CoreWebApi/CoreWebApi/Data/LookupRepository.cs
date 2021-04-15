@@ -133,7 +133,7 @@ namespace CoreWebApi.Data
                 for (int i = 0; i < list.Count(); i++)
                 {
                     var item = list[i];
-                    var count = list.Where(m => m.Name == item.Name).Count();
+                    var count = list.Where(m => m.Name.ToLower() == item.Name.ToLower()).Count();
                     if (count > 1)
                         list.Remove(item);
                 }
@@ -555,19 +555,37 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> GetTutorStudents()
+        public async Task<ServiceResponse<object>> GetTutorStudents(int subjectId)
         {
-            var users = await (from u in _context.Users
-                               join ts in _context.TutorStudentMappings
-                               on u.Id equals ts.StudentId
-                               where ts.TutorId == _LoggedIn_UserID
-                               orderby u.FullName
-                               select u).ToListAsync();
-            var list = _mapper.Map<List<UserForListDto>>(users);
+            if (subjectId > 0)
+            {
+                var users = await (from u in _context.Users
+                                   join ts in _context.TutorStudentMappings
+                                   on u.Id equals ts.StudentId
+                                   where ts.TutorId == _LoggedIn_UserID
+                                   && ts.SubjectId == subjectId
+                                   orderby u.FullName
+                                   select u).ToListAsync();
+                var list = _mapper.Map<List<UserForListDto>>(users);
 
-            _serviceResponse.Data = list;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
+                _serviceResponse.Data = list;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+            else
+            {
+                var users = await (from u in _context.Users
+                                   join ts in _context.TutorStudentMappings
+                                   on u.Id equals ts.StudentId
+                                   where ts.TutorId == _LoggedIn_UserID
+                                   orderby u.FullName
+                                   select u).ToListAsync();
+                var list = _mapper.Map<List<UserForListDto>>(users);
+
+                _serviceResponse.Data = list;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
         }
 
     }

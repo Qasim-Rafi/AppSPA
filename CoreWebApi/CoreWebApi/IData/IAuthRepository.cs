@@ -17,7 +17,7 @@ namespace CoreWebApi.IData
         Task<object> GetSchoolDetails(string regNo, int branchId);
         Task<bool> UserExists(string  userName, string  schoolName);
         //Task<ServiceResponse<object>> UploadFile(UploadFileDto model);
-        Task<User> ExStudentLogin(string username, string password, int tutorId);
+        Task<User> ExStudentLogin(string username, string password, int tutorId, int subjectId);
         Task<ServiceResponse<object>> ExStudentRegister(ExStudentForRegisterDto model);
     }
 }

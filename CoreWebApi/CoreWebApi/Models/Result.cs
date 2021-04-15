@@ -9,10 +9,11 @@ namespace CoreWebApi.Models
     public class Result
     {
         public int Id { get; set; }
-        public int ClassSectionId { get; set; }
+        public int? ClassSectionId { get; set; }
         public int SubjectId { get; set; }
         public int StudentId { get; set; }
-        public int ReferenceId { get; set; }
+        public string TutorExamName { get; set; }
+        public int? ReferenceId { get; set; }
         public string Remarks { get; set; }
         public double TotalMarks { get; set; }
         public double ObtainedMarks { get; set; }
