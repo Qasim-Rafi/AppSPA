@@ -570,7 +570,7 @@ namespace CoreWebApi.Data
                                    where ts.TutorId == _LoggedIn_UserID
                                    && ts.SubjectId == subjectId
                                    orderby u.FullName
-                                   select u).ToListAsync();
+                                   select u).Distinct().ToListAsync();
                 var list = _mapper.Map<List<UserForListDto>>(users);
 
                 _serviceResponse.Data = list;
@@ -584,7 +584,7 @@ namespace CoreWebApi.Data
                                    on u.Id equals ts.StudentId
                                    where ts.TutorId == _LoggedIn_UserID
                                    orderby u.FullName
-                                   select u).ToListAsync();
+                                   select u).Distinct().ToListAsync();
                 var list = _mapper.Map<List<UserForListDto>>(users);
 
                 _serviceResponse.Data = list;

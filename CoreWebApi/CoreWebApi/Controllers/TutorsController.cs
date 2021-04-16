@@ -200,7 +200,7 @@ namespace CoreWebApi.Controllers
         [HttpPost("GetAttendanceToDisplay")]
         public async Task<IActionResult> GetAttendanceToDisplay(TutorAttendanceDtoForDisplay model)
         {
-            var responseUsers = await _repo.GetUsersForAttendance(model.subjectId,model.className);
+            var responseUsers = await _repo.GetUsersForAttendance(model.subjectId, model.className);
             _response = await _repo.GetAttendanceToDisplay(responseUsers.Data, model);
             return Ok(_response);
 

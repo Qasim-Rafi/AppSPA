@@ -754,7 +754,7 @@ namespace CoreWebApi.Data
                         StudentId = attendance.StudentId,
                         SubjectId = attendance.SubjectId,
                         ClassName = attendance.ClassName,
-                        CreatedDatetime = DateTime.Now,
+                        CreatedDatetime = DateTime.Now,                        
                         SchoolBranchId = _LoggedIn_BranchID
                     };
 
@@ -773,14 +773,14 @@ namespace CoreWebApi.Data
             //OnInIt();
             DateTime DTdate = DateTime.ParseExact(model.date, "MM/dd/yyyy", null);
             var ToReturn = (from user in list
-                            join attendance in _context.Attendances
-                            on user.StudentId equals attendance.UserId
+                            join attendance in _context.TutorAttendances
+                            on user.StudentId equals attendance.StudentId
 
                             where attendance.CreatedDatetime.Date == DTdate.Date
                             select new { user, attendance }).Select(o => new TutorAttendanceDtoForList
                             {
                                 Id = o.attendance.Id,
-                                StudentId = o.attendance.UserId,
+                                StudentId = o.attendance.StudentId,
                                 SubjectId = Convert.ToInt32(o.attendance.SubjectId),
                                 FullName = o.user.FullName,
                                 CreatedDatetime = DateFormat.ToDate(o.attendance.CreatedDatetime.ToString()),
