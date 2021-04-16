@@ -79,27 +79,27 @@ namespace CoreWebApi.Data
                             on user.UserId equals attendance.UserId
 
                             where attendance.CreatedDatetime.Date == DTdate.Date
-                            select new { user, attendance }).Select(o => new AttendanceDtoForList
+                            select new AttendanceDtoForList
                             {
-                                Id = o.attendance.Id,
-                                UserId = o.attendance.UserId,
-                                ClassSectionId = Convert.ToInt32(o.attendance.ClassSectionId),
-                                SubjectId = Convert.ToInt32(o.attendance.SubjectId),
-                                FullName = o.user.FullName,
-                                CreatedDatetime = DateFormat.ToDate(o.attendance.CreatedDatetime.ToString()),
-                                Present = o.attendance.Present,
-                                Absent = o.attendance.Absent,
-                                Late = o.attendance.Late,
-                                Comments = o.attendance.Comments,
-                                LeaveCount = o.user.LeaveCount,// _context.Leaves.Where(m => m.UserId == o.user.UserId).Count(),
-                                AbsentCount = o.user.AbsentCount,//_context.Attendances.Where(m => m.UserId == o.user.UserId && m.Absent == true).Count(),
-                                LateCount = o.user.LateCount,//_context.Attendances.Where(m => m.UserId == o.user.UserId && m.Late == true).Count(),
-                                PresentCount = o.user.PresentCount,// _context.Attendances.Where(m => m.UserId == o.user.UserId && m.Present == true).Count(),
-                                Photos = o.user.Photos
-                                //LeaveFrom = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.FromDate,
-                                //LeaveTo = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.ToDate,
-                                //LeavePurpose = _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault()?.Details,
-                                //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == o.UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
+                                Id = attendance.Id,
+                                UserId = attendance.UserId,
+                                ClassSectionId = Convert.ToInt32(attendance.ClassSectionId),
+                                SubjectId = Convert.ToInt32(attendance.SubjectId),
+                                FullName = user.FullName,
+                                CreatedDatetime = DateFormat.ToDate(attendance.CreatedDatetime.ToString()),
+                                Present = attendance.Present,
+                                Absent = attendance.Absent,
+                                Late = attendance.Late,
+                                Comments = attendance.Comments,
+                                LeaveCount = user.LeaveCount,// _context.Leaves.Where(m => m.UserId == user.UserId).Count(),
+                                AbsentCount = user.AbsentCount,//_context.Attendances.Where(m => m.UserId == user.UserId && m.Absent == true).Count(),
+                                LateCount = user.LateCount,//_context.Attendances.Where(m => m.UserId == user.UserId && m.Late == true).Count(),
+                                PresentCount = user.PresentCount,// _context.Attendances.Where(m => m.UserId == user.UserId && m.Present == true).Count(),
+                                Photos = user.Photos
+                                //LeaveFrom = _context.Leaves.Where(m => m.UserId == UserId).FirstOrDefault()?.FromDate,
+                                //LeaveTo = _context.Leaves.Where(m => m.UserId == UserId).FirstOrDefault()?.ToDate,
+                                //LeavePurpose = _context.Leaves.Where(m => m.UserId == UserId).FirstOrDefault()?.Details,
+                                //LeaveType = _context.LeaveTypes.Where(m => m.Id == _context.Leaves.Where(m => m.UserId == UserId).FirstOrDefault().LeaveTypeId).FirstOrDefault()?.Type
                             }).ToList();
             ToReturn.AddRange(list.Where(m => !ToReturn.Select(m => m.UserId).Contains(m.UserId)).Select(o => new AttendanceDtoForList
             {

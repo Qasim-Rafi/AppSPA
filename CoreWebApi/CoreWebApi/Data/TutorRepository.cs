@@ -777,21 +777,21 @@ namespace CoreWebApi.Data
                             on user.StudentId equals attendance.StudentId
 
                             where attendance.CreatedDatetime.Date == DTdate.Date
-                            select new { user, attendance }).Select(o => new TutorAttendanceDtoForList
+                            select new TutorAttendanceDtoForList
                             {
-                                Id = o.attendance.Id,
-                                StudentId = o.attendance.StudentId,
-                                SubjectId = Convert.ToInt32(o.attendance.SubjectId),
-                                FullName = o.user.FullName,
-                                CreatedDatetime = DateFormat.ToDate(o.attendance.CreatedDatetime.ToString()),
-                                Present = o.attendance.Present,
-                                Absent = o.attendance.Absent,
-                                Late = o.attendance.Late,
-                                Comments = o.attendance.Comments,
-                                AbsentCount = o.user.AbsentCount,
-                                LateCount = o.user.LateCount,
-                                PresentCount = o.user.PresentCount,
-                                Photos = o.user.Photos
+                                Id = attendance.Id,
+                                StudentId = attendance.StudentId,
+                                SubjectId = Convert.ToInt32(attendance.SubjectId),
+                                FullName = user.FullName,
+                                CreatedDatetime = DateFormat.ToDate(attendance.CreatedDatetime.ToString()),
+                                Present = attendance.Present,
+                                Absent = attendance.Absent,
+                                Late = attendance.Late,
+                                Comments = attendance.Comments,
+                                AbsentCount = user.AbsentCount,
+                                LateCount = user.LateCount,
+                                PresentCount = user.PresentCount,
+                                Photos = user.Photos
                             }).ToList();
             ToReturn.AddRange(list.Where(m => !ToReturn.Select(m => m.StudentId).Contains(m.StudentId)).Select(o => new TutorAttendanceDtoForList
             {
