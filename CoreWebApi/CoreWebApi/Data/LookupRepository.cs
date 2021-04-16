@@ -125,11 +125,10 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetSubjects()
         {
-            List<Subject> list = new List<Subject>();
             var branch = _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefault();
             if (branch.Id == _LoggedIn_BranchID || _LoggedIn_BranchID == 0)
             {
-                list = await _context.Subjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).OrderBy(m => m.Name).ToListAsync();
+                var list = await _context.TutorSubjects.Where(m => m.SchoolBranchId == branch.Id && m.Active == true).OrderBy(m => m.Name).ToListAsync();
                 for (int i = 0; i < list.Count(); i++)
                 {
                     var item = list[i];
@@ -137,16 +136,22 @@ namespace CoreWebApi.Data
                     if (count > 1)
                         list.Remove(item);
                 }
+                var ToReturn = _mapper.Map<List<TutorSubjectDtoForList>>(list);
+
+                _serviceResponse.Data = ToReturn;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
             }
             else
             {
-                list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderBy(m => m.Name).ToListAsync();
-            }
-            var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
+                var list = await _context.Subjects.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderBy(m => m.Name).ToListAsync();
+                var ToReturn = _mapper.Map<List<SubjectDtoForList>>(list);
 
-            _serviceResponse.Data = ToReturn;
-            _serviceResponse.Success = true;
-            return _serviceResponse;
+                _serviceResponse.Data = ToReturn;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+           
         }
 
         public async Task<ServiceResponse<object>> GetTeachers()
@@ -548,8 +553,8 @@ namespace CoreWebApi.Data
         {
             var Obj = await _context.TutorProfiles.Where(m => m.CreatedById == _LoggedIn_UserID).FirstOrDefaultAsync();
             var Classes = Obj.GradeLevels.Split(',').ToList();
-            var ListObj = await _context.Subjects.Where(m => m.CreatedById == _LoggedIn_UserID).ToListAsync();
-            var Subjects = _mapper.Map<IEnumerable<SubjectDtoForDetail>>(ListObj);
+            var ListObj = await _context.TutorSubjects.Where(m => m.CreatedById == _LoggedIn_UserID).ToListAsync();
+            var Subjects = _mapper.Map<IEnumerable<TutorSubjectDtoForDetail>>(ListObj);
 
             _serviceResponse.Data = new { Classes, Subjects };
             _serviceResponse.Success = true;

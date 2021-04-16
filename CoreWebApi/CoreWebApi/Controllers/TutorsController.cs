@@ -191,5 +191,27 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
 
+        [HttpGet("GetUsersForAttendance/{subjectId}/{className?}")]
+        public async Task<IActionResult> GetUsersForAttendance(int subjectId, string className = "")
+        {
+            var response = await _repo.GetUsersForAttendance(subjectId, className);
+            return Ok(response);
+        }
+        [HttpPost("GetAttendanceToDisplay")]
+        public async Task<IActionResult> GetAttendanceToDisplay(TutorAttendanceDtoForDisplay model)
+        {
+            var responseUsers = await _repo.GetUsersForAttendance(model.subjectId,model.className);
+            _response = await _repo.GetAttendanceToDisplay(responseUsers.Data, model);
+            return Ok(_response);
+
+        }
+        [HttpPost("AddAttendance")]
+        public async Task<IActionResult> AddAttendance(List<TutorAttendanceDtoForAdd> list)
+        {
+            _response = await _repo.AddAttendance(list);
+
+            return Ok(_response);
+
+        }
     }
 }

@@ -15,8 +15,7 @@ namespace CoreWebApi.Dtos
         [Required]
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Name { get; set; }
-        public int? CreditHours { get; set; }
-        public int? ExpertRank { get; set; }
+        public int CreditHours { get; set; }
     }
     public class SubjectDtoForEdit
     {
@@ -24,24 +23,21 @@ namespace CoreWebApi.Dtos
         [Required]
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Name { get; set; }
-        public int? CreditHours { get; set; }
-        public int? ExpertRank { get; set; }
+        public int CreditHours { get; set; }
         public bool Active { get; set; } = true;
     }
     public class SubjectDtoForList
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int? CreditHours { get; set; }
-        public int? ExpertRank { get; set; }
+        public int CreditHours { get; set; }
         public bool Active { get; set; }
     }
     public class SubjectDtoForDetail
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int? CreditHours { get; set; }
-        public int? ExpertRank { get; set; }
+        public int CreditHours { get; set; }
 
         public bool Active { get; set; }
     }

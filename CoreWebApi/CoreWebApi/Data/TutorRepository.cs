@@ -27,12 +27,12 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> SearchTutor(SearchTutorDto model)
         {
-            var subjectDetails = await _context.Subjects.FirstOrDefaultAsync(m => m.Id == model.SubjectId);
+            var subjectDetails = await _context.TutorSubjects.FirstOrDefaultAsync(m => m.Id == model.SubjectId);
             var users = await (from user in _context.Users
                                join pr in _context.TutorProfiles
                                on user.Id equals pr.CreatedById
 
-                               join subject in _context.Subjects
+                               join subject in _context.TutorSubjects
                                on user.Id equals subject.CreatedById
 
                                where pr.GradeLevels.Contains(model.Class)
@@ -49,7 +49,7 @@ namespace CoreWebApi.Data
                                    Gender = user.Gender,
                                    CityId = pr.CityId,
                                    CityName = _context.Cities.FirstOrDefault(m => m.Id == pr.CityId).Name,
-                                   Subjects = string.Join(',', _context.Subjects.Where(m => m.CreatedById == user.Id).Select(m => m.Name)),
+                                   Subjects = string.Join(',', _context.TutorSubjects.Where(m => m.CreatedById == user.Id).Select(m => m.Name)),
                                    About = pr.About,
                                    AreasToTeach = pr.AreasToTeach,
                                    CommunicationSkillRate = pr.CommunicationSkillRate,
@@ -74,7 +74,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetAllSubjects()
         {
-            var list = await _context.Subjects.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+            var list = await _context.TutorSubjects.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             var Subjects = _mapper.Map<IEnumerable<TutorSubjectDtoForDetail>>(list);
 
             var obj2 = await _context.TutorProfiles.Where(m => m.Active == true && m.CreatedById == _LoggedIn_UserID && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefaultAsync();
@@ -88,7 +88,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetSubjectById(int id)
         {
-            var obj = await _context.Subjects.FirstOrDefaultAsync(u => u.Id == id);
+            var obj = await _context.TutorSubjects.FirstOrDefaultAsync(u => u.Id == id);
             if (obj != null)
             {
                 var Subject = _mapper.Map<TutorSubjectDtoForDetail>(obj);
@@ -115,7 +115,7 @@ namespace CoreWebApi.Data
             {
                 //var branch = await _context.SchoolBranch.Where(m => m.BranchName == "ONLINE ACADEMY").FirstOrDefaultAsync();
 
-                var ToAdd = new Subject
+                var ToAdd = new TutorSubject
                 {
                     Name = model.Name,
                     Active = true,
@@ -124,7 +124,7 @@ namespace CoreWebApi.Data
                     CreatedDateTime = DateTime.Now,
                     SchoolBranchId = _LoggedIn_BranchID,
                 };
-                await _context.Subjects.AddAsync(ToAdd);
+                await _context.TutorSubjects.AddAsync(ToAdd);
                 await _context.SaveChangesAsync();
 
                 var Exist = await _context.TutorProfiles.AnyAsync(m => m.CreatedById == _LoggedIn_UserID);
@@ -165,21 +165,21 @@ namespace CoreWebApi.Data
         {
             try
             {
-                Subject checkExist = _context.Subjects.FirstOrDefault(s => s.Name.ToLower() == subject.Name.ToLower() && s.CreatedById == _LoggedIn_UserID && s.SchoolBranchId == _LoggedIn_BranchID);
+                var checkExist = _context.TutorSubjects.FirstOrDefault(s => s.Name.ToLower() == subject.Name.ToLower() && s.CreatedById == _LoggedIn_UserID && s.SchoolBranchId == _LoggedIn_BranchID);
                 if (checkExist != null && checkExist.Id != subject.Id)
                 {
                     _serviceResponse.Success = false;
                     _serviceResponse.Message = CustomMessage.RecordAlreadyExist;
                     return _serviceResponse;
                 }
-                Subject ObjToUpdate = _context.Subjects.FirstOrDefault(s => s.Id.Equals(subject.Id));
+                var ObjToUpdate = _context.TutorSubjects.FirstOrDefault(s => s.Id.Equals(subject.Id));
                 if (ObjToUpdate != null)
                 {
                     ObjToUpdate.Name = subject.Name;
                     ObjToUpdate.ExpertRate = subject.ExpertRate;
                     ObjToUpdate.Active = subject.Active;
 
-                    _context.Subjects.Update(ObjToUpdate);
+                    _context.TutorSubjects.Update(ObjToUpdate);
                     await _context.SaveChangesAsync();
 
                     var ObjToUpdate2 = _context.TutorProfiles.FirstOrDefault(s => s.CreatedById.Equals(_LoggedIn_UserID));
@@ -310,7 +310,7 @@ namespace CoreWebApi.Data
                                      Gender = user.Gender,
                                      CityId = pr.CityId,
                                      CityName = _context.Cities.FirstOrDefault(m => m.Id == pr.CityId).Name,
-                                     Subjects = string.Join(',', _context.Subjects.Where(m => m.CreatedById == user.Id).Select(m => m.Name)),
+                                     Subjects = string.Join(',', _context.TutorSubjects.Where(m => m.CreatedById == user.Id).Select(m => m.Name)),
                                      About = pr.About,
                                      AreasToTeach = pr.AreasToTeach,
                                      CommunicationSkillRate = pr.CommunicationSkillRate,
@@ -691,6 +691,127 @@ namespace CoreWebApi.Data
             }
         }
 
+        public async Task<ServiceResponse<List<UsersForAttendanceListDto>>> GetUsersForAttendance(int subjectId, string className)
+        {
+            ServiceResponse<List<UsersForAttendanceListDto>> serviceResponse = new ServiceResponse<List<UsersForAttendanceListDto>>();
+            var today = DateTime.Now;
+            var thisMonth = new DateTime(today.Year, today.Month, 1);
 
+            List<UsersForAttendanceListDto> users = await (from u in _context.Users
+                               join ts in _context.TutorStudentMappings
+                               on u.Id equals ts.StudentId
+                               where ts.SubjectId == subjectId
+
+                               select u).Select(o => new UsersForAttendanceListDto
+                               {
+                                   StudentId = o.Id,
+                                   FullName = o.FullName,
+                                   Present = false,
+                                   Absent = false,
+                                   Late = false,
+                                   Comments = "",
+                                   AbsentCount = _context.TutorAttendances.Where(m => m.StudentId == o.Id && m.Absent == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                   LateCount = _context.TutorAttendances.Where(m => m.StudentId == o.Id && m.Late == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                   PresentCount = _context.TutorAttendances.Where(m => m.StudentId == o.Id && m.Present == true && m.CreatedDatetime >= thisMonth && m.CreatedDatetime <= today).Count(),
+                                   Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                                   {
+                                       Id = x.Id,
+                                       Name = x.Name,
+                                       IsPrimary = x.IsPrimary,
+                                       Url = _File.AppendImagePath(x.Name)
+                                   }).ToList(),
+                               }).ToListAsync();
+
+            serviceResponse.Data = users;
+            serviceResponse.Success = true;
+            return serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> AddAttendance(List<TutorAttendanceDtoForAdd> list)
+        {
+            foreach (var attendance in list)
+            {
+                var attendanceExist = _context.TutorAttendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.StudentId == attendance.StudentId && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
+                if (attendanceExist != null)
+                {
+                    attendanceExist.Present = attendance.Present;
+                    attendanceExist.Absent = attendance.Absent;
+                    attendanceExist.Late = attendance.Late;
+                    attendanceExist.Comments = attendance.Comments;
+                    attendanceExist.StudentId = attendance.StudentId;
+                    attendanceExist.ClassName = attendance.ClassName;
+                    attendanceExist.SubjectId = attendance.SubjectId;
+
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var objToCreate = new TutorAttendance
+                    {
+                        Present = attendance.Present,
+                        Absent = attendance.Absent,
+                        Late = attendance.Late,
+                        Comments = attendance.Comments,
+                        StudentId = attendance.StudentId,
+                        SubjectId = attendance.SubjectId,
+                        ClassName = attendance.ClassName,
+                        CreatedDatetime = DateTime.Now,
+                        SchoolBranchId = _LoggedIn_BranchID
+                    };
+
+                    await _context.TutorAttendances.AddAsync(objToCreate);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            _serviceResponse.Message = CustomMessage.Added;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+
+        }
+        public async Task<ServiceResponse<object>> GetAttendanceToDisplay(List<UsersForAttendanceListDto> list, TutorAttendanceDtoForDisplay model)
+        {
+            //OnInIt();
+            DateTime DTdate = DateTime.ParseExact(model.date, "MM/dd/yyyy", null);
+            var ToReturn = (from user in list
+                            join attendance in _context.Attendances
+                            on user.StudentId equals attendance.UserId
+
+                            where attendance.CreatedDatetime.Date == DTdate.Date
+                            select new { user, attendance }).Select(o => new TutorAttendanceDtoForList
+                            {
+                                Id = o.attendance.Id,
+                                StudentId = o.attendance.UserId,
+                                SubjectId = Convert.ToInt32(o.attendance.SubjectId),
+                                FullName = o.user.FullName,
+                                CreatedDatetime = DateFormat.ToDate(o.attendance.CreatedDatetime.ToString()),
+                                Present = o.attendance.Present,
+                                Absent = o.attendance.Absent,
+                                Late = o.attendance.Late,
+                                Comments = o.attendance.Comments,
+                                AbsentCount = o.user.AbsentCount,
+                                LateCount = o.user.LateCount,
+                                PresentCount = o.user.PresentCount,
+                                Photos = o.user.Photos
+                            }).ToList();
+            ToReturn.AddRange(list.Where(m => !ToReturn.Select(m => m.StudentId).Contains(m.StudentId)).Select(o => new TutorAttendanceDtoForList
+            {
+                StudentId = o.StudentId,
+                SubjectId = o.SubjectId,
+                FullName = o.FullName,
+                CreatedDatetime = "",
+                Present = false,
+                Absent = false,
+                Late = false,
+                Comments = "",
+                AbsentCount = o.AbsentCount,
+                LateCount = o.LateCount,
+                PresentCount = o.PresentCount,
+                Photos = o.Photos
+            }).ToList());
+           
+            _serviceResponse.Data = ToReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

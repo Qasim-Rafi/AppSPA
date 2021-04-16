@@ -27,6 +27,8 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetGroupUsers();
         Task<ServiceResponse<object>> GetGroupUsersById(int id);
         Task<ServiceResponse<object>> DeleteGroup(int id);
-
+        Task<ServiceResponse<List<UsersForAttendanceListDto>>> GetUsersForAttendance(int subjectId, string className);
+        Task<ServiceResponse<object>> AddAttendance(List<TutorAttendanceDtoForAdd> list);
+        Task<ServiceResponse<object>> GetAttendanceToDisplay(List<UsersForAttendanceListDto> list, TutorAttendanceDtoForDisplay model);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CoreWebApi.Helpers;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoreWebApi.Dtos
@@ -31,8 +32,7 @@ namespace CoreWebApi.Dtos
         [Required]
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Name { get; set; }
-        public int? CreditHours { get; set; }
-        public int? ExpertRate { get; set; }
+        public int ExpertRate { get; set; }
         public List<string> GradeLevels { get; set; }
     }
     public class TutorSubjectDtoForEdit
@@ -41,8 +41,7 @@ namespace CoreWebApi.Dtos
         [Required]
         [StringLength(200, ErrorMessage = "Subject Name cannot be longer than 200 characters")]
         public string Name { get; set; }
-        public int? CreditHours { get; set; }
-        public int? ExpertRate { get; set; }
+        public int ExpertRate { get; set; }
         public List<string> GradeLevels { get; set; }
         public bool Active { get; set; } = true;
     }
@@ -50,8 +49,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int? CreditHours { get; set; }
-        public int? ExpertRate { get; set; }
+        public int ExpertRate { get; set; }
         //public List<string> GradeLevels { get; set; }
         public bool Active { get; set; }
     }
@@ -59,8 +57,7 @@ namespace CoreWebApi.Dtos
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int? CreditHours { get; set; }
-        public int? ExpertRate { get; set; }
+        public int ExpertRate { get; set; }
         //public List<string> GradeLevels { get; set; }
 
         public bool Active { get; set; }
@@ -102,7 +99,7 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
-        public string Gender { get; set; }      
+        public string Gender { get; set; }
         public int? CityId { get; set; }
         public string CityName { get; set; }
         public string GradeLevels { get; set; }
@@ -165,7 +162,7 @@ namespace CoreWebApi.Dtos
         public string Duration { get; set; }
     }
     public class TutorSubjectContentOneDtoForList
-    {       
+    {
         public string TutorClassName { get; set; }
         public List<TutorSubjectContentTwoDtoForList> Subjects = new List<TutorSubjectContentTwoDtoForList>();
     }
@@ -222,5 +219,82 @@ namespace CoreWebApi.Dtos
         public string TutorClassName { get; set; }
         public int SubjectId { get; set; }
         public List<TutorGroupUserListForEditDto> Students { get; set; } = new List<TutorGroupUserListForEditDto>();
+    }
+    public class UsersForAttendanceListDto
+    {
+        public int SubjectId { get; set; }
+        public string FullName { get; set; }
+        public int StudentId { get; set; }
+        public bool Present { get; set; }
+        public bool Absent { get; set; }
+        public bool Late { get; set; }
+        public string Comments { get; set; }
+        public string CreatedDatetime { get; set; }
+        public int LateCount { get; set; }
+        public int AbsentCount { get; set; }
+        public int PresentCount { get; set; }
+        public List<PhotoDto> Photos { get; set; }
+    }
+    public class TutorAttendanceDtoForAdd
+    {
+        public int SubjectId { get; set; }
+        public int StudentId { get; set; }
+        public string ClassName { get; set; }
+        [BoolValidation(ErrorMessage = "The field must be true of false")]
+        public bool Present { get; set; }
+        [BoolValidation(ErrorMessage = "The field must be true of false")]
+        public bool Absent { get; set; }
+        [BoolValidation(ErrorMessage = "The field must be true of false")]
+        public bool Late { get; set; }
+        public string Comments { get; set; }
+    }
+    public class TutorAttendanceDtoForEdit
+    {
+        [BoolValidation(ErrorMessage = "The field must be true of false")]
+        public bool Present { get; set; }
+        [BoolValidation(ErrorMessage = "The field must be true of false")]
+        public bool Absent { get; set; }
+        [BoolValidation(ErrorMessage = "The field must be true of false")]
+        public bool Late { get; set; }
+        public string Comments { get; set; }
+    }
+    public class TutorAttendanceDtoForList
+    {
+        public int Id { get; set; }
+        public string ClassName { get; set; }
+        public int SubjectId { get; set; }
+        public string FullName { get; set; }
+        public int StudentId { get; set; }
+        public bool Present { get; set; }
+        public bool Absent { get; set; }
+        public bool Late { get; set; }
+        public string Comments { get; set; }
+        public string CreatedDatetime { get; set; }
+        public int LateCount { get; internal set; }
+        public int AbsentCount { get; internal set; }
+        public int PresentCount { get; internal set; }
+        public List<PhotoDto> Photos { get; set; }
+    }
+    public class TutorAttendanceDtoForDetail
+    {
+        public int Id { get; set; }
+        public string ClassName { get; set; }
+        public int SubjectId { get; set; }
+        public string FullName { get; set; }
+        public int StudentId { get; set; }
+        public bool Present { get; set; }
+        public bool Absent { get; set; }
+        public bool Late { get; set; }
+        public string Comments { get; set; }
+        public string CreatedDatetime { get; set; }
+        public int LateCount { get; internal set; }
+        public int AbsentCount { get; internal set; }
+        public int PresentCount { get; internal set; }
+    }
+    public class TutorAttendanceDtoForDisplay
+    {
+        public string className { get; set; }
+        public int subjectId { get; set; }
+        public string date { get; set; }
     }
 }
