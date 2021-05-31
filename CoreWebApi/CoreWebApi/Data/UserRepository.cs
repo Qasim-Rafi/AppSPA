@@ -328,7 +328,7 @@ namespace CoreWebApi.Data
                 if (userDto.UserTypeId == (int)Enumm.UserType.Student)
                 {
                     SchoolBranch School = _context.SchoolBranch.Where(m => m.Id == _LoggedIn_BranchID).FirstOrDefault();
-                    var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && m.SchoolBranchId == _LoggedIn_BranchID).LastOrDefault();
+                    var LastUser = _context.Users.Where(m => m.UserTypeId == (int)Enumm.UserType.Student && m.SchoolBranchId == _LoggedIn_BranchID).OrderBy(m => m.Id).LastOrDefault();
                     bool HasRegistrationNumber = false;
                     HasRegistrationNumber = Convert.ToBoolean(_configuration.GetSection("AppSettings:SchoolHaveRegistrationNumbers").Value);
                     if (HasRegistrationNumber)
@@ -1458,7 +1458,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        
+
 
         public async Task<ServiceResponse<object>> UnMapUser(UnMapUserForAddDto model)
         {
