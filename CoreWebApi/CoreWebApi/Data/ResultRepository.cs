@@ -53,7 +53,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetDataForResult()
+        public async Task<ServiceResponse<object>> GetDataForResult(int csId, int subjectId)
         {
             var ClassSections = await (from cla in _context.ClassLectureAssignment
                                        join cs in _context.ClassSections
@@ -67,24 +67,28 @@ namespace CoreWebApi.Data
                                            Section = cs.Section.SectionName
                                        }).Distinct().ToListAsync();
 
-            var Subjects = await (from cla in _context.ClassLectureAssignment
+            List<SubjectForResultListDto> Subjects = new List<SubjectForResultListDto>();
+            List<ExamForResultListDto> Exams = new List<ExamForResultListDto>();
+            List<StudentForResultListDto> Students = new List<StudentForResultListDto>();
+
+            if (csId > 0)
+            {
+                Subjects = await (from cla in _context.ClassLectureAssignment
                                   join s in _context.Subjects
                                   on cla.SubjectId equals s.Id
                                   //join cs in ClassSections
                                   //on cla.ClassSectionId equals cs.ClassSectionId
                                   where cla.TeacherId == _LoggedIn_UserID
-                                  && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
+                                  && cla.ClassSectionId == csId
                                   select new SubjectForResultListDto
                                   {
                                       SubjectId = s.Id,
                                       SubjectName = s.Name,
-                                      ClassSectionId = cla.ClassSectionId,
                                   }).Distinct().ToListAsync();
-
-            var Exams = (from s in Subjects
-                         join ass in _context.ClassSectionAssignment
-                         on s.SubjectId equals ass.SubjectId
-
+            }
+            if (subjectId > 0)
+            {
+                Exams = (from ass in _context.ClassSectionAssignment
                          join u in _context.Users
                          on ass.CreatedById equals u.Id
 
@@ -92,13 +96,14 @@ namespace CoreWebApi.Data
                          on ass.Id equals assSub.ClassSectionAssignmentId
 
                          where u.Id == _LoggedIn_UserID
+                         && ass.SubjectId == subjectId
                          //&& ass.DueDateTime.Value.Date <= DateTime.Now.Date
                          select new ExamForResultListDto
                          {
                              RefId = ass.Id,
                              RefName = ass.AssignmentName,
                          }).Distinct().ToList();
-
+            }
             //Exams.AddRange(await (from u in _context.Users
             //                      join q in _context.Quizzes
             //                      on u.Id equals q.CreatedById
@@ -112,8 +117,9 @@ namespace CoreWebApi.Data
             //                          RefId = q.Id,
             //                          RefName = q.QuizDate.Value.ToShortDateString(),
             //                      }).ToListAsync());
-
-            var Students = await (from cla in _context.ClassLectureAssignment
+            if (csId > 0 && subjectId > 0)
+            {
+                Students = await (from cla in _context.ClassLectureAssignment
                                   join csU in _context.ClassSectionUsers
                                   on cla.ClassSectionId equals csU.ClassSectionId
 
@@ -122,12 +128,13 @@ namespace CoreWebApi.Data
 
                                   where cla.TeacherId == _LoggedIn_UserID
                                   && u.UserTypeId == (int)Enumm.UserType.Student
+                                  && csU.ClassSectionId == csId
                                   select new StudentForResultListDto
                                   {
                                       StudentId = u.Id,
                                       StudentName = u.FullName,
-                                      ClassSectionId = cla.ClassSectionId,
                                   }).Distinct().ToListAsync();
+            }
             //var CustomOption = new ExamForResultListDto { RefId = 0, RefName = "Final Exam" };
             //Exams.Insert(0, CustomOption);
             _serviceResponse.Data = new { ClassSections, Subjects, Exams, Students };

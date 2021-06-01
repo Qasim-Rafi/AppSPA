@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace CoreWebApi.Dtos
         public int SubjectId { get; set; }
         public int StudentId { get; set; }
         public string TutorExamName { get; set; }
+        [Required]
         public int? ReferenceId { get; set; }
         public string Remarks { get; set; }
         public double TotalMarks { get; set; }
@@ -50,7 +52,6 @@ namespace CoreWebApi.Dtos
     {
         public int StudentId { get; set; }
         public string StudentName { get; set; }
-        public int ClassSectionId { get; set; }
         public int ReferenceId { get; set; } = 0;
         public double TotalMarks { get; set; } = 0;
         public double ObtainedMarks { get; set; } = 0;
@@ -61,7 +62,6 @@ namespace CoreWebApi.Dtos
     {
         public int SubjectId { get; set; }
         public string SubjectName { get; set; }
-        public int ClassSectionId { get; set; }
     }
     public class AllStdExamResultListDto
     {

@@ -10,7 +10,7 @@ namespace CoreWebApi.IData
     public interface IResultRepository
     {
         Task<ServiceResponse<object>> AddResult(List<ResultForAddDto> model);
-        Task<ServiceResponse<object>> GetDataForResult();
+        Task<ServiceResponse<object>> GetDataForResult(int csId, int subjectId);
         Task<ServiceResponse<object>> GetStudentResult(int id);
     }
 }

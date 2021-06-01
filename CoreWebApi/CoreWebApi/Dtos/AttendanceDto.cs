@@ -85,7 +85,7 @@ namespace CoreWebApi.Dtos
     {
         public int typeId { get; set; }
         public int? classSectionId { get; set; }
-        public int subjectId { get; set; }
+        public int? subjectId { get; set; }
         public string date { get; set; }
     }
     public class ThisMonthAttendancePercentageDto

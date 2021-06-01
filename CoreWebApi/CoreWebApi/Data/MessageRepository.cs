@@ -21,7 +21,7 @@ namespace CoreWebApi.Data
     public class MessageRepository : BaseRepository, IMessageRepository
     {
         private readonly IFilesRepository _fileRepo;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper;        
         public MessageRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository filesRepository)
          : base(context, httpContextAccessor)
         {
@@ -51,6 +51,7 @@ namespace CoreWebApi.Data
                                  UserIds = new List<int>() { u.Id },
                                  Names = u.FullName,
                                  UserName = u.Username,
+                                 IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
                                  Description = cs.Class.Name + " " + cs.Section.SectionName,
                                  Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                  {
@@ -69,6 +70,7 @@ namespace CoreWebApi.Data
                                         UserIds = new List<int>() { u.Id },
                                         Names = u.FullName,
                                         UserName = u.Username,
+                                        IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
                                         Description = "",
                                         Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                         {
@@ -105,6 +107,7 @@ namespace CoreWebApi.Data
                                        UserIds = new List<int>() { u.Id },
                                        Names = u.FullName,
                                        UserName = u.Username,
+                                       IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
                                        Description = cs.Class.Name + " " + cs.Section.SectionName,
                                        Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                        {
@@ -130,6 +133,7 @@ namespace CoreWebApi.Data
                                         UserIds = new List<int>() { u.Id },
                                         Names = u.FullName,
                                         UserName = u.Username,
+                                        IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
                                         Description = cs.Class.Name + " " + cs.Section.SectionName,
                                         Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                         {
@@ -147,6 +151,7 @@ namespace CoreWebApi.Data
                                         UserIds = new List<int>() { u.Id },
                                         Names = u.FullName,
                                         UserName = u.Username,
+                                        IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
                                         Description = "",
                                         Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                         {
@@ -188,6 +193,7 @@ namespace CoreWebApi.Data
                                  UserIds = new List<int>() { u.Id },
                                  Names = u.FullName,
                                  UserName = u.Username,
+                                 IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
                                  Description = cs.Class.Name + " " + cs.Section.SectionName,
                                  Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
                                  {
@@ -212,6 +218,7 @@ namespace CoreWebApi.Data
                                     {
                                         UserIds = new List<int>() { u.Id },
                                         UserName = u.Username,
+                                        IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
                                         Names = u.FullName,
                                         Description = cs.Class.Name + " " + cs.Section.SectionName,
                                         Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
@@ -414,6 +421,9 @@ namespace CoreWebApi.Data
                 }
             }
             await _context.Messages.AddAsync(ToAdd);
+
+            
+
             await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;

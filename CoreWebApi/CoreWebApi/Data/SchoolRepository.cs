@@ -932,7 +932,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetNotices()
         {
-            var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new NoticeBoardForListDto
+            var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).Select(o => new NoticeBoardForListDto
             {
                 Title = o.Title,
                 Description = o.Description,

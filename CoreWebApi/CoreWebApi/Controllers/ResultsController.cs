@@ -22,20 +22,15 @@ namespace CoreWebApi.Controllers
             _mapper = mapper;
             _repo = repo;
         }
-        [HttpGet("GetDataForResult")]
-        public async Task<IActionResult> GetDataForResult()
+        [HttpGet("GetDataForResult/{csId?}/{subjectId?}")]
+        public async Task<IActionResult> GetDataForResult(int csId = 0, int subjectId = 0)
         {
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _response = await _repo.GetDataForResult();
+            _response = await _repo.GetDataForResult(csId, subjectId);
 
             return Ok(_response);
 
         }
+
         [HttpPost("AddResult")]
         public async Task<IActionResult> AddResult(List<ResultForAddDto> model)
         {

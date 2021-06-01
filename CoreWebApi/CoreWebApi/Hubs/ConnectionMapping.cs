@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Hubs
 {
-    public class ConnectionMapping<T>
+    public static class ConnectionMapping<T>
     {
-        private readonly Dictionary<T, HashSet<string>> _connections =
+        private static readonly Dictionary<T, HashSet<string>> _connections =
             new Dictionary<T, HashSet<string>>();
 
-        public int Count
+        public static int Count
         {
             get
             {
@@ -18,7 +18,7 @@ namespace CoreWebApi.Hubs
             }
         }
 
-        public void Add(T key, string connectionId)
+        public static void Add(T key, string connectionId)
         {
             lock (_connections)
             {
@@ -36,7 +36,7 @@ namespace CoreWebApi.Hubs
             }
         }
 
-        public IEnumerable<string> GetConnections(T key)
+        public static IEnumerable<string> GetConnections(T key)
         {
             HashSet<string> connections;
             if (_connections.TryGetValue(key, out connections))
@@ -47,7 +47,7 @@ namespace CoreWebApi.Hubs
             return Enumerable.Empty<string>();
         }
 
-        public void Remove(T key, string connectionId)
+        public static void Remove(T key, string connectionId)
         {
             lock (_connections)
             {
@@ -69,7 +69,7 @@ namespace CoreWebApi.Hubs
             }
         }
 
-        public string ToJson()
+        public static string ToJson()
         {
             var entries = _connections.Select(d => string.Format("\"{0}\": [\"{1}\"]", d.Key, string.Join(",", d.Value)));
             return "{" + string.Join(",", entries) + "}";
