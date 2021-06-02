@@ -61,7 +61,7 @@ namespace CoreWebApi.Dtos
         public int MessageFromUserId { get; set; }
         public string MessageFromUser { get; set; }
         public int? MessageReplyId { get; set; }
-        public IFormFileCollection files { get; set; }
+        public string Attachment { get; set; }
         public int GroupId { get; set; }
     }
     public class MessageForListByTimeDto
@@ -83,6 +83,7 @@ namespace CoreWebApi.Dtos
         public int MessageToUserId { get; set; }
         public string MessageToUser { get; set; }
         public string Comment { get; set; }
+        public string Attachment { get; set; }
         public int MessageFromUserId { get; set; }
         public string MessageFromUser { get; set; }
         public int? MessageReplyId { get; set; }
@@ -96,6 +97,7 @@ namespace CoreWebApi.Dtos
         public string MessageToUserIdsStr { get; set; }
         public string MessageToUser { get; set; }
         public string Comment { get; set; }
+        public string Attachment { get; set; }
         public int MessageFromUserId { get; set; }
         public string MessageFromUser { get; set; }
         public int? MessageReplyId { get; set; }

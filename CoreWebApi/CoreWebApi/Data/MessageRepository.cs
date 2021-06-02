@@ -21,7 +21,7 @@ namespace CoreWebApi.Data
     public class MessageRepository : BaseRepository, IMessageRepository
     {
         private readonly IFilesRepository _fileRepo;
-        private readonly IMapper _mapper;        
+        private readonly IMapper _mapper;
         public MessageRepository(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper, IFilesRepository filesRepository)
          : base(context, httpContextAccessor)
         {
@@ -258,6 +258,7 @@ namespace CoreWebApi.Data
                         MessageFromUserId = o.MessageFromUserId,
                         MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                         Comment = o.Comment,
+                        Attachment = _context.ChatMessageAttachments.FirstOrDefault(m => m.MessageId == o.Id) != null ? _context.ChatMessageAttachments.FirstOrDefault(m => m.MessageId == o.Id).AttachmentPath : "",
                         MessageToUserIdsStr = o.MessageToUserId.ToString(),
                         Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
                     }).ToList();
@@ -296,6 +297,7 @@ namespace CoreWebApi.Data
                         MessageFromUserId = o.MessageFromUserId,
                         MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                         Comment = o.Comment,
+                        Attachment = _context.ChatMessageAttachments.FirstOrDefault(m => m.MessageId == o.Id) != null ? _context.ChatMessageAttachments.FirstOrDefault(m => m.MessageId == o.Id).AttachmentPath : "",
                         MessageToUserIdsStr = o.MessageToUserId.ToString(),
                         Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
                     }).OrderByDescending(m => m.Id).FirstOrDefault();
@@ -330,6 +332,7 @@ namespace CoreWebApi.Data
                         MessageFromUserId = o.MessageFromUserId,
                         MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                         Comment = o.Comment,
+                        Attachment = _context.ChatMessageAttachments.FirstOrDefault(m => m.MessageId == o.Id) != null ? _context.ChatMessageAttachments.FirstOrDefault(m => m.MessageId == o.Id).AttachmentPath : "",
                         MessageToUserIdsStr = o.MessageToUserIds,
                         Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2", // 1=Message, 2=Reply
                         GroupId = o.GroupId,
@@ -369,6 +372,7 @@ namespace CoreWebApi.Data
                         MessageFromUserId = o.MessageFromUserId,
                         MessageFromUser = o.MessageFromUser != null ? o.MessageFromUser.FullName : "",
                         Comment = o.Comment,
+                        Attachment = _context.ChatMessageAttachments.FirstOrDefault(m => m.MessageId == o.Id) != null ? _context.ChatMessageAttachments.FirstOrDefault(m => m.MessageId == o.Id).AttachmentPath : "",
                         MessageToUserIdsStr = o.MessageToUserIds,
                         Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2", // 1=Message, 2=Reply
                         GroupId = o.GroupId,
@@ -414,16 +418,15 @@ namespace CoreWebApi.Data
                 for (int i = 0; i < model.files.Count(); i++)
                 {
                     var dbPath = _fileRepo.SaveFile(model.files[i]);
-                    if (string.IsNullOrEmpty(ToAdd.Attachment))
-                        ToAdd.Attachment += dbPath;
-                    else
-                        ToAdd.Attachment = ToAdd.Attachment + "||" + dbPath;
+                    var attachment = new ChatMessageAttachment
+                    {
+                        MessageId = ToAdd.Id,
+                        AttachmentPath = dbPath,
+                    };
+                    await _context.ChatMessageAttachments.AddAsync(attachment);
                 }
             }
             await _context.Messages.AddAsync(ToAdd);
-
-            
-
             await _context.SaveChangesAsync();
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
@@ -446,10 +449,12 @@ namespace CoreWebApi.Data
                 for (int i = 0; i < model.files.Count(); i++)
                 {
                     var dbPath = _fileRepo.SaveFile(model.files[i]);
-                    if (string.IsNullOrEmpty(ToAdd.Attachment))
-                        ToAdd.Attachment += dbPath;
-                    else
-                        ToAdd.Attachment = ToAdd.Attachment + "||" + dbPath;
+                    var attachment = new ChatMessageAttachment
+                    {
+                        MessageId = ToAdd.Id,
+                        AttachmentPath = dbPath,
+                    };
+                    await _context.ChatMessageAttachments.AddAsync(attachment);
                 }
             }
             await _context.GroupMessages.AddAsync(ToAdd);
