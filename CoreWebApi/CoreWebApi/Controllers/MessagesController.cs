@@ -24,13 +24,15 @@ namespace CoreWebApi.Controllers
         private readonly IMapper _mapper;
         private readonly IHubContext<ChatHub> _hubContext;
         private int _LoggedIn_UserID = 0;
+        private readonly IFilesRepository _filesRepository;
         //private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
-        public MessagesController(IMessageRepository repo, IMapper mapper, IHubContext<ChatHub> hubContext, IHttpContextAccessor httpContextAccessor)
+        public MessagesController(IMessageRepository repo, IMapper mapper, IHubContext<ChatHub> hubContext, IHttpContextAccessor httpContextAccessor, IFilesRepository filesRepository)
         {
             _mapper = mapper;
             _repo = repo;
             _hubContext = hubContext;
             _LoggedIn_UserID = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirstValue(Enumm.ClaimType.NameIdentifier.ToString()));
+            _filesRepository = filesRepository;
         }
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage([FromForm] MessageForAddDto model)
@@ -60,6 +62,7 @@ namespace CoreWebApi.Controllers
                     MessageFromUser = lastMessage.Messages[0].MessageFromUser,
                     MessageToUserIdsStr = lastMessage.Messages[0].MessageToUserIdsStr,
                     GroupId = 0,
+                    Attachment = _filesRepository.AppendDocPath(lastMessage.Messages[0].Attachment)
                     //MessageToUser = lastMessage.Messages[0].MessageToUser,
                 };
 

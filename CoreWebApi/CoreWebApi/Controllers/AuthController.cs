@@ -334,7 +334,9 @@ namespace CoreWebApi.Controllers
                 {".jpg", "image/jpeg"},
                 {".jpeg", "image/jpeg"},
                 {".gif", "image/gif"},
-                {".csv", "text/csv"}
+                {".csv", "text/csv"},
+                {".mp3", "audio/mp3"},
+                {".wav", "audio/wav"}
             };
         }
     }
