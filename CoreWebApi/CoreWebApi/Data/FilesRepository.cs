@@ -70,8 +70,9 @@ namespace CoreWebApi.Data
                 var pathToSave = Path.Combine(contentRootPath, _configuration.GetSection("AppSettings:VirtualDirectoryPath").Value);
                 //var pathToSave = Path.Combine(contentRootPath, "StaticFiles", "Images");
 
-
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                if (file.ContentType == "audio/wav" || file.ContentType == "audio/mp3")
+                    fileName += ".mp3";
                 var dbPath = Path.Combine(pathToSave, fileName);
                 //if (!Directory.Exists(pathToSave))
                 //{
