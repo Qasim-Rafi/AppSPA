@@ -54,20 +54,26 @@ namespace CoreWebApi.Data
                 await _context.StudentFees.AddAsync(ToAdd);
                 await _context.SaveChangesAsync();
 
-                var ToUpdateInstallmentPaidStatus = (from sfm in _context.SemesterFeeMappings
-                                                     join fi in _context.FeeInstallments
-                                                     on sfm.Id equals fi.SemesterFeeMappingId
+                if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString())
+                {
+                    var ToUpdateInstallmentPaidStatus = (from sfm in _context.SemesterFeeMappings
+                                                         join fi in _context.FeeInstallments
+                                                         on sfm.Id equals fi.SemesterFeeMappingId
 
-                                                     where sfm.StudentId == ToAdd.StudentId
-                                                     && fi.Paid == false
+                                                         where sfm.StudentId == ToAdd.StudentId
+                                                         && fi.Paid == false
 
-                                                     orderby fi.Id
-                                                     select fi).FirstOrDefault();
-                ToUpdateInstallmentPaidStatus.PaidMonth = currentMonth;
-                ToUpdateInstallmentPaidStatus.Paid = true;
-                _context.FeeInstallments.Update(ToUpdateInstallmentPaidStatus);
-                await _context.SaveChangesAsync();
+                                                         orderby fi.Id
+                                                         select fi).FirstOrDefault();
+                    if (ToUpdateInstallmentPaidStatus != null)
+                    {
+                        ToUpdateInstallmentPaidStatus.PaidMonth = currentMonth;
+                        ToUpdateInstallmentPaidStatus.Paid = true;
+                        _context.FeeInstallments.Update(ToUpdateInstallmentPaidStatus);
+                        await _context.SaveChangesAsync();
+                    }
 
+                }
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Added;
             }

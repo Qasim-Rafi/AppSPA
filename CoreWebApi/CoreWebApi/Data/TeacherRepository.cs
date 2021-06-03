@@ -624,7 +624,7 @@ namespace CoreWebApi.Data
                     //    StartTime = o.StartTime,
                     //    EndTime = o.EndTime
                     //}).ToList();
-                    TimeSlots = _context.LectureTiming.Select(o => new TeacherTimeSlotsForListDto
+                    TimeSlots = _context.LectureTiming.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new TeacherTimeSlotsForListDto
                     {
                         StartTime = DateFormat.To24HRTime(o.StartTime),
                         EndTime = DateFormat.To24HRTime(o.EndTime),
@@ -849,6 +849,6 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-       
+
     }
 }

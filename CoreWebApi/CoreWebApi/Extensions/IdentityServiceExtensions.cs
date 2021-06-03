@@ -37,7 +37,7 @@ namespace CoreWebApi.Extensions
                     swagger.SwaggerDoc("v2", new OpenApiInfo
                     {
                         Version = "v2",
-                        Title = "LMS Web Api at " + DateTime.Now.ToLongDateString(),
+                        Title = "LMS Web Api at " + DateTime.Now.ToLongTimeString(),
                         Description = "ASP.NET Core 3.1 Web API"
                     });
                     // To Enable authorization using Swagger (JWT)  
