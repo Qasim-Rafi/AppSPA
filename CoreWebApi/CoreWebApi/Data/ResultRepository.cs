@@ -188,6 +188,7 @@ namespace CoreWebApi.Data
 
                          where u.Id == _LoggedIn_UserID
                          && ass.SubjectId == subjectId
+                         && ass.ClassSectionId == csId
                          //&& ass.DueDateTime.Value.Date <= DateTime.Now.Date
                          select new ExamForResultListDto
                          {
