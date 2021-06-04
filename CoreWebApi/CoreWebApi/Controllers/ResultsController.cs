@@ -30,10 +30,10 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpGet("GetResultToUpdate/{resultId?}")]
-        public async Task<IActionResult> GetAddedResultByExam(int resultId = 0)
+        [HttpGet("GetResultToUpdate/{csId?}/{examId?}/{subjectId?}")]
+        public async Task<IActionResult> GetResultToUpdate(int csId = 0, int examId = 0, int subjectId = 0)
         {
-            _response = await _repo.GetResultToUpdate(resultId);
+            _response = await _repo.GetResultToUpdate(csId, examId, subjectId);
 
             return Ok(_response);
 

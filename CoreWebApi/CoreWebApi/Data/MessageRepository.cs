@@ -115,8 +115,9 @@ namespace CoreWebApi.Data
                                    join cs in _context.ClassSections
                                    on csU.ClassSectionId equals cs.Id
 
-                                   where ClassSections.Any(m => m.ClassSectionId == csU.ClassSectionId)
-                                   && u.UserTypeId == (int)Enumm.UserType.Student
+                                   let c1 = ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
+                                   where u.UserTypeId == (int)Enumm.UserType.Student
+                                    && c1
                                    select new ChatUserForListDto
                                    {
                                        UserIds = new List<int>() { u.Id },
@@ -139,9 +140,10 @@ namespace CoreWebApi.Data
                                     join cs in _context.ClassSections
                                     on csU.ClassSectionId equals cs.Id
 
+                                    let c1 = ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
                                     where u.UserTypeId == (int)Enumm.UserType.Teacher
                                     && u.SchoolBranchId == _LoggedIn_BranchID
-                                    && ClassSections.Any(m => m.ClassSectionId == csU.ClassSectionId)//ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
+                                    && c1
                                     && u.Id != _LoggedIn_UserID
                                     select new ChatUserForListDto
                                     {
@@ -201,9 +203,10 @@ namespace CoreWebApi.Data
                              join cs in _context.ClassSections
                              on csU.ClassSectionId equals cs.Id
 
+                             let c1 = ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
                              where u.UserTypeId == (int)Enumm.UserType.Teacher
-                             && ClassSections.Any(m => m.ClassSectionId == csU.ClassSectionId)
                              && u.SchoolBranchId == _LoggedIn_BranchID
+                             && c1
                              select new ChatUserForListDto
                              {
                                  UserIds = new List<int>() { u.Id },
@@ -226,10 +229,11 @@ namespace CoreWebApi.Data
                                     join cs in _context.ClassSections
                                     on csU.ClassSectionId equals cs.Id
 
+                                    let c1 = ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
                                     where u.UserTypeId == (int)Enumm.UserType.Student
-                                    && ClassSections.Any(m => m.ClassSectionId == csU.ClassSectionId)
                                     && u.SchoolBranchId == _LoggedIn_BranchID
                                     && u.Id != _LoggedIn_UserID
+                                    && c1
                                     select new ChatUserForListDto
                                     {
                                         UserIds = new List<int>() { u.Id },

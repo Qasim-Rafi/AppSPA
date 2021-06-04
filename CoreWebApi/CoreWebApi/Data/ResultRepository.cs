@@ -58,7 +58,7 @@ namespace CoreWebApi.Data
             for (int i = 0; i < model.Count; i++)
             {
                 var item = model[i];
-                var toUpdate = _context.Results.Where(m => m.Id == item.Id).FirstOrDefault();              
+                var toUpdate = _context.Results.Where(m => m.Id == item.Id).FirstOrDefault();
                 toUpdate.Remarks = item.Remarks;
                 toUpdate.ObtainedMarks = item.ObtainedMarks;
                 toUpdate.TotalMarks = item.TotalMarks;
@@ -73,7 +73,7 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<object>> GetResultToUpdate(int resultId)
+        public async Task<ServiceResponse<object>> GetResultToUpdate(int csId, int examId, int subjectId)
         {
             List<ResultForListDto> Results = new List<ResultForListDto>();
 
@@ -84,7 +84,6 @@ namespace CoreWebApi.Data
                                        where r.CreatedById == _LoggedIn_UserID
                                        select new ResultForListDto
                                        {
-                                           Id = r.Id,
                                            ClassSectionName = cs.Class.Name + " " + cs.Section.SectionName,
                                            ClassSectionId = cs.Id,
                                            SubjectId = r.SubjectId,
@@ -93,13 +92,15 @@ namespace CoreWebApi.Data
                                            Reference = _context.ClassSectionAssignment.FirstOrDefault(m => m.Id == r.ReferenceId).AssignmentName,
                                        }).Distinct().ToListAsync();
 
-            if (resultId > 0)
+            if (csId > 0 && examId > 0 && subjectId > 0)
             {
                 Results = await (from r in _context.Results
                                  join cs in _context.ClassSections
                                  on r.ClassSectionId equals cs.Id
 
-                                 where r.Id == resultId
+                                 where r.ClassSectionId == csId
+                                 && r.ReferenceId == examId
+                                 && r.SubjectId == subjectId
                                  select new ResultForListDto
                                  {
                                      Id = r.Id,
@@ -120,10 +121,11 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GetDataForResult(int csId, int subjectId)
         {
-            var ClassSections = await (from cla in _context.ClassLectureAssignment
+            var ClassSections = await (from csU in _context.ClassSectionUsers
                                        join cs in _context.ClassSections
-                                       on cla.ClassSectionId equals cs.Id
-                                       where cla.TeacherId == _LoggedIn_UserID
+                                       on csU.ClassSectionId equals cs.Id
+
+                                       where csU.UserTypeId == (int)Enumm.UserType.Teacher
                                        select new ClassSectionForResultListDto
                                        {
                                            ClassSectionId = cs.Id,
@@ -131,6 +133,17 @@ namespace CoreWebApi.Data
                                            Semester = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString() ? cs.SemesterObj.Name : null,
                                            Section = cs.Section.SectionName
                                        }).Distinct().ToListAsync();
+            //var ClassSections = await (from cla in _context.ClassLectureAssignment
+            //                           join cs in _context.ClassSections
+            //                           on cla.ClassSectionId equals cs.Id
+            //                           where cla.TeacherId == _LoggedIn_UserID
+            //                           select new ClassSectionForResultListDto
+            //                           {
+            //                               ClassSectionId = cs.Id,
+            //                               Classs = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString() ? cs.Class.Name : null,
+            //                               Semester = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString() ? cs.SemesterObj.Name : null,
+            //                               Section = cs.Section.SectionName
+            //                           }).Distinct().ToListAsync();
 
             List<SubjectForResultListDto> Subjects = new List<SubjectForResultListDto>();
             List<ExamForResultListDto> Exams = new List<ExamForResultListDto>();
@@ -138,18 +151,31 @@ namespace CoreWebApi.Data
 
             if (csId > 0)
             {
-                Subjects = await (from cla in _context.ClassLectureAssignment
-                                  join s in _context.Subjects
-                                  on cla.SubjectId equals s.Id
-                                  //join cs in ClassSections
-                                  //on cla.ClassSectionId equals cs.ClassSectionId
-                                  where cla.TeacherId == _LoggedIn_UserID
-                                  && cla.ClassSectionId == csId
+                Subjects = await (from s in _context.Subjects
+                                  join sa in _context.SubjectAssignments
+                                  on s.Id equals sa.SubjectId
+
+                                  join cs in _context.ClassSections
+                                  on sa.ClassId equals cs.ClassId
+
+                                  where cs.Id == csId
                                   select new SubjectForResultListDto
                                   {
                                       SubjectId = s.Id,
                                       SubjectName = s.Name,
                                   }).Distinct().ToListAsync();
+                //Subjects = await (from cla in _context.ClassLectureAssignment
+                //                  join s in _context.Subjects
+                //                  on cla.SubjectId equals s.Id
+                //                  //join cs in ClassSections
+                //                  //on cla.ClassSectionId equals cs.ClassSectionId
+                //                  where cla.TeacherId == _LoggedIn_UserID
+                //                  && cla.ClassSectionId == csId
+                //                  select new SubjectForResultListDto
+                //                  {
+                //                      SubjectId = s.Id,
+                //                      SubjectName = s.Name,
+                //                  }).Distinct().ToListAsync();
             }
             if (subjectId > 0)
             {
@@ -184,21 +210,33 @@ namespace CoreWebApi.Data
             //                      }).ToListAsync());
             if (csId > 0 && subjectId > 0)
             {
-                Students = await (from cla in _context.ClassLectureAssignment
-                                  join csU in _context.ClassSectionUsers
-                                  on cla.ClassSectionId equals csU.ClassSectionId
+                Students = await (from csU in _context.ClassSectionUsers
 
                                   join u in _context.Users
                                   on csU.UserId equals u.Id
 
-                                  where cla.TeacherId == _LoggedIn_UserID
-                                  && u.UserTypeId == (int)Enumm.UserType.Student
+                                  where u.UserTypeId == (int)Enumm.UserType.Student
                                   && csU.ClassSectionId == csId
                                   select new StudentForResultListDto
                                   {
                                       StudentId = u.Id,
                                       StudentName = u.FullName,
                                   }).Distinct().ToListAsync();
+                //Students = await (from cla in _context.ClassLectureAssignment
+                //                  join csU in _context.ClassSectionUsers
+                //                  on cla.ClassSectionId equals csU.ClassSectionId
+
+                //                  join u in _context.Users
+                //                  on csU.UserId equals u.Id
+
+                //                  where cla.TeacherId == _LoggedIn_UserID
+                //                  && u.UserTypeId == (int)Enumm.UserType.Student
+                //                  && csU.ClassSectionId == csId
+                //                  select new StudentForResultListDto
+                //                  {
+                //                      StudentId = u.Id,
+                //                      StudentName = u.FullName,
+                //                  }).Distinct().ToListAsync();
             }
             //var CustomOption = new ExamForResultListDto { RefId = 0, RefName = "Final Exam" };
             //Exams.Insert(0, CustomOption);
