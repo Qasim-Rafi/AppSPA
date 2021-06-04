@@ -30,6 +30,14 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetResultToUpdate/{resultId?}")]
+        public async Task<IActionResult> GetAddedResultByExam(int resultId = 0)
+        {
+            _response = await _repo.GetResultToUpdate(resultId);
+
+            return Ok(_response);
+
+        }
 
         [HttpPost("AddResult")]
         public async Task<IActionResult> AddResult(List<ResultForAddDto> model)
@@ -41,6 +49,20 @@ namespace CoreWebApi.Controllers
             }
 
             _response = await _repo.AddResult(model);
+
+            return Ok(_response);
+
+        }
+        [HttpPut("UpdateResult")]
+        public async Task<IActionResult> UpdateResult(List<ResultForUpdateDto> model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.UpdateResult(model);
 
             return Ok(_response);
 

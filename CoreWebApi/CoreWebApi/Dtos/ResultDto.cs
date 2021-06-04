@@ -21,13 +21,22 @@ namespace CoreWebApi.Dtos
         public double TotalMarks { get; set; }
         public double ObtainedMarks { get; set; }
     }
+    public class ResultForUpdateDto
+    {
+        public int Id { get; set; }       
+        public string Remarks { get; set; }
+        public double TotalMarks { get; set; }
+        public double ObtainedMarks { get; set; }
+    }
     public class ResultForListDto
     {
+        public int Id { get; set; }
         public int ClassSectionId { get; set; }
+        public string ClassSectionName { get; set; }
         public int SubjectId { get; set; }
         public string Subject { get; set; }
         public int StudentId { get; set; }
-        public string Student { get; set; }
+        public string StudentName { get; set; }
         public string TutorExamName { get; set; }
         public int ReferenceId { get; set; }
         public string Reference { get; set; }

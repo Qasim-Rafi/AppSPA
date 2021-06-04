@@ -19,6 +19,8 @@ namespace CoreWebApi.IData
         //Task<ServiceResponse<object>> UploadFile(UploadFileDto model);
         Task<User> ExStudentLogin(string username, string password, int tutorId, int subjectId);
         Task<ServiceResponse<object>> ExStudentRegister(ExStudentForRegisterDto model);
+        ServiceResponse<object> SiteCheck();
+
     }
 }
 

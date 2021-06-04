@@ -439,5 +439,13 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
+        public ServiceResponse<object> SiteCheck()
+        {
+            _serviceResponse.Message = "Site Is Working...";
+            _serviceResponse.Data = new { name = "lms", url = "http://e-learningbox.com/" };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+
+        }
     }
 }

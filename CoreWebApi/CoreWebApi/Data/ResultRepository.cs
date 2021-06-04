@@ -52,7 +52,72 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> UpdateResult(List<ResultForUpdateDto> model)
+        {
+            var ListToUpdate = new List<Result>();
+            for (int i = 0; i < model.Count; i++)
+            {
+                var item = model[i];
+                var toUpdate = _context.Results.Where(m => m.Id == item.Id).FirstOrDefault();              
+                toUpdate.Remarks = item.Remarks;
+                toUpdate.ObtainedMarks = item.ObtainedMarks;
+                toUpdate.TotalMarks = item.TotalMarks;
+                ListToUpdate.Add(toUpdate);
+            }
 
+            _context.Results.UpdateRange(ListToUpdate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse<object>> GetResultToUpdate(int resultId)
+        {
+            List<ResultForListDto> Results = new List<ResultForListDto>();
+
+            var ClassSections = await (from r in _context.Results
+                                       join cs in _context.ClassSections
+                                       on r.ClassSectionId equals cs.Id
+
+                                       where r.CreatedById == _LoggedIn_UserID
+                                       select new ResultForListDto
+                                       {
+                                           Id = r.Id,
+                                           ClassSectionName = cs.Class.Name + " " + cs.Section.SectionName,
+                                           ClassSectionId = cs.Id,
+                                           SubjectId = r.SubjectId,
+                                           Subject = _context.Subjects.FirstOrDefault(m => m.Id == r.SubjectId).Name,
+                                           ReferenceId = r.ReferenceId.Value,
+                                           Reference = _context.ClassSectionAssignment.FirstOrDefault(m => m.Id == r.ReferenceId).AssignmentName,
+                                       }).Distinct().ToListAsync();
+
+            if (resultId > 0)
+            {
+                Results = await (from r in _context.Results
+                                 join cs in _context.ClassSections
+                                 on r.ClassSectionId equals cs.Id
+
+                                 where r.Id == resultId
+                                 select new ResultForListDto
+                                 {
+                                     Id = r.Id,
+                                     ClassSectionName = cs.Class.Name + " " + cs.Section.SectionName,
+                                     StudentId = r.StudentId,
+                                     StudentName = _context.Users.FirstOrDefault(m => m.Id == r.StudentId).FullName,
+                                     SubjectId = r.SubjectId,
+                                     Subject = _context.Subjects.FirstOrDefault(m => m.Id == r.SubjectId).Name,
+                                     ReferenceId = r.ReferenceId.Value,
+                                     Reference = _context.ClassSectionAssignment.FirstOrDefault(m => m.Id == r.ReferenceId).AssignmentName,
+                                     ObtainedMarks = r.ObtainedMarks,
+                                     TotalMarks = r.TotalMarks,
+                                 }).ToListAsync();
+            }
+            _serviceResponse.Data = new { ClassSections, Results };
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
         public async Task<ServiceResponse<object>> GetDataForResult(int csId, int subjectId)
         {
             var ClassSections = await (from cla in _context.ClassLectureAssignment

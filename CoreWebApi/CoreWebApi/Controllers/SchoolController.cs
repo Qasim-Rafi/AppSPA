@@ -342,6 +342,17 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetUsefulResources(currentPage, resourceType);
             return Ok(_response);
         }
+        [HttpDelete("DeleteUsefulResource/{id}")]
+        public async Task<IActionResult> DeleteUsefulResource(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.DeleteUsefulResource(id);
 
+            return Ok(_response);
+
+        }
     }
 }

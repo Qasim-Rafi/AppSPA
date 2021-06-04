@@ -151,7 +151,7 @@ namespace CoreWebApi.Data
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
-           
+
         }
 
         public async Task<ServiceResponse<object>> GetTeachers()
@@ -592,6 +592,8 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-
+        
     }
+
 }
+

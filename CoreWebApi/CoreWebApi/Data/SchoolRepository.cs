@@ -1000,10 +1000,11 @@ namespace CoreWebApi.Data
             {
                 var Resources = await _context.UsefulResources.Where(m => string.IsNullOrEmpty(m.ResourceType) && m.SchoolBranchId == _LoggedIn_BranchID).Select(p => new UsefulResourceForListDto // && m.CreatedById == _LoggedIn_UserID
                 {
+                    Id = p.Id,
                     Title = p.Title,
                     Description = p.Description,
                     Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link
-                }).ToListAsync();
+                }).OrderByDescending(m => m.Id).ToListAsync();
                 _serviceResponse.Data = Resources;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
@@ -1023,12 +1024,13 @@ namespace CoreWebApi.Data
                             Keyword = o.Key,
                             TopicWiseLinks = o.Select(o => new UsefulResourceForListDto
                             {
+                                Id = o.Id,
                                 Thumbnail = o.Thumbnail,
                                 Title = o.Title,
                                 Description = o.Description,
                                 Link = o.Link,
                                 ResourceType = o.ResourceType
-                            }).ToList()
+                            }).OrderByDescending(m => m.Id).ToList()
                         }).Skip(skip).Take(take).ToList();
                     }
                 }
@@ -1040,18 +1042,37 @@ namespace CoreWebApi.Data
                             Keyword = o.Key,
                             TopicWiseLinks = o.Select(o => new UsefulResourceForListDto
                             {
+                                Id = o.Id,
                                 Thumbnail = o.Thumbnail,
                                 Title = o.Title,
                                 Description = o.Description,
                                 Link = o.Link,
                                 ResourceType = o.ResourceType
-                            }).ToList()
+                            }).OrderByDescending(m => m.Id).ToList()
                         }).ToList();
                 }
                 _serviceResponse.Data = ToReturn;
                 _serviceResponse.Success = true;
                 return _serviceResponse;
             }
+        }
+        public async Task<ServiceResponse<object>> DeleteUsefulResource(int id)
+        {
+            var ToRemove = await _context.UsefulResources.Where(m => m.Id == id).FirstOrDefaultAsync();
+            if (ToRemove != null)
+            {
+                _context.UsefulResources.Remove(ToRemove);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Deleted;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+            }
+            return _serviceResponse;
+
         }
     }
 }

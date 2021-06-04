@@ -83,16 +83,31 @@ namespace CoreWebApi.Data
                 }
                 else if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
-                    var ClassSections = await (from cla in _context.ClassLectureAssignment
+                    var ClassSections = await (from csU in _context.ClassSectionUsers
                                                join cs in _context.ClassSections
-                                               on cla.ClassSectionId equals cs.Id
-                                               where cla.TeacherId == _LoggedIn_UserID
+                                               on csU.ClassSectionId equals cs.Id
+
+                                               join u in _context.Users
+                                               on csU.UserId equals u.Id
+
+                                               where csU.UserId == _LoggedIn_UserID
+                                               && u.Role == Enumm.UserType.Teacher.ToString()
                                                select new ClassSectionForResultListDto
                                                {
                                                    ClassSectionId = cs.Id,
                                                    Classs = cs.Class.Name,
                                                    Section = cs.Section.SectionName
                                                }).Distinct().ToListAsync();
+                    //var ClassSections = await (from cla in _context.ClassLectureAssignment
+                    //                           join cs in _context.ClassSections
+                    //                           on cla.ClassSectionId equals cs.Id
+                    //                           where cla.TeacherId == _LoggedIn_UserID
+                    //                           select new ClassSectionForResultListDto
+                    //                           {
+                    //                               ClassSectionId = cs.Id,
+                    //                               Classs = cs.Class.Name,
+                    //                               Section = cs.Section.SectionName
+                    //                           }).Distinct().ToListAsync();
                     Users = await (from u in _context.Users
                                    join csU in _context.ClassSectionUsers
                                    on u.Id equals csU.UserId
@@ -100,7 +115,7 @@ namespace CoreWebApi.Data
                                    join cs in _context.ClassSections
                                    on csU.ClassSectionId equals cs.Id
 
-                                   where ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
+                                   where ClassSections.Any(m => m.ClassSectionId == csU.ClassSectionId)
                                    && u.UserTypeId == (int)Enumm.UserType.Student
                                    select new ChatUserForListDto
                                    {
@@ -126,7 +141,7 @@ namespace CoreWebApi.Data
 
                                     where u.UserTypeId == (int)Enumm.UserType.Teacher
                                     && u.SchoolBranchId == _LoggedIn_BranchID
-                                    && ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
+                                    && ClassSections.Any(m => m.ClassSectionId == csU.ClassSectionId)//ClassSections.Select(m => m.ClassSectionId).Contains(csU.ClassSectionId)
                                     && u.Id != _LoggedIn_UserID
                                     select new ChatUserForListDto
                                     {
@@ -178,15 +193,16 @@ namespace CoreWebApi.Data
                                                    Classs = cs.Class.Name,
                                                    Section = cs.Section.SectionName
                                                }).Distinct().ToListAsync();
+
                     Users = (from u in _context.Users
-                             join cla in _context.ClassLectureAssignment
-                             on u.Id equals cla.TeacherId
+                             join csU in _context.ClassSectionUsers
+                             on u.Id equals csU.UserId
 
                              join cs in _context.ClassSections
-                             on cla.ClassSectionId equals cs.Id
+                             on csU.ClassSectionId equals cs.Id
 
                              where u.UserTypeId == (int)Enumm.UserType.Teacher
-                             && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
+                             && ClassSections.Any(m => m.ClassSectionId == csU.ClassSectionId)
                              && u.SchoolBranchId == _LoggedIn_BranchID
                              select new ChatUserForListDto
                              {
@@ -204,14 +220,14 @@ namespace CoreWebApi.Data
                              }).Distinct().ToList();
 
                     Users.AddRange((from u in _context.Users
-                                    join cla in _context.ClassLectureAssignment
-                                    on u.Id equals cla.TeacherId
+                                    join csU in _context.ClassSectionUsers
+                                    on u.Id equals csU.UserId
 
                                     join cs in _context.ClassSections
-                                    on cla.ClassSectionId equals cs.Id
+                                    on csU.ClassSectionId equals cs.Id
 
                                     where u.UserTypeId == (int)Enumm.UserType.Student
-                                    && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
+                                    && ClassSections.Any(m => m.ClassSectionId == csU.ClassSectionId)
                                     && u.SchoolBranchId == _LoggedIn_BranchID
                                     && u.Id != _LoggedIn_UserID
                                     select new ChatUserForListDto
@@ -228,6 +244,56 @@ namespace CoreWebApi.Data
                                             Url = _fileRepo.AppendImagePath(x.Name)
                                         }).ToList(),
                                     }).Distinct().ToList());
+                    //Users = (from u in _context.Users
+                    //         join cla in _context.ClassLectureAssignment
+                    //         on u.Id equals cla.TeacherId
+
+                    //         join cs in _context.ClassSections
+                    //         on cla.ClassSectionId equals cs.Id
+
+                    //         where u.UserTypeId == (int)Enumm.UserType.Teacher
+                    //         && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
+                    //         && u.SchoolBranchId == _LoggedIn_BranchID
+                    //         select new ChatUserForListDto
+                    //         {
+                    //             UserIds = new List<int>() { u.Id },
+                    //             Names = u.FullName,
+                    //             UserName = u.Username,
+                    //             IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
+                    //             Description = cs.Class.Name + " " + cs.Section.SectionName,
+                    //             Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                    //             {
+                    //                 Id = x.Id,
+                    //                 Name = x.Name,
+                    //                 Url = _fileRepo.AppendImagePath(x.Name)
+                    //             }).ToList(),
+                    //         }).Distinct().ToList();
+
+                    //Users.AddRange((from u in _context.Users
+                    //                join cla in _context.ClassLectureAssignment
+                    //                on u.Id equals cla.TeacherId
+
+                    //                join cs in _context.ClassSections
+                    //                on cla.ClassSectionId equals cs.Id
+
+                    //                where u.UserTypeId == (int)Enumm.UserType.Student
+                    //                && ClassSections.Select(m => m.ClassSectionId).Contains(cla.ClassSectionId)
+                    //                && u.SchoolBranchId == _LoggedIn_BranchID
+                    //                && u.Id != _LoggedIn_UserID
+                    //                select new ChatUserForListDto
+                    //                {
+                    //                    UserIds = new List<int>() { u.Id },
+                    //                    UserName = u.Username,
+                    //                    IsOnline = ConnectionMapping<string>.GetConnections(u.Username).Any(),
+                    //                    Names = u.FullName,
+                    //                    Description = cs.Class.Name + " " + cs.Section.SectionName,
+                    //                    Photos = _context.Photos.Where(m => m.UserId == u.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new PhotoDto
+                    //                    {
+                    //                        Id = x.Id,
+                    //                        Name = x.Name,
+                    //                        Url = _fileRepo.AppendImagePath(x.Name)
+                    //                    }).ToList(),
+                    //                }).Distinct().ToList());
                 }
             }
             else

@@ -1,29 +1,20 @@
-﻿using System;
+﻿using CoreWebApi.Data;
+using CoreWebApi.Dtos;
+using CoreWebApi.Helpers;
+using CoreWebApi.IData;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using CoreWebApi.Data;
-using CoreWebApi.Dtos;
-using CoreWebApi.Helpers;
-using CoreWebApi.IData;
-using CoreWebApi.Models;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CoreWebApi.Controllers
 {
@@ -31,7 +22,7 @@ namespace CoreWebApi.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
-        private IFileProvider _fileProvider;
+        private readonly IFileProvider _fileProvider;
         private readonly DataContext _context;
 
 
@@ -255,6 +246,12 @@ namespace CoreWebApi.Controllers
             var getFile = _context.Photos.Where(m => m.Name == fileName).FirstOrDefault();
             var bytes = Convert.FromBase64String(getFile.Url);
             return File(bytes, GetContentType(getFile.Name));
+        }
+        [HttpGet("CheckLMSSite")]
+        public IActionResult CheckLMSSite()
+        {
+            _response = _repo.SiteCheck();
+            return Ok(_response);
         }
         //[HttpPost("UploadFile"), NonAction]
         //public async Task<IActionResult> UploadFile([FromForm] UploadFileDto model)
