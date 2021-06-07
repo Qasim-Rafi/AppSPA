@@ -150,6 +150,7 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
+
         private static List<string> SplitValues(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -325,5 +326,51 @@ namespace CoreWebApi.Data
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> SubmittedAssignentsToLoggedTeacher()
+        {
+            if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
+            {
+                List<AssignmentDtoForList> ToReturn = new List<AssignmentDtoForList>();
+                if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
+                {
+                    ToReturn = await (from csAssign in _context.ClassSectionAssignment
+                                      join submitted in _context.ClassSectionAssigmentSubmissions
+                                      on csAssign.Id equals submitted.ClassSectionAssignmentId
+
+                                      where csAssign.CreatedById == _LoggedIn_UserID
+                                      && csAssign.SchoolBranchId == _LoggedIn_BranchID
+                                      orderby csAssign.Id ascending
+                                      select csAssign).Select(o => new AssignmentDtoForList
+                                      {
+                                          Id = o.Id,
+                                          AssignmentName = o.AssignmentName,
+                                          ClassSectionId = o.ClassSectionId,
+                                          ClassSection = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString()
+                                          ? (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
+                                            ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : ""
+                                          : (_context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
+                                            ? _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : "",
+                                          RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
+                                          FileName = SplitValues(o.FileName),
+                                          Details = o.Details,
+                                          ReferenceUrl = o.ReferenceUrl,
+                                          SubjectId = o.SubjectId,
+                                          DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : "",
+                                          IsPosted = o.IsPosted,
+                                      }).ToListAsync();
+                }
+
+                _serviceResponse.Success = true;
+                _serviceResponse.Data = ToReturn;
+                return _serviceResponse;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.UserNotLoggedIn;
+                return _serviceResponse;
+            }
+        }
+
     }
 }

@@ -16,5 +16,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddAssignment(AssignmentDtoForAdd assignment);
         Task<ServiceResponse<object>> SubmitAssignment(SubmitAssignmentDtoForAdd model);
         Task<ServiceResponse<object>> EditAssignment(int id, AssignmentDtoForEdit assignment);
+        Task<ServiceResponse<object>> SubmittedAssignentsToLoggedTeacher();
     }
 }

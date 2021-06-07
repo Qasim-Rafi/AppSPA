@@ -62,7 +62,10 @@ namespace CoreWebApi.Controllers
                     MessageFromUser = lastMessage.Messages[0].MessageFromUser,
                     MessageToUserIdsStr = lastMessage.Messages[0].MessageToUserIdsStr,
                     GroupId = 0,
-                    Attachment = _filesRepository.AppendDocPath(lastMessage.Messages[0].Attachment)
+                    Attachment = lastMessage.Messages[0].Attachment,
+                    FileName = lastMessage.Messages[0].FileName,
+                    FileType = lastMessage.Messages[0].FileType,
+
                     //MessageToUser = lastMessage.Messages[0].MessageToUser,
                 };
 
@@ -102,6 +105,9 @@ namespace CoreWebApi.Controllers
                     MessageFromUser = lastMessage.Messages[0].MessageFromUser,
                     MessageToUserIdsStr = lastMessage.Messages[0].MessageToUserIdsStr,
                     GroupId = lastMessage.Messages[0].GroupId,
+                    Attachment = lastMessage.Messages[0].Attachment,
+                    FileName = lastMessage.Messages[0].FileName,
+                    FileType = lastMessage.Messages[0].FileType,
                     //MessageToUser = lastMessage.Messages[0].MessageToUser,
                 };
 

@@ -62,6 +62,8 @@ namespace CoreWebApi.Dtos
         public string MessageFromUser { get; set; }
         public int? MessageReplyId { get; set; }
         public string Attachment { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
         public int GroupId { get; set; }
     }
     public class MessageForListByTimeDto
@@ -98,6 +100,8 @@ namespace CoreWebApi.Dtos
         public string MessageToUser { get; set; }
         public string Comment { get; set; }
         public string Attachment { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
         public int MessageFromUserId { get; set; }
         public string MessageFromUser { get; set; }
         public int? MessageReplyId { get; set; }

@@ -10,6 +10,8 @@ namespace CoreWebApi.Models
     {
         public int Id { get; set; }
         public int MessageId { get; set; }
+        public string FileType { get; set; }
+        public string FileName { get; set; }
         public string AttachmentPath { get; set; }
 
         [ForeignKey("MessageId")]

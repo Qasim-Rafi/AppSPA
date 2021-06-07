@@ -264,6 +264,7 @@ namespace CoreWebApi.Data
             int QuizCount = 0;
             int SubstitutionCount = 0;
             int SubjectCount = 0;
+            int ResultCount = 0;
             if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
             {
                 if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
@@ -342,6 +343,12 @@ namespace CoreWebApi.Data
                                     where csUser.UserId == _LoggedIn_UserID
                                     && csUser.SchoolBranchId == _LoggedIn_BranchID
                                     select subject).ToList().Count();
+
+                    ResultCount = (from r in _context.Results
+
+                                   where r.StudentId == _LoggedIn_UserID
+                                   && r.SchoolBranchId == _LoggedIn_BranchID
+                                   select r).ToList().Count();
                 }
             }
             _serviceResponse.Data = new
@@ -350,6 +357,7 @@ namespace CoreWebApi.Data
                 QuizCount,
                 SubstitutionCount,
                 SubjectCount,
+                ResultCount,
             };
             _serviceResponse.Success = true;
             return _serviceResponse;
