@@ -326,42 +326,76 @@ namespace CoreWebApi.Data
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
         }
-        public async Task<ServiceResponse<object>> SubmittedAssignentsToLoggedTeacher()
+        public async Task<ServiceResponse<object>> SubmittedAssignentsToLoggedTeacher(int csId, int assignmentId, int subjectId)
         {
             if (!string.IsNullOrEmpty(_LoggedIn_UserRole))
             {
-                List<AssignmentDtoForList> ToReturn = new List<AssignmentDtoForList>();
                 if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
                 {
-                    ToReturn = await (from csAssign in _context.ClassSectionAssignment
-                                      join submitted in _context.ClassSectionAssigmentSubmissions
-                                      on csAssign.Id equals submitted.ClassSectionAssignmentId
+                    if (csId > 0 && assignmentId > 0 && subjectId > 0)
+                    {
+                        var ToReturn = await (from u in _context.Users
+                                              join csU in _context.ClassSectionUsers
+                                              on u.Id equals csU.UserId
 
-                                      where csAssign.CreatedById == _LoggedIn_UserID
-                                      && csAssign.SchoolBranchId == _LoggedIn_BranchID
-                                      orderby csAssign.Id ascending
-                                      select csAssign).Select(o => new AssignmentDtoForList
-                                      {
-                                          Id = o.Id,
-                                          AssignmentName = o.AssignmentName,
-                                          ClassSectionId = o.ClassSectionId,
-                                          ClassSection = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString()
-                                          ? (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
-                                            ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : ""
-                                          : (_context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
-                                            ? _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : "",
-                                          RelatedMaterial = _filesRepository.AppendMultiDocPath(o.RelatedMaterial),
-                                          FileName = SplitValues(o.FileName),
-                                          Details = o.Details,
-                                          ReferenceUrl = o.ReferenceUrl,
-                                          SubjectId = o.SubjectId,
-                                          DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : "",
-                                          IsPosted = o.IsPosted,
-                                      }).ToListAsync();
+                                              join submit in _context.ClassSectionAssigmentSubmissions
+                                              on u.Id equals submit.StudentId into newSubmit
+                                              from submit in newSubmit.DefaultIfEmpty()
+
+                                              join csAssign in _context.ClassSectionAssignment
+                                              on submit.ClassSectionAssignmentId equals csAssign.Id into newCSAssign
+                                              from csAssign in newCSAssign.DefaultIfEmpty()
+
+                                              join result in _context.Results
+                                              on submit.ClassSectionAssignmentId equals result.ReferenceId into newResult
+                                              from result in newResult.DefaultIfEmpty()
+
+                                              where csAssign.CreatedById == _LoggedIn_UserID
+                                              && csU.ClassSectionId == csId
+                                              //&& submit.ClassSectionAssignmentId == assignmentId
+                                              //&& csAssign.SubjectId == subjectId
+
+                                              orderby csAssign.Id ascending
+                                              select new SubmittedAssignmentStudentsDtoForList
+                                              {
+                                                  ResultId = result.Id,
+                                                  Details = submit.Description,
+                                                  RelatedMaterial = _filesRepository.AppendMultiDocPath(submit.SubmittedMaterial),
+                                                  StudentId = submit.StudentId,
+                                                  StudentName = _context.Users.FirstOrDefault(m => m.Id == submit.StudentId).FullName,
+                                                  ObtainedMarks = result.ObtainedMarks,
+                                                  TotalMarks = result.TotalMarks,
+                                              }).Distinct().ToListAsync();
+                        _serviceResponse.Success = true;
+                        _serviceResponse.Data = ToReturn;
+                    }
+                    else
+                    {
+                        var ToReturn = await (from csAssign in _context.ClassSectionAssignment
+                                              join submitted in _context.ClassSectionAssigmentSubmissions
+                                              on csAssign.Id equals submitted.ClassSectionAssignmentId
+
+                                              where csAssign.CreatedById == _LoggedIn_UserID
+                                              && csAssign.SchoolBranchId == _LoggedIn_BranchID
+                                              orderby csAssign.Id ascending
+                                              select csAssign).Select(o => new SubmittedAssignmentDtoForList
+                                              {
+                                                  AssignmentId = o.Id,
+                                                  AssignmentName = o.AssignmentName,
+                                                  ClassSectionId = o.ClassSectionId,
+                                                  ClassSection = _LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString()
+                                                  ? (_context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
+                                                    ? _context.Class.FirstOrDefault(m => m.Id == o.ClassSection.ClassId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : ""
+                                                  : (_context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active) != null && _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active) != null)
+                                                    ? _context.Semesters.FirstOrDefault(m => m.Id == o.ClassSection.SemesterId && m.Active).Name + " " + _context.Sections.FirstOrDefault(m => m.Id == o.ClassSection.SectionId && m.Active).SectionName : "",
+                                                  SubjectId = o.SubjectId,
+                                                  SubjectName = o.Subject.Name,
+                                              }).Distinct().ToListAsync();
+
+                        _serviceResponse.Success = true;
+                        _serviceResponse.Data = ToReturn;
+                    }
                 }
-
-                _serviceResponse.Success = true;
-                _serviceResponse.Data = ToReturn;
                 return _serviceResponse;
             }
             else

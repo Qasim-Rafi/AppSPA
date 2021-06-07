@@ -21,7 +21,7 @@ namespace CoreWebApi.Controllers
         private readonly IAssignmentRepository _repo;
         private readonly IMapper _mapper;
         private IFileProvider _fileProvider;
-        public AssignmentsController(IAssignmentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)            
+        public AssignmentsController(IAssignmentRepository repo, IMapper mapper, IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)
         {
             _mapper = mapper;
             _repo = repo;
@@ -67,8 +67,22 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             _response = await _repo.SubmitAssignment(model);
+
+            return Ok(_response);
+
+        }
+        [HttpPost("SubmittedAssignentsToLoggedTeacher/{csId?}/{assignmentId?}/{subjectId?}")]
+        public async Task<IActionResult> SubmittedAssignentsToLoggedTeacher(int csId = 0, int assignmentId = 0, int subjectId = 0)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _response = await _repo.SubmittedAssignentsToLoggedTeacher(csId, assignmentId, subjectId);
 
             return Ok(_response);
 
