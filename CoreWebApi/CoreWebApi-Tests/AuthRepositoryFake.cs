@@ -403,6 +403,11 @@ namespace CoreWebApi_Tests
         {
             throw new NotImplementedException();
         }
+
+        public ServiceResponse<object> SiteCheck()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
