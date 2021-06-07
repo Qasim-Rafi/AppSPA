@@ -73,7 +73,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
-        [HttpPost("SubmittedAssignentsToLoggedTeacher/{csId?}/{assignmentId?}/{subjectId?}")]
+        [HttpGet("SubmittedAssignentsToLoggedTeacher/{csId?}/{assignmentId?}/{subjectId?}")]
         public async Task<IActionResult> SubmittedAssignentsToLoggedTeacher(int csId = 0, int assignmentId = 0, int subjectId = 0)
         {
 
