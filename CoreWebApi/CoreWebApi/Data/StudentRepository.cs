@@ -254,11 +254,11 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> GetLoggedStudentAssignedSubjects(int subjectId)
+        public async Task<ServiceResponse<object>> GetLoggedStudentAssignedSubjects(int classId, int subjectId)
         {
             if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
             {
-                if (subjectId == 0)
+                if (classId == 0 && subjectId == 0)
                 {
                     var Subjects = await (from csU in _context.ClassSectionUsers
                                           join cs in _context.ClassSections
@@ -278,6 +278,9 @@ namespace CoreWebApi.Data
                                           && s.SchoolBranchId == _LoggedIn_BranchID
                                           select new StudentSubjectForListDto
                                           {
+                                              ClassId = c.Id,
+                                              ClassName = c.Name,
+                                              TeacherName = _context.ClassLectureAssignment.FirstOrDefault(m => m.ClassSectionId == cs.Id && m.SubjectId == s.Id).User.FullName,
                                               SubjectId = s.Id,
                                               SubjectName = s.Name,
                                           }).ToListAsync();
@@ -293,6 +296,7 @@ namespace CoreWebApi.Data
                                                  on s.Id equals content.SubjectId
 
                                                  where s.Id == subjectId
+                                                 && content.ClassId == classId
                                                  select new StudentSubjectContentForListDto
                                                  {
                                                      ContentId = content.Id,

@@ -75,6 +75,9 @@ namespace CoreWebApi.Dtos
     }
     public class StudentSubjectForListDto
     {
+        public int ClassId { get; set; }
+        public string ClassName { get; set; }
+        public string TeacherName { get; set; }
         public int SubjectId { get; set; }
         public string SubjectName { get; set; }
     }
