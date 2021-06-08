@@ -254,11 +254,11 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
-        public async Task<ServiceResponse<object>> GetLoggedStudentAssignedSubjects(int classId, int subjectId)
+        public async Task<ServiceResponse<object>> GetLoggedStudentAssignedSubjects(int classOrSemesterId, int subjectId)
         {
             if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
             {
-                if (classId == 0 && subjectId == 0)
+                if (classOrSemesterId == 0 && subjectId == 0)
                 {
                     var Subjects = await (from csU in _context.ClassSectionUsers
                                           join cs in _context.ClassSections
@@ -296,7 +296,7 @@ namespace CoreWebApi.Data
                                                  on s.Id equals content.SubjectId
 
                                                  where s.Id == subjectId
-                                                 && content.ClassId == classId
+                                                 && content.ClassId == classOrSemesterId
                                                  select new StudentSubjectContentForListDto
                                                  {
                                                      ContentId = content.Id,
@@ -320,50 +320,77 @@ namespace CoreWebApi.Data
                                               }).ToListAsync();
                     }
                     _serviceResponse.Data = SubjectContents;
-                    _serviceResponse.Success = false;
+                    _serviceResponse.Success = true;
                     return _serviceResponse;
                 }
             }
             else
             {
-                //var subject = await (from s in _context.Subjects
-                //                     join ass in _context.SubjectAssignments
-                //                     on s.Id equals ass.SubjectId
-                //                     join sem in _context.Semesters
-                //                     on ass.SemesterId equals sem.Id
-                //                     join sch in _context.SchoolBranch
-                //                     on ass.SchoolBranchId equals sch.Id
-                //                     where ass.Id == id
-                //                     && s.Active == true
-                //                     && s.SchoolBranchId == _LoggedIn_BranchID
-                //                     select new AssignSubjectDtoForDetail
-                //                     {
-                //                         Id = s.Id,
-                //                         SemesterId = sem.Id,
-                //                         SemesterName = sem.Name,
-                //                         SchoolId = ass.SchoolBranchId,
-                //                         SchoolName = sch.BranchName,
-                //                         //TableOfContent = ass.TableOfContent,
-                //                     }).FirstOrDefaultAsync();
+                if (classOrSemesterId == 0 && subjectId == 0)
+                {
+                    var Subjects = await (from csU in _context.ClassSectionUsers
+                                          join cs in _context.ClassSections
+                                          on csU.ClassSectionId equals cs.Id
 
-                //if (subject != null)
-                //{
-                //    var childrens = await (from s in _context.Subjects
-                //                           join ass in _context.SubjectAssignments
-                //                           on s.Id equals ass.SubjectId
-                //                           where ass.SemesterId == subject.SemesterId
-                //                           && s.Active == true
-                //                           && s.SchoolBranchId == _LoggedIn_BranchID
-                //                           select s).Select(x => new SubjectDtoForDetail
-                //                           {
-                //                               Id = x.Id,
-                //                               Name = x.Name,
-                //                           }).ToListAsync();
-                //    subject.Children.AddRange(childrens);
+                                          join sem in _context.Semesters
+                                          on cs.SemesterId equals sem.Id
 
-                //    _serviceResponse.Data = subject;
-                _serviceResponse.Success = true;
-                return _serviceResponse;
+                                          join ass in _context.SubjectAssignments
+                                          on sem.Id equals ass.SemesterId
+
+                                          join s in _context.Subjects
+                                          on ass.SubjectId equals s.Id
+
+                                          where csU.UserId == _LoggedIn_UserID
+                                          && s.Active == true
+                                          && s.SchoolBranchId == _LoggedIn_BranchID
+                                          select new StudentSubjectForListDto
+                                          {
+                                              SemesterId = sem.Id,
+                                              SemesterName = sem.Name,
+                                              TeacherName = _context.ClassLectureAssignment.FirstOrDefault(m => m.ClassSectionId == cs.Id && m.SubjectId == s.Id).User.FullName,
+                                              SubjectId = s.Id,
+                                              SubjectName = s.Name,
+                                          }).ToListAsync();
+
+                    _serviceResponse.Data = Subjects;
+                    _serviceResponse.Success = true;
+                    return _serviceResponse;
+                }
+                else
+                {
+                    var SubjectContents = await (from s in _context.Subjects
+                                                 join content in _context.SubjectContents
+                                                 on s.Id equals content.SubjectId
+
+                                                 where s.Id == subjectId
+                                                 && content.SemesterId == classOrSemesterId
+                                                 select new StudentSubjectContentForListDto
+                                                 {
+                                                     ContentId = content.Id,
+                                                     Content = content.Heading,
+                                                 }).ToListAsync();
+
+                    for (int i = 0; i < SubjectContents.Count; i++)
+                    {
+                        var item = SubjectContents[i];
+
+                        item.Details = await (from content in _context.SubjectContents
+                                              join details in _context.SubjectContentDetails
+                                              on content.Id equals details.SubjectContentId
+
+                                              where content.Id == item.ContentId
+                                              && content.SubjectId == subjectId
+                                              select new StudentSubjectContentDetailForListDto
+                                              {
+                                                  ContentDetailId = details.Id,
+                                                  Detail = details.Heading,
+                                              }).ToListAsync();
+                    }
+                    _serviceResponse.Data = SubjectContents;
+                    _serviceResponse.Success = true;
+                    return _serviceResponse;
+                }
             }
         }
     }
