@@ -66,7 +66,7 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
         }
         [HttpGet("GetLoggedStudentSubjects/{subjectId?}")]
-        public async Task<IActionResult> GetLoggedStudentSubjects(int subjectId)
+        public async Task<IActionResult> GetLoggedStudentSubjects(int subjectId = 0)
         {
             if (!ModelState.IsValid)
             {
@@ -75,6 +75,6 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetLoggedStudentAssignedSubjects(subjectId);
             return Ok(_response);
         }
-        
+
     }
 }

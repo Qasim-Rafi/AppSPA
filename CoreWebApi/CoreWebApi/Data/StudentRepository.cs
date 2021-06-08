@@ -258,25 +258,22 @@ namespace CoreWebApi.Data
         {
             if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
             {
-                if (subjectId > 0)
+                if (subjectId == 0)
                 {
-                    var Subjects = await (from s in _context.Subjects
-                                          join ass in _context.SubjectAssignments
-                                          on s.Id equals ass.SubjectId
+                    var Subjects = await (from csU in _context.ClassSectionUsers
+                                          join cs in _context.ClassSections
+                                          on csU.ClassSectionId equals cs.Id
 
                                           join c in _context.Class
-                                          on ass.ClassId equals c.Id
+                                          on cs.ClassId equals c.Id
 
-                                          join cs in _context.ClassSections
-                                          on ass.ClassId equals cs.ClassId
+                                          join ass in _context.SubjectAssignments
+                                          on c.Id equals ass.ClassId
 
-                                          join csU in _context.ClassSectionUsers
-                                          on cs.Id equals csU.ClassSectionId
+                                          join s in _context.Subjects
+                                          on ass.SubjectId equals s.Id
 
-                                          join u in _context.Users
-                                          on csU.UserId equals u.Id
-
-                                          where u.Id == _LoggedIn_UserID
+                                          where csU.UserId == _LoggedIn_UserID
                                           && s.Active == true
                                           && s.SchoolBranchId == _LoggedIn_BranchID
                                           select new StudentSubjectForListDto
@@ -291,7 +288,7 @@ namespace CoreWebApi.Data
                 }
                 else
                 {
-                    var SubjectContents = await (from s in _context.Subjects                                                 
+                    var SubjectContents = await (from s in _context.Subjects
                                                  join content in _context.SubjectContents
                                                  on s.Id equals content.SubjectId
 
@@ -311,6 +308,7 @@ namespace CoreWebApi.Data
                                               on content.Id equals details.SubjectContentId
 
                                               where content.Id == item.ContentId
+                                              && content.SubjectId == subjectId
                                               select new StudentSubjectContentDetailForListDto
                                               {
                                                   ContentDetailId = details.Id,
