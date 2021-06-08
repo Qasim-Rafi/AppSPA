@@ -338,22 +338,23 @@ namespace CoreWebApi.Data
                                               join csU in _context.ClassSectionUsers
                                               on u.Id equals csU.UserId
 
+                                              join csAssign in _context.ClassSectionAssignment
+                                              on csU.ClassSectionId equals csAssign.ClassSectionId
+
                                               join submit in _context.ClassSectionAssigmentSubmissions
-                                              on u.Id equals submit.StudentId into newSubmit
+                                              on new { StudentId = u.Id, AssId = csAssign.Id } equals
+                                              new { StudentId = submit.StudentId, AssId = submit.ClassSectionAssignmentId } into newSubmit
                                               from submit in newSubmit.DefaultIfEmpty()
 
-                                              join csAssign in _context.ClassSectionAssignment
-                                              on submit.ClassSectionAssignmentId equals csAssign.Id into newCSAssign
-                                              from csAssign in newCSAssign.DefaultIfEmpty()
-
                                               join result in _context.Results
-                                              on submit.ClassSectionAssignmentId equals result.ReferenceId into newResult
+                                              on new { AssIdd = csAssign.Id, StudentIdd = u.Id } equals
+                                              new { AssIdd = (int)result.ReferenceId, StudentIdd = result.StudentId } into newResult
                                               from result in newResult.DefaultIfEmpty()
 
                                               where csAssign.CreatedById == _LoggedIn_UserID
                                               && csU.ClassSectionId == csId
-                                              //&& submit.ClassSectionAssignmentId == assignmentId
-                                              //&& csAssign.SubjectId == subjectId
+                                              && u.UserTypeId == (int)Enumm.UserType.Student
+                                              && csAssign.Id == assignmentId
 
                                               orderby csAssign.Id ascending
                                               select new SubmittedAssignmentStudentsDtoForList
@@ -362,10 +363,10 @@ namespace CoreWebApi.Data
                                                   Details = submit.Description,
                                                   RelatedMaterial = _filesRepository.AppendMultiDocPath(submit.SubmittedMaterial),
                                                   StudentId = submit.StudentId,
-                                                  StudentName = _context.Users.FirstOrDefault(m => m.Id == submit.StudentId).FullName,
+                                                  StudentName = u.FullName,
                                                   ObtainedMarks = result.ObtainedMarks,
                                                   TotalMarks = result.TotalMarks,
-                                              }).Distinct().ToListAsync();
+                                              }).ToListAsync();
                         _serviceResponse.Success = true;
                         _serviceResponse.Data = ToReturn;
                     }

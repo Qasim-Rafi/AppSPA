@@ -383,7 +383,7 @@ namespace CoreWebApi.Data
             {
                 if (model.SubjectIds.Count() > 0)
                 {
-                    List<SubjectAssignment> ToRemove = model.ClassId != null ? _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList()
+                    List<SubjectAssignment> ToRemove = model.ClassId > 0 ? _context.SubjectAssignments.Where(s => s.ClassId.Equals(model.ClassId)).ToList()
                         : _context.SubjectAssignments.Where(s => s.SemesterId.Equals(model.SemesterId)).ToList();
                     if (ToRemove.Count() > 0)
                     {
@@ -396,8 +396,8 @@ namespace CoreWebApi.Data
                             ListToAdd.Add(new SubjectAssignment
                             {
                                 SubjectId = SubjectId,
-                                ClassId = model.ClassId,
-                                SemesterId = model.SemesterId,
+                                ClassId = model.ClassId > 0 ? model.ClassId : null,
+                                SemesterId = model.SemesterId > 0 ? model.SemesterId : null,
                                 SchoolBranchId = _LoggedIn_BranchID,
                                 //TableOfContent = model.TableOfContent,
                                 CreatedById = _LoggedIn_UserID,
