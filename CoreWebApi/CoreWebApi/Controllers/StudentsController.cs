@@ -65,6 +65,16 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetStudentTimeTable();
             return Ok(_response);
         }
+        [HttpGet("GetLoggedStudentSubjects/{subjectId?}")]
+        public async Task<IActionResult> GetLoggedStudentSubjects(int subjectId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetLoggedStudentAssignedSubjects(subjectId);
+            return Ok(_response);
+        }
         
     }
 }

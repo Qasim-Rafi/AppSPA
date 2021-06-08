@@ -19,7 +19,7 @@ namespace CoreWebApi.Dtos
     public class CurrentMonthStudentFeeDtoForList
     {
         public bool CurrentMonthPaidStatus { get; set; }
-        public List<StudentFeeDtoForList> AllMonthPaidStatus{ get; set; } = new List<StudentFeeDtoForList>();
+        public List<StudentFeeDtoForList> AllMonthPaidStatus { get; set; } = new List<StudentFeeDtoForList>();
     }
     public class StudentFeeDtoForList
     {
@@ -33,7 +33,7 @@ namespace CoreWebApi.Dtos
     }
     public class StudentForFeeListDto
     {
-        public int Id { get; set; }        
+        public int Id { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
         public string Gender { get; set; }
@@ -43,7 +43,7 @@ namespace CoreWebApi.Dtos
         public int? CountryId { get; set; }
         public string StateName { get; set; }
         public string CountryName { get; set; }
-        public string OtherState { get; set; }      
+        public string OtherState { get; set; }
         public string RollNumber { get; set; }
         public int ClassSectionId { get; set; }
         public string ClassSection { get; set; }
@@ -72,5 +72,22 @@ namespace CoreWebApi.Dtos
         public string ExtraChargesDetails { get; set; }
         public double ExtraChargesAmount { get; set; }
         public string Month { get; set; }
+    }
+    public class StudentSubjectForListDto
+    {
+        public int SubjectId { get; set; }
+        public string SubjectName { get; set; }
+    }
+    public class StudentSubjectContentForListDto
+    {
+        public int ContentId { get; set; }
+        public string Content { get; set; }
+        public List<StudentSubjectContentDetailForListDto> Details { get; set; }
+
+    }
+    public class StudentSubjectContentDetailForListDto
+    {
+        public int ContentDetailId { get; set; }
+        public string Detail { get; set; }
     }
 }

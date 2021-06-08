@@ -254,7 +254,116 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
+        public async Task<ServiceResponse<object>> GetLoggedStudentAssignedSubjects(int subjectId)
+        {
+            if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Annual.ToString())
+            {
+                if (subjectId > 0)
+                {
+                    var Subjects = await (from s in _context.Subjects
+                                          join ass in _context.SubjectAssignments
+                                          on s.Id equals ass.SubjectId
 
+                                          join c in _context.Class
+                                          on ass.ClassId equals c.Id
 
+                                          join cs in _context.ClassSections
+                                          on ass.ClassId equals cs.ClassId
+
+                                          join csU in _context.ClassSectionUsers
+                                          on cs.Id equals csU.ClassSectionId
+
+                                          join u in _context.Users
+                                          on csU.UserId equals u.Id
+
+                                          where u.Id == _LoggedIn_UserID
+                                          && s.Active == true
+                                          && s.SchoolBranchId == _LoggedIn_BranchID
+                                          select new StudentSubjectForListDto
+                                          {
+                                              SubjectId = s.Id,
+                                              SubjectName = s.Name,
+                                          }).ToListAsync();
+
+                    _serviceResponse.Data = Subjects;
+                    _serviceResponse.Success = true;
+                    return _serviceResponse;
+                }
+                else
+                {
+                    var SubjectContents = await (from s in _context.Subjects                                                 
+                                                 join content in _context.SubjectContents
+                                                 on s.Id equals content.SubjectId
+
+                                                 where s.Id == subjectId
+                                                 select new StudentSubjectContentForListDto
+                                                 {
+                                                     ContentId = content.Id,
+                                                     Content = content.Heading,
+                                                 }).ToListAsync();
+
+                    for (int i = 0; i < SubjectContents.Count; i++)
+                    {
+                        var item = SubjectContents[i];
+
+                        item.Details = await (from content in _context.SubjectContents
+                                              join details in _context.SubjectContentDetails
+                                              on content.Id equals details.SubjectContentId
+
+                                              where content.Id == item.ContentId
+                                              select new StudentSubjectContentDetailForListDto
+                                              {
+                                                  ContentDetailId = details.Id,
+                                                  Detail = details.Heading,
+                                              }).ToListAsync();
+                    }
+                    _serviceResponse.Data = SubjectContents;
+                    _serviceResponse.Success = false;
+                    return _serviceResponse;
+                }
+            }
+            else
+            {
+                //var subject = await (from s in _context.Subjects
+                //                     join ass in _context.SubjectAssignments
+                //                     on s.Id equals ass.SubjectId
+                //                     join sem in _context.Semesters
+                //                     on ass.SemesterId equals sem.Id
+                //                     join sch in _context.SchoolBranch
+                //                     on ass.SchoolBranchId equals sch.Id
+                //                     where ass.Id == id
+                //                     && s.Active == true
+                //                     && s.SchoolBranchId == _LoggedIn_BranchID
+                //                     select new AssignSubjectDtoForDetail
+                //                     {
+                //                         Id = s.Id,
+                //                         SemesterId = sem.Id,
+                //                         SemesterName = sem.Name,
+                //                         SchoolId = ass.SchoolBranchId,
+                //                         SchoolName = sch.BranchName,
+                //                         //TableOfContent = ass.TableOfContent,
+                //                     }).FirstOrDefaultAsync();
+
+                //if (subject != null)
+                //{
+                //    var childrens = await (from s in _context.Subjects
+                //                           join ass in _context.SubjectAssignments
+                //                           on s.Id equals ass.SubjectId
+                //                           where ass.SemesterId == subject.SemesterId
+                //                           && s.Active == true
+                //                           && s.SchoolBranchId == _LoggedIn_BranchID
+                //                           select s).Select(x => new SubjectDtoForDetail
+                //                           {
+                //                               Id = x.Id,
+                //                               Name = x.Name,
+                //                           }).ToListAsync();
+                //    subject.Children.AddRange(childrens);
+
+                //    _serviceResponse.Data = subject;
+                _serviceResponse.Success = true;
+                return _serviceResponse;
+            }
+        }
     }
 }
+

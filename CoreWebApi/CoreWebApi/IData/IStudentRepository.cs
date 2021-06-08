@@ -13,6 +13,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddFee(StudentFeeDtoForAdd model);
         Task<ServiceResponse<object>> GetStudentsForFee();
         Task<ServiceResponse<object>> GetStudentTimeTable();
+        Task<ServiceResponse<object>> GetLoggedStudentAssignedSubjects(int subjectId);
         
     }
 }
