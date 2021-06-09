@@ -393,6 +393,28 @@ namespace CoreWebApi.Data
                 }
             }
         }
+
+        public async Task<ServiceResponse<object>> GetUsefulResources()
+        {
+            var list = await (from ur in _context.UsefulResources
+
+                              let csId = _context.ClassSectionUsers.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.ClassSectionId).FirstOrDefault()
+                              where ur.ClassSectionIds.Contains(csId.ToString())
+                              && ur.IsPosted == true
+                              && ur.SchoolBranchId == _LoggedIn_BranchID
+                              select new UsefulResourceForListDto
+                              {
+                                  Id = ur.Id,
+                                  Title = ur.Title,
+                                  Description = ur.Description,
+                                  Link = ur.Link.StartsWith("https://www.youtube.com") ? ur.Link.Substring(ur.Link.LastIndexOf("=") + 1) : ur.Link,
+                                  IsPosted = ur.IsPosted,
+                              }).OrderByDescending(m => m.Id).ToListAsync();
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }
 

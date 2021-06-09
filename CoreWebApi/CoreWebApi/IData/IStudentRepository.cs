@@ -14,6 +14,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetStudentsForFee();
         Task<ServiceResponse<object>> GetStudentTimeTable();
         Task<ServiceResponse<object>> GetLoggedStudentAssignedSubjects(int classOrSemesterId, int subjectId);
+        Task<ServiceResponse<object>> GetUsefulResources();
         
     }
 }

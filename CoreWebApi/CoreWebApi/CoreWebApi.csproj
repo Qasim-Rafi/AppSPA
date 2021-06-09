@@ -196,6 +196,8 @@
     <Compile Remove="Migrations\20210325131753_UpdateCompPKs.Designer.cs" />
     <Compile Remove="Migrations\20210407075134_UpdateUser5.cs" />
     <Compile Remove="Migrations\20210407075134_UpdateUser5.Designer.cs" />
+    <Compile Remove="Migrations\20210609053654_UpdateUsefullRes.cs" />
+    <Compile Remove="Migrations\20210609053654_UpdateUsefullRes.Designer.cs" />
 
   </ItemGroup>
 

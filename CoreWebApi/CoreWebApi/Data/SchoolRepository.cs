@@ -974,14 +974,20 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddUsefulResources(UsefulResourceForAddDto model)
         {
+            var csIds = new List<int>();
+            if (_LoggedIn_UserRole == Enumm.UserType.Teacher.ToString())
+                csIds = _context.ClassSectionUsers.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.ClassSectionId).ToList();
+
             var ToAdd = new UsefulResource
             {
+                ClassSectionIds = csIds.Count > 0 ? string.Join(',', csIds) : null,
                 Title = model.Title,
                 Description = model.Description,
                 Link = model.Link,
                 Keyword = model.Keyword,
                 Thumbnail = model.Thumbnail,
                 ResourceType = model.ResourceType,
+                IsPosted = model.IsPosted,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID
             };
@@ -1003,7 +1009,8 @@ namespace CoreWebApi.Data
                     Id = p.Id,
                     Title = p.Title,
                     Description = p.Description,
-                    Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link
+                    Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link,
+                    IsPosted = p.IsPosted,
                 }).OrderByDescending(m => m.Id).ToListAsync();
                 _serviceResponse.Data = Resources;
                 _serviceResponse.Success = true;
@@ -1047,7 +1054,8 @@ namespace CoreWebApi.Data
                                 Title = o.Title,
                                 Description = o.Description,
                                 Link = o.Link,
-                                ResourceType = o.ResourceType
+                                ResourceType = o.ResourceType,
+                                IsPosted = o.IsPosted,
                             }).OrderByDescending(m => m.Id).ToList()
                         }).ToList();
                 }
@@ -1065,6 +1073,25 @@ namespace CoreWebApi.Data
                 await _context.SaveChangesAsync();
                 _serviceResponse.Success = true;
                 _serviceResponse.Message = CustomMessage.Deleted;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+            }
+            return _serviceResponse;
+
+        }
+        public async Task<ServiceResponse<object>> PublishUsefulResource(int id)
+        {
+            var ToUpdate = await _context.UsefulResources.Where(m => m.Id == id).FirstOrDefaultAsync();
+            if (ToUpdate != null)
+            {
+                ToUpdate.IsPosted = true;
+                _context.UsefulResources.Update(ToUpdate);
+                await _context.SaveChangesAsync();
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
             }
             else
             {

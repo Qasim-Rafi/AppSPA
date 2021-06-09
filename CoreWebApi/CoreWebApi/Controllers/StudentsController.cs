@@ -75,6 +75,16 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetLoggedStudentAssignedSubjects(classOrSemesterId, subjectId);
             return Ok(_response);
         }
+        [HttpGet("GetUsefulResources")]
+        public async Task<IActionResult> GetUsefulResources()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetUsefulResources();
+            return Ok(_response);
+        }
 
     }
 }

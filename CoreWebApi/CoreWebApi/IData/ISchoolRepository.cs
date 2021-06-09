@@ -34,5 +34,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddUsefulResources(UsefulResourceForAddDto model);
         Task<ServiceResponse<object>> GetUsefulResources(int currentPage, string resourceType);
         Task<ServiceResponse<object>> DeleteUsefulResource(int id);
+        Task<ServiceResponse<object>> PublishUsefulResource(int id);
     }
 }

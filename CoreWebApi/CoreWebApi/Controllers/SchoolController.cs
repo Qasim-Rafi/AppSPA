@@ -354,5 +354,17 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPut("PublishUsefulResource/{id}")]
+        public async Task<IActionResult> PublishUsefulResource(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.PublishUsefulResource(id);
+
+            return Ok(_response);
+
+        }
     }
 }

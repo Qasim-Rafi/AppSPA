@@ -151,6 +151,7 @@ namespace CoreWebApi.Dtos
         public string Link { get; set; }
         public string Thumbnail { get; set; }
         public string ResourceType { get; set; }
+        public bool IsPosted { get; set; }
     }
     public class UsefulResourceForListDto
     {
@@ -160,6 +161,7 @@ namespace CoreWebApi.Dtos
         public string Link { get; set; } = "";
         public string Thumbnail { get; set; } = "";
         public string ResourceType { get; set; } = "";
+        public bool IsPosted { get; set; }
     }
     public class UsefulResourceTopicWiseForListDto
     {
