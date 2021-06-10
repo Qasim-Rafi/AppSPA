@@ -28,7 +28,7 @@ namespace CoreWebApi.Data
 
                 foreach (var type in userTypes)
                 {
-                    //type.Creatdatetime = DateTime.Now;
+                    //type.Creatdatetime = DateTime.UtcNow;
                     context.UserTypes.Add(type);
                 }
                 context.SaveChanges();
@@ -69,7 +69,7 @@ namespace CoreWebApi.Data
                     if (schoolAcademyId > 0)
                     {
 
-                        var schoolBranch = new SchoolBranch { BranchName = "Online Academy", SchoolAcademyID = schoolAcademyId, CreatedDateTime = DateTime.Now, Active = true, RegistrationNumber = "20000001" };
+                        var schoolBranch = new SchoolBranch { BranchName = "Online Academy", SchoolAcademyID = schoolAcademyId, CreatedDateTime = DateTime.UtcNow, Active = true, RegistrationNumber = "20000001" };
 
                         context.SchoolBranch.Add(schoolBranch);
                         context.SaveChanges();
@@ -108,11 +108,11 @@ namespace CoreWebApi.Data
                         user.PasswordHash = passwordhash;
                         user.PasswordSalt = passwordSalt;
                         user.Username = user.Username.ToLower();
-                        user.DateofBirth = DateTime.Now;
+                        user.DateofBirth = DateTime.UtcNow;
                         user.Email = "test@email";
                         user.FullName = "test name 0" + (index + 1);
                         user.UserTypeId = index == 0 ? context.UserTypes.FirstOrDefault(m => m.Name == "Admin").Id : context.UserTypes.FirstOrDefault(m => m.Name == "Student").Id;
-                        user.CreatedDateTime = DateTime.Now;
+                        user.CreatedDateTime = DateTime.UtcNow;
                         user.SchoolBranchId = schoolBranch.Id;
                         user.RollNumber = index == 0 ? null : "R-00" + (index + 1);
                         user.Active = true;

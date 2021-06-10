@@ -21,7 +21,7 @@ namespace CoreWebApi.Dtos
         public int ClassSectionId { get; set; }
         public string ReferenceUrl { get; set; }
         public int SubjectId { get; set; }
-        public string DueDateTime { get; set; } = DateTime.Now.ToString("MM/dd/yyyy");
+        public string DueDateTime { get; set; } = DateTime.UtcNow.ToString("MM/dd/yyyy");
         public string TeacherName { get; set; }
         public List<IFormFile> files { get; set; }
         public bool IsPosted { get; set; }
@@ -37,7 +37,7 @@ namespace CoreWebApi.Dtos
         public string ReferenceUrl { get; set; }
         public string TeacherName { get; set; }
         public int SubjectId { get; set; }
-        public string DueDateTime { get; set; } = DateTime.Now.ToString("MM/dd/yyyy");
+        public string DueDateTime { get; set; } = DateTime.UtcNow.ToString("MM/dd/yyyy");
         public IFormFileCollection files { get; set; }
         public bool IsPosted { get; set; }
 

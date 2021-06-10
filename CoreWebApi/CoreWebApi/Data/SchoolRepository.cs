@@ -442,7 +442,7 @@ namespace CoreWebApi.Data
                                 TeacherId = item.TeacherId > 0 ? item.TeacherId : null,
                                 SubjectId = item.SubjectId,
                                 ClassSectionId = item.ClassSectionId,
-                                Date = DateTime.Now
+                                Date = DateTime.UtcNow
                             });
                         }
                         else
@@ -554,7 +554,7 @@ namespace CoreWebApi.Data
             //        TeacherId = model.TeacherId,
             //        SubjectId = model.SubjectId,
             //        ClassSectionId = model.ClassSectionId,
-            //        Date = DateTime.Now
+            //        Date = DateTime.UtcNow
             //    };
 
             //    await _context.ClassLectureAssignment.AddRangeAsync(ToAdd);
@@ -768,7 +768,7 @@ namespace CoreWebApi.Data
                               on e.Id equals ed.EventId
                               where e.Active == true
                               && e.SchoolBranchId == _LoggedIn_BranchID
-                              //&& ed.StartDate.Value.Date >= DateTime.Now.Date
+                              //&& ed.StartDate.Value.Date >= DateTime.UtcNow.Date
                               select new EventDaysForListDto
                               {
                                   Id = ed.Id,
@@ -786,15 +786,15 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetBirthdays()
         {
-            var NextOneDay = DateTime.Now.AddDays(1);
-            var NextTwoDays = DateTime.Now.AddDays(2);
-            var users = await _context.Users.Where(u => (u.DateofBirth.Value.Day >= DateTime.Now.Day && u.DateofBirth.Value.Day <= NextTwoDays.Day) && (u.DateofBirth.Value.Month >= DateTime.Now.Month && u.DateofBirth.Value.Month <= NextTwoDays.Month) && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID)
+            var NextOneDay = DateTime.UtcNow.AddDays(1);
+            var NextTwoDays = DateTime.UtcNow.AddDays(2);
+            var users = await _context.Users.Where(u => (u.DateofBirth.Value.Day >= DateTime.UtcNow.Day && u.DateofBirth.Value.Day <= NextTwoDays.Day) && (u.DateofBirth.Value.Month >= DateTime.UtcNow.Month && u.DateofBirth.Value.Month <= NextTwoDays.Month) && u.Active == true && u.SchoolBranchId == _LoggedIn_BranchID)
                 .OrderBy(m => m.DateofBirth).Select(o => new
                 {
                     o.Id,
                     o.FullName,
                     DateofBirth = o.DateofBirth != null ? DateFormat.ToDate(o.DateofBirth.ToString()) : "",
-                    ComingOn = o.DateofBirth.Value.Day == DateTime.Now.Day ? "Today" : o.DateofBirth.Value.Day == NextOneDay.Day ? "Tomorrow" : o.DateofBirth.Value.Day == NextTwoDays.Day ? "After 1 Day" : "",
+                    ComingOn = o.DateofBirth.Value.Day == DateTime.UtcNow.Day ? "Today" : o.DateofBirth.Value.Day == NextOneDay.Day ? "Tomorrow" : o.DateofBirth.Value.Day == NextTwoDays.Day ? "After 1 Day" : "",
                     Photos = _context.Photos.Where(m => m.UserId == o.Id && m.IsPrimary == true).OrderByDescending(m => m.Id).Select(x => new
                     {
                         x.Id,
@@ -812,8 +812,8 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetNewStudents()
         {
-            var FirstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            var LastDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+            var FirstDayOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+            var LastDayOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month));
             var users = await (from u in _context.Users
                                where u.UserTypeId == (int)Enumm.UserType.Student
                                && u.Active == true
@@ -854,7 +854,7 @@ namespace CoreWebApi.Data
                 TeacherId = model.TeacherId,
                 ClassSectionId = model.ClassSectionId,
                 LectureUrl = model.LectureUrl,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -893,7 +893,7 @@ namespace CoreWebApi.Data
                 Title = model.Title,
                 Description = model.Description,
                 NoticeDate = NoticeDate,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID
             };
@@ -917,7 +917,7 @@ namespace CoreWebApi.Data
                         " On " + ToAdd.NoticeDate.Value.ToShortDateString()
                     }, _LoggedIn_UserName),
                     CreatedById = _LoggedIn_UserID,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     IsRead = false,
                     UserIdTo = UserId
                 });
@@ -936,7 +936,8 @@ namespace CoreWebApi.Data
             {
                 Title = o.Title,
                 Description = o.Description,
-                NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString())
+                NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
+                CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime.To_Pk_DateTime()),
             }).ToListAsync();
 
             //var ToReturn = _mapper.Map<List<NoticeBoardForListDto>>(List);
@@ -956,11 +957,12 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> AddQuery(ContactUsForAddDto model)
         {
+
             var ToAdd = new ContactUsQuery
             {
                 Description = model.Description,
                 FullName = model.FullName,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 Company = model.Company,
                 Email = model.Email,
                 Phone = model.Phone,

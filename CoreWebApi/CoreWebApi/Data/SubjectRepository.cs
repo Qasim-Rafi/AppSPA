@@ -269,7 +269,7 @@ namespace CoreWebApi.Data
                         Active = true,
                         CreditHours = subject.CreditHours,
                         CreatedById = _LoggedIn_UserID,
-                        CreatedDateTime = DateTime.Now,
+                        CreatedDateTime = DateTime.UtcNow,
                         SchoolBranchId = _LoggedIn_BranchID,
                     });
                     await _context.Subjects.AddRangeAsync(ListToAdd);
@@ -315,7 +315,7 @@ namespace CoreWebApi.Data
                         SchoolBranchId = _LoggedIn_BranchID,
                         //TableOfContent = model.TableOfContent,
                         CreatedById = _LoggedIn_UserID,
-                        CreatedDateTime = DateTime.Now
+                        CreatedDateTime = DateTime.UtcNow
                     });
                 }
 
@@ -401,7 +401,7 @@ namespace CoreWebApi.Data
                                 SchoolBranchId = _LoggedIn_BranchID,
                                 //TableOfContent = model.TableOfContent,
                                 CreatedById = _LoggedIn_UserID,
-                                CreatedDateTime = DateTime.Now
+                                CreatedDateTime = DateTime.UtcNow
                             });
                         }
 
@@ -616,7 +616,7 @@ namespace CoreWebApi.Data
                     Heading = item.Heading,
                     Active = true,
                     ContentOrder = item.ContentOrder,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     SubjectId = item.SubjectId,
                     ClassId = item.ClassId,
                     SemesterId = item.SemesterId,
@@ -656,7 +656,7 @@ namespace CoreWebApi.Data
                     Heading = item.Heading,
                     Active = true,
                     Order = item.Order,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     SubjectContentId = item.SubjectContentId,
                     Duration = item.Duration,
                 });

@@ -360,7 +360,7 @@ namespace CoreWebApi.Data
                     {
                         NewRollNo = $"R-{School.BranchName.Substring(0, 3)}-{1:00000}";
                     }
-                    var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                    var TotalDays = (DateTime.UtcNow.Date - DateOfBirth.Date).TotalDays;
                     var Age = Math.Truncate(TotalDays / 365);
                     if (Age < BusinessRules.Student_Min_Age)
                     {
@@ -372,7 +372,7 @@ namespace CoreWebApi.Data
 
                 if (userDto.UserTypeId == (int)Enumm.UserType.Teacher)
                 {
-                    var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                    var TotalDays = (DateTime.UtcNow.Date - DateOfBirth.Date).TotalDays;
                     var Age = Math.Truncate(TotalDays / 365);
                     if (Age < BusinessRules.Teacher_Min_Age)
                     {
@@ -388,11 +388,11 @@ namespace CoreWebApi.Data
                     FullName = userDto.FullName,
                     Username = userDto.Username,
                     UserTypeId = userDto.UserTypeId,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     Gender = userDto.Gender,
                     Active = true,
                     DateofBirth = DateOfBirth,
-                    LastActive = DateTime.Now,
+                    LastActive = DateTime.UtcNow,
                     StateId = userDto.StateId,
                     CityId = userDto.CityId,
                     CountryId = userDto.CountryId,
@@ -434,7 +434,7 @@ namespace CoreWebApi.Data
                             ParentEmail = userDto.ParentEmail,
                             ParentContactNumber = userDto.ParentContactNumber,
                             UserTypeId = (int)Enumm.UserType.Parent,
-                            CreatedDateTime = DateTime.Now,
+                            CreatedDateTime = DateTime.UtcNow,
                             Gender = "male",
                             Active = true,
                             StateId = userDto.StateId,
@@ -555,7 +555,7 @@ namespace CoreWebApi.Data
                     if (user.UserTypeId == (int)Enumm.UserType.Student)
                     {
 
-                        var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                        var TotalDays = (DateTime.UtcNow.Date - DateOfBirth.Date).TotalDays;
                         var Age = Math.Truncate(TotalDays / 365);
                         if (Age < BusinessRules.Student_Min_Age)
                         {
@@ -586,7 +586,7 @@ namespace CoreWebApi.Data
                     }
                     if (user.UserTypeId == (int)Enumm.UserType.Teacher)
                     {
-                        var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                        var TotalDays = (DateTime.UtcNow.Date - DateOfBirth.Date).TotalDays;
                         var Age = Math.Truncate(TotalDays / 365);
                         if (Age < BusinessRules.Teacher_Min_Age)
                         {
@@ -721,7 +721,7 @@ namespace CoreWebApi.Data
                                     IsPrimary = user.IsPrimaryPhoto,
                                     UserId = dbUser.Id,
                                     Url = _File.GetBinaryFile(file),
-                                    CreatedDatetime = DateTime.Now
+                                    CreatedDatetime = DateTime.UtcNow
                                 };
                                 await _context.Photos.AddAsync(photo);
                                 await _context.SaveChangesAsync();
@@ -792,7 +792,7 @@ namespace CoreWebApi.Data
 
                     if (user.UserTypeId == (int)Enumm.UserType.Student)
                     {
-                        var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                        var TotalDays = (DateTime.UtcNow.Date - DateOfBirth.Date).TotalDays;
                         var Age = Math.Truncate(TotalDays / 365);
                         if (Age < BusinessRules.Student_Min_Age)
                         {
@@ -803,7 +803,7 @@ namespace CoreWebApi.Data
                     }
                     if (user.UserTypeId == (int)Enumm.UserType.Teacher)
                     {
-                        var TotalDays = (DateTime.Now.Date - DateOfBirth.Date).TotalDays;
+                        var TotalDays = (DateTime.UtcNow.Date - DateOfBirth.Date).TotalDays;
                         var Age = Math.Truncate(TotalDays / 365);
                         if (Age < BusinessRules.Teacher_Min_Age)
                         {
@@ -888,7 +888,7 @@ namespace CoreWebApi.Data
                                     IsPrimary = user.IsPrimaryPhoto,
                                     UserId = dbUser.Id,
                                     Url = _File.GetBinaryFile(file),
-                                    CreatedDatetime = DateTime.Now
+                                    CreatedDatetime = DateTime.UtcNow
                                 };
                                 await _context.Photos.AddAsync(photo);
                                 await _context.SaveChangesAsync();
@@ -936,7 +936,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetUsersForSemesterAttendance(int subjectId, int semesterSectionId)
         {
-            var today = DateTime.Now;
+            var today = DateTime.UtcNow;
             var thisMonth = new DateTime(today.Year, today.Month, 1);
             var users = await (from csU in _context.ClassSectionUsers
                                join cla in _context.ClassLectureAssignment
@@ -977,7 +977,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<IEnumerable<UserByTypeListDto>>> GetUsersByType(int typeId, int? classSectionId)
         {
             ServiceResponse<IEnumerable<UserByTypeListDto>> serviceResponse = new ServiceResponse<IEnumerable<UserByTypeListDto>>();
-            var today = DateTime.Now;
+            var today = DateTime.UtcNow;
             var thisMonth = new DateTime(today.Year, today.Month, 1);
             if (!string.IsNullOrEmpty(classSectionId.ToString()))
             {
@@ -1476,7 +1476,7 @@ namespace CoreWebApi.Data
                     UserId = ToRemove.UserId,
                     MappedCreationDate = ToRemove.CreatedDate,
                     UserTypeId = _context.Users.FirstOrDefault(m => m.Id == ToRemove.UserId && m.Active == true).UserTypeId,
-                    DeletionDate = DateTime.Now,
+                    DeletionDate = DateTime.UtcNow,
                     DeletedById = _LoggedIn_UserID
                 });
 

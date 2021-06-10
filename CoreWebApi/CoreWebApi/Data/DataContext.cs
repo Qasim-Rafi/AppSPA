@@ -92,6 +92,7 @@ namespace CoreWebApi.Data
         public DbSet<TutorAttendance> TutorAttendances { get; set; }
         public DbSet<TutorSubject> TutorSubjects { get; set; }
         public DbSet<ChatMessageAttachment> ChatMessageAttachments { get; set; }
+        public DbSet<StudentActivityTransaction> StudentActivityTransactions { get; set; }
         //
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }

@@ -42,7 +42,7 @@ namespace CoreWebApi.Data
                     TotalMarks = item.TotalMarks,
                     CreatedById = _LoggedIn_UserID,
                     SchoolBranchId = _LoggedIn_BranchID,
-                    CreatedDateTime = DateTime.Now
+                    CreatedDateTime = DateTime.UtcNow
                 });
             }
 
@@ -189,7 +189,7 @@ namespace CoreWebApi.Data
                          where u.Id == _LoggedIn_UserID
                          && ass.SubjectId == subjectId
                          && ass.ClassSectionId == csId
-                         //&& ass.DueDateTime.Value.Date <= DateTime.Now.Date
+                         //&& ass.DueDateTime.Value.Date <= DateTime.UtcNow.Date
                          select new ExamForResultListDto
                          {
                              RefId = ass.Id,

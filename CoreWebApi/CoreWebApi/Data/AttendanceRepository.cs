@@ -24,7 +24,7 @@ namespace CoreWebApi.Data
         }
         public void OnInIt()
         {
-            var leaves = _context.Leaves.Where(m => m.FromDate.Date >= DateTime.Now.Date && m.ToDate.Date <= DateTime.Now.Date && m.Status == Enumm.LeaveStatus.Approved).ToList();
+            var leaves = _context.Leaves.Where(m => m.FromDate.Date >= DateTime.UtcNow.Date && m.ToDate.Date <= DateTime.UtcNow.Date && m.Status == Enumm.LeaveStatus.Approved).ToList();
 
             if (leaves.Count() > 0)
             {
@@ -46,7 +46,7 @@ namespace CoreWebApi.Data
                         Comments = "",
                         UserId = item.UserId,
                         ClassSectionId = classSection.ClassSectionId,
-                        CreatedDatetime = DateTime.Now,
+                        CreatedDatetime = DateTime.UtcNow,
                         SchoolBranchId = _LoggedIn_BranchID
                     });
                 }
@@ -144,7 +144,7 @@ namespace CoreWebApi.Data
         {
             foreach (var attendance in list)
             {
-                var attendanceExist = _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.UserId == attendance.UserId && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
+                var attendanceExist = _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.UtcNow.Date && m.UserId == attendance.UserId && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
                 if (attendanceExist != null)
                 {
                     attendanceExist.Present = attendance.Present;
@@ -168,7 +168,7 @@ namespace CoreWebApi.Data
                         Comments = attendance.Comments,
                         UserId = attendance.UserId,
                         ClassSectionId = attendance.ClassSectionId,
-                        CreatedDatetime = DateTime.Now,
+                        CreatedDatetime = DateTime.UtcNow,
                         SchoolBranchId = _LoggedIn_BranchID
                     };
                     if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString())

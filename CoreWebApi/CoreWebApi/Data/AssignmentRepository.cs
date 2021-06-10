@@ -83,7 +83,7 @@ namespace CoreWebApi.Data
                                       && subject.Active == true
                                       && classSection.Active == true
                                       //&& csAssign.IsPosted == true
-                                      && csAssign.DueDateTime.Value.Date >= DateTime.Now.Date
+                                      && csAssign.DueDateTime.Value.Date >= DateTime.UtcNow.Date
                                       orderby csAssign.Id descending
                                       select csAssign).Select(o => new AssignmentDtoForList
                                       {
@@ -165,7 +165,7 @@ namespace CoreWebApi.Data
 
             var UserObj = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             var SubjectObj = _context.Subjects.Where(m => m.Id == assignment.SubjectId).FirstOrDefault();
-            var AssignmentName = $"{DateTime.Now.ToShortDateString()} - {UserObj?.FullName} - {SubjectObj?.Name}";
+            var AssignmentName = $"{DateTime.UtcNow.ToShortDateString()} - {UserObj?.FullName} - {SubjectObj?.Name}";
             var objToCreate = new ClassSectionAssignment
             {
                 AssignmentName = AssignmentName,
@@ -177,7 +177,7 @@ namespace CoreWebApi.Data
                 IsPosted = assignment.IsPosted,
                 SchoolBranchId = _LoggedIn_BranchID,
                 CreatedById = _LoggedIn_UserID,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = GenericFunctions.DateTime_Now(),
             };
 
             if (assignment.files != null && assignment.files.Count() > 0)
@@ -217,7 +217,7 @@ namespace CoreWebApi.Data
                         DueDateTime.ToShortDateString()
                     }, UserObj?.FullName),
                     CreatedById = _LoggedIn_UserID,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     IsRead = false,
                     UserIdTo = UserId
                 });
@@ -237,7 +237,7 @@ namespace CoreWebApi.Data
                 DateTime DueDateTime = DateTime.ParseExact(assignment.DueDateTime, "MM/dd/yyyy", null);
                 var UserObj = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
                 var SubjectObj = _context.Subjects.Where(m => m.Id == assignment.SubjectId).FirstOrDefault();
-                var AssignmentName = $"{DateTime.Now.ToShortDateString()} - {UserObj?.FullName} - {SubjectObj?.Name}";
+                var AssignmentName = $"{DateTime.UtcNow.ToShortDateString()} - {UserObj?.FullName} - {SubjectObj?.Name}";
                 dbObj.AssignmentName = AssignmentName;
                 dbObj.Details = assignment.Details;
                 dbObj.ClassSectionId = assignment.ClassSectionId;
@@ -306,7 +306,7 @@ namespace CoreWebApi.Data
                 ClassSectionAssignmentId = model.AssignmentId,
                 Description = model.Description,
                 StudentId = _LoggedIn_UserID,
-                CreatedDatetime = DateTime.Now,
+                CreatedDatetime = DateTime.UtcNow,
             };
 
             if (model.files != null && model.files.Count() > 0)
@@ -320,8 +320,20 @@ namespace CoreWebApi.Data
                         objToCreate.SubmittedMaterial = objToCreate.SubmittedMaterial + "||" + dbPath;
                 }
             }
+
             await _context.ClassSectionAssigmentSubmissions.AddAsync(objToCreate);
             await _context.SaveChangesAsync();
+
+            var toCreateTrans = new StudentActivityTransaction
+            {
+                StudentId = _LoggedIn_UserID,
+                Value = _LoggedIn_UserName + " you submit an assignment at " + DateFormat.ToDateTime(DateTime.UtcNow),
+                Details = "",
+                UpdatedDateTime = DateTime.UtcNow
+            };
+            await _context.StudentActivityTransactions.AddAsync(toCreateTrans);
+            await _context.SaveChangesAsync();
+
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;

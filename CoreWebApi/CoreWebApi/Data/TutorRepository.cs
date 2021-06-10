@@ -121,7 +121,7 @@ namespace CoreWebApi.Data
                     Active = true,
                     ExpertRate = model.ExpertRate,
                     CreatedById = _LoggedIn_UserID,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     SchoolBranchId = _LoggedIn_BranchID,
                 };
                 await _context.TutorSubjects.AddAsync(ToAdd);
@@ -136,7 +136,7 @@ namespace CoreWebApi.Data
                         Active = true,
                         SchoolBranchId = _LoggedIn_BranchID,
                         CreatedById = _LoggedIn_UserID,
-                        CreatedDateTime = DateTime.Now,
+                        CreatedDateTime = DateTime.UtcNow,
                     };
 
                     await _context.TutorProfiles.AddAsync(ToAdd3);
@@ -244,7 +244,7 @@ namespace CoreWebApi.Data
                     Active = true,
                     SchoolBranchId = _LoggedIn_BranchID,
                     CreatedById = _LoggedIn_UserID,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                 };
 
                 await _context.TutorProfiles.AddAsync(ToAdd);
@@ -343,7 +343,7 @@ namespace CoreWebApi.Data
                     Heading = item.Heading,
                     Active = true,
                     ContentOrder = item.ContentOrder,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     SubjectId = item.SubjectId,
                     TutorClassName = item.TutorClassName,
                 });
@@ -381,7 +381,7 @@ namespace CoreWebApi.Data
                     Heading = item.Heading,
                     Active = true,
                     Order = item.Order,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     SubjectContentId = item.SubjectContentId,
                     Duration = item.Duration,
                 });
@@ -694,7 +694,7 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<List<UsersForAttendanceListDto>>> GetUsersForAttendance(int subjectId, string className)
         {
             ServiceResponse<List<UsersForAttendanceListDto>> serviceResponse = new ServiceResponse<List<UsersForAttendanceListDto>>();
-            var today = DateTime.Now;
+            var today = DateTime.UtcNow;
             var thisMonth = new DateTime(today.Year, today.Month, 1);
 
             List<UsersForAttendanceListDto> users = await (from u in _context.Users
@@ -730,7 +730,7 @@ namespace CoreWebApi.Data
         {
             foreach (var attendance in list)
             {
-                var attendanceExist = _context.TutorAttendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.StudentId == attendance.StudentId && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
+                var attendanceExist = _context.TutorAttendances.Where(m => m.CreatedDatetime.Date == DateTime.UtcNow.Date && m.StudentId == attendance.StudentId && m.SchoolBranchId == _LoggedIn_BranchID).FirstOrDefault();
                 if (attendanceExist != null)
                 {
                     attendanceExist.Present = attendance.Present;
@@ -754,7 +754,7 @@ namespace CoreWebApi.Data
                         StudentId = attendance.StudentId,
                         SubjectId = attendance.SubjectId,
                         ClassName = attendance.ClassName,
-                        CreatedDatetime = DateTime.Now,                        
+                        CreatedDatetime = DateTime.UtcNow,                        
                         SchoolBranchId = _LoggedIn_BranchID
                     };
 

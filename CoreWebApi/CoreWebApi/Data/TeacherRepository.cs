@@ -36,7 +36,7 @@ namespace CoreWebApi.Data
                 DocumentTypeId = model.DocumentTypeId,
                 ReferenceId = model.ReferenceId,
                 CreatedById = _LoggedIn_UserID,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
             };
             await _context.Planners.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
@@ -127,7 +127,7 @@ namespace CoreWebApi.Data
                                            && cs.Active == true
                                            && u.Active == true
                                            && att.Absent == true
-                                           && att.CreatedDatetime.Date == DateTime.Now.Date
+                                           && att.CreatedDatetime.Date == DateTime.UtcNow.Date
                                            orderby l.Day, l.StartTime, l.EndTime
                                            select new EmptyTimeSlotForListDto
                                            {
@@ -158,7 +158,7 @@ namespace CoreWebApi.Data
 
                                                       where u.UserTypeId == (int)Enumm.UserType.Teacher
                                                       //&& att.Absent == false
-                                                      //&& att.CreatedDatetime.Date == DateTime.Now.Date
+                                                      //&& att.CreatedDatetime.Date == DateTime.UtcNow.Date
                                                       && u.SchoolBranchId == _LoggedIn_BranchID
                                                       && _context.ClassLectureAssignment.Where(m => m.LectureId == EmptySlot.LectureId && m.TeacherId == u.Id).FirstOrDefault() == null
                                                       //!EmptyTimeSlots.Select(m => m.TeacherId).Contains(u.Id)
@@ -213,7 +213,7 @@ namespace CoreWebApi.Data
                     Remarks = item.Remarks,
                     CreatedById = _LoggedIn_UserID,
                     SchoolBranchId = _LoggedIn_BranchID,
-                    CreatedDate = DateTime.Now,
+                    CreatedDate = DateTime.UtcNow,
                 });
             }
 
@@ -262,7 +262,7 @@ namespace CoreWebApi.Data
                                 Active = true,
                                 SchoolBranchId = _LoggedIn_BranchID,
                                 CreatedById = _LoggedIn_UserID,
-                                CreatedDateTime = DateTime.Now,
+                                CreatedDateTime = DateTime.UtcNow,
                             });
                         }
                     }
@@ -328,7 +328,7 @@ namespace CoreWebApi.Data
                         {
                             TeacherExpertiesId = item.Id,
                             ActiveStatus = true,
-                            TransactionDate = DateTime.Now,
+                            TransactionDate = DateTime.UtcNow,
                             TransactionById = _LoggedIn_UserID
                         });
                     }
@@ -344,7 +344,7 @@ namespace CoreWebApi.Data
                             {
                                 TeacherExpertiesId = item.Id,
                                 ActiveStatus = false,
-                                TransactionDate = DateTime.Now,
+                                TransactionDate = DateTime.UtcNow,
                                 TransactionById = _LoggedIn_UserID
                             });
                         }
@@ -379,7 +379,7 @@ namespace CoreWebApi.Data
                                 Active = true,
                                 SchoolBranchId = _LoggedIn_BranchID,
                                 CreatedById = _LoggedIn_UserID,
-                                CreatedDateTime = DateTime.Now,
+                                CreatedDateTime = DateTime.UtcNow,
                             });
                         }
                     }
@@ -445,7 +445,7 @@ namespace CoreWebApi.Data
                         {
                             TeacherExpertiesId = item.Id,
                             ActiveStatus = true,
-                            TransactionDate = DateTime.Now,
+                            TransactionDate = DateTime.UtcNow,
                             TransactionById = _LoggedIn_UserID
                         });
                     }
@@ -461,7 +461,7 @@ namespace CoreWebApi.Data
                             {
                                 TeacherExpertiesId = item.Id,
                                 ActiveStatus = false,
-                                TransactionDate = DateTime.Now,
+                                TransactionDate = DateTime.UtcNow,
                                 TransactionById = _LoggedIn_UserID
                             });
                         }
@@ -493,7 +493,7 @@ namespace CoreWebApi.Data
                 {
                     TeacherExpertiesId = ToUpdate.Id,
                     ActiveStatus = false,
-                    TransactionDate = DateTime.Now,
+                    TransactionDate = DateTime.UtcNow,
                     TransactionById = _LoggedIn_UserID
                 };
                 await _context.TeacherExpertiesTransactions.AddAsync(ToAdd);
@@ -672,7 +672,7 @@ namespace CoreWebApi.Data
             {
                 RequestById = _LoggedIn_UserID,
                 RequestComment = model.RequestComment,
-                RequestDateTime = DateTime.Now,
+                RequestDateTime = DateTime.UtcNow,
                 Status = Enumm.RequisitionStatus.Pending,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -691,7 +691,7 @@ namespace CoreWebApi.Data
                 Title = model.Title,
                 Posted = false,
                 Amount = Convert.ToDouble(model.Amount),
-                CreatedDate = DateTime.Now,
+                CreatedDate = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -767,7 +767,7 @@ namespace CoreWebApi.Data
                 Remarks = model.Remarks,
                 Posted = false,
                 Amount = Convert.ToDouble(model.Amount),
-                CreatedDate = DateTime.Now,
+                CreatedDate = DateTime.UtcNow,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
             await _context.SchoolCashAccount.AddAsync(ToAdd2);

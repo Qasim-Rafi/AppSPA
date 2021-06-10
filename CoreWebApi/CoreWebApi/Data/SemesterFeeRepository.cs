@@ -45,7 +45,7 @@ namespace CoreWebApi.Data
                 LateFeeValidityInDays = Convert.ToInt32(model.LateFeeValidityInDays),
                 Posted = false,
                 Active = true,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -56,7 +56,7 @@ namespace CoreWebApi.Data
             {
                 SemesterId = ToAdd.Id,
                 Amount = Convert.ToDouble(model.FeeAmount),
-                UpdatedDateTime = DateTime.Now,
+                UpdatedDateTime = DateTime.UtcNow,
                 UpdatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -94,7 +94,7 @@ namespace CoreWebApi.Data
                 {
                     SemesterId = ObjToUpdate.Id,
                     Amount = Convert.ToDouble(model.FeeAmount),
-                    UpdatedDateTime = DateTime.Now,
+                    UpdatedDateTime = DateTime.UtcNow,
                     UpdatedById = _LoggedIn_UserID,
                     SchoolBranchId = _LoggedIn_BranchID,
                 };
@@ -171,7 +171,7 @@ namespace CoreWebApi.Data
                 FeeAfterDiscount = Convert.ToDouble(model.FeeAfterDiscount),
                 Installments = Convert.ToInt32(model.Installments),
                 Posted = false,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -191,7 +191,7 @@ namespace CoreWebApi.Data
                         Amount = installmentAmount,
                         Paid = false,
                         Active = true,
-                        CreatedDateTime = DateTime.Now,
+                        CreatedDateTime = DateTime.UtcNow,
                         CreatedById = _LoggedIn_UserID,
                         SchoolBranchId = _LoggedIn_BranchID,
                     };
@@ -292,7 +292,7 @@ namespace CoreWebApi.Data
                 BankAccountId = model.BankAccountId,
                 Month = model.Month,
                 Active = true,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -340,7 +340,7 @@ namespace CoreWebApi.Data
         }
         public async Task<ServiceResponse<object>> GenerateFeeVoucher(int bankAccountId, int semesterId)
         {
-            var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+            var currentMonth = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year;
 
             var voucherDetailList = await _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
             var CurrentMonthVoucherStdIds = await _context.FeeVoucherRecords.Where(m => m.BillMonth == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Select(m => m.StudentId).ToListAsync();
@@ -379,11 +379,11 @@ namespace CoreWebApi.Data
                         string BillNumber = lastVoucherRecord.BillNumber.Substring(8, 7);
                         int LastBillNumber = Convert.ToInt32(BillNumber);
                         int NextBillNumber = ++LastBillNumber;
-                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month:00}{DateTime.Now.Day:00}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
+                        NewBillNo = $"{DateTime.UtcNow.Year}{DateTime.UtcNow.Month:00}{DateTime.UtcNow.Day:00}{NextBillNumber:0000000}-{_LoggedIn_BranchID}";
                     }
                     else
                     {
-                        NewBillNo = $"{DateTime.Now.Year}{DateTime.Now.Month:00}{DateTime.Now.Day:00}{1:0000000}-{_LoggedIn_BranchID}";
+                        NewBillNo = $"{DateTime.UtcNow.Year}{DateTime.UtcNow.Month:00}{DateTime.UtcNow.Day:00}{1:0000000}-{_LoggedIn_BranchID}";
                     }
                     var ExtraChargesOfThisMonth = _context.FeeVoucherDetails.Where(m => m.Month == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Sum(m => m.ExtraChargesAmount);
                     var ToAdd = new FeeVoucherRecord
@@ -394,8 +394,8 @@ namespace CoreWebApi.Data
                         VoucherDetailIds = string.Join(',', voucherDetailList.Select(m => m.Id)),
                         BankAccountId = bankAccountId,
                         FeeAmount = item.fee.FeeAfterDiscount / item.fee.Installments,
-                        BillGenerationDate = DateTime.Now,
-                        DueDate = DateTime.Now.AddDays(7),
+                        BillGenerationDate = DateTime.UtcNow,
+                        DueDate = DateTime.UtcNow.AddDays(7),
                         BillMonth = currentMonth,
                         BillNumber = NewBillNo,
                         ClassSectionId = item.cs.Id,
@@ -403,7 +403,7 @@ namespace CoreWebApi.Data
                         MiscellaneousCharges = ExtraChargesOfThisMonth,
                         TotalFee = (item.fee.FeeAfterDiscount / item.fee.Installments) + ExtraChargesOfThisMonth, //item.fee.FeeAfterDiscount + ExtraChargesOfThisMonth,
                         Active = true,
-                        CreatedDateTime = DateTime.Now,
+                        CreatedDateTime = DateTime.UtcNow,
                         CreatedById = _LoggedIn_UserID,
                         SchoolBranchId = _LoggedIn_BranchID,
                     };
@@ -467,7 +467,7 @@ namespace CoreWebApi.Data
                       BankAccountNumber = o.BankAccountNumber,
                       BankAddress = o.BankAddress,
                       BankDetails = o.BankDetails,
-                      Month = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year
+                      Month = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year
                   }).ToListAsync();
 
             _serviceResponse.Data = ToReturn;
@@ -485,7 +485,7 @@ namespace CoreWebApi.Data
                         BankAccountNumber = o.BankAccountNumber,
                         BankAddress = o.BankAddress,
                         BankDetails = o.BankDetails,
-                        Month = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year
+                        Month = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year
                     }).FirstOrDefaultAsync();
 
             _serviceResponse.Data = ToReturn;
@@ -503,7 +503,7 @@ namespace CoreWebApi.Data
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
                 Active = true,
-                CreatedDateTime = DateTime.Now
+                CreatedDateTime = DateTime.UtcNow
             };
 
             await _context.BankAccounts.AddAsync(toCreate);
@@ -552,7 +552,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetGeneratedFeeVouchers()
         {
-            var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+            var currentMonth = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year;
 
             var ToReturn = await _context.FeeVoucherRecords.Where(m => m.BillMonth == currentMonth && m.SchoolBranchId == _LoggedIn_BranchID).Select(o => new FeeVoucherRecordDtoForList
             {

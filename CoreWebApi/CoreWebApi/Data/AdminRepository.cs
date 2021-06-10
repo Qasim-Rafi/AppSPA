@@ -27,7 +27,7 @@ namespace CoreWebApi.Data
             toUpdate.ApproveById = _LoggedIn_UserID;
             toUpdate.ApproveComment = model.ApproveComment;
             toUpdate.Status = model.Status;
-            toUpdate.ApproveDateTime = DateTime.Now;
+            toUpdate.ApproveDateTime = DateTime.UtcNow;
 
             _context.Requisitions.Update(toUpdate);
             await _context.SaveChangesAsync();
@@ -88,7 +88,7 @@ namespace CoreWebApi.Data
                 EmployeeId = model.EmployeeId,
                 Amount = Convert.ToDouble(model.Amount),
                 Posted = false,
-                CreatedDate = DateTime.Now,
+                CreatedDate = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -100,7 +100,7 @@ namespace CoreWebApi.Data
                 EmployeeId = model.EmployeeId,
                 Amount = Convert.ToDouble(model.Amount),
                 Posted = ToAdd.Posted,
-                UpdatedDate = DateTime.Now,
+                UpdatedDate = DateTime.UtcNow,
                 UpdatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -128,7 +128,7 @@ namespace CoreWebApi.Data
             {
                 EmployeeId = model.EmployeeId,
                 Amount = Convert.ToDouble(model.Amount),
-                UpdatedDate = DateTime.Now,
+                UpdatedDate = DateTime.UtcNow,
                 UpdatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -181,7 +181,7 @@ namespace CoreWebApi.Data
                 EmployeeId = toUpdate.EmployeeId,
                 Amount = toUpdate.Amount,
                 Posted = toUpdate.Posted,
-                UpdatedDate = DateTime.Now,
+                UpdatedDate = DateTime.UtcNow,
                 UpdatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };

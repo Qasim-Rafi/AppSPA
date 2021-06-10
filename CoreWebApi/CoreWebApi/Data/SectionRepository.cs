@@ -50,7 +50,7 @@ namespace CoreWebApi.Data
             {
                 SectionName = section.SectionName,
                 CreatedById = _LoggedIn_UserID,
-                CreationDatetime = DateTime.Now,
+                CreationDatetime = DateTime.UtcNow,
                 Active = true,
                 SchoolBranchId = _LoggedIn_BranchID
             };

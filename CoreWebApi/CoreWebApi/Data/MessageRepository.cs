@@ -318,7 +318,7 @@ namespace CoreWebApi.Data
             {
                 var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
                 var UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
-                var SentMessages = _context.Messages.Where(m => m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
+                var SentMessages = _context.Messages.Where(m => m.CreatedDateTime.Date >= DateTime.UtcNow.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
                 || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID))))
                     .Select(o => new GroupMessageForListDto
                     {
@@ -335,7 +335,7 @@ namespace CoreWebApi.Data
                         Type = o.MessageFromUserId == _LoggedIn_UserID ? "1" : "2" // 1=Message, 2=Reply
                     }).ToList();
 
-                var DateTimes = _context.Messages.Where(m => m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
+                var DateTimes = _context.Messages.Where(m => m.CreatedDateTime.Date >= DateTime.UtcNow.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
                 || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID))))
                     .OrderBy(m => m.CreatedDateTime)
                     .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
@@ -345,9 +345,9 @@ namespace CoreWebApi.Data
                     var item = DateTimes[i];
                     var ToAdd = new GroupMessageForListByTimeDto();
                     DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
-                    if (dt.Date == DateTime.Now.Date)
+                    if (dt.Date == DateTime.UtcNow.Date)
                         ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
-                    else if (dt.Date == DateTime.Now.AddDays(-1).Date)
+                    else if (dt.Date == DateTime.UtcNow.AddDays(-1).Date)
                         ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
                     else
                         ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
@@ -359,7 +359,7 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var SingleSentMessage = _context.Messages.Where(m => m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
+                var SingleSentMessage = _context.Messages.Where(m => m.CreatedDateTime.Date >= DateTime.UtcNow.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserId.Equals(m.MessageToUserId))
                 || (UserId.Equals(m.MessageFromUserId) && m.MessageToUserId.Equals(_LoggedIn_UserID))))
                     .Select(o => new GroupMessageForListDto
                     {
@@ -396,7 +396,7 @@ namespace CoreWebApi.Data
                 List<UserForDetailedDto> UserToDetails = new List<UserForDetailedDto>();
                 var Users = await _context.Users.Where(m => userIds.Contains(m.Id.ToString())).ToListAsync();
                 UserToDetails = Users.Count > 0 ? _mapper.Map<List<UserForDetailedDto>>(Users) : new List<UserForDetailedDto>();
-                var SentMessages = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+                var SentMessages = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.UtcNow.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
                 || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
                     .Select(o => new GroupMessageForListDto
                     {
@@ -414,7 +414,7 @@ namespace CoreWebApi.Data
                         GroupId = o.GroupId,
                     }).ToList();
 
-                var DateTimes = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+                var DateTimes = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.UtcNow.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
                 || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
                     .OrderBy(m => m.CreatedDateTime)
                     .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).ToList();
@@ -424,9 +424,9 @@ namespace CoreWebApi.Data
                     var item = DateTimes[i];
                     var ToAdd = new GroupMessageForListByTimeDto();
                     DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
-                    if (dt.Date == DateTime.Now.Date)
+                    if (dt.Date == DateTime.UtcNow.Date)
                         ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
-                    else if (dt.Date == DateTime.Now.AddDays(-1).Date)
+                    else if (dt.Date == DateTime.UtcNow.AddDays(-1).Date)
                         ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
                     else
                         ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
@@ -438,7 +438,7 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var SingleSentMessage = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+                var SingleSentMessage = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.UtcNow.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
                 || (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
                     .Select(o => new GroupMessageForListDto
                     {
@@ -456,7 +456,7 @@ namespace CoreWebApi.Data
                         GroupId = o.GroupId,
                     }).OrderByDescending(m => m.Id).FirstOrDefault();
 
-                //var SingleDateTime = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.Now.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
+                //var SingleDateTime = _context.GroupMessages.Where(m => m.GroupId == groupId && m.CreatedDateTime.Date >= DateTime.UtcNow.AddDays(-7).Date && ((m.MessageFromUserId == _LoggedIn_UserID && UserIdds.Contains(m.MessageToUserIds))
                 //|| (UserIdds.Contains(m.MessageFromUserId.ToString()) && m.MessageToUserIds.Contains(_LoggedIn_UserID.ToString()))))
                 //    .OrderByDescending(m => m.CreatedDateTime)
                 //    .Select(m => DateFormat.ToDateTime(m.CreatedDateTime)).FirstOrDefault();
@@ -465,9 +465,9 @@ namespace CoreWebApi.Data
                 //var item = SingalDateTime;
                 var ToAdd = new GroupMessageForListByTimeDto();
                 //DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
-                //if (dt.Date == DateTime.Now.Date)
+                //if (dt.Date == DateTime.UtcNow.Date)
                 //    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
-                //else if (dt.Date == DateTime.Now.AddDays(-1).Date)
+                //else if (dt.Date == DateTime.UtcNow.AddDays(-1).Date)
                 //    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
                 //else
                 //    ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
@@ -487,7 +487,7 @@ namespace CoreWebApi.Data
                 Comment = model.Comment,
                 MessageToUserId = model.MessageToUserId,
                 IsRead = false,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 MessageFromUserId = _LoggedIn_UserID,
                 MessageReplyId = model.MessageReplyId,
             };
@@ -521,11 +521,13 @@ namespace CoreWebApi.Data
                 Comment = model.Comment,
                 MessageToUserIds = string.Join(',', model.MessageToUserIds),
                 IsRead = false,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 MessageFromUserId = _LoggedIn_UserID,
                 MessageReplyId = model.MessageReplyId,
                 GroupId = model.GroupId,
             };
+            await _context.GroupMessages.AddAsync(ToAdd);
+            await _context.SaveChangesAsync();
             if (model.files != null && model.files.Count() > 0)
             {
                 for (int i = 0; i < model.files.Count(); i++)
@@ -539,10 +541,10 @@ namespace CoreWebApi.Data
                         FileType = model.files[i].FileName != "blob" ? "FileAttachment" : ""
                     };
                     await _context.ChatMessageAttachments.AddAsync(attachment);
+                    await _context.SaveChangesAsync();
                 }
             }
-            await _context.GroupMessages.AddAsync(ToAdd);
-            await _context.SaveChangesAsync();
+
             _serviceResponse.Success = true;
             _serviceResponse.Message = CustomMessage.Added;
             return _serviceResponse;
@@ -554,7 +556,7 @@ namespace CoreWebApi.Data
                 Reply = model.Reply,
                 ReplyToUserId = model.ReplyToUserId,
                 IsRead = false,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 ReplyFromUserId = _LoggedIn_UserID,
                 MessageId = model.MessageId,
             };
@@ -583,7 +585,7 @@ namespace CoreWebApi.Data
             {
                 GroupName = model.GroupName,
                 UserIds = string.Join(',', model.UserIds),
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID
             };
             await _context.ChatGroups.AddAsync(ToAdd);

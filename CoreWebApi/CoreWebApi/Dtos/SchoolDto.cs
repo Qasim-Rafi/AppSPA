@@ -125,6 +125,8 @@ namespace CoreWebApi.Dtos
         public string Title { get; set; }
         public string Description { get; set; }
         public string NoticeDate { get; set; }
+        public string CreatedDateTime { get; set; }
+        public string Test1 { get; set; }
     }
     public class NoticeBoardForUpdateDto
     {        
@@ -167,5 +169,11 @@ namespace CoreWebApi.Dtos
     {
         public string Keyword { get; set; } = "";
         public List<UsefulResourceForListDto> TopicWiseLinks { get; set; } = new List<UsefulResourceForListDto>();
+    }
+    public class StudentActivityForListDto
+    {
+        public int Id { get; set; }
+        public string Value { get; set; }
+        public string Details { get; set; }
     }
 }

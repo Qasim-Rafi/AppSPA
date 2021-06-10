@@ -70,7 +70,7 @@ namespace CoreWebApi.Data
                 int PresentStudentCount = await (from user in _context.Users
                                                  join attendance in _context.Attendances
                                                  on user.Id equals attendance.UserId
-                                                 where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                 where attendance.CreatedDatetime.Date == DateTime.UtcNow.Date
                                                  where attendance.Present == true
                                                  && user.UserTypeId == (int)Enumm.UserType.Student
                                                  && user.Active == true
@@ -80,7 +80,7 @@ namespace CoreWebApi.Data
                 int PresentTeacherCount = await (from user in _context.Users
                                                  join attendance in _context.Attendances
                                                  on user.Id equals attendance.UserId
-                                                 where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                 where attendance.CreatedDatetime.Date == DateTime.UtcNow.Date
                                                  where attendance.Present == true
                                                  && user.UserTypeId == (int)Enumm.UserType.Teacher
                                                  && user.Active == true
@@ -90,14 +90,14 @@ namespace CoreWebApi.Data
                 int AbsentStudentCount = await (from user in _context.Users
                                                 join attendance in _context.Attendances
                                                 on user.Id equals attendance.UserId
-                                                where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                where attendance.CreatedDatetime.Date == DateTime.UtcNow.Date
                                                 && attendance.Absent == true
                                                 && user.UserTypeId == (int)Enumm.UserType.Student
                                                 && user.Active == true
                                                 && user.SchoolBranchId == _LoggedIn_BranchID
                                                 select user).CountAsync();
 
-                var attendances = await _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.Now.Date && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
+                var attendances = await _context.Attendances.Where(m => m.CreatedDatetime.Date == DateTime.UtcNow.Date && m.SchoolBranchId == _LoggedIn_BranchID).ToListAsync();
                 var classSections = await (from cs in _context.ClassSections
                                            where //!attendances.Select(m => m.ClassSectionId).Contains(cs.Id)
                                            cs.Active == true
@@ -113,7 +113,7 @@ namespace CoreWebApi.Data
                 int AbsentTeacherCount = await (from user in _context.Users
                                                 join attendance in _context.Attendances
                                                 on user.Id equals attendance.UserId
-                                                where attendance.CreatedDatetime.Date == DateTime.Now.Date
+                                                where attendance.CreatedDatetime.Date == DateTime.UtcNow.Date
                                                 && attendance.Absent == true
                                                 && user.UserTypeId == (int)Enumm.UserType.Teacher
                                                 && user.Active == true
@@ -208,8 +208,8 @@ namespace CoreWebApi.Data
             var userDetails = _context.Users.Where(m => m.Id == _LoggedIn_UserID).FirstOrDefault();
             if (userDetails != null)
             {
-                var StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                var LastDate = DateTime.Today.Date;
+                var StartDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+                var LastDate = DateTime.UtcNow.Date;
                 var DaysCount = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
 
                 var UserPresentCount = (from u in _context.Users
@@ -227,7 +227,7 @@ namespace CoreWebApi.Data
                 for (int i = 0; i < Months.Length; i++)
                 {
                     string month = Months[i];
-                    var StartDateByMonth = new DateTime(DateTime.Now.Year, (Array.IndexOf(Months, month) + 1), 1);
+                    var StartDateByMonth = new DateTime(DateTime.UtcNow.Year, (Array.IndexOf(Months, month) + 1), 1);
                     var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
                     var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
                     var UserPresentCountByMonth = (from u in _context.Users
@@ -598,7 +598,7 @@ namespace CoreWebApi.Data
                 foreach (var month in Months)
                 {
 
-                    var StartDateByMonth = new DateTime(DateTime.Now.Year, Array.IndexOf(Months, month) + 1, 1);
+                    var StartDateByMonth = new DateTime(DateTime.UtcNow.Year, Array.IndexOf(Months, month) + 1, 1);
                     var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
                     var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
                     var UserPresentCountByMonth = (from u in _context.Users
@@ -675,7 +675,7 @@ namespace CoreWebApi.Data
                                                           Remarks = fee.Remarks,
                                                       }).ToListAsync();
 
-                string CurrentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+                string CurrentMonth = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year;
                 var currentMonthFee = item.Fees.AllMonthPaidStatus.Where(m => m.Month == CurrentMonth).FirstOrDefault();
                 if (currentMonthFee != null)
                     item.Fees.CurrentMonthPaidStatus = true;
@@ -689,7 +689,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetStudentFeeVoucher()
         {
-            var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+            var currentMonth = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year;
             var ToReturn = await _context.FeeVoucherRecords.Where(m => m.BillMonth == currentMonth && m.StudentId == _LoggedIn_UserID).Select(o => new FeeVoucherRecordDtoForList
             {
                 Id = o.Id,
@@ -733,7 +733,7 @@ namespace CoreWebApi.Data
         {
             if (_LoggedIn_UserID != 0)
             {
-                var StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var StartDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
                 var LastDate = DateTime.Today.Date;
                 var DaysCount = GenericFunctions.BusinessDaysUntil(StartDate, LastDate);
                 var UserPresentCount = (from u in _context.Users
@@ -787,7 +787,7 @@ namespace CoreWebApi.Data
                     for (int j = 0; j < Months.Length; j++)
                     {
                         var month = Months[j];
-                        var StartDateByMonth = new DateTime(DateTime.Now.Year, month, 1);
+                        var StartDateByMonth = new DateTime(DateTime.UtcNow.Year, month, 1);
                         var LastDateByMonth = StartDateByMonth.AddMonths(1).AddDays(-1);
                         var DaysCountByMonth = GenericFunctions.BusinessDaysUntil(StartDateByMonth, LastDateByMonth);
 

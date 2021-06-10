@@ -173,7 +173,7 @@ namespace CoreWebApi_Tests
                     {
                         BranchName = string.IsNullOrEmpty(model.SchoolName) ? "Branch-" + (branches.Count() + 1) : model.SchoolName,
                         SchoolAcademyID = schoolAcademyId,
-                        CreatedDateTime = DateTime.Now,
+                        CreatedDateTime = DateTime.UtcNow,
                         Active = true,
                         RegistrationNumber = branches.Count() == 1 ? "10000000" : (Convert.ToInt32(branches.FirstOrDefault().RegistrationNumber) + 1).ToString(),
                         ExamType = model.ExamType,
@@ -194,7 +194,7 @@ namespace CoreWebApi_Tests
                     SchoolBranchId = branch.Id,
                     Gender = "male",
                     Active = true,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Admin).FirstOrDefault()?.Name
                 };
                 byte[] passwordHash, passwordSalt;
@@ -219,7 +219,7 @@ namespace CoreWebApi_Tests
                     SchoolBranchId = branch.Id,
                     Gender = model.Gender,
                     Active = true,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.Tutor).FirstOrDefault()?.Name
                 };
                 byte[] passwordHash, passwordSalt;
@@ -245,7 +245,7 @@ namespace CoreWebApi_Tests
                     SchoolBranchId = branch.Id,
                     Gender = model.Gender,
                     Active = true,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     Role = _context.UserTypes.Where(m => m.Id == (int)Enumm.UserType.OnlineStudent).FirstOrDefault()?.Name
                 };
                 byte[] passwordHash, passwordSalt;

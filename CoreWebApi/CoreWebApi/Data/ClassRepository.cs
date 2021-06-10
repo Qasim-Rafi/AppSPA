@@ -51,7 +51,7 @@ namespace CoreWebApi.Data
             {
                 Name = @class.Name,
                 CreatedById = _LoggedIn_UserID,
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 Active = true,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -144,7 +144,7 @@ namespace CoreWebApi.Data
                     NumberOfStudents = classSection.NumberOfStudents,
                     Active = true,
                     CreatedById = _LoggedIn_UserID,
-                    CreatedDatetime = DateTime.Now
+                    CreatedDatetime = DateTime.UtcNow
                 };
 
                 await _context.ClassSections.AddAsync(objToCreate);
@@ -239,7 +239,7 @@ namespace CoreWebApi.Data
                     UserId = classSectionUser.UserId,
                     UserTypeId = _context.Users.FirstOrDefault(m => m.Id == classSectionUser.UserId && m.Active == true).UserTypeId,
                     IsIncharge = classSectionUser.IsIncharge,
-                    CreatedDate = DateTime.Now,
+                    CreatedDate = DateTime.UtcNow,
                     SchoolBranchId = _LoggedIn_BranchID
                 };
 
@@ -287,7 +287,7 @@ namespace CoreWebApi.Data
                     UserId = oldUserId,
                     MappedCreationDate = objToUpdate.CreatedDate,
                     UserTypeId = _context.Users.FirstOrDefault(m => m.Id == objToUpdate.UserId && m.Active == true).UserTypeId,
-                    DeletionDate = DateTime.Now,
+                    DeletionDate = DateTime.UtcNow,
                     DeletedById = _LoggedIn_UserID
                 });
 
@@ -352,7 +352,7 @@ namespace CoreWebApi.Data
                         ClassSectionId = model.ClassSectionId,
                         UserId = userId,
                         UserTypeId = _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == userId && m.Active == true).UserTypeId : (int)Enumm.UserType.Student,
-                        CreatedDate = DateTime.Now,
+                        CreatedDate = DateTime.UtcNow,
                         SchoolBranchId = _LoggedIn_BranchID
                     });
                 }
@@ -377,7 +377,7 @@ namespace CoreWebApi.Data
                 //            ClassSectionId = item.ClassSectionId,
                 //            UserId = item.UserId,
                 //            UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true) != null ? _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId : 3,
-                //            DeletionDate = DateTime.Now,
+                //            DeletionDate = DateTime.UtcNow,
                 //            DeletedById = _LoggedIn_UserID
                 //        });
                 //    }
@@ -493,7 +493,7 @@ namespace CoreWebApi.Data
                     UserId = classSectionUser.UserId,
                     MappedCreationDate = classSectionUser.CreatedDate,
                     UserTypeId = _context.Users.FirstOrDefault(m => m.Id == classSectionUser.UserId && m.Active == true).UserTypeId,
-                    DeletionDate = DateTime.Now,
+                    DeletionDate = DateTime.UtcNow,
                     DeletedById = _LoggedIn_UserID
                 });
 
@@ -527,7 +527,7 @@ namespace CoreWebApi.Data
                         UserId = item.UserId,
                         MappedCreationDate = item.CreatedDate,
                         UserTypeId = _context.Users.FirstOrDefault(m => m.Id == item.UserId && m.Active == true).UserTypeId,
-                        DeletionDate = DateTime.Now,
+                        DeletionDate = DateTime.UtcNow,
                         DeletedById = _LoggedIn_UserID
                     });
                 }

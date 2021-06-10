@@ -39,7 +39,7 @@ namespace CoreWebApi.Data
             }
             else
             {
-                var currentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+                var currentMonth = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year;
                 var ToAdd = new StudentFee
                 {
                     StudentId = model.StudentId,
@@ -47,7 +47,7 @@ namespace CoreWebApi.Data
                     Remarks = model.Remarks,
                     Paid = model.Paid,
                     Month = currentMonth,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     CreatedById = _LoggedIn_UserID,
                     SchoolBranchId = _LoggedIn_BranchID,
                 };
@@ -82,7 +82,7 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetStudentsForFee()
         {
-            string CurrentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+            string CurrentMonth = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year;
             var PaidStudents = await (from fee in _context.StudentFees
                                       join u in _context.Users
                                       on fee.StudentId equals u.Id
@@ -396,12 +396,13 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetUsefulResources()
         {
+            var csId = _context.ClassSectionUsers.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.ClassSectionId).FirstOrDefault();
             var list = await (from ur in _context.UsefulResources
 
-                              let csId = _context.ClassSectionUsers.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.ClassSectionId).FirstOrDefault()
                               where ur.ClassSectionIds.Contains(csId.ToString())
                               && ur.IsPosted == true
                               && ur.SchoolBranchId == _LoggedIn_BranchID
+                              orderby ur.Id descending
                               select new UsefulResourceForListDto
                               {
                                   Id = ur.Id,
@@ -409,7 +410,24 @@ namespace CoreWebApi.Data
                                   Description = ur.Description,
                                   Link = ur.Link.StartsWith("https://www.youtube.com") ? ur.Link.Substring(ur.Link.LastIndexOf("=") + 1) : ur.Link,
                                   IsPosted = ur.IsPosted,
-                              }).OrderByDescending(m => m.Id).ToListAsync();
+                              }).ToListAsync();
+
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
+        public async Task<ServiceResponse<object>> GetActivityRecords()
+        {
+            var list = await (from main in _context.StudentActivityTransactions
+
+                              where main.StudentId == _LoggedIn_UserID
+                              orderby main.Id descending
+                              select new StudentActivityForListDto
+                              {
+                                  Id = main.Id,
+                                  Value = main.Value,
+                                  Details = main.Details
+                              }).ToListAsync();
 
             _serviceResponse.Data = list;
             _serviceResponse.Success = true;

@@ -37,7 +37,7 @@ namespace CoreWebApi.Hubs
         //        Comment = comment,
         //        MessageToUserId = messageToUserId,
         //        IsRead = false,
-        //        CreatedDateTime = DateTime.Now,
+        //        CreatedDateTime = DateTime.UtcNow,
         //        MessageFromUserId = _LoggedIn_UserID,
         //        MessageReplyId = messageReplyId,
         //    };

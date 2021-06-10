@@ -23,7 +23,7 @@ namespace CoreWebApi.Helpers
                 Directory.CreateDirectory(folderPath);
             }
             var fileModifiedDate = File.GetLastWriteTime(filePath);
-            if ((DateTime.Now - fileModifiedDate).Days > 6)
+            if ((DateTime.UtcNow - fileModifiedDate).Days > 6)
             {
                 File.WriteAllText(filePath, string.Empty);
             }
@@ -31,7 +31,7 @@ namespace CoreWebApi.Helpers
             {
 
                 writer.WriteLine("---------------------------------------------------------------------------------");
-                writer.WriteLine("Date : " + DateTime.Now.ToString());
+                writer.WriteLine("Date : " + DateTime.UtcNow.ToString());
                 writer.WriteLine();
 
                 while (ex != null)

@@ -34,7 +34,7 @@ namespace CoreWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            string CurrentMonth = DateTime.Now.ToString("MMMM") + " " + DateTime.Now.Year;
+            string CurrentMonth = DateTime.UtcNow.ToString("MMMM") + " " + DateTime.UtcNow.Year;
 
             if (await _repo.PaidAlready(CurrentMonth, model.StudentId))
                 return BadRequest(new { message = CustomMessage.FeeAlreadyPaid });
@@ -83,6 +83,16 @@ namespace CoreWebApi.Controllers
                 return BadRequest(ModelState);
             }
             _response = await _repo.GetUsefulResources();
+            return Ok(_response);
+        }
+        [HttpGet("GetActivityRecords")]
+        public async Task<IActionResult> GetActivityRecords()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.GetActivityRecords();
             return Ok(_response);
         }
 

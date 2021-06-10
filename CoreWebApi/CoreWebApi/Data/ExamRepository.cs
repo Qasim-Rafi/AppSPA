@@ -102,7 +102,7 @@ namespace CoreWebApi.Data
                 ClassSectionId = model.ClassSectionId,
                 //TeacherName = model.TeacherName,
                 IsPosted = model.IsPosted,
-                CreatedDate = DateTime.Now,
+                CreatedDate = DateTime.UtcNow,
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
             };
@@ -278,7 +278,7 @@ namespace CoreWebApi.Data
                                      //&& !ids.Contains(quiz.Id)
                                      && subject.Active == true
                                      && classSection.Active == true
-                                     && quiz.QuizDate.Value.Date >= DateTime.Now.Date
+                                     && quiz.QuizDate.Value.Date >= DateTime.UtcNow.Date
                                      orderby quiz.Id descending
                                      select new QuizForListDto
                                      {
@@ -390,7 +390,7 @@ namespace CoreWebApi.Data
                     AnswerId = item.AnswerId,
                     //IsCorrect = TrueAnswers.Select(m => m.Id).Contains(Convert.ToInt32(item.AnswerId)) ? true : false,
                     Description = item.Description,
-                    CreatedDateTime = DateTime.Now,
+                    CreatedDateTime = DateTime.UtcNow,
                     UserId = _LoggedIn_UserID
                 };
                 if (TrueAnswers.Count() == 1)
@@ -412,6 +412,17 @@ namespace CoreWebApi.Data
 
             await _context.QuizSubmissions.AddRangeAsync(ListToAdd);
             await _context.SaveChangesAsync();
+
+            var toCreateTrans = new StudentActivityTransaction
+            {
+                StudentId = _LoggedIn_UserID,
+                Value = _LoggedIn_UserName + " you submit a quiz at " + DateFormat.ToDateTime(DateTime.UtcNow),
+                Details = "",
+                UpdatedDateTime = DateTime.UtcNow
+            };
+            await _context.StudentActivityTransactions.AddAsync(toCreateTrans);
+            await _context.SaveChangesAsync();
+
             _serviceResponse.Success = true;
             _serviceResponse.Data = CustomMessage.Added;
             return _serviceResponse;

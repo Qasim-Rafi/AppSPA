@@ -112,7 +112,7 @@ namespace CoreWebApi.Data
                 ToDate = ToDate,
                 UserId = _LoggedIn_UserID,//Convert.ToInt32(leave.UserId),
                 LeaveTypeId = Convert.ToInt32(model.LeaveTypeId),
-                CreatedDateTime = DateTime.Now,
+                CreatedDateTime = DateTime.UtcNow,
                 SchoolBranchId = _LoggedIn_BranchID,
                 Status = Enumm.LeaveStatus.Pending,
             };
@@ -151,7 +151,7 @@ namespace CoreWebApi.Data
             {
                 dbObj.ApproveById = _LoggedIn_UserID;
                 dbObj.ApproveComment = model.ApproveComment;
-                dbObj.ApproveDateTime = DateTime.Now;
+                dbObj.ApproveDateTime = DateTime.UtcNow;
                 dbObj.Status = model.Status;
 
                 _context.Leaves.Update(dbObj);
