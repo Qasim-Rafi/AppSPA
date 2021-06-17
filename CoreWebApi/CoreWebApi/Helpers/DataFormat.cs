@@ -17,7 +17,9 @@ namespace CoreWebApi.Helpers
         {
             //var dt = DateTime.ParseExact(dateString.ToString(), "dd/MM/yyyy", new CultureInfo("ur-PK"), DateTimeStyles.None);
             var getDate = Convert.ToDateTime(dateString);
-            var dt = getDate.Date.ToString("dd-MM-yyyy");
+            DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(getDate, "Pakistan Standard Time");
+
+            var dt = Now.Date.ToString("dd-MM-yyyy");
             return dt;
 
             //bool isValid = DateTime.TryParseExact(dateString.ToString(), "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out DateTime dt);
@@ -38,8 +40,9 @@ namespace CoreWebApi.Helpers
         public static string ToDateTime(DateTime dateString)
         {
             //var getDate = Convert.ToDateTime(dateString);
+            DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dateString, "Pakistan Standard Time");
 
-            var dt = dateString.ToString("dd-MM-yyyy hh:mm tt");
+            var dt = Now.ToString("dd-MM-yyyy hh:mm tt");
             return dt;
             //string[] formats = { "dd/MM/yyyy", "dd/MM/yyyy h:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "MM/dd/yyyy", "MM/dd/yyyy hh:mm tt", "MM/dd/yyyy hh:mm:ss tt", "yyyy/MM/dd", "yyyy/MM/dd hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss", "yyyy/MM/dd hh:mm tt" };
             //var dt = DateTime.ParseExact(dateString.ToString(), formats, new CultureInfo("en-US"), DateTimeStyles.None);
@@ -58,7 +61,8 @@ namespace CoreWebApi.Helpers
         public static string ToTime(TimeSpan timeSpan)
         {
             DateTime time = DateTime.Today.Add(timeSpan);
-            string dt = time.ToString("hh:mm:ss tt");
+            DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(time, "Pakistan Standard Time");
+            string dt = Now.ToString("hh:mm:ss tt");
             return dt;
 
         }

@@ -346,9 +346,9 @@ namespace CoreWebApi.Data
                     var ToAdd = new GroupMessageForListByTimeDto();
                     DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
                     if (dt.Date == DateTime.UtcNow.Date)
-                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
+                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? dt.TimeOfDay.ToString() : "Today";
                     else if (dt.Date == DateTime.UtcNow.AddDays(-1).Date)
-                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
+                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? dt.TimeOfDay.ToString() : "Yesterday";
                     else
                         ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
                     ToAdd.Messages = SentMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList();
@@ -425,9 +425,9 @@ namespace CoreWebApi.Data
                     var ToAdd = new GroupMessageForListByTimeDto();
                     DateTime dt = Convert.ToDateTime(item, CultureInfo.GetCultureInfo("ur-PK").DateTimeFormat);
                     if (dt.Date == DateTime.UtcNow.Date)
-                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? "" : "Today";
+                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Today") ? dt.TimeOfDay.ToString() : "Today";
                     else if (dt.Date == DateTime.UtcNow.AddDays(-1).Date)
-                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? "" : "Yesterday";
+                        ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == "Yesterday") ? dt.TimeOfDay.ToString() : "Yesterday";
                     else
                         ToAdd.TimeToDisplay = Messages.Any(m => m.TimeToDisplay == item) ? "" : item;
                     ToAdd.Messages = SentMessages.Where(m => m.Time.Date == dt.Date && m.Time.Hour == dt.Hour && m.Time.Minute == dt.Minute).OrderBy(m => m.Time).ToList();
