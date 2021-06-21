@@ -35,5 +35,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetUsefulResources(int currentPage, string resourceType);
         Task<ServiceResponse<object>> DeleteUsefulResource(int id);
         Task<ServiceResponse<object>> PublishUsefulResource(int id);
+        Task<ServiceResponse<object>> GetUsefulResourcesForAnonymous();
     }
 }

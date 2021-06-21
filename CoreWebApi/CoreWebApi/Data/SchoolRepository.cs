@@ -1103,5 +1103,21 @@ namespace CoreWebApi.Data
             return _serviceResponse;
 
         }
+
+        public async Task<ServiceResponse<object>> GetUsefulResourcesForAnonymous()
+        {
+            var Resources = await _context.UsefulResources.Where(m => string.IsNullOrEmpty(m.ResourceType)).Select(p => new UsefulResourceForListDto // && m.CreatedById == _LoggedIn_UserID
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Description = p.Description,
+                Link = p.Link.StartsWith("https://www.youtube.com") ? p.Link.Substring(p.Link.LastIndexOf("=") + 1) : p.Link,
+                IsPosted = p.IsPosted,
+            }).OrderByDescending(m => m.Id).ToListAsync();
+            _serviceResponse.Data = Resources;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+
+        }
     }
 }
