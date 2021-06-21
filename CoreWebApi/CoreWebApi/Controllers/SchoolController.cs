@@ -332,6 +332,7 @@ namespace CoreWebApi.Controllers
             _response = await _repo.AddUsefulResources(model);
             return Ok(_response);
         }
+        [AllowAnonymous]
         [HttpGet("GetUsefulResources/{resourceType?}/{currentPage?}")]
         public async Task<IActionResult> GetUsefulResources(string resourceType = "", int currentPage = 0)
         {

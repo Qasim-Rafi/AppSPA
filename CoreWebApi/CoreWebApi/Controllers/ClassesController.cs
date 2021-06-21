@@ -20,14 +20,14 @@ namespace CoreWebApi.Controllers
     {
         private readonly IClassRepository _repo;
         private readonly IMapper _mapper;
-        private readonly DataContext _context;
+        //private readonly DataContext _context;
 
         
-        public ClassesController(IClassRepository repo, IMapper mapper, DataContext context)
+        public ClassesController(IClassRepository repo, IMapper mapper)//, DataContext context
         {
             _mapper = mapper;
             _repo = repo;
-            _context = context;
+            //_context = context;
            
         }
 
@@ -98,47 +98,18 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetClassSectionMapping")]
         public async Task<IActionResult> GetClassSectionMapping()
         {
-            IEnumerable<ClassSection> list = await _repo.GetClassSectionMapping();
-            var ToReturn = list.Where(m => _context.Sections.FirstOrDefault(n => n.Id == m.SectionId)?.Active == true).Select(o => new ClassSectionForListDto
-            {
-                ClassSectionId = o.Id,
-                SchoolAcademyId = o.SchoolBranchId,
-                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId && m.Active == true)?.Name,
-                ClassId = Convert.ToInt32(o.ClassId),
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId && m.Active == true)?.Name,
-                SemesterId = Convert.ToInt32(o.SemesterId),
-                SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId)?.Name,
-                SectionId = o.SectionId,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true)?.SectionName,
-                NumberOfStudents = o.NumberOfStudents,
-                Active = o.Active,
-            });
-            return Ok(ToReturn);
+            var list = await _repo.GetClassSectionMapping();
+           
+            return Ok(list);
 
         }
         [HttpGet("GetClassSectionById/{id}")]
         public async Task<IActionResult> GetClassSectionById(int id)
         {
 
-            var result = await _repo.GetClassSectionById(id);
+            var response = await _repo.GetClassSectionById(id);
 
-            _response.Success = result.Success;
-            _response.Message = result.Message;
-            _response.Data = result.Data.Select(o => new ClassSectionForDetailsDto
-            {
-                ClassSectionId = o.Id,
-                SchoolAcademyId = o.SchoolBranchId,
-                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId)?.Name,
-                ClassId = Convert.ToInt32(o.ClassId),
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId)?.Name,
-                SemesterId = Convert.ToInt32(o.SemesterId),
-                SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId)?.Name,
-                SectionId = o.SectionId,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId)?.SectionName,
-                NumberOfStudents = o.NumberOfStudents,
-                Active = o.Active,
-            });
-            return Ok(_response);
+            return Ok(response);
 
         }
         [HttpPost("AddClassSectionMapping")]
@@ -231,19 +202,9 @@ namespace CoreWebApi.Controllers
         [HttpGet("GetClassSectionUserMapping/{csId}/{userId}")]
         public async Task<IActionResult> GetClassSectionUserMappingById(int csId, int userId)
         {
-            var result = await _repo.GetClassSectionUserMappingById(csId, userId);
-            _response.Data = new ClassSectionUserForListDto
-            {
-                Id = result.Data.Id,
-                ClassSectionId = result.Data.ClassSectionId,
-                ClassName = _context.Class.FirstOrDefault(m => m.Id == result.Data.ClassSection.ClassId && m.Active == true)?.Name,
-                SectionName = _context.Sections.FirstOrDefault(m => m.Id == result.Data.ClassSection.SectionId && m.Active == true)?.SectionName,
-                UserId = result.Data.UserId,
-                FullName = result.Data.User.FullName,
+            var response = await _repo.GetClassSectionUserMappingById(csId, userId);
 
-            };
-
-            return Ok(_response);
+            return Ok(response);
 
         }
         [HttpPut("UpdateClassSectionUserMapping")] // for teacher

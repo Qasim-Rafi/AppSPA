@@ -169,15 +169,45 @@ namespace CoreWebApi.Data
         }
 
 
-        public async Task<IEnumerable<ClassSection>> GetClassSectionMapping()
+        public async Task<IEnumerable<ClassSectionForListDto>> GetClassSectionMapping()
         {
             if (_LoggedIn_SchoolExamType == Enumm.ExamTypes.Semester.ToString())
             {
-                return await _context.ClassSections.Where(m => m.SemesterId != null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+                var list = await _context.ClassSections.Where(m => m.SemesterId != null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+                var ToReturn = list.Where(m => _context.Sections.FirstOrDefault(n => n.Id == m.SectionId)?.Active == true).Select(o => new ClassSectionForListDto
+                {
+                    ClassSectionId = o.Id,
+                    SchoolAcademyId = o.SchoolBranchId,
+                    SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId && m.Active == true)?.Name,
+                    ClassId = Convert.ToInt32(o.ClassId),
+                    ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId && m.Active == true)?.Name,
+                    SemesterId = Convert.ToInt32(o.SemesterId),
+                    SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId)?.Name,
+                    SectionId = o.SectionId,
+                    SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true)?.SectionName,
+                    NumberOfStudents = o.NumberOfStudents,
+                    Active = o.Active,
+                });
+                return ToReturn;
             }
             else
             {
-                return await _context.ClassSections.Where(m => m.ClassId != null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+                var list = await _context.ClassSections.Where(m => m.ClassId != null && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).OrderByDescending(m => m.Id).ToListAsync();
+                var ToReturn = list.Where(m => _context.Sections.FirstOrDefault(n => n.Id == m.SectionId)?.Active == true).Select(o => new ClassSectionForListDto
+                {
+                    ClassSectionId = o.Id,
+                    SchoolAcademyId = o.SchoolBranchId,
+                    SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId && m.Active == true)?.Name,
+                    ClassId = Convert.ToInt32(o.ClassId),
+                    ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId && m.Active == true)?.Name,
+                    SemesterId = Convert.ToInt32(o.SemesterId),
+                    SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId)?.Name,
+                    SectionId = o.SectionId,
+                    SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId && m.Active == true)?.SectionName,
+                    NumberOfStudents = o.NumberOfStudents,
+                    Active = o.Active,
+                });
+                return ToReturn;
             }
 
         }
@@ -313,15 +343,24 @@ namespace CoreWebApi.Data
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse<ClassSectionUser>> GetClassSectionUserMappingById(int csId, int userId)
+        public async Task<ServiceResponse<ClassSectionUserForListDto>> GetClassSectionUserMappingById(int csId, int userId)
         {
-            ServiceResponse<ClassSectionUser> serviceResponse = new ServiceResponse<ClassSectionUser>();
+            ServiceResponse<ClassSectionUserForListDto> serviceResponse = new ServiceResponse<ClassSectionUserForListDto>();
 
 
-            serviceResponse.Data = await _context.ClassSectionUsers.Include(m => m.ClassSection).Include(m => m.User).Where(m => m.ClassSectionId == csId && m.UserId == userId).FirstOrDefaultAsync();
+            var obj = await _context.ClassSectionUsers.Include(m => m.ClassSection).Include(m => m.User).Where(m => m.ClassSectionId == csId && m.UserId == userId).FirstOrDefaultAsync();
+            var ToReturn = new ClassSectionUserForListDto
+            {
+                Id = obj.Id,
+                ClassSectionId = obj.ClassSectionId,
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == obj.ClassSection.ClassId && m.Active == true)?.Name,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == obj.ClassSection.SectionId && m.Active == true)?.SectionName,
+                UserId = obj.UserId,
+                FullName = obj.User.FullName,
 
+            };
             serviceResponse.Success = true;
-
+            serviceResponse.Data = ToReturn;
             return serviceResponse;
 
         }
@@ -404,11 +443,27 @@ namespace CoreWebApi.Data
             }
         }
 
-        public async Task<ServiceResponse<IEnumerable<ClassSection>>> GetClassSectionById(int id)
+        public async Task<ServiceResponse<IEnumerable<ClassSectionForDetailsDto>>> GetClassSectionById(int id)
         {
-            ServiceResponse<IEnumerable<ClassSection>> serviceResponse = new ServiceResponse<IEnumerable<ClassSection>>();
+            ServiceResponse<IEnumerable<ClassSectionForDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<ClassSectionForDetailsDto>>();
+
+            var list = await _context.ClassSections.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).Select(o => new ClassSectionForDetailsDto
+            {
+                ClassSectionId = o.Id,
+                SchoolAcademyId = o.SchoolBranchId,
+                SchoolName = _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId) != null ? _context.SchoolAcademy.FirstOrDefault(m => m.Id == o.SchoolBranchId).Name : "",
+                ClassId = Convert.ToInt32(o.ClassId),
+                ClassName = _context.Class.FirstOrDefault(m => m.Id == o.ClassId) != null ? _context.Class.FirstOrDefault(m => m.Id == o.ClassId).Name : "",
+                SemesterId = Convert.ToInt32(o.SemesterId),
+                SemesterName = _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId) != null ? _context.Semesters.FirstOrDefault(m => m.Id == o.SemesterId).Name : "",
+                SectionId = o.SectionId,
+                SectionName = _context.Sections.FirstOrDefault(m => m.Id == o.SectionId) != null ? _context.Sections.FirstOrDefault(m => m.Id == o.SectionId).SectionName : "",
+                NumberOfStudents = o.NumberOfStudents,
+                Active = o.Active,
+            }).ToListAsync();
+
             serviceResponse.Success = true;
-            serviceResponse.Data = await _context.ClassSections.Where(m => m.Id == id && m.SchoolBranchId == _LoggedIn_BranchID && m.Active == true).ToListAsync();
+            serviceResponse.Data = list;
             return serviceResponse;
         }
 
