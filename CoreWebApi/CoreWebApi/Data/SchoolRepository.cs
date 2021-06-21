@@ -937,7 +937,7 @@ namespace CoreWebApi.Data
                 Title = o.Title,
                 Description = o.Description,
                 NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
-                CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime.To_Pk_DateTime()),
+                CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime),
             }).ToListAsync();
 
             //var ToReturn = _mapper.Map<List<NoticeBoardForListDto>>(List);

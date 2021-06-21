@@ -86,16 +86,7 @@ namespace CoreWebApi.Helpers
             }
 
         }
-        public static DateTime DateTime_Now()
-        {
-            DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Pakistan Standard Time");
-            return Now;
-        }
-        public static DateTime To_Pk_DateTime(this DateTime Value)
-        {
-            DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(Value, "Pakistan Standard Time");
-            return Now;
-        }
+              
         public static bool IsPropertyExist(dynamic settings, string name)
         {
             if (settings != null)

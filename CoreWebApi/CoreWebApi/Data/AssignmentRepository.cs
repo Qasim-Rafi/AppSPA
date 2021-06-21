@@ -136,6 +136,7 @@ namespace CoreWebApi.Data
                                           SubjectId = o.SubjectId,
                                           DueDateTime = o.DueDateTime != null ? DateFormat.ToDate(o.DueDateTime.ToString()) : "",
                                           IsPosted = o.IsPosted,
+                                          CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime)
                                       }).ToListAsync();
                 }
 
@@ -177,7 +178,7 @@ namespace CoreWebApi.Data
                 IsPosted = assignment.IsPosted,
                 SchoolBranchId = _LoggedIn_BranchID,
                 CreatedById = _LoggedIn_UserID,
-                CreatedDateTime = GenericFunctions.DateTime_Now(),
+                CreatedDateTime = DateTime.UtcNow,
             };
 
             if (assignment.files != null && assignment.files.Count() > 0)

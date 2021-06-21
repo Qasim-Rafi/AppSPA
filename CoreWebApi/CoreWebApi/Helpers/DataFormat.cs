@@ -17,8 +17,8 @@ namespace CoreWebApi.Helpers
         {
             //var dt = DateTime.ParseExact(dateString.ToString(), "dd/MM/yyyy", new CultureInfo("ur-PK"), DateTimeStyles.None);
             var getDate = Convert.ToDateTime(dateString);
-            DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(getDate, "Pakistan Standard Time");
-
+            var PKZone = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
+            var Now = TimeZoneInfo.ConvertTimeFromUtc(getDate, PKZone); 
             var dt = Now.Date.ToString("dd-MM-yyyy");
             return dt;
 
@@ -40,8 +40,9 @@ namespace CoreWebApi.Helpers
         public static string ToDateTime(DateTime dateString)
         {
             //var getDate = Convert.ToDateTime(dateString);
-            DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dateString, "Pakistan Standard Time");
-
+            //DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dateString, TimeZoneInfo.Local.Id, "Pakistan Standard Time");
+            var PKZone = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
+            var Now = TimeZoneInfo.ConvertTimeFromUtc(dateString, PKZone);
             var dt = Now.ToString("dd-MM-yyyy hh:mm tt");
             return dt;
             //string[] formats = { "dd/MM/yyyy", "dd/MM/yyyy h:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "MM/dd/yyyy", "MM/dd/yyyy hh:mm tt", "MM/dd/yyyy hh:mm:ss tt", "yyyy/MM/dd", "yyyy/MM/dd hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss", "yyyy/MM/dd hh:mm tt" };
@@ -60,10 +61,18 @@ namespace CoreWebApi.Helpers
         }
         public static string ToTime(TimeSpan timeSpan)
         {
-            DateTime time = DateTime.Today.Add(timeSpan);
-            DateTime Now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(time, "Pakistan Standard Time");
+            DateTime time = DateTime.UtcNow.Date.Add(timeSpan);
+            var PKZone = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
+            var Now = TimeZoneInfo.ConvertTimeFromUtc(time, PKZone); 
             string dt = Now.ToString("hh:mm:ss tt");
             return dt;
+
+        }
+        public static DateTime FromUTCToPKFormat(DateTime dateTime)
+        {
+            var PKZone = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
+            var Now = TimeZoneInfo.ConvertTimeFromUtc(dateTime, PKZone); 
+            return Now;
 
         }
         public static string To24HRTime(TimeSpan timeSpan)

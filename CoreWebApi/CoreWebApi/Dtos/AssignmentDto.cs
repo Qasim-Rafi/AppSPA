@@ -59,6 +59,7 @@ namespace CoreWebApi.Dtos
         public int SubjectId { get; set; }
         public string SubjectName { get; set; }
         public bool IsPosted { get; set; }
+        public string CreatedDateTime { get; set; }
 
     }
     public class SubmittedAssignmentDtoForList
