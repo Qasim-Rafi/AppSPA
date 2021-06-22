@@ -1512,17 +1512,15 @@ namespace CoreWebApi.Data
         {
             var names = userName.ToLower().Split(',');
             var Photos = await (from u in _context.Users
-                               join p in _context.Photos
-                               on u.Id equals p.UserId
+                                where names.Any(m => m == u.Username.ToLower())
+                                && u.SchoolBranchId == _LoggedIn_BranchID
 
-                               where names.Contains(u.Username.ToLower())
-                               && p.IsPrimary == true
-                               select p).Select(x => new PhotoDto
-                               {
-                                   Id = x.Id,
-                                   UserName = x.User.FullName,
-                                   Url = _File.AppendImagePath(x.Name)
-                               }).ToListAsync();
+                                let photo = _context.Photos.FirstOrDefault(m => m.UserId == u.Id)
+                                select new PhotoDto
+                                {
+                                    UserName = u.FullName,
+                                    Url = photo != null ? _File.AppendImagePath(photo.Name) : null
+                                }).ToListAsync();
 
             _serviceResponse.Data = Photos;
             _serviceResponse.Success = true;
