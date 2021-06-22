@@ -337,5 +337,12 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("GetUserProfileImage/{userName}")]
+        public async Task<IActionResult> GetUserProfileImage(string userName)
+        {
+            _response = await _repo.GetUserProfileImage(userName);
+            return Ok(_response);
+
+        }
     }
 }

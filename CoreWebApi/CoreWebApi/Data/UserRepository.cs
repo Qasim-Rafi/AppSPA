@@ -1508,6 +1508,26 @@ namespace CoreWebApi.Data
             }
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> GetUserProfileImage(string userName)
+        {
+            var Photo = await (from u in _context.Users
+                               join p in _context.Photos
+                               on u.Id equals p.UserId
+
+                               where u.Username.ToLower() == userName.ToLower()
+                               && p.IsPrimary == true
+                               select p).Select(x => new PhotoDto
+                               {
+                                   Id = x.Id,
+                                   UserName = x.User.FullName,
+                                   Url = _File.AppendImagePath(x.Name)
+                               }).FirstOrDefaultAsync();
+
+            _serviceResponse.Data = Photo;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+
+        }
     }
 }
 

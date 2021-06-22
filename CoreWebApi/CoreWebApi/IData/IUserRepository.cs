@@ -34,6 +34,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> DeleteGroup(int id);
         Task<ServiceResponse<object>> CheckUserActiveStatus();
         Task<ServiceResponse<object>> GetUsersForSemesterAttendance(int subjectId, int semesterSectionId);
+        Task<ServiceResponse<object>> GetUserProfileImage(string userName);
 
     }
 }
