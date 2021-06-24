@@ -55,7 +55,7 @@ namespace CoreWebApi.Controllers
                 {
                     Id = lastMessage.Messages[0].Id,
                     Type = lastMessage.Messages[0].Type,
-                    DateTimeToDisplay = lastMessage.TimeToDisplay,
+                    DateTimeToDisplay = lastMessage.Messages[0].TimeToDisplay,
                     TimeToDisplay = lastMessage.Messages[0].TimeToDisplay,
                     Comment = lastMessage.Messages[0].Comment,
                     MessageFromUserId = lastMessage.Messages[0].MessageFromUserId,
@@ -98,7 +98,7 @@ namespace CoreWebApi.Controllers
                 {
                     Id = lastMessage.Messages[0].Id,
                     Type = lastMessage.Messages[0].Type,
-                    DateTimeToDisplay = lastMessage.TimeToDisplay,
+                    DateTimeToDisplay = lastMessage.Messages[0].TimeToDisplay,
                     TimeToDisplay = lastMessage.Messages[0].TimeToDisplay,
                     Comment = lastMessage.Messages[0].Comment,
                     MessageFromUserId = lastMessage.Messages[0].MessageFromUserId,
