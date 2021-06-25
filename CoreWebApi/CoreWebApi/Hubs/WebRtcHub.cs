@@ -135,7 +135,7 @@ namespace CoreWebApi.Hubs
                 }
             }
 
-            if (callingUser.CurrentRoom.Users.Count() == 0)
+            if (callingUser.CurrentRoom != null && callingUser.CurrentRoom.Users.Count() == 0)
             {
                 RoomsThatAreFull.Remove(callingUser.CurrentRoom);
                 RoomsThatAreActive.Remove(callingUser.CurrentRoom);
