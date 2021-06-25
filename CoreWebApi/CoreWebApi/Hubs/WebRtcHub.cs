@@ -98,10 +98,10 @@ namespace CoreWebApi.Hubs
             //room.Users.RemoveAll(m => roomUsers.Select(n => n.UserName).Contains(m.UserName));
             await Clients.Others.SendAsync("ScreenSharingStarted", roomName, roomUser);
         }
-        public async Task UserDisconnected()
+        public async Task UserDisconnected(string userName)
         {
-            var user = RTCUser.Get("", Context.ConnectionId);
-            await Clients.Others.SendAsync("UserDisconnected", user.UserName);
+            var user = RTCUser.Get(userName, Context.ConnectionId);
+            await Clients.All.SendAsync("UserDisconnected", user.UserName);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -126,26 +126,22 @@ namespace CoreWebApi.Hubs
                 await SendUserListUpdate(Clients.Others, callingUser.CurrentRoom, false);
             }
 
-            lock (RoomsThatAreActive)
+            if (RoomsThatAreActive.Count() > 0)
             {
-                if (RoomsThatAreActive.Count() > 0)
+                var toRemove = RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault();
+                if (toRemove != null)
                 {
-                    var toRemove = RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault();
-                    if (toRemove != null)
-                    {
-                        toRemove.Remove(callingUser);
-                    }
-                }
-                lock (RoomsThatAreFull)
-                {
-                    if (callingUser.CurrentRoom.Users.Count() == 0)
-                    {
-                        RoomsThatAreFull.Remove(callingUser.CurrentRoom);
-                        RoomsThatAreActive.Remove(callingUser.CurrentRoom);
-                        //Room.Remove(callingUser.CurrentRoom);
-                    }
+                    toRemove.Remove(callingUser);
                 }
             }
+
+            if (callingUser.CurrentRoom.Users.Count() == 0)
+            {
+                RoomsThatAreFull.Remove(callingUser.CurrentRoom);
+                RoomsThatAreActive.Remove(callingUser.CurrentRoom);
+                Room.Remove(callingUser.CurrentRoom);
+            }
+
             RTCUser.Remove(callingUser);
         }
 
