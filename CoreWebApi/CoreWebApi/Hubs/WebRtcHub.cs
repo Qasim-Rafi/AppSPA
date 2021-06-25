@@ -126,7 +126,7 @@ namespace CoreWebApi.Hubs
                 await SendUserListUpdate(Clients.Others, callingUser.CurrentRoom, false);
             }
 
-            if (RoomsThatAreActive.Count() > 0)
+            if (RoomsThatAreActive.Count() > 0 && callingUser.CurrentRoom != null)
             {
                 var toRemove = RoomsThatAreActive.Where(m => m.Name == callingUser.CurrentRoom.Name).Select(m => m.Users).FirstOrDefault();
                 if (toRemove != null)
