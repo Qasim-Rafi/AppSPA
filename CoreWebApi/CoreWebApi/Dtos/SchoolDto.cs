@@ -127,6 +127,8 @@ namespace CoreWebApi.Dtos
         public string Description { get; set; }
         public string NoticeDate { get; set; }
         public string CreatedDateTime { get; set; }
+        public string ApprovedDateTime { get; set; }
+        public string ApproveComment { get; set; }
         public bool IsApproved { get; set; }
         public bool IsNotified { get; set; }
     }

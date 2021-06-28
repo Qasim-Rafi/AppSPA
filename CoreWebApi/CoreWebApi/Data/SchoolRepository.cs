@@ -917,7 +917,9 @@ namespace CoreWebApi.Data
                 NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
                 CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime),
                 IsApproved = o.IsApproved,
-                IsNotified = o.IsNofified
+                IsNotified = o.IsNofified,
+                ApprovedDateTime = o.ApproveDateTime.HasValue ? DateFormat.ToDateTime(o.ApproveDateTime.Value) : "",
+                ApproveComment = o.ApproveComment
             }).ToListAsync();
 
             _serviceResponse.Data = List;
