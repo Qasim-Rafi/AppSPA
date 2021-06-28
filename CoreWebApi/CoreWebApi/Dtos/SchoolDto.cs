@@ -118,7 +118,7 @@ namespace CoreWebApi.Dtos
         public string Title { get; set; }
         public string Description { get; set; }
         public string NoticeDate { get; set; }
-        public int SemesterId { get; set; }
+        //public int SemesterId { get; set; }
     }
     public class NoticeBoardForListDto
     {        

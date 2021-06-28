@@ -934,6 +934,30 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> UpdateNotice(NoticeBoardForUpdateDto model)
+        {
+            var ToUpdate = await _context.NoticeBoards.Where(m => m.Id == model.Id).FirstOrDefaultAsync();
+            if (ToUpdate != null)
+            {
+                DateTime NoticeDate = DateTime.ParseExact(model.NoticeDate, "MM/dd/yyyy", null);
+                ToUpdate.Title = model.Title;
+                ToUpdate.Description = model.Description;
+                ToUpdate.NoticeDate = NoticeDate;
+
+                _context.NoticeBoards.Update(ToUpdate);
+                await _context.SaveChangesAsync();
+
+                _serviceResponse.Success = true;
+                _serviceResponse.Message = CustomMessage.Updated;
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = CustomMessage.RecordNotFound;
+            }
+            return _serviceResponse;
+
+        }
 
         public async Task<ServiceResponse<object>> AddQuery(ContactUsForAddDto model)
         {

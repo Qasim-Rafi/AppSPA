@@ -30,6 +30,7 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> AddNotice(NoticeBoardForAddDto model);
         Task<ServiceResponse<object>> GetNotices();
         Task<ServiceResponse<object>> GetNoticeById(int id);
+        Task<ServiceResponse<object>> UpdateNotice(NoticeBoardForUpdateDto model);
         Task<ServiceResponse<object>> AddQuery(ContactUsForAddDto model);
         Task<ServiceResponse<object>> AddUsefulResources(UsefulResourceForAddDto model);
         Task<ServiceResponse<object>> GetUsefulResources(int currentPage, string resourceType);

@@ -312,6 +312,16 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetNoticeById(id);
             return Ok(_response);
         }
+        [HttpPut("UpdateNotice")]
+        public async Task<IActionResult> UpdateNotice(NoticeBoardForUpdateDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.UpdateNotice(model);
+            return Ok(_response);
+        }
         [HttpPost("AddContactUsQuery"), AllowAnonymous]
         public async Task<IActionResult> AddQuery(ContactUsForAddDto model)
         {
