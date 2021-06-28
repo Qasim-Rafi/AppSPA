@@ -80,8 +80,8 @@ namespace CoreWebApi.Data
                                       where classSectionUser.UserId == _LoggedIn_UserID
                                       && csAssign.SchoolBranchId == _LoggedIn_BranchID
                                       && !ids.Contains(csAssign.Id)
-                                      && subject.Active == true
-                                      && classSection.Active == true
+                                      //&& subject.Active == true
+                                      //&& classSection.Active == true
                                       //&& csAssign.IsPosted == true
                                       && csAssign.DueDateTime.Value.Date >= DateTime.UtcNow.Date
                                       orderby csAssign.Id descending
@@ -116,8 +116,8 @@ namespace CoreWebApi.Data
 
                                       where csAssign.CreatedById == _LoggedIn_UserID
                                       && csAssign.SchoolBranchId == _LoggedIn_BranchID
-                                      && subject.Active == true
-                                      && classSection.Active == true
+                                      //&& subject.Active == true
+                                      //&& classSection.Active == true
                                       orderby csAssign.Id descending
                                       select csAssign).Select(o => new AssignmentDtoForList
                                       {

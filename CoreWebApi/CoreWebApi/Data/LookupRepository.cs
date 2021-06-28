@@ -197,6 +197,15 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        
+        public async Task<ServiceResponse<object>> GetQuestionTypes()
+        {
+            string[] values = new string[] { "Subjective" };
+            var list = await _context.QuestionTypes.Where(m => !values.Contains(m.Type)).ToListAsync();
+            _serviceResponse.Data = list;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
 
         public ServiceResponse<object> SchoolBranches()
         {

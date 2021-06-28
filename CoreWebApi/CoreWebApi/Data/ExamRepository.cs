@@ -197,8 +197,10 @@ namespace CoreWebApi.Data
             List<QuizForListDto> quizzes = await (from quiz in _context.Quizzes
                                                   join subject in _context.Subjects
                                                   on quiz.SubjectId equals subject.Id
+
                                                   join classSection in _context.ClassSections
                                                   on quiz.ClassSectionId equals classSection.Id
+
                                                   where subject.Active == true
                                                   && classSection.Active == true
                                                   && quiz.SchoolBranchId == _LoggedIn_BranchID
@@ -276,8 +278,8 @@ namespace CoreWebApi.Data
                                      where classSectionUser.UserId == _LoggedIn_UserID
                                      && quiz.SchoolBranchId == _LoggedIn_BranchID
                                      //&& !ids.Contains(quiz.Id)
-                                     && subject.Active == true
-                                     && classSection.Active == true
+                                     //&& subject.Active == true
+                                     //&& classSection.Active == true
                                      && quiz.QuizDate.Value.Date >= DateTime.UtcNow.Date
                                      orderby quiz.Id descending
                                      select new QuizForListDto
@@ -308,8 +310,8 @@ namespace CoreWebApi.Data
 
                                      where quiz.CreatedById == _LoggedIn_UserID
                                      && quiz.SchoolBranchId == _LoggedIn_BranchID
-                                     && subject.Active == true
-                                     && classSection.Active == true
+                                     //&& subject.Active == true
+                                     //&& classSection.Active == true
                                      orderby quiz.Id descending
                                      select new QuizForListDto
                                      {
@@ -623,12 +625,13 @@ namespace CoreWebApi.Data
                                    SectionName = _context.Sections.FirstOrDefault(m => m.Id == classSection.SectionId).SectionName,
                                    QuestionCount = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Count(),
                                    TotalMarks = _context.QuizQuestions.Where(n => n.QuizId == quiz.Id).Select(m => m.Marks.Value).Sum(),
-                                   ObtainedMarks = _context.QuizSubmissions.Where(n => n.QuizId == quiz.Id).Select(m => m.ResultMarks).Sum()
+                                   ObtainedMarks = _context.QuizSubmissions.Where(n => n.QuizId == quiz.Id && n.UserId == studentId).Select(m => m.ResultMarks).Sum()
                                }).FirstOrDefaultAsync();
 
             var questions = await (from q in _context.QuizQuestions
                                    join qType in _context.QuestionTypes
                                    on q.QuestionTypeId equals qType.Id
+
                                    where q.QuizId == quizz.QuizId
                                    select new QuestionResultForListDto
                                    {
@@ -637,7 +640,7 @@ namespace CoreWebApi.Data
                                        QuestionTypeId = q.QuestionTypeId,
                                        QuestionType = qType.Type,
                                        Marks = Convert.ToInt32(q.Marks),
-                                       IsAnsCorrect = _context.QuizSubmissions.FirstOrDefault(m => m.QuestionId == q.Id).IsCorrect
+                                       IsAnsCorrect = _context.QuizSubmissions.FirstOrDefault(m => m.QuestionId == q.Id && m.UserId == studentId).IsCorrect
                                    }).ToListAsync();
             quizz.Questions.AddRange(questions);
             foreach (var question in questions)
@@ -648,7 +651,7 @@ namespace CoreWebApi.Data
                                      {
                                          AnswerId = ans.Id,
                                          Answer = ans.Answer,
-                                         IsTrue = _context.QuizSubmissions.FirstOrDefault(m => m.AnswerId == ans.Id && m.QuestionId == question.QuestionId && m.QuizId == quizz.QuizId) != null ? true : false,
+                                         IsTrue = _context.QuizSubmissions.FirstOrDefault(m => m.AnswerId == ans.Id && m.QuestionId == question.QuestionId && m.QuizId == quizz.QuizId && m.UserId == studentId) != null ? true : false,
                                      }).ToListAsync();
                 question.Answers.AddRange(answers);
             }

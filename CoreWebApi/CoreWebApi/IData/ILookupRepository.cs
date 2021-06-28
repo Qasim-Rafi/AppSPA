@@ -10,6 +10,7 @@ namespace CoreWebApi.IData
     public interface ILookupRepository
     {
         Task<ServiceResponse<object>> GetUserTypes();
+        Task<ServiceResponse<object>> GetQuestionTypes();
         Task<ServiceResponse<object>> GetClassSections();
         Task<ServiceResponse<object>> GetClasses();
         Task<ServiceResponse<object>> GetSections();

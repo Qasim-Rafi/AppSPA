@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]
+    [Authorize(Roles = "SuperAdmin,Admin,Teacher,Student")]
     public class SchoolController : BaseController
     {
         private readonly ISchoolRepository _repo;

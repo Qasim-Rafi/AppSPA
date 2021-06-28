@@ -912,6 +912,7 @@ namespace CoreWebApi.Data
             {
                 var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.IsApproved == false).OrderByDescending(m => m.Id).Select(o => new NoticeBoardForListDto
                 {
+                    Id = o.Id,
                     Title = o.Title,
                     Description = o.Description,
                     NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
@@ -925,6 +926,7 @@ namespace CoreWebApi.Data
             {
                 var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.IsApproved == true).OrderByDescending(m => m.Id).Select(o => new NoticeBoardForListDto
                 {
+                    Id = o.Id,
                     Title = o.Title,
                     Description = o.Description,
                     NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),

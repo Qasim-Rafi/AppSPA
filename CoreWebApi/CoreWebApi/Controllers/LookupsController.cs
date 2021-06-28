@@ -37,6 +37,14 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpGet("QuestionTypes")]
+        public async Task<IActionResult> GetQuestionTypes()
+        {
+            _response = await _repo.GetQuestionTypes();
+
+            return Ok(_response);
+
+        }
         [HttpGet("ClassSections")]
         public async Task<IActionResult> GetClassSections()
         {
