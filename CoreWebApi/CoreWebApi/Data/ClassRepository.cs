@@ -226,8 +226,8 @@ namespace CoreWebApi.Data
                         _serviceResponse.Message = CustomMessage.NoOfStudentLimitIsLowerNow;
                         return _serviceResponse;
                     }
-                    objToUpdate.ClassId = model.ClassId;
-                    objToUpdate.SemesterId = model.SemesterId;
+                    objToUpdate.ClassId = model.ClassId > 0 ? model.ClassId : null;
+                    objToUpdate.SemesterId = model.SemesterId > 0 ? model.SemesterId : null;
                     objToUpdate.SectionId = model.SectionId;
                     objToUpdate.Active = model.Active;
                     //objToUpdate.SchoolBranchId = _LoggedIn_BranchID;

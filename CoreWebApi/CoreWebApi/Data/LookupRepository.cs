@@ -592,7 +592,15 @@ namespace CoreWebApi.Data
                 return _serviceResponse;
             }
         }
-        
+        public ServiceResponse<object> GetNotifyToTypes()
+        {
+            var toReturn = new List<string> { Enumm.NotifyTo.Student.ToString(),
+                Enumm.NotifyTo.Teacher.ToString(), Enumm.NotifyTo.Parent.ToString(),
+                Enumm.NotifyTo.Admin.ToString() };
+            _serviceResponse.Data = toReturn;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 
 }

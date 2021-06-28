@@ -377,5 +377,17 @@ namespace CoreWebApi.Controllers
             _response = await _repo.GetUsefulResourcesForAnonymous();
             return Ok(_response);
         }
+        [HttpPut("SendNotification/{noticeId}/{notifyTo}")]
+        public async Task<IActionResult> SendNotification(int noticeId, string notifyTo)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.SendNotification(noticeId, notifyTo);
+
+            return Ok(_response);
+
+        }
     }
 }

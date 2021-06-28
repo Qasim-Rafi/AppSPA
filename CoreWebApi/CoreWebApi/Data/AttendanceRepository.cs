@@ -24,7 +24,7 @@ namespace CoreWebApi.Data
         }
         public void OnInIt()
         {
-            var leaves = _context.Leaves.Where(m => m.FromDate.Date >= DateTime.UtcNow.Date && m.ToDate.Date <= DateTime.UtcNow.Date && m.Status == Enumm.LeaveStatus.Approved).ToList();
+            var leaves = _context.Leaves.Where(m => m.FromDate.Date >= DateTime.UtcNow.Date && DateTime.UtcNow.Date <= m.ToDate.Date && m.Status == Enumm.LeaveStatus.Approved && m.SchoolBranchId == _LoggedIn_BranchID).ToList();
 
             if (leaves.Count() > 0)
             {
@@ -34,21 +34,23 @@ namespace CoreWebApi.Data
                     var item = leaves[i];
 
                     var classSection = _context.ClassSectionUsers.Where(m => m.UserId == item.UserId).FirstOrDefault();
-                    //if (!AttendanceExists(item.UserId, item.FromDate))
-                    //{
-
-                    //}
-                    ListToAdd.Add(new Attendance
+                    if (!AttendanceExists(item.UserId, DateTime.UtcNow))
                     {
-                        Present = false,
-                        Absent = true,
-                        Late = false,
-                        Comments = "",
-                        UserId = item.UserId,
-                        ClassSectionId = classSection.ClassSectionId,
-                        CreatedDatetime = DateTime.UtcNow,
-                        SchoolBranchId = _LoggedIn_BranchID
-                    });
+                        ListToAdd.Add(new Attendance
+                        {
+                            Present = false,
+                            Absent = true,
+                            Late = false,
+                            Comments = "",
+                            UserId = item.UserId,
+                            ClassSectionId = classSection.ClassSectionId,
+                            Leave = true,
+                            LeaveDescription = item.Details,
+                            CreatedDatetime = DateTime.UtcNow,
+                            SchoolBranchId = _LoggedIn_BranchID
+                        });
+                    }
+                   
                 }
 
                 _context.Attendances.AddRange(ListToAdd);
@@ -57,7 +59,7 @@ namespace CoreWebApi.Data
         }
         public bool AttendanceExists(int userId, DateTime date)
         {
-            if (_context.Attendances.Any(x => x.UserId == userId && x.CreatedDatetime == date))
+            if (_context.Attendances.Any(x => x.UserId == userId && x.CreatedDatetime.Date == date.Date))
                 return true;
             return false;
         }
@@ -72,8 +74,8 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetAttendances(IEnumerable<UserByTypeListDto> list, AttendanceDtoForDisplay model)
         {
-            //OnInIt();
-            DateTime DTdate = DateTime.ParseExact(model.date, "MM/dd/yyyy", null);
+            OnInIt();
+            DateTime DTdate = DateTime.ParseExact(model.Date, "MM/dd/yyyy", null);
             var ToReturn = (from user in list
                             join attendance in _context.Attendances
                             on user.UserId equals attendance.UserId
@@ -91,6 +93,8 @@ namespace CoreWebApi.Data
                                 Absent = attendance.Absent,
                                 Late = attendance.Late,
                                 Comments = attendance.Comments,
+                                Leave = attendance.Leave,
+                                LeaveComments = attendance.LeaveDescription,
                                 LeaveCount = user.LeaveCount,// _context.Leaves.Where(m => m.UserId == user.UserId).Count(),
                                 AbsentCount = user.AbsentCount,//_context.Attendances.Where(m => m.UserId == user.UserId && m.Absent == true).Count(),
                                 LateCount = user.LateCount,//_context.Attendances.Where(m => m.UserId == user.UserId && m.Late == true).Count(),
@@ -111,7 +115,9 @@ namespace CoreWebApi.Data
                 Present = false,
                 Absent = false,
                 Late = false,
+                Leave = false,
                 Comments = "",
+                LeaveComments = "",
                 LeaveCount = o.LeaveCount,
                 AbsentCount = o.AbsentCount,
                 LateCount = o.LateCount,

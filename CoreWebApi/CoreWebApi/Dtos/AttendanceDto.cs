@@ -48,7 +48,8 @@ namespace CoreWebApi.Dtos
         public bool Absent { get; set; }
         public bool Late { get; set; }
         public string Comments { get; set; }
-        //public string LeavePurpose { get; set; }
+        public bool Leave { get; set; }
+        public string LeaveComments { get; set; }
         //public string LeaveType { get; set; }
         public string CreatedDatetime { get; set; }
         //public DateTime? LeaveFrom { get; set; }
@@ -70,7 +71,8 @@ namespace CoreWebApi.Dtos
         public bool Absent { get; set; }
         public bool Late { get; set; }
         public string Comments { get; set; }
-        //public string LeavePurpose { get; set; }
+        public bool Leave { get; set; }
+        public string LeaveComments { get; set; }
         //public string LeaveType { get; set; }
         public string CreatedDatetime { get; set; }
         //public DateTime? LeaveFrom { get; set; }
@@ -83,10 +85,10 @@ namespace CoreWebApi.Dtos
     }
     public class AttendanceDtoForDisplay
     {
-        public int typeId { get; set; }
-        public int? classSectionId { get; set; }
-        public int? subjectId { get; set; }
-        public string date { get; set; }
+        public int TypeId { get; set; }
+        public int? ClassSectionId { get; set; }
+        public int? SubjectId { get; set; }
+        public string Date { get; set; }
     }
     public class ThisMonthAttendancePercentageDto
     {

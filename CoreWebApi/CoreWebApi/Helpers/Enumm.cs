@@ -51,7 +51,13 @@ namespace CoreWebApi.Helpers
             public const string Rejected = "Rejected";
             public const string Pending = "Pending";
         }
-
+        public enum NotifyTo
+        {
+            Student,
+            Teacher,
+            Parent,
+            Admin
+        }
     }
     public static class AppRoles
     {

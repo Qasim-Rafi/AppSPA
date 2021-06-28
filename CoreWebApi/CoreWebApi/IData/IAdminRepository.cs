@@ -15,5 +15,6 @@ namespace CoreWebApi.IData
         Task<ServiceResponse<object>> GetEmployeeSalary();
         Task<ServiceResponse<object>> GetEmployeeSalaryById(int id);
         Task<ServiceResponse<object>> PostSalary(SalaryForPostDto model);
+        Task<ServiceResponse<object>> ApproveNotice(NoticeForApproveDto model);
     }
 }

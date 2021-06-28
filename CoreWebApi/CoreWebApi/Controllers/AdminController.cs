@@ -111,5 +111,16 @@ namespace CoreWebApi.Controllers
             return Ok(_response);
 
         }
+        [HttpPut("ApproveNotice")]
+        public async Task<IActionResult> ApproveNotice(NoticeForApproveDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _response = await _repo.ApproveNotice(model);
+            return Ok(_response);
+
+        }
     }
 }

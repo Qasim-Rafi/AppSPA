@@ -31,19 +31,11 @@ namespace CoreWebApi.Controllers
             _context = context;
         }
 
-        [HttpGet, NonAction] // not in use
-        public async Task<IActionResult> GetAttendancees()
-        {
-            _response = await _repo.GetAttendances(null, null);
-
-            //var ToReturn = _mapper.Map<IEnumerable<AttendanceDtoForList>>(attendances);
-            return Ok(_response);
-
-        }
+       
         [HttpPost("GetAttendanceToDisplay")]
         public async Task<IActionResult> GetAttendanceToDisplay(AttendanceDtoForDisplay model)
         {
-            ServiceResponse<IEnumerable<UserByTypeListDto>> responseUsers = await _userRepository.GetUsersByType(model.typeId, model.classSectionId);
+            ServiceResponse<IEnumerable<UserByTypeListDto>> responseUsers = await _userRepository.GetUsersByType(model.TypeId, model.ClassSectionId);
             _response = await _repo.GetAttendances(responseUsers.Data, model);
             return Ok(_response);
 

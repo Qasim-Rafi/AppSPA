@@ -11,7 +11,7 @@ namespace CoreWebApi.IData
     {
         Task<ServiceResponse<object>> GetAttendances(IEnumerable<UserByTypeListDto> list, AttendanceDtoForDisplay model);
         Task<ServiceResponse<object>> GetAttendance(int id);
-        bool AttendanceExists(int userId, DateTime date);
+        //bool AttendanceExists(int userId, DateTime date);
         Task<ServiceResponse<object>> AddAttendance(List<AttendanceDtoForAdd> Attendances);
         Task<ServiceResponse<object>> EditAttendance(int id, AttendanceDtoForEdit Attendance);
     }

@@ -192,5 +192,20 @@ namespace CoreWebApi.Data
             _serviceResponse.Success = true;
             return _serviceResponse;
         }
+        public async Task<ServiceResponse<object>> ApproveNotice(NoticeForApproveDto model)
+        {
+            var toUpdate = await _context.NoticeBoards.Where(m => m.Id == model.NoticeId).FirstOrDefaultAsync();
+            toUpdate.ApproveById = _LoggedIn_UserID;
+            toUpdate.ApproveComment = model.ApproveComment;
+            toUpdate.IsApproved = model.IsApproved;
+            toUpdate.ApproveDateTime = DateTime.UtcNow;
+
+            _context.NoticeBoards.Update(toUpdate);
+            await _context.SaveChangesAsync();
+
+            _serviceResponse.Message = CustomMessage.Updated;
+            _serviceResponse.Success = true;
+            return _serviceResponse;
+        }
     }
 }

@@ -16,10 +16,11 @@ namespace CoreWebApi.Models
         public bool Present { get; set; }
         public bool Absent { get; set; }
         public bool Late { get; set; }
-        public string Comments { get; set; }
+        public string Comments { get; set; }      
         public DateTime CreatedDatetime { get; set; }
         public int SchoolBranchId { get; set; }
-
+        public bool Leave { get; set; }
+        public string LeaveDescription { get; set; }
         //public virtual User User { get; set; }
 
         //public virtual ClassSection ClassSection { get; set; }

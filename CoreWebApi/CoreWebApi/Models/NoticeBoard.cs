@@ -15,6 +15,10 @@ namespace CoreWebApi.Models
         public DateTime CreatedDateTime { get; set; }
         public int CreatedById { get; set; }
         public int SchoolBranchId { get; set; }
+        public bool IsApproved { get; set; }
+        public int? ApproveById { get; set; }
+        public DateTime? ApproveDateTime { get; set; }
+        public string ApproveComment { get; set; }
 
         [ForeignKey("CreatedById")]
         public virtual User CreatedBy { get; set; }

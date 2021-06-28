@@ -178,6 +178,8 @@ namespace CoreWebApi.Dtos
         public bool Absent { get; set; }
         public bool Late { get; set; }
         public string Comments { get; set; }
+        public bool Leave { get; set; }
+        public string LeaveComments { get; set; }
         public string CreatedDatetime { get; set; }
         public int LateCount { get; set; }
         public int AbsentCount { get; set; }

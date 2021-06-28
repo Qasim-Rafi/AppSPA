@@ -55,4 +55,10 @@ namespace CoreWebApi.Dtos
         public int Id { get; set; }
         public bool Posted { get; set; }
     }
+    public class NoticeForApproveDto
+    {
+        public int NoticeId { get; set; }
+        public string ApproveComment { get; set; }
+        public bool IsApproved { get; set; }
+    }
 }
