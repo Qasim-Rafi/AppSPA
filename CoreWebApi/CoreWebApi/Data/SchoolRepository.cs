@@ -897,6 +897,7 @@ namespace CoreWebApi.Data
                 CreatedById = _LoggedIn_UserID,
                 SchoolBranchId = _LoggedIn_BranchID,
                 IsApproved = false,
+                IsNofified = false,
             };
             await _context.NoticeBoards.AddAsync(ToAdd);
             await _context.SaveChangesAsync();
@@ -908,34 +909,20 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetNotices()
         {
-            if (_LoggedIn_UserRole == Enumm.UserType.SuperAdmin.ToString())
+            var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID).OrderByDescending(m => m.Id).Select(o => new NoticeBoardForListDto
             {
-                var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.IsApproved == false).OrderByDescending(m => m.Id).Select(o => new NoticeBoardForListDto
-                {
-                    Id = o.Id,
-                    Title = o.Title,
-                    Description = o.Description,
-                    NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
-                    CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime),
-                }).ToListAsync();
+                Id = o.Id,
+                Title = o.Title,
+                Description = o.Description,
+                NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
+                CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime),
+                IsApproved = o.IsApproved,
+                IsNotified = o.IsNofified
+            }).ToListAsync();
 
-                _serviceResponse.Data = List;
-                _serviceResponse.Success = true;
-            }
-            else
-            {
-                var List = await _context.NoticeBoards.Where(m => m.SchoolBranchId == _LoggedIn_BranchID && m.IsApproved == true).OrderByDescending(m => m.Id).Select(o => new NoticeBoardForListDto
-                {
-                    Id = o.Id,
-                    Title = o.Title,
-                    Description = o.Description,
-                    NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
-                    CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime),
-                }).ToListAsync();
+            _serviceResponse.Data = List;
+            _serviceResponse.Success = true;
 
-                _serviceResponse.Data = List;
-                _serviceResponse.Success = true;
-            }
             return _serviceResponse;
         }
 
@@ -1115,6 +1102,9 @@ namespace CoreWebApi.Data
         public async Task<ServiceResponse<object>> SendNotification(int noticeId, string notifyTo)
         {
             var dbObj = await _context.NoticeBoards.Where(m => m.Id == noticeId).FirstOrDefaultAsync();
+            dbObj.IsNofified = true;
+            _context.NoticeBoards.Update(dbObj);
+            await _context.SaveChangesAsync();
 
             List<Notification> NotificationsToAdd = new List<Notification>();
             var ToUsers = (from u in _context.Users

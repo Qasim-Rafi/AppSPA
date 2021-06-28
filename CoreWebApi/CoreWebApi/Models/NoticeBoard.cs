@@ -19,6 +19,7 @@ namespace CoreWebApi.Models
         public int? ApproveById { get; set; }
         public DateTime? ApproveDateTime { get; set; }
         public string ApproveComment { get; set; }
+        public bool IsNofified { get; set; }
 
         [ForeignKey("CreatedById")]
         public virtual User CreatedBy { get; set; }
