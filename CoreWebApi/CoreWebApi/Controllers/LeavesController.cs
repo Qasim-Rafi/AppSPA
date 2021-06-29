@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWebApi.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Student")]
+    [Authorize(Roles = "SuperAdmin,Admin,Teacher,Student")]
     public class LeavesController : BaseController
     {
         private readonly ILeaveRepository _repo;

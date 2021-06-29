@@ -936,7 +936,7 @@ namespace CoreWebApi.Data
                 Title = o.Title,
                 Description = o.Description,
                 NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
-                //CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime),
+                CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime),
                 IsApproved = o.IsApproved,
                 IsNotified = o.IsNofified,
                 ApprovedDateTime = o.ApproveDateTime.HasValue ? DateFormat.ToDateTime(o.ApproveDateTime.Value) : "",
