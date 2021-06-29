@@ -930,8 +930,19 @@ namespace CoreWebApi.Data
 
         public async Task<ServiceResponse<object>> GetNoticeById(int id)
         {
-            var dbObj = await _context.NoticeBoards.Where(m => m.Id == id).FirstOrDefaultAsync();
-            var ToReturn = _mapper.Map<NoticeBoardForListDto>(dbObj);
+            var ToReturn = await _context.NoticeBoards.Where(m => m.Id == id).Select(o => new NoticeBoardForListDto
+            {
+                Id = o.Id,
+                Title = o.Title,
+                Description = o.Description,
+                NoticeDate = DateFormat.ToDate(o.NoticeDate.ToString()),
+                //CreatedDateTime = DateFormat.ToDateTime(o.CreatedDateTime),
+                IsApproved = o.IsApproved,
+                IsNotified = o.IsNofified,
+                ApprovedDateTime = o.ApproveDateTime.HasValue ? DateFormat.ToDateTime(o.ApproveDateTime.Value) : "",
+                ApproveComment = o.ApproveComment
+            }).FirstOrDefaultAsync();
+
             _serviceResponse.Data = ToReturn;
             _serviceResponse.Success = true;
             return _serviceResponse;
