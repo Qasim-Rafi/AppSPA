@@ -96,6 +96,8 @@ namespace CoreWebApi.Data
                                    join cs in _context.ClassSections
                                    on main.ClassSectionId equals cs.Id
 
+                                 
+
                                    where //u.UserTypeId == (int)Enumm.UserType.Teacher
                                    l.SchoolBranchId == _LoggedIn_BranchID
                                    && s.Active == true
@@ -119,6 +121,8 @@ namespace CoreWebApi.Data
                                        Classs = _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true) != null ? _context.Class.FirstOrDefault(m => m.Id == cs.ClassId && m.Active == true).Name : "",
                                        Section = _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true) != null ? _context.Sections.FirstOrDefault(m => m.Id == cs.SectionId && m.Active == true).SectionName : "",
                                        IsBreak = l.IsBreak,
+                                       IsPresent = _context.Leaves.Count(m => m.UserId == u.Id) > 0 ? true : false,
+
                                        RowNo = l.RowNo
                                    }).ToListAsync(); //.Where(m => m.Teacher != null)
 
@@ -139,6 +143,8 @@ namespace CoreWebApi.Data
                     EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
+                   
+
                 });
             }
 

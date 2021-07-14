@@ -61,6 +61,7 @@ namespace CoreWebApi.Dtos
         public string Section { get; set; }
         public bool IsBreak { get; set; }
         public int RowNo { get; set; }
+        public  bool IsPresent{ get; set; }
     }
 
     public class TimeSlotsForListDto
@@ -71,6 +72,7 @@ namespace CoreWebApi.Dtos
         public string StartTimeToDisplay { get; set; }
         public string EndTimeToDisplay { get; set; }
         public bool IsBreak { get; set; }
+        public bool IsPresent { get; set; }
         public string Day { get; set; }
     }
 
