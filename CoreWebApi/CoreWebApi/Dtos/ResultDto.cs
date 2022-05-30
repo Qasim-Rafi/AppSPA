@@ -23,7 +23,7 @@ namespace CoreWebApi.Dtos
     }
     public class ResultForUpdateDto
     {
-        public int Id { get; set; }       
+        public int ResultId { get; set; }       
         public string Remarks { get; set; }
         public double TotalMarks { get; set; }
         public double ObtainedMarks { get; set; }
@@ -80,8 +80,8 @@ namespace CoreWebApi.Dtos
         public double Total { get; set; }
         public double TotalObtained { get; set; }
         public decimal TotalPercentage { get; set; }
-        public double HighestMarks { get; set; }
-        public double LowestMarks { get; set; }
+        public double?  HighestMarks { get; set; }
+        public double? LowestMarks { get; set; }
         public double AverageMarks { get; set; }
     }
 }

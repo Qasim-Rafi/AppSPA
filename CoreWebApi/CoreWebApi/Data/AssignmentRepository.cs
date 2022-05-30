@@ -372,6 +372,7 @@ namespace CoreWebApi.Data
                                               orderby csAssign.Id ascending
                                               select new SubmittedAssignmentStudentsDtoForList
                                               {
+                                                  
                                                   ResultId = result.Id,
                                                   Details = submit.Description,
                                                   RelatedMaterial = _filesRepository.AppendMultiDocPath(submit.SubmittedMaterial),

@@ -58,15 +58,17 @@ namespace CoreWebApi.Data
             for (int i = 0; i < model.Count; i++)
             {
                 var item = model[i];
-                var toUpdate = _context.Results.Where(m => m.Id == item.Id).FirstOrDefault();
+                var toUpdate = _context.Results.Where(m => m.Id == item.ResultId).FirstOrDefault();
                 toUpdate.Remarks = item.Remarks;
                 toUpdate.ObtainedMarks = item.ObtainedMarks;
                 toUpdate.TotalMarks = item.TotalMarks;
                 ListToUpdate.Add(toUpdate);
+
+
+                _context.Results.UpdateRange(ListToUpdate);
+                await _context.SaveChangesAsync();
             }
 
-            _context.Results.UpdateRange(ListToUpdate);
-            await _context.SaveChangesAsync();
 
             _serviceResponse.Message = CustomMessage.Updated;
             _serviceResponse.Success = true;
@@ -287,21 +289,26 @@ namespace CoreWebApi.Data
 
                     item.TotalObtained = item.Result.Select(m => m.ObtainedMarks).Sum();
                     item.Total = item.Result.Select(m => m.TotalMarks).Sum();
-                    item.TotalPercentage = GenericFunctions.CalculatePercentage(item.Result.Select(m => m.ObtainedMarks).Sum(), item.Result.Select(m => m.TotalMarks).Sum());
+                    item.TotalPercentage = GenericFunctions.CalculatePercentage(item.Result.Count > 0  ? item.Result.Select(m => m.ObtainedMarks).DefaultIfEmpty().Sum(): 0 , item.Result.Count> 0 ? item.Result.Select(m => m.TotalMarks).DefaultIfEmpty().Sum() : 1  );
+                    try
+                    {
+                        item.HighestMarks = await (from r in _context.Results
+                                                   join s in _context.Subjects
+                                                   on r.SubjectId equals s.Id
 
-                    item.HighestMarks = await (from r in _context.Results
-                                               join s in _context.Subjects
-                                               on r.SubjectId equals s.Id
-
-                                               where r.ReferenceId == item.ExamId
-                                               select r).MaxAsync(m => m.ObtainedMarks);
+                                                   where r.ReferenceId == item.ExamId
+                                                   select r).MaxAsync(m => (double?) m.ObtainedMarks);
+                    } catch (Exception ex)
+                    {
+                        string s = ex.Message; 
+                    }
 
                     item.LowestMarks = await (from r in _context.Results
                                               join s in _context.Subjects
                                               on r.SubjectId equals s.Id
 
                                               where r.ReferenceId == item.ExamId
-                                              select r).MinAsync(m => m.ObtainedMarks);
+                                              select r).MinAsync(m => (double?)m.ObtainedMarks);
 
                     var sumOfMarks = await (from r in _context.Results
                                             join s in _context.Subjects
