@@ -41,7 +41,7 @@ namespace CoreWebApi.Extensions
             services.AddScoped<IEmailRepository, EmailRepository>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
+            services.AddScoped<IVideosTutorialsRepository, VideosTutorialsRepository>();
             return services;
         }
     }
