@@ -263,7 +263,7 @@ namespace CoreWebApi.Data
                 List<QuizForListDto> quizzes = new List<QuizForListDto>();
                 if (_LoggedIn_UserRole == Enumm.UserType.Student.ToString())
                 {
-                    //var ids = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.QuizId);
+                    var ids = _context.QuizSubmissions.Where(m => m.UserId == _LoggedIn_UserID).Select(m => m.QuizId);
 
                     quizzes = await (from quiz in _context.Quizzes
                                      join subject in _context.Subjects
@@ -277,7 +277,7 @@ namespace CoreWebApi.Data
 
                                      where classSectionUser.UserId == _LoggedIn_UserID
                                      && quiz.SchoolBranchId == _LoggedIn_BranchID
-                                     //&& !ids.Contains(quiz.Id)
+                                     && !ids.Contains(quiz.Id)
                                      //&& subject.Active == true
                                      //&& classSection.Active == true
                                      && quiz.QuizDate.Value.Date >= DateTime.UtcNow.Date
