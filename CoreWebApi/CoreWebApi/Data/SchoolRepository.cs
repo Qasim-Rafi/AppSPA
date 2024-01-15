@@ -139,8 +139,8 @@ namespace CoreWebApi.Data
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
                     StartTime = DateFormat.To24HRTime(StartTimings[i]),
                     EndTime = DateFormat.To24HRTime(EndTimings[i]),
-                    StartTimeToDisplay = DateFormat.ToTime(StartTimings[i]),
-                    EndTimeToDisplay = DateFormat.ToTime(EndTimings[i]),
+                    StartTimeToDisplay = DateFormat.To24HRTime(StartTimings[i]) +  Convert.ToDateTime( DateFormat.ToTime(StartTimings[i])).ToString("tt", CultureInfo.InvariantCulture),// Convert.ToDateTime( DateFormat.ToTime(o.EndTime)).ToString("tt", CultureInfo.InvariantCulture),
+                    EndTimeToDisplay = DateFormat.To24HRTime(EndTimings[i]) +  Convert.ToDateTime(DateFormat.ToTime(EndTimings[i])).ToString("tt", CultureInfo.InvariantCulture),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                    
