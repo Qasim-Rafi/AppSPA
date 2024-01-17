@@ -66,8 +66,8 @@ namespace CoreWebApi.Data
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
                     StartTime = StartTimings[i],//DateFormat.ToTime(StartTimings[i]),
                     EndTime = EndTimings[i],//DateFormat.ToTime(EndTimings[i]),
-                    StartTimeToDisplay = DateFormat.ToTime(Convert.ToDateTime(StartTimings[i]).TimeOfDay),
-                    EndTimeToDisplay = DateFormat.ToTime(Convert.ToDateTime(EndTimings[i]).TimeOfDay),
+                    StartTimeToDisplay = DateFormat.To24HRTime(Convert.ToDateTime(StartTimings[i]).TimeOfDay) + Convert.ToDateTime(DateFormat.To24HRTime(Convert.ToDateTime(StartTimings[i]).TimeOfDay)).ToString("tt", CultureInfo.InvariantCulture),
+                    EndTimeToDisplay = DateFormat.To24HRTime(Convert.ToDateTime(EndTimings[i]).TimeOfDay) + Convert.ToDateTime(DateFormat.To24HRTime(Convert.ToDateTime(EndTimings[i]).TimeOfDay)).ToString("tt", CultureInfo.InvariantCulture),
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                 });
@@ -139,8 +139,8 @@ namespace CoreWebApi.Data
                     Id = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Id : 0,
                     StartTime = DateFormat.To24HRTime(StartTimings[i]),
                     EndTime = DateFormat.To24HRTime(EndTimings[i]),
-                    StartTimeToDisplay = DateFormat.To24HRTime(StartTimings[i]) +  Convert.ToDateTime( DateFormat.ToTime(StartTimings[i])).ToString("tt", CultureInfo.InvariantCulture),// Convert.ToDateTime( DateFormat.ToTime(o.EndTime)).ToString("tt", CultureInfo.InvariantCulture),
-                    EndTimeToDisplay = DateFormat.To24HRTime(EndTimings[i]) +  Convert.ToDateTime(DateFormat.ToTime(EndTimings[i])).ToString("tt", CultureInfo.InvariantCulture),
+                    StartTimeToDisplay = DateFormat.To24HRTime(StartTimings[i]),// Convert.ToDateTime( DateFormat.ToTime(o.EndTime)).ToString("tt", CultureInfo.InvariantCulture),
+                    EndTimeToDisplay = DateFormat.To24HRTime(EndTimings[i]) ,
                     Day = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).Day : "",
                     IsBreak = Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]) != null ? Timings.FirstOrDefault(m => m.StartTime == StartTimings[i] && m.EndTime == EndTimings[i]).IsBreak : false
                    
