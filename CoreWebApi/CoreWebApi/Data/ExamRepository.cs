@@ -277,7 +277,7 @@ namespace CoreWebApi.Data
 
                                      where classSectionUser.UserId == _LoggedIn_UserID
                                      && quiz.SchoolBranchId == _LoggedIn_BranchID
-                                     && !ids.Contains(quiz.Id)
+                                     && ids.Contains(quiz.Id)
                                      //&& subject.Active == true
                                      //&& classSection.Active == true
                                      && quiz.QuizDate.Value.Date >= DateTime.UtcNow.Date
