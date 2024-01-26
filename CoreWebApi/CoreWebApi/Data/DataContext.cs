@@ -97,6 +97,8 @@ namespace CoreWebApi.Data
         public DbSet<GetAttendancePercentageByMonthDto> SPGetAttendancePercentageByMonth { get; set; }
         public DbSet<GetSubstituteTeachersDto> SPGetSubstituteTeachers { get; set; }
         public DbSet<VideosTutorials> VideosTutorials { get; set; }
+        public DbSet<Video> Videos { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

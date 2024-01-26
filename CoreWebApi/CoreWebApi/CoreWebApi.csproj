@@ -198,6 +198,8 @@
     <Compile Remove="Migrations\20210407075134_UpdateUser5.Designer.cs" />
     <Compile Remove="Migrations\20210609053654_UpdateUsefullRes.cs" />
     <Compile Remove="Migrations\20210609053654_UpdateUsefullRes.Designer.cs" />
+    <Compile Remove="Migrations\20240126070214_AddedVideo.cs" />
+    <Compile Remove="Migrations\20240126070214_AddedVideo.Designer.cs" />
 
   </ItemGroup>
 

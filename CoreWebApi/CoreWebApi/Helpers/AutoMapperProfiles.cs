@@ -75,7 +75,8 @@ namespace CoreWebApi.Helpers
             // tutor
             CreateMap<TutorSubject, TutorSubjectDtoForDetail>();
             CreateMap<TutorSubject, TutorSubjectDtoForList>();
-            
+            CreateMap<Video, VideoDto>();
+
 
         }
     }

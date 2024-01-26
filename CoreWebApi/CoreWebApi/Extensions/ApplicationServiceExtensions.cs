@@ -33,7 +33,7 @@ namespace CoreWebApi.Extensions
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<ISemesterFeeRepository, SemesterFeeRepository>();
             services.AddScoped<ITutorRepository, TutorRepository>();
-
+            services.AddScoped<IVideoRepository, VideoRepository>();
 
 
             services.AddScoped<ILookupRepository, LookupRepository>();
