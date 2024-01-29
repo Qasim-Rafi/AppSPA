@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using AutoMapper.Configuration;
 using CoreWebApi.Dtos;
 using CoreWebApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,6 +12,7 @@ namespace CoreWebApi.Helpers
 {
     public class AutoMapperProfiles : Profile
     {
+        protected readonly IConfiguration _configuration;
         public AutoMapperProfiles()
         {
             // user
@@ -75,7 +78,11 @@ namespace CoreWebApi.Helpers
             // tutor
             CreateMap<TutorSubject, TutorSubjectDtoForDetail>();
             CreateMap<TutorSubject, TutorSubjectDtoForList>();
-            CreateMap<Video, VideoDto>();
+            CreateMap<Video, VideoDto>()
+          .ForMember(dest => dest.FullPath, opt => opt.MapFrom(src =>
+              !string.IsNullOrEmpty(src.FileName)
+                  ? $"https://e-learningbox.com/WebAPI/{src.FileName}"  // Note: Added string interpolation
+                  : string.Empty));
 
 
         }

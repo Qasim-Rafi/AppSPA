@@ -37,7 +37,7 @@ namespace CoreWebApi.Controllers
         }
 
         [HttpPost("AddVideo")]
-        public async Task<IActionResult> AddVideo(VideoDto request)
+        public async Task<IActionResult> AddVideo([FromForm] VideoDto request)
         {
 
             if (!ModelState.IsValid)

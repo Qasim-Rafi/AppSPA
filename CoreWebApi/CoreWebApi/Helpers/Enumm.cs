@@ -68,4 +68,9 @@ namespace CoreWebApi.Helpers
         public const string Teacher_Student_Parent = "Teacher, Student, Parent";
         public const string Tutor_OnlineStudent = "Tutor, OnlineStudent";
     }
+    public static class FIlePath
+    {
+        public const string RecordedLectures = "RecordedLectures";
+
+    }
 }

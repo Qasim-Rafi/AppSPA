@@ -17,7 +17,8 @@ namespace CoreWebApi.Models
         public string Url { get; set; }
         public string TumbNail { get; set; }
         public string Description { get; set; }
-       
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
 
         [ForeignKey("SchoolBranchId")]
         public virtual SchoolBranch SchoolBranch { get; set; }
