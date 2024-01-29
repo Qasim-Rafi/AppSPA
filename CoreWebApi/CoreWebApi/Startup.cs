@@ -5,12 +5,14 @@ using CoreWebApi.Helpers;
 using CoreWebApi.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace CoreWebApi
 {
@@ -24,6 +26,29 @@ namespace CoreWebApi
             _HostEnvironment = HostEnvironment;
         }
 
+        [AttributeUsage(AttributeTargets.Class)]
+        public class ControllerNameAttribute : Attribute
+        {
+            public string Name { get; }
+
+            public ControllerNameAttribute(string name)
+            {
+                Name = name;
+            }
+        }
+        public class ControllerNameAttributeConvention : IControllerModelConvention
+        {
+            public void Apply(ControllerModel controller)
+            {
+                var controllerNameAttribute = controller.Attributes.OfType<ControllerNameAttribute>().SingleOrDefault();
+                if (controllerNameAttribute != null)
+                {
+                    controller.ControllerName = controllerNameAttribute.Name;
+                }
+            }
+        }
+
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -31,11 +56,16 @@ namespace CoreWebApi
             try
             {
                 services.AddDistributedMemoryCache();
-
-                services.AddControllers().AddNewtonsoftJson();
-                services.AddCors();
-                services.AddAutoMapper(typeof(UserRepository).Assembly);
                 services.AddApplicationServices(Configuration);
+                services.AddCors();
+                // services.AddControllers().AddNewtonsoftJson();
+                services.AddControllers(o =>
+                {
+                    o.Conventions.Add(new ControllerNameAttributeConvention());
+                });
+
+                services.AddAutoMapper(typeof(Startup).Assembly);
+             
                 services.AddIdentityServices(Configuration, _HostEnvironment);
 
 
